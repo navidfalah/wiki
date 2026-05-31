@@ -69,3 +69,12 @@ export async function saveKnowledgeGraphOverrides(connections, apiBase = DEFAULT
 export function fetchAnalytics(apiBase = DEFAULT_WIKI_API_URL) {
   return apiFetch('/api/analytics', apiBase);
 }
+
+export function fetchDocsList(apiBase = DEFAULT_WIKI_API_URL) {
+  return apiFetch('/api/docs', apiBase);
+}
+
+export function fetchAnalyticsTag(tag, apiBase = DEFAULT_WIKI_API_URL) {
+  const encoded = encodeURIComponent(tag);
+  return apiFetch(`/api/analytics/tags/${encoded}`, apiBase);
+}

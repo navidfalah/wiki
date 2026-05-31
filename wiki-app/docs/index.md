@@ -5,14 +5,14 @@ tags:
   - index
   - moc
   - wiki
-last_updated: "2026-05-31T20:50:54.801886+00:00"
+last_updated: "2026-05-31T21:07:10.245381+00:00"
 sidebar_label: Wiki Index
 slug: /index
 ---
 
 # Wiki Map of Content
 
-&gt; Auto-generated index of **222** pages, organized by topic and tags.
+> Auto-generated index of **222** pages, organized by topic and tags.
 
 ## Overview
 
@@ -83,8 +83,8 @@ slug: /index
 
 ## Meetings & Transcripts
 
-- ["meeting" — no agenda, 23 min](./meeting-no-agenda-23-min.md) — Synthesized from 1 raw chunk(s) (heuristic mode — set OPENAIAPIKEY for LLM drafts).
 - [[TRANSCRIPT FRAGMENT — recording failed at 00:04:12]](./transcript-fragment-recording-failed-at-000412.md) — Synthesized from 1 raw chunk(s) (heuristic mode — set OPENAIAPIKEY for LLM drafts).
+- [\"meeting\" — no agenda, 23 min](./meeting-no-agenda-23-min.md) — Synthesized from 1 raw chunk(s) (heuristic mode — set OPENAIAPIKEY for LLM drafts).
 - [STANDUP — june 1?? (late again)](./standup-june-1-late-again.md) — Synthesized from 1 raw chunk(s) (heuristic mode — set OPENAIAPIKEY for LLM drafts).
 - [Voice memo transcription (auto, low confidence)](./voice-memo-transcription-auto-low-confidence.md) — Synthesized from 1 raw chunk(s) (heuristic mode — set OPENAIAPIKEY for LLM drafts).
 
@@ -170,30 +170,30 @@ slug: /index
 ### Uncategorized
 
 - [- (1) Cross-reference: MeshSync rejoin storms above six nodes remain a P0 for Au](./1-cross-reference-meshsync-rejoin-storms-above-six-nodes-remain-a-p0-for-au.md) — Synthesized from 6 raw chunk(s) (heuristic mode — set OPENAIAPIKEY for LLM drafts).
-- [- (111) Herbal tea preset is seven minutes in [firmware](./firmware.md); box label was corrected](./111-herbal-tea-preset-is-seven-minutes-in-firmware-box-label-was-corrected.md) — Synthesized from 1 raw chunk(s) (heuristic mode — set OPENAIAPIKEY for LLM drafts).
-- [- (114) PulsePatch wearable shares no [firmware](./firmware.md) lineage with [MeshSync](./meshsync.md) despite inv](./114-pulsepatch-wearable-shares-no-firmware-lineage-with-meshsync-despite-inv.md) — Synthesized from 1 raw chunk(s) (heuristic mode — set OPENAIAPIKEY for LLM drafts).
-- [- (19) [SenseNode SN-400](./sensenode-sn-400.md) is splash-resistant IP54; Nova Widget beta units are spl](./19-sensenode-sn-400-is-splash-resistant-ip54-nova-widget-beta-units-are-spl.md) — Synthesized from 5 raw chunk(s) (heuristic mode — set OPENAIAPIKEY for LLM drafts).
+- [- (111) Herbal tea preset is seven minutes in firmware; box label was corrected](./111-herbal-tea-preset-is-seven-minutes-in-firmware-box-label-was-corrected.md) — Synthesized from 1 raw chunk(s) (heuristic mode — set OPENAIAPIKEY for LLM drafts).
+- [- (114) PulsePatch wearable shares no firmware lineage with MeshSync despite inv](./114-pulsepatch-wearable-shares-no-firmware-lineage-with-meshsync-despite-inv.md) — Synthesized from 1 raw chunk(s) (heuristic mode — set OPENAIAPIKEY for LLM drafts).
+- [- (19) SenseNode SN-400 is splash-resistant IP54; Nova Widget beta units are spl](./19-sensenode-sn-400-is-splash-resistant-ip54-nova-widget-beta-units-are-spl.md) — Synthesized from 5 raw chunk(s) (heuristic mode — set OPENAIAPIKEY for LLM drafts).
 - [- (20) Default Nova Widget read interval is fifteen minutes, not hourly (kickoff](./20-default-nova-widget-read-interval-is-fifteen-minutes-not-hourly-kickoff.md) — Synthesized from 5 raw chunk(s) (heuristic mode — set OPENAIAPIKEY for LLM drafts).
-- [- (21) Herbal tea preset is seven minutes in [firmware](./firmware.md); box label was corrected i](./21-herbal-tea-preset-is-seven-minutes-in-firmware-box-label-was-corrected-i.md) — Synthesized from 3 raw chunk(s) (heuristic mode — set OPENAIAPIKEY for LLM drafts).
+- [- (21) Herbal tea preset is seven minutes in firmware; box label was corrected i](./21-herbal-tea-preset-is-seven-minutes-in-firmware-box-label-was-corrected-i.md) — Synthesized from 3 raw chunk(s) (heuristic mode — set OPENAIAPIKEY for LLM drafts).
 - [- (23) GreenGrid Hub integration is exploratory; no committed API surface for Q3](./23-greengrid-hub-integration-is-exploratory-no-committed-api-surface-for-q3.md) — Synthesized from 4 raw chunk(s) (heuristic mode — set OPENAIAPIKEY for LLM drafts).
-- [- (24) PulsePatch wearable shares no [firmware](./firmware.md) lineage with [MeshSync](./meshsync.md) despite inve](./24-pulsepatch-wearable-shares-no-firmware-lineage-with-meshsync-despite-inve.md) — Synthesized from 7 raw chunk(s) (heuristic mode — set OPENAIAPIKEY for LLM drafts).
+- [- (24) PulsePatch wearable shares no firmware lineage with MeshSync despite inve](./24-pulsepatch-wearable-shares-no-firmware-lineage-with-meshsync-despite-inve.md) — Synthesized from 7 raw chunk(s) (heuristic mode — set OPENAIAPIKEY for LLM drafts).
 - [- (25) Wiki compiler heuristic mode extracts headers, bold terms, and first-line](./25-wiki-compiler-heuristic-mode-extracts-headers-bold-terms-and-first-line.md) — Synthesized from 2 raw chunk(s) (heuristic mode — set OPENAIAPIKEY for LLM drafts).
-- [- (26) CR2032 sleep draw on TeaBuddy Puck reduced from 12µA to 9µA in [firmware](./firmware.md) v](./26-cr2032-sleep-draw-on-teabuddy-puck-reduced-from-12µa-to-9µa-in-firmware-v.md) — Synthesized from 4 raw chunk(s) (heuristic mode — set OPENAIAPIKEY for LLM drafts).
-- [- (3) Marketing copy still mentions two-year [battery](./battery.md) life; engineering model sho](./3-marketing-copy-still-mentions-two-year-battery-life-engineering-model-sho.md) — Synthesized from 6 raw chunk(s) (heuristic mode — set OPENAIAPIKEY for LLM drafts).
-- [- (36) Herbal tea preset is seven minutes in [firmware](./firmware.md); box label was corrected i](./36-herbal-tea-preset-is-seven-minutes-in-firmware-box-label-was-corrected-i.md) — Synthesized from 5 raw chunk(s) (heuristic mode — set OPENAIAPIKEY for LLM drafts).
+- [- (26) CR2032 sleep draw on TeaBuddy Puck reduced from 12µA to 9µA in firmware v](./26-cr2032-sleep-draw-on-teabuddy-puck-reduced-from-12µa-to-9µa-in-firmware-v.md) — Synthesized from 4 raw chunk(s) (heuristic mode — set OPENAIAPIKEY for LLM drafts).
+- [- (3) Marketing copy still mentions two-year battery life; engineering model sho](./3-marketing-copy-still-mentions-two-year-battery-life-engineering-model-sho.md) — Synthesized from 6 raw chunk(s) (heuristic mode — set OPENAIAPIKEY for LLM drafts).
+- [- (36) Herbal tea preset is seven minutes in firmware; box label was corrected i](./36-herbal-tea-preset-is-seven-minutes-in-firmware-box-label-was-corrected-i.md) — Synthesized from 5 raw chunk(s) (heuristic mode — set OPENAIAPIKEY for LLM drafts).
 - [- (38) GreenGrid Hub integration is exploratory; no committed API surface for Q3](./38-greengrid-hub-integration-is-exploratory-no-committed-api-surface-for-q3.md) — Synthesized from 3 raw chunk(s) (heuristic mode — set OPENAIAPIKEY for LLM drafts).
-- [- (39) PulsePatch wearable shares no [firmware](./firmware.md) lineage with [MeshSync](./meshsync.md) despite inve](./39-pulsepatch-wearable-shares-no-firmware-lineage-with-meshsync-despite-inve.md) — Synthesized from 3 raw chunk(s) (heuristic mode — set OPENAIAPIKEY for LLM drafts).
-- [- (4) [SenseNode SN-400](./sensenode-sn-400.md) is splash-resistant IP54; Nova Widget beta units are spla](./4-sensenode-sn-400-is-splash-resistant-ip54-nova-widget-beta-units-are-spla.md) — Synthesized from 4 raw chunk(s) (heuristic mode — set OPENAIAPIKEY for LLM drafts).
-- [- (41) CR2032 sleep draw on TeaBuddy Puck reduced from 12µA to 9µA in [firmware](./firmware.md) v](./41-cr2032-sleep-draw-on-teabuddy-puck-reduced-from-12µa-to-9µa-in-firmware-v.md) — Synthesized from 3 raw chunk(s) (heuristic mode — set OPENAIAPIKEY for LLM drafts).
+- [- (39) PulsePatch wearable shares no firmware lineage with MeshSync despite inve](./39-pulsepatch-wearable-shares-no-firmware-lineage-with-meshsync-despite-inve.md) — Synthesized from 3 raw chunk(s) (heuristic mode — set OPENAIAPIKEY for LLM drafts).
+- [- (4) SenseNode SN-400 is splash-resistant IP54; Nova Widget beta units are spla](./4-sensenode-sn-400-is-splash-resistant-ip54-nova-widget-beta-units-are-spla.md) — Synthesized from 4 raw chunk(s) (heuristic mode — set OPENAIAPIKEY for LLM drafts).
+- [- (41) CR2032 sleep draw on TeaBuddy Puck reduced from 12µA to 9µA in firmware v](./41-cr2032-sleep-draw-on-teabuddy-puck-reduced-from-12µa-to-9µa-in-firmware-v.md) — Synthesized from 3 raw chunk(s) (heuristic mode — set OPENAIAPIKEY for LLM drafts).
 - [- (42) Support ticket TB-2156 tracked iOS 18 pairing failures; closed after v0.9](./42-support-ticket-tb-2156-tracked-ios-18-pairing-failures-closed-after-v09.md) — Synthesized from 5 raw chunk(s) (heuristic mode — set OPENAIAPIKEY for LLM drafts).
 - [- (43) Parent election logging exports RSSI and hop count via debug UART on Mesh](./43-parent-election-logging-exports-rssi-and-hop-count-via-debug-uart-on-mesh.md) — Synthesized from 2 raw chunk(s) (heuristic mode — set OPENAIAPIKEY for LLM drafts).
 - [- (44) Android TeaBuddy app is v1.1 scope; waitlist replies must not promise shi](./44-android-teabuddy-app-is-v11-scope-waitlist-replies-must-not-promise-shi.md) — Synthesized from 3 raw chunk(s) (heuristic mode — set OPENAIAPIKEY for LLM drafts).
 - [- (5) Default Nova Widget read interval is fifteen minutes, not hourly (kickoff](./5-default-nova-widget-read-interval-is-fifteen-minutes-not-hourly-kickoff.md) — Synthesized from 4 raw chunk(s) (heuristic mode — set OPENAIAPIKEY for LLM drafts).
-- [- (54) PulsePatch wearable shares no [firmware](./firmware.md) lineage with [MeshSync](./meshsync.md) despite inve](./54-pulsepatch-wearable-shares-no-firmware-lineage-with-meshsync-despite-inve.md) — Synthesized from 2 raw chunk(s) (heuristic mode — set OPENAIAPIKEY for LLM drafts).
-- [- (56) CR2032 sleep draw on TeaBuddy Puck reduced from 12µA to 9µA in [firmware](./firmware.md) v](./56-cr2032-sleep-draw-on-teabuddy-puck-reduced-from-12µa-to-9µa-in-firmware-v.md) — Synthesized from 3 raw chunk(s) (heuristic mode — set OPENAIAPIKEY for LLM drafts).
+- [- (54) PulsePatch wearable shares no firmware lineage with MeshSync despite inve](./54-pulsepatch-wearable-shares-no-firmware-lineage-with-meshsync-despite-inve.md) — Synthesized from 2 raw chunk(s) (heuristic mode — set OPENAIAPIKEY for LLM drafts).
+- [- (56) CR2032 sleep draw on TeaBuddy Puck reduced from 12µA to 9µA in firmware v](./56-cr2032-sleep-draw-on-teabuddy-puck-reduced-from-12µa-to-9µa-in-firmware-v.md) — Synthesized from 3 raw chunk(s) (heuristic mode — set OPENAIAPIKEY for LLM drafts).
 - [- (57) Support ticket TB-2156 tracked iOS 18 pairing failures; closed after v0.9](./57-support-ticket-tb-2156-tracked-ios-18-pairing-failures-closed-after-v09.md) — Synthesized from 1 raw chunk(s) (heuristic mode — set OPENAIAPIKEY for LLM drafts).
 - [- (59) Android TeaBuddy app is v1.1 scope; waitlist replies must not promise shi](./59-android-teabuddy-app-is-v11-scope-waitlist-replies-must-not-promise-shi.md) — Synthesized from 2 raw chunk(s) (heuristic mode — set OPENAIAPIKEY for LLM drafts).
-- [- (6) Herbal tea preset is seven minutes in [firmware](./firmware.md); box label was corrected in](./6-herbal-tea-preset-is-seven-minutes-in-firmware-box-label-was-corrected-in.md) — Synthesized from 7 raw chunk(s) (heuristic mode — set OPENAIAPIKEY for LLM drafts).
+- [- (6) Herbal tea preset is seven minutes in firmware; box label was corrected in](./6-herbal-tea-preset-is-seven-minutes-in-firmware-box-label-was-corrected-in.md) — Synthesized from 7 raw chunk(s) (heuristic mode — set OPENAIAPIKEY for LLM drafts).
 - [- (60) Beta tester agreement prohibits resale; enclosure samples ship under sepa](./60-beta-tester-agreement-prohibits-resale-enclosure-samples-ship-under-sepa.md) — Synthesized from 2 raw chunk(s) (heuristic mode — set OPENAIAPIKEY for LLM drafts).
 - [- (61) Cross-reference: MeshSync rejoin storms above six nodes remain a P0 for A](./61-cross-reference-meshsync-rejoin-storms-above-six-nodes-remain-a-p0-for-a.md) — Synthesized from 2 raw chunk(s) (heuristic mode — set OPENAIAPIKEY for LLM drafts).
 - [- (62) TeaBuddy pairing timeout was extended to 45 seconds after iOS 18 CoreBlue](./62-teabuddy-pairing-timeout-was-extended-to-45-seconds-after-ios-18-coreblue.md) — Synthesized from 3 raw chunk(s) (heuristic mode — set OPENAIAPIKEY for LLM drafts).
@@ -201,14 +201,14 @@ slug: /index
 - [- (72) Support ticket TB-2156 tracked iOS 18 pairing failures; closed after v0.9](./72-support-ticket-tb-2156-tracked-ios-18-pairing-failures-closed-after-v09.md) — Synthesized from 1 raw chunk(s) (heuristic mode — set OPENAIAPIKEY for LLM drafts).
 - [- (74) Android TeaBuddy app is v1.1 scope; waitlist replies must not promise shi](./74-android-teabuddy-app-is-v11-scope-waitlist-replies-must-not-promise-shi.md) — Synthesized from 2 raw chunk(s) (heuristic mode — set OPENAIAPIKEY for LLM drafts).
 - [- (77) TeaBuddy pairing timeout was extended to 45 seconds after iOS 18 CoreBlue](./77-teabuddy-pairing-timeout-was-extended-to-45-seconds-after-ios-18-coreblue.md) — Synthesized from 2 raw chunk(s) (heuristic mode — set OPENAIAPIKEY for LLM drafts).
-- [- (78) Marketing copy still mentions two-year [battery](./battery.md) life; engineering model sh](./78-marketing-copy-still-mentions-two-year-battery-life-engineering-model-sh.md) — Synthesized from 3 raw chunk(s) (heuristic mode — set OPENAIAPIKEY for LLM drafts).
-- [- (79) [SenseNode SN-400](./sensenode-sn-400.md) is splash-resistant IP54; Nova Widget beta units are spl](./79-sensenode-sn-400-is-splash-resistant-ip54-nova-widget-beta-units-are-spl.md) — Synthesized from 3 raw chunk(s) (heuristic mode — set OPENAIAPIKEY for LLM drafts).
+- [- (78) Marketing copy still mentions two-year battery life; engineering model sh](./78-marketing-copy-still-mentions-two-year-battery-life-engineering-model-sh.md) — Synthesized from 3 raw chunk(s) (heuristic mode — set OPENAIAPIKEY for LLM drafts).
+- [- (79) SenseNode SN-400 is splash-resistant IP54; Nova Widget beta units are spl](./79-sensenode-sn-400-is-splash-resistant-ip54-nova-widget-beta-units-are-spl.md) — Synthesized from 3 raw chunk(s) (heuristic mode — set OPENAIAPIKEY for LLM drafts).
 - [- (8) GreenGrid Hub integration is exploratory; no committed API surface for Q3.](./8-greengrid-hub-integration-is-exploratory-no-committed-api-surface-for-q3.md) — Synthesized from 4 raw chunk(s) (heuristic mode — set OPENAIAPIKEY for LLM drafts).
 - [- (90) Beta tester agreement prohibits resale; enclosure samples ship under sepa](./90-beta-tester-agreement-prohibits-resale-enclosure-samples-ship-under-sepa.md) — Synthesized from 1 raw chunk(s) (heuristic mode — set OPENAIAPIKEY for LLM drafts).
 - [- (92) TeaBuddy pairing timeout was extended to 45 seconds after iOS 18 CoreBlue](./92-teabuddy-pairing-timeout-was-extended-to-45-seconds-after-ios-18-coreblue.md) — Synthesized from 2 raw chunk(s) (heuristic mode — set OPENAIAPIKEY for LLM drafts).
-- [- (94) [SenseNode SN-400](./sensenode-sn-400.md) is splash-resistant IP54; Nova Widget beta units are spl](./94-sensenode-sn-400-is-splash-resistant-ip54-nova-widget-beta-units-are-spl.md) — Synthesized from 2 raw chunk(s) (heuristic mode — set OPENAIAPIKEY for LLM drafts).
+- [- (94) SenseNode SN-400 is splash-resistant IP54; Nova Widget beta units are spl](./94-sensenode-sn-400-is-splash-resistant-ip54-nova-widget-beta-units-are-spl.md) — Synthesized from 2 raw chunk(s) (heuristic mode — set OPENAIAPIKEY for LLM drafts).
 - [- (95) Default Nova Widget read interval is fifteen minutes, not hourly (kickoff](./95-default-nova-widget-read-interval-is-fifteen-minutes-not-hourly-kickoff.md) — Synthesized from 1 raw chunk(s) (heuristic mode — set OPENAIAPIKEY for LLM drafts).
-- [- (96) Herbal tea preset is seven minutes in [firmware](./firmware.md); box label was corrected i](./96-herbal-tea-preset-is-seven-minutes-in-firmware-box-label-was-corrected-i.md) — Synthesized from 1 raw chunk(s) (heuristic mode — set OPENAIAPIKEY for LLM drafts).
+- [- (96) Herbal tea preset is seven minutes in firmware; box label was corrected i](./96-herbal-tea-preset-is-seven-minutes-in-firmware-box-label-was-corrected-i.md) — Synthesized from 1 raw chunk(s) (heuristic mode — set OPENAIAPIKEY for LLM drafts).
 - [[11:00] Marcus Webb: running main.py --heuristic-only --force on varied-samples](./1100-marcus-webb-running-mainpy---heuristic-only---force-on-varied-samples.md) — heuristic-only---force-on-varied-samples
 - [[DUMMY TEST DATA — TeaBuddy beta feedback snippets — fictional customer quotes]](./dummy-test-data-teabuddy-beta-feedback-snippets-fictional-customer-quotes.md) — Synthesized from 1 raw chunk(s) (heuristic mode — set OPENAIAPIKEY for LLM drafts).
 - [[DUMMY TEST DATA — TeaBuddy fictional startup — Slack #engineering export 2026-0](./dummy-test-data-teabuddy-fictional-startup-slack-engineering-export-2026-0.md) — Synthesized from 1 raw chunk(s) (heuristic mode — set OPENAIAPIKEY for LLM drafts).
@@ -230,15 +230,15 @@ slug: /index
 - [[SAMPLE] Email — TeaBuddy press pitch (draft, not sent)](./sample-email-teabuddy-press-pitch-draft-not-sent.md) — Synthesized from 1 raw chunk(s) (heuristic mode — set OPENAIAPIKEY for LLM drafts).
 - [[SAMPLE] Email — trademark review request](./sample-email-trademark-review-request.md) — Synthesized from 1 raw chunk(s) (heuristic mode — set OPENAIAPIKEY for LLM drafts).
 - [[SAMPLE] GitHub issue scrape — aurora-labs/meshsync #442](./sample-github-issue-scrape-aurora-labsmeshsync-442.md) — Synthesized from 1 raw chunk(s) (heuristic mode — set OPENAIAPIKEY for LLM drafts).
-- [[SAMPLE] Hacker News thread scrape — "Show HN: Local mesh soil sensor"](./sample-hacker-news-thread-scrape-show-hn-local-mesh-soil-sensor.md) — Synthesized from 1 raw chunk(s) (heuristic mode — set OPENAIAPIKEY for LLM drafts).
+- [[SAMPLE] Hacker News thread scrape — \"Show HN: Local mesh soil sensor\"](./sample-hacker-news-thread-scrape-show-hn-local-mesh-soil-sensor.md) — Synthesized from 1 raw chunk(s) (heuristic mode — set OPENAIAPIKEY for LLM drafts).
 - [[SAMPLE] Instagram caption draft — TeaBuddy (July 8)](./sample-instagram-caption-draft-teabuddy-july-8.md) — Synthesized from 1 raw chunk(s) (heuristic mode — set OPENAIAPIKEY for LLM drafts).
 - [[SAMPLE] Investor call transcript fragment — Aurora Labs (July 2)](./sample-investor-call-transcript-fragment-aurora-labs-july-2.md) — Synthesized from 1 raw chunk(s) (heuristic mode — set OPENAIAPIKEY for LLM drafts).
-- [[SAMPLE] Lunch-and-learn notes — "Local-first IoT" (July 5)](./sample-lunch-and-learn-notes-local-first-iot-july-5.md) — Synthesized from 1 raw chunk(s) (heuristic mode — set OPENAIAPIKEY for LLM drafts).
+- [[SAMPLE] Lunch-and-learn notes — \"Local-first IoT\" (July 5)](./sample-lunch-and-learn-notes-local-first-iot-july-5.md) — Synthesized from 1 raw chunk(s) (heuristic mode — set OPENAIAPIKEY for LLM drafts).
 - [[SAMPLE] Maker Faire Portland booth plan — joint Aurora × TeaBuddy (draft)](./sample-maker-faire-portland-booth-plan-joint-aurora-teabuddy-draft.md) — Synthesized from 1 raw chunk(s) (heuristic mode — set OPENAIAPIKEY for LLM drafts).
 - [[SAMPLE] MeshSync debug session — Mira + Jonah, June 12](./sample-meshsync-debug-session-mira-jonah-june-12.md) — Synthesized from 2 raw chunk(s) (heuristic mode — set OPENAIAPIKEY for LLM drafts).
 - [[SAMPLE] MeshSync protocol header — v0.3 (excerpt)](./sample-meshsync-protocol-header-v03-excerpt.md) — Synthesized from 1 raw chunk(s) (heuristic mode — set OPENAIAPIKEY for LLM drafts).
 - [[SAMPLE] Naming brainstorm — TeaBuddy variants (DO NOT SEND)](./sample-naming-brainstorm-teabuddy-variants-do-not-send.md) — Synthesized from 2 raw chunk(s) (heuristic mode — set OPENAIAPIKEY for LLM drafts).
-- [[SAMPLE] Podcast outline — "Local-first gadgets" (never recorded)](./sample-podcast-outline-local-first-gadgets-never-recorded.md) — Synthesized from 1 raw chunk(s) (heuristic mode — set OPENAIAPIKEY for LLM drafts).
+- [[SAMPLE] Podcast outline — \"Local-first gadgets\" (never recorded)](./sample-podcast-outline-local-first-gadgets-never-recorded.md) — Synthesized from 1 raw chunk(s) (heuristic mode — set OPENAIAPIKEY for LLM drafts).
 - [[SAMPLE] Research snippet — capacitive soil probe corrosion (forum compile)](./sample-research-snippet-capacitive-soil-probe-corrosion-forum-compile.md) — Synthesized from 1 raw chunk(s) (heuristic mode — set OPENAIAPIKEY for LLM drafts).
 - [[SAMPLE] Research tabs dump — June 24 (mental bookmark chaos)](./sample-research-tabs-dump-june-24-mental-bookmark-chaos.md) — Synthesized from 2 raw chunk(s) (heuristic mode — set OPENAIAPIKEY for LLM drafts).
 - [[SAMPLE] Scraped forum HTML — HomeLab Sensors thread #9102](./sample-scraped-forum-html-homelab-sensors-thread-9102.md) — Synthesized from 2 raw chunk(s) (heuristic mode — set OPENAIAPIKEY for LLM drafts).
@@ -313,4 +313,4 @@ slug: /index
 
 ---
 
-*Last generated: 2026-05-31T20:50:54.801859+00:00*
+*Last generated: 2026-05-31T21:07:10.245366+00:00*

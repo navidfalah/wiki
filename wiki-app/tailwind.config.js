@@ -53,12 +53,15 @@ module.exports = {
       },
       boxShadow: {
         card: '0 1px 3px 0 rgb(0 0 0 / 0.04), 0 1px 2px -1px rgb(0 0 0 / 0.04)',
-        'card-hover': '0 4px 12px 0 rgb(0 0 0 / 0.06)',
+        'card-hover': '0 8px 24px -4px rgb(0 0 0 / 0.08), 0 4px 8px -4px rgb(0 0 0 / 0.04)',
         panel: '0 1px 2px 0 rgb(0 0 0 / 0.03), 0 4px 16px -2px rgb(0 0 0 / 0.06)',
+        glow: '0 0 0 3px rgb(5 150 105 / 0.12)',
       },
       backgroundImage: {
         'shimmer-gradient':
-          'linear-gradient(90deg, rgb(245 245 245) 0%, rgb(229 229 229) 50%, rgb(245 245 245) 100%)',
+          'linear-gradient(90deg, rgb(248 250 252) 0%, rgb(226 232 240) 50%, rgb(248 250 252) 100%)',
+        'page-gradient':
+          'linear-gradient(to bottom, rgb(248 250 252), rgb(255 255 255), rgb(236 253 245 / 0.2))',
       },
     },
   },
