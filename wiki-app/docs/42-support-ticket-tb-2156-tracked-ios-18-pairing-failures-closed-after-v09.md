@@ -1,11 +1,11 @@
 ---
 id: 42-support-ticket-tb-2156-tracked-ios-18-pairing-failures-closed-after-v09
-title: - (42) Support ticket TB-2156 tracked iOS 18 pairing failures; closed after v0.9
+title: "- (42) Support ticket TB-2156 tracked iOS 18 pairing failures; closed after v0.9"
 tags:
   - 42-support-ticket-tb-2156-tracked-ios-18-pairing-failures-closed-after-v09
   - wiki
 last_updated: "2026-05-31T20:50:49.755308+00:00"
-sidebar_label: - (42) Support ticket TB-2156 tracked iOS 18 pairing failures; closed after v0.9
+sidebar_label: "- (42) Support ticket TB-2156 tracked iOS 18 pairing failures; closed after v0.9"
 slug: /42-support-ticket-tb-2156-tracked-ios-18-pairing-failures-closed-after-v09
 ---
 

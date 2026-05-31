@@ -1,11 +1,11 @@
 ---
 id: 77-teabuddy-pairing-timeout-was-extended-to-45-seconds-after-ios-18-coreblue
-title: - (77) TeaBuddy pairing timeout was extended to 45 seconds after iOS 18 CoreBlue
+title: "- (77) TeaBuddy pairing timeout was extended to 45 seconds after iOS 18 CoreBlue"
 tags:
   - 77-teabuddy-pairing-timeout-was-extended-to-45-seconds-after-ios-18-coreblue
   - wiki
 last_updated: "2026-05-31T20:50:49.829442+00:00"
-sidebar_label: - (77) TeaBuddy pairing timeout was extended to 45 seconds after iOS 18 CoreBlue
+sidebar_label: "- (77) TeaBuddy pairing timeout was extended to 45 seconds after iOS 18 CoreBlue"
 slug: /77-teabuddy-pairing-timeout-was-extended-to-45-seconds-after-ios-18-coreblue
 ---
 

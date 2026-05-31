@@ -11,6 +11,7 @@ from pathlib import Path
 
 from llm_client import LLMClient
 from models import RAW_DIR, STATE_FILE, WikiPage
+from yaml_frontmatter import yaml_quote
 
 COMPILER_DIR = Path(__file__).resolve().parent
 TEMP_OUTPUT_DIR = COMPILER_DIR / "temp_output"
@@ -838,9 +839,7 @@ def group_chunks_by_topic(extractions: dict) -> dict[str, list[dict]]:
 
 def _yaml_scalar(value: str) -> str:
     """Format a string for safe use in YAML frontmatter."""
-    if any(c in value for c in ":\n#'\"<>{}[]|&"):
-        return json.dumps(value, ensure_ascii=False)
-    return value
+    return yaml_quote(value)
 
 
 def _derive_tags(topic: str, entries: list[dict]) -> list[str]:

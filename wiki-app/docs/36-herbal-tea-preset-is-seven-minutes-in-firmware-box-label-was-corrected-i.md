@@ -1,11 +1,11 @@
 ---
 id: 36-herbal-tea-preset-is-seven-minutes-in-firmware-box-label-was-corrected-i
-title: - (36) Herbal tea preset is seven minutes in firmware; box label was corrected i
+title: "- (36) Herbal tea preset is seven minutes in firmware; box label was corrected i"
 tags:
   - 36-herbal-tea-preset-is-seven-minutes-in-firmware-box-label-was-corrected-i
   - wiki
 last_updated: "2026-05-31T20:50:49.723443+00:00"
-sidebar_label: - (36) Herbal tea preset is seven minutes in firmware; box label was corrected i
+sidebar_label: "- (36) Herbal tea preset is seven minutes in firmware; box label was corrected i"
 slug: /36-herbal-tea-preset-is-seven-minutes-in-firmware-box-label-was-corrected-i
 ---
 

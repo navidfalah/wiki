@@ -15,7 +15,7 @@ sidebar_label: Technical decisions
 slug: /technical-decisions
 ---
 
-# Technical [decisions](./[decision](./decision.md)s.md)
+# Technical decisions
 
 ## [Overview](./overview.md)
 

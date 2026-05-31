@@ -19,7 +19,7 @@ Synthesized from **1** raw chunk(s) (heuristic mode — set OPENAI_API_KEY for L
 
 ## Key Details
 
-- `dummy-test/2026-07-02-aurora-[meshsync](./meshsync.md)-release-notes.md` (chunk 0): # [DUMMY TEST DATA] MeshSync [firmware](./firmware.md) 0.3.8 — release notes  > **Label:** Fictional Aurora Labs release. Tags: MeshSync, Nova Widget, rejoin.  **Release date:** 2026-07-02   **Owners:** Mira Chen (firmware), Jonah Park (QA sign-off)  ## [Highlights](./highlights.md)  - Rejoin storm mitigation when mesh exceeds 6 nodes...
+- `dummy-test/2026-07-02-aurora-[meshsync](./meshsync.md)-release-notes.md` (chunk 0): # [DUMMY TEST DATA] MeshSync [firmware](./firmware.md) 0.3.8 — release notes  &gt; **Label:** Fictional Aurora Labs release. Tags: MeshSync, Nova Widget, rejoin.  **Release date:** 2026-07-02   **Owners:** Mira Chen (firmware), Jonah Park (QA sign-off)  ## [Highlights](./highlights.md)  - Rejoin storm mitigation when mesh exceeds 6 nodes...
 
 ## Sources
 

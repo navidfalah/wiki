@@ -1,11 +1,11 @@
 ---
 id: 25-wiki-compiler-heuristic-mode-extracts-headers-bold-terms-and-first-line
-title: - (25) Wiki compiler heuristic mode extracts headers, bold terms, and first-line
+title: "- (25) Wiki compiler heuristic mode extracts headers, bold terms, and first-line"
 tags:
   - 25-wiki-compiler-heuristic-mode-extracts-headers-bold-terms-and-first-line
   - wiki
 last_updated: "2026-05-31T20:50:49.691703+00:00"
-sidebar_label: - (25) Wiki compiler heuristic mode extracts headers, bold terms, and first-line
+sidebar_label: "- (25) Wiki compiler heuristic mode extracts headers, bold terms, and first-line"
 slug: /25-wiki-compiler-heuristic-mode-extracts-headers-bold-terms-and-first-line
 ---
 

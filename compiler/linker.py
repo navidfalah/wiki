@@ -17,6 +17,7 @@ from link_overrides import (
     override_source_topics,
 )
 from models import OUTPUT_DIR, WikiPage
+from yaml_frontmatter import yaml_quote
 
 COMPILER_DIR = Path(__file__).resolve().parent
 TEMP_OUTPUT_DIR = COMPILER_DIR / "temp_output"
@@ -68,11 +69,7 @@ def _index_entry_for_draft(page_path: Path) -> tuple[str, str]:
 
 def _yaml_str(value: str) -> str:
     """Quote strings that would break YAML frontmatter."""
-    if not value:
-        return '""'
-    if any(c in value for c in ":\n#@*`\"'<>{}[]|&"):
-        return json.dumps(value, ensure_ascii=False)
-    return value
+    return yaml_quote(value)
 
 
 def _extract_title_from_markdown(content: str, fallback: str) -> str:
@@ -114,6 +111,15 @@ def _finalize_linked_doc(
 
     if existing_frontmatter:
         fm = existing_frontmatter
+        for field in ("title", "sidebar_label"):
+            if re.search(rf"^{field}:", fm, re.MULTILINE):
+                fm = re.sub(
+                    rf"^{field}:.*$",
+                    f"{field}: {_yaml_str(title)}",
+                    fm,
+                    count=1,
+                    flags=re.MULTILINE,
+                )
         if re.search(r"^last_updated:", fm, re.MULTILINE):
             fm = re.sub(
                 r"^last_updated:.*$",
@@ -362,6 +368,30 @@ def _remove_broken_links(body: str, removed_files: set[str]) -> str:
     return body
 
 
+_MD_LINK_RE = re.compile(r"\[[^\]]*\]\([^)]*\)")
+
+
+def _link_plain_text_segment(
+    segment: str,
+    *,
+    page_title: str,
+    current_filename: str | None,
+    candidates: list[tuple[str, str]],
+) -> str:
+    linked = segment
+    for title, filename in candidates:
+        if title.lower() == page_title.lower():
+            continue
+        if current_filename and filename == current_filename:
+            continue
+        pattern = re.compile(
+            rf"(?<!\[)(?<!\w)({re.escape(title)})(?!\]\()",
+            re.IGNORECASE,
+        )
+        linked = pattern.sub(rf"[\1](./{filename})", linked, count=1)
+    return linked
+
+
 def link_page_heuristic(
     content: str,
     *,
@@ -369,7 +399,6 @@ def link_page_heuristic(
     topic_index: dict[str, str],
 ) -> str:
     """Inject links without LLM by matching known topic titles in plain text."""
-    linked = content
     current_filename = None
     for title, filename in topic_index.items():
         if title.lower() == page_title.lower():
@@ -378,24 +407,38 @@ def link_page_heuristic(
 
     candidates = sorted(topic_index.items(), key=lambda item: len(item[0]), reverse=True)
 
-    for title, filename in candidates:
-        if title.lower() == page_title.lower():
-            continue
-        if current_filename and filename == current_filename:
-            continue
-
-        pattern = re.compile(
-            rf"(?<!\[)(?<!\w)({re.escape(title)})(?!\]\()",
-            re.IGNORECASE,
+    parts: list[str] = []
+    last = 0
+    for match in _MD_LINK_RE.finditer(content):
+        if match.start() > last:
+            parts.append(
+                _link_plain_text_segment(
+                    content[last : match.start()],
+                    page_title=page_title,
+                    current_filename=current_filename,
+                    candidates=candidates,
+                )
+            )
+        parts.append(match.group(0))
+        last = match.end()
+    if last < len(content):
+        parts.append(
+            _link_plain_text_segment(
+                content[last:],
+                page_title=page_title,
+                current_filename=current_filename,
+                candidates=candidates,
+            )
         )
-        linked = pattern.sub(rf"[\1](./{filename})", linked, count=1)
+    return "".join(parts) if parts else _link_plain_text_segment(
+        content,
+        page_title=page_title,
+        current_filename=current_filename,
+        candidates=candidates,
+    )
 
-    return linked
 
-
-def sanitize_for_mdx(body: str) -> str:
-    """Escape `<` patterns that MDX would misparse as JSX (e.g. `<--`, `<`)."""
-    return re.sub(r"(?<![\[`/])<(?=[^\s\w/!?])", "&lt;", body)
+from mdx_sanitize import sanitize_for_mdx
 
 
 def wrap_docusaurus_doc(

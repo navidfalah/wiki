@@ -1,11 +1,11 @@
 ---
 id: 38-greengrid-hub-integration-is-exploratory-no-committed-api-surface-for-q3
-title: - (38) GreenGrid Hub integration is exploratory; no committed API surface for Q3
+title: "- (38) GreenGrid Hub integration is exploratory; no committed API surface for Q3"
 tags:
   - 38-greengrid-hub-integration-is-exploratory-no-committed-api-surface-for-q3
   - wiki
 last_updated: "2026-05-31T20:50:49.728937+00:00"
-sidebar_label: - (38) GreenGrid Hub integration is exploratory; no committed API surface for Q3
+sidebar_label: "- (38) GreenGrid Hub integration is exploratory; no committed API surface for Q3"
 slug: /38-greengrid-hub-integration-is-exploratory-no-committed-api-surface-for-q3
 ---
 

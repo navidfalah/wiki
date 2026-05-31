@@ -1,11 +1,11 @@
 ---
 id: sample-hacker-news-thread-scrape-show-hn-local-mesh-soil-sensor
-title: "[SAMPLE] Hacker News thread scrape — \"Show HN: Local mesh soil sensor\""
+title: "[SAMPLE] Hacker News thread scrape — \\\"Show HN: Local mesh soil sensor\\\""
 tags:
   - sample-hacker-news-thread-scrape-show-hn-local-mesh-soil-sensor
   - wiki
 last_updated: "2026-05-31T20:50:53.120492+00:00"
-sidebar_label: "[SAMPLE] Hacker News thread scrape — \\\"Show HN: Local mesh soil sensor\\\""
+sidebar_label: "[SAMPLE] Hacker News thread scrape — \\\\\\\"Show HN: Local mesh soil sensor\\\\\\\""
 slug: /sample-hacker-news-thread-scrape-show-hn-local-mesh-soil-sensor
 ---
 

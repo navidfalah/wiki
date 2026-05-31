@@ -12,7 +12,7 @@ slug: /index
 
 # Wiki Map of Content
 
-> Auto-generated index of **222** pages, organized by topic and tags.
+&gt; Auto-generated index of **222** pages, organized by topic and tags.
 
 ## Overview
 

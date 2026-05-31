@@ -1,11 +1,11 @@
 ---
 id: 60-beta-tester-agreement-prohibits-resale-enclosure-samples-ship-under-sepa
-title: - (60) Beta tester agreement prohibits resale; enclosure samples ship under sepa
+title: "- (60) Beta tester agreement prohibits resale; enclosure samples ship under sepa"
 tags:
   - 60-beta-tester-agreement-prohibits-resale-enclosure-samples-ship-under-sepa
   - wiki
 last_updated: "2026-05-31T20:50:49.803842+00:00"
-sidebar_label: - (60) Beta tester agreement prohibits resale; enclosure samples ship under sepa
+sidebar_label: "- (60) Beta tester agreement prohibits resale; enclosure samples ship under sepa"
 slug: /60-beta-tester-agreement-prohibits-resale-enclosure-samples-ship-under-sepa
 ---
 

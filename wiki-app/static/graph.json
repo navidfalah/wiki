@@ -143,6 +143,10 @@
       "target": "why-were-doing-this"
     },
     {
+      "source": "product-idea-nova-widget",
+      "target": "technical-decisions"
+    },
+    {
       "source": "sensenode-sn-400",
       "target": "hardware"
     },
@@ -173,6 +177,10 @@
     {
       "source": "why-were-doing-this",
       "target": "product-idea-nova-widget"
+    },
+    {
+      "source": "why-were-doing-this",
+      "target": "technical-decisions"
     }
   ]
 }

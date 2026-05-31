@@ -1,11 +1,11 @@
 ---
 id: 41-cr2032-sleep-draw-on-teabuddy-puck-reduced-from-12µa-to-9µa-in-firmware-v
-title: - (41) CR2032 sleep draw on TeaBuddy Puck reduced from 12µA to 9µA in firmware v
+title: "- (41) CR2032 sleep draw on TeaBuddy Puck reduced from 12µA to 9µA in firmware v"
 tags:
   - 41-cr2032-sleep-draw-on-teabuddy-puck-reduced-from-12µa-to-9µa-in-firmware-v
   - wiki
 last_updated: "2026-05-31T20:50:49.747167+00:00"
-sidebar_label: - (41) CR2032 sleep draw on TeaBuddy Puck reduced from 12µA to 9µA in firmware v
+sidebar_label: "- (41) CR2032 sleep draw on TeaBuddy Puck reduced from 12µA to 9µA in firmware v"
 slug: /41-cr2032-sleep-draw-on-teabuddy-puck-reduced-from-12µa-to-9µa-in-firmware-v
 ---
 

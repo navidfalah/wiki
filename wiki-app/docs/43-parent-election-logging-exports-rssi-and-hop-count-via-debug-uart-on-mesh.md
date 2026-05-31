@@ -1,11 +1,11 @@
 ---
 id: 43-parent-election-logging-exports-rssi-and-hop-count-via-debug-uart-on-mesh
-title: - (43) Parent election logging exports RSSI and hop count via debug UART on Mesh
+title: "- (43) Parent election logging exports RSSI and hop count via debug UART on Mesh"
 tags:
   - 43-parent-election-logging-exports-rssi-and-hop-count-via-debug-uart-on-mesh
   - wiki
 last_updated: "2026-05-31T20:50:49.759379+00:00"
-sidebar_label: - (43) Parent election logging exports RSSI and hop count via debug UART on Mesh
+sidebar_label: "- (43) Parent election logging exports RSSI and hop count via debug UART on Mesh"
 slug: /43-parent-election-logging-exports-rssi-and-hop-count-via-debug-uart-on-mesh
 ---
 

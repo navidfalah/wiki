@@ -1,11 +1,11 @@
 ---
 id: sample-lunch-and-learn-notes-local-first-iot-july-5
-title: "[SAMPLE] Lunch-and-learn notes — \"Local-first IoT\" (July 5)"
+title: "[SAMPLE] Lunch-and-learn notes — \\\"Local-first IoT\\\" (July 5)"
 tags:
   - sample-lunch-and-learn-notes-local-first-iot-july-5
   - wiki
 last_updated: "2026-05-31T20:50:53.128298+00:00"
-sidebar_label: "[SAMPLE] Lunch-and-learn notes — \\\"Local-first IoT\\\" (July 5)"
+sidebar_label: "[SAMPLE] Lunch-and-learn notes — \\\\\\\"Local-first IoT\\\\\\\" (July 5)"
 slug: /sample-lunch-and-learn-notes-local-first-iot-july-5
 ---
 

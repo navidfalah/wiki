@@ -1,11 +1,11 @@
 ---
 id: 7-mqtt-export-schema-v2-is-optional-and-local-broker-only-no-cloud-telemetr
-title: - (7) MQTT export schema v2 is optional and local-broker only; no cloud telemetr
+title: "- (7) MQTT export schema v2 is optional and local-broker only; no cloud telemetr"
 tags:
   - 7-mqtt-export-schema-v2-is-optional-and-local-broker-only-no-cloud-telemetr
   - wiki
 last_updated: "2026-05-31T20:50:49.818530+00:00"
-sidebar_label: - (7) MQTT export schema v2 is optional and local-broker only; no cloud telemetr
+sidebar_label: "- (7) MQTT export schema v2 is optional and local-broker only; no cloud telemetr"
 slug: /7-mqtt-export-schema-v2-is-optional-and-local-broker-only-no-cloud-telemetr
 ---
 

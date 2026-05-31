@@ -1,11 +1,11 @@
 ---
 id: 44-android-teabuddy-app-is-v11-scope-waitlist-replies-must-not-promise-shi
-title: - (44) Android TeaBuddy app is v1.1 scope; waitlist replies must not promise shi
+title: "- (44) Android TeaBuddy app is v1.1 scope; waitlist replies must not promise shi"
 tags:
   - 44-android-teabuddy-app-is-v11-scope-waitlist-replies-must-not-promise-shi
   - wiki
 last_updated: "2026-05-31T20:50:49.764673+00:00"
-sidebar_label: - (44) Android TeaBuddy app is v1.1 scope; waitlist replies must not promise shi
+sidebar_label: "- (44) Android TeaBuddy app is v1.1 scope; waitlist replies must not promise shi"
 slug: /44-android-teabuddy-app-is-v11-scope-waitlist-replies-must-not-promise-shi
 ---
 

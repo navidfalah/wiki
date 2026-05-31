@@ -1,11 +1,11 @@
 ---
 id: sample-podcast-outline-local-first-gadgets-never-recorded
-title: "[SAMPLE] Podcast outline — \"Local-first gadgets\" (never recorded)"
+title: "[SAMPLE] Podcast outline — \\\"Local-first gadgets\\\" (never recorded)"
 tags:
   - sample-podcast-outline-local-first-gadgets-never-recorded
   - wiki
 last_updated: "2026-05-31T20:50:53.143782+00:00"
-sidebar_label: "[SAMPLE] Podcast outline — \\\"Local-first gadgets\\\" (never recorded)"
+sidebar_label: "[SAMPLE] Podcast outline — \\\\\\\"Local-first gadgets\\\\\\\" (never recorded)"
 slug: /sample-podcast-outline-local-first-gadgets-never-recorded
 ---
 

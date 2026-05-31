@@ -1,11 +1,11 @@
 ---
 id: 3-marketing-copy-still-mentions-two-year-battery-life-engineering-model-sho
-title: - (3) Marketing copy still mentions two-year battery life; engineering model sho
+title: "- (3) Marketing copy still mentions two-year battery life; engineering model sho"
 tags:
   - 3-marketing-copy-still-mentions-two-year-battery-life-engineering-model-sho
   - wiki
 last_updated: "2026-05-31T20:50:49.708261+00:00"
-sidebar_label: - (3) Marketing copy still mentions two-year battery life; engineering model sho
+sidebar_label: "- (3) Marketing copy still mentions two-year battery life; engineering model sho"
 slug: /3-marketing-copy-still-mentions-two-year-battery-life-engineering-model-sho
 ---
 

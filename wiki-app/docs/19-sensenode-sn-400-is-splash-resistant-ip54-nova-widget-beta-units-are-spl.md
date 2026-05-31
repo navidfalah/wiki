@@ -1,11 +1,11 @@
 ---
 id: 19-sensenode-sn-400-is-splash-resistant-ip54-nova-widget-beta-units-are-spl
-title: - (19) SenseNode SN-400 is splash-resistant IP54; Nova Widget beta units are spl
+title: "- (19) SenseNode SN-400 is splash-resistant IP54; Nova Widget beta units are spl"
 tags:
   - 19-sensenode-sn-400-is-splash-resistant-ip54-nova-widget-beta-units-are-spl
   - wiki
 last_updated: "2026-05-31T20:50:49.649108+00:00"
-sidebar_label: - (19) SenseNode SN-400 is splash-resistant IP54; Nova Widget beta units are spl
+sidebar_label: "- (19) SenseNode SN-400 is splash-resistant IP54; Nova Widget beta units are spl"
 slug: /19-sensenode-sn-400-is-splash-resistant-ip54-nova-widget-beta-units-are-spl
 ---
 

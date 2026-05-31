@@ -1,11 +1,11 @@
 ---
 id: 20-default-nova-widget-read-interval-is-fifteen-minutes-not-hourly-kickoff
-title: - (20) Default Nova Widget read interval is fifteen minutes, not hourly (kickoff
+title: "- (20) Default Nova Widget read interval is fifteen minutes, not hourly (kickoff"
 tags:
   - 20-default-nova-widget-read-interval-is-fifteen-minutes-not-hourly-kickoff
   - wiki
 last_updated: "2026-05-31T20:50:49.663873+00:00"
-sidebar_label: - (20) Default Nova Widget read interval is fifteen minutes, not hourly (kickoff
+sidebar_label: "- (20) Default Nova Widget read interval is fifteen minutes, not hourly (kickoff"
 slug: /20-default-nova-widget-read-interval-is-fifteen-minutes-not-hourly-kickoff
 ---
 

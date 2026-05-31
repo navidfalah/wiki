@@ -1,11 +1,11 @@
 ---
 id: 54-pulsepatch-wearable-shares-no-firmware-lineage-with-meshsync-despite-inve
-title: - (54) PulsePatch wearable shares no firmware lineage with MeshSync despite inve
+title: "- (54) PulsePatch wearable shares no firmware lineage with MeshSync despite inve"
 tags:
   - 54-pulsepatch-wearable-shares-no-firmware-lineage-with-meshsync-despite-inve
   - wiki
 last_updated: "2026-05-31T20:50:49.775524+00:00"
-sidebar_label: - (54) PulsePatch wearable shares no firmware lineage with MeshSync despite inve
+sidebar_label: "- (54) PulsePatch wearable shares no firmware lineage with MeshSync despite inve"
 slug: /54-pulsepatch-wearable-shares-no-firmware-lineage-with-meshsync-despite-inve
 ---
 
