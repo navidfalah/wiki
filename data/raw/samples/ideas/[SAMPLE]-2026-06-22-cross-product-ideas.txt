@@ -1,0 +1,21 @@
+[SAMPLE] Cross-product idea dump — Aurora × TeaBuddy (mostly rejected)
+
+IDEA A: "GardenTea" — soil moisture triggers herbal preset reminder
+Status: REJECTED (mira: scope creep)
+
+IDEA B: Shared BLE stack library
+Status: MAYBE (sam + mira to sync Q3)
+
+IDEA C: Co-branded maker faire booth
+Status: PENDING (jonah interested, alex skeptical)
+
+IDEA D: Wiki compiles both product lines into one graph
+Status: YES — that's this repo
+
+IDEA E: Nova Widget LED shows tea timer countdown
+Status: REJECTED (jonah: "no")
+
+IDEA F: Plant Whisperer app from grocery list notes
+Status: backlog #47
+
+Shower thought: linter that greps for "Contradiction:" blocks across all raw files

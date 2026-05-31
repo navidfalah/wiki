@@ -1,0 +1,22 @@
+# [SAMPLE] Research snippet — tea steep time chemistry (TeaBuddy content marketing)
+
+**Author:** Alex Kim  
+**Tags:** TeaBuddy, herbal preset, marketing
+
+## Key facts for copy
+
+- Green tea: 2–3 min typical — we use 3:00
+- Black tea: 3–5 min — we use 5:00
+- Herbal/tisane: 5–7 min — we use **7:00** (NOT 5 — box error fixed July)
+
+## Contradiction source
+
+Early kickoff said herbal 5 min for "simplicity" — rejected by tea advisor.
+
+## Competitor
+
+TimerCap mechanical dial — no science, just gears
+
+## Aurora overlap
+
+None — except shared wiki compile demo mentions both preset tables

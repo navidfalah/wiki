@@ -1,0 +1,26 @@
+[SAMPLE] Hacker News thread scrape — "Show HN: Local mesh soil sensor"
+
+Posted: 2026-07-10
+Points: 142
+
+@dang: duplicate of May thread?
+
+OP (mirachen): Nova Widget beta — MeshSync, optional MQTT, no mandatory cloud
+
+comment @hardwarefan: battery math?
+
+OP: CR2032, 15min reads, spreadsheet soon
+
+comment @cloudbro: why not just wifi
+
+OP: LAN-first, lower duty cycle
+
+comment @teafan: saw teabuddy at faire — same team?
+
+OP: friends, different company
+
+comment @sensenode: IP67 > IP54 fight me
+
+OP: fair for submersion use case
+
+[scrape cut — "load more comments" button not followed]

@@ -1,0 +1,28 @@
+[SAMPLE] Support ticket #2222 — waterproof confusion vs SenseNode
+
+Status: OPEN  
+Product: Aurora Nova Widget  
+Customer: gardener (Pacific NW)
+
+---
+
+CUSTOMER:
+Installed in raised bed. Rain killed unit #3. SenseNode neighbor fine.
+
+AGENT (Jonah internal):
+IP54 not IP67. Recommend cover. Comparison page update in sprint 15.
+
+CUSTOMER:
+Why not IP67 like SenseNode?
+
+AGENT (draft):
+Cost/tooling tradeoff. Beta focus local mesh + open export. IP65 roadmap.
+
+CUSTOMER:
+What about TeaBuddy puck — waterproof?
+
+AGENT:
+TeaBuddy is splash-resistant kitchen use. Different product.
+
+---
+Related: #1042, competitor SN-400

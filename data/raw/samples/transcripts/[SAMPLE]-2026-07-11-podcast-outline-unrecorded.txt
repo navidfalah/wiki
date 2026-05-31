@@ -1,0 +1,24 @@
+[SAMPLE] Podcast outline — "Local-first gadgets" (never recorded)
+
+Hosts: Alex Kim (TeaBuddy), Mira Chen (Aurora Labs)
+Planned date: 2026-07-11 — cancelled due to travel
+
+SEGMENT 1: Why no cloud account for v1?
+- TeaBuddy: steep timer privacy theater vs real need
+- Aurora: mesh data stays on LAN
+
+SEGMENT 2: Battery myths
+- CR2032 in both products — different duty cycles
+- Contradiction: 2yr vs 18mo marketing
+
+SEGMENT 3: When mesh beats BLE
+- Garden scale, multiple sensors
+- Kitchen single-device — BLE wins
+
+SEGMENT 4: SenseNode elephant in room
+- Subscription fatigue
+- IP67 envy
+
+CTA: link wiki demo with graph view
+
+[STATUS: unrecorded — reschedule TBD]

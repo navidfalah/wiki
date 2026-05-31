@@ -1,7 +1,12 @@
 import React from 'react';
-import styles from './highlighted.module.css';
 
 const LINK_RE = /\[([^\]]+)\]\(([^)]+)\)/g;
+
+const HIGHLIGHT_CLASSES = {
+  entity: 'rounded-sm bg-amber-100/80 px-0.5 underline decoration-amber-400 decoration-dashed underline-offset-2',
+  concept: 'rounded-sm bg-sky-100/80 px-0.5 underline decoration-sky-400 decoration-dashed underline-offset-2',
+  tag: 'rounded-sm bg-violet-100/80 px-0.5 underline decoration-violet-400 decoration-dashed underline-offset-2',
+};
 
 function escapeRegex(value) {
   return value.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
@@ -73,7 +78,7 @@ function highlightPlainText(text, terms) {
 
   return segments.map((segment, index) =>
     segment.highlighted ? (
-      <span key={`${segment.kind}-${index}`} className={styles[segment.kind]}>
+      <span key={`${segment.kind}-${index}`} className={HIGHLIGHT_CLASSES[segment.kind]}>
         {segment.text}
       </span>
     ) : (
@@ -98,7 +103,9 @@ function renderInline(line, terms) {
     }
 
     parts.push(
-      <span key={`link-${key}`} className={styles.link}>
+      <span
+        key={`link-${key}`}
+        className="rounded bg-emerald-100/80 px-1 font-medium text-accent hover:underline">
         <a href={match[2]}>{match[1]}</a>
       </span>,
     );
@@ -119,12 +126,12 @@ function renderInline(line, terms) {
 
 function renderLine(line, terms, index) {
   if (!line.trim()) {
-    return <div key={index} className={styles.spacer} />;
+    return <div key={index} className="h-2" />;
   }
 
   if (line.startsWith('### ')) {
     return (
-      <h4 key={index} className={styles.h3}>
+      <h4 key={index} className="mb-2 mt-4 text-base font-semibold text-slate-800">
         {renderInline(line.slice(4), terms)}
       </h4>
     );
@@ -132,7 +139,7 @@ function renderLine(line, terms, index) {
 
   if (line.startsWith('## ')) {
     return (
-      <h3 key={index} className={styles.h2}>
+      <h3 key={index} className="mb-2 mt-5 text-lg font-semibold text-slate-900">
         {renderInline(line.slice(3), terms)}
       </h3>
     );
@@ -140,7 +147,7 @@ function renderLine(line, terms, index) {
 
   if (line.startsWith('# ')) {
     return (
-      <h2 key={index} className={styles.h1}>
+      <h2 key={index} className="mb-3 mt-6 text-xl font-semibold text-slate-900">
         {renderInline(line.slice(2), terms)}
       </h2>
     );
@@ -148,7 +155,7 @@ function renderLine(line, terms, index) {
 
   if (line.startsWith('- ') || line.startsWith('* ')) {
     return (
-      <div key={index} className={styles.listItem}>
+      <div key={index} className="relative my-1.5 pl-4 before:absolute before:left-0 before:text-slate-400 before:content-['•']">
         {renderInline(line.slice(2), terms)}
       </div>
     );
@@ -156,14 +163,16 @@ function renderLine(line, terms, index) {
 
   if (line.startsWith('> ')) {
     return (
-      <blockquote key={index} className={styles.quote}>
+      <blockquote
+        key={index}
+        className="my-2 border-l-2 border-slate-200 pl-3 text-slate-600">
         {renderInline(line.slice(2), terms)}
       </blockquote>
     );
   }
 
   return (
-    <p key={index} className={styles.paragraph}>
+    <p key={index} className="my-1.5 text-[0.95rem] leading-relaxed text-slate-700">
       {renderInline(line, terms)}
     </p>
   );
@@ -174,7 +183,7 @@ export default function HighlightedMarkdown({ body, entities, concepts, tags }) 
   const lines = (body ?? '').split('\n');
 
   return (
-    <div className={styles.markdown}>
+    <div className="text-[0.95rem] leading-relaxed">
       {lines.map((line, index) => renderLine(line, terms, index))}
     </div>
   );

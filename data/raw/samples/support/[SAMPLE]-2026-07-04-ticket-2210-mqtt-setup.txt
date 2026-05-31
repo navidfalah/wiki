@@ -1,0 +1,28 @@
+[SAMPLE] Support ticket #2210 — MQTT Home Assistant setup
+
+Status: RESOLVED  
+Product: Aurora Nova Widget v2 beta  
+Customer: homelab (same as thread #9102)
+
+---
+
+CUSTOMER:
+Enabled MQTT export. Getting duplicate messages during rejoin storms.
+
+AGENT:
+Known on 0.3.7. Upgrade 0.3.8. Filter neighbors topic. Limit to 6 nodes.
+
+CUSTOMER:
+Schema v1 or v2?
+
+AGENT:
+v2 required for 0.3.8+. See mqtt-export-schema sample doc.
+
+CUSTOMER:
+Works. Side note: wife wants TeaBuddy for kitchen — different MQTT?
+
+AGENT:
+TeaBuddy has no MQTT. BLE app only.
+
+---
+Related: homelab integration guide (community)

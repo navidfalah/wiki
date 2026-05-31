@@ -1,0 +1,19 @@
+[SAMPLE] Email — beta invite batch #3 (Aurora Nova Widget)
+
+From: beta@auroralabs.example
+To: [12 recipients]
+Subject: Nova Widget beta — firmware 0.3.8 + docs refresh
+
+Welcome to batch 3!
+
+Please flash 0.3.8 before adding more than 6 nodes.
+Default read interval: 15 minutes (ignore old PDF saying hourly).
+
+Docs: wiki.auroralabs.example (compiled from raw sources)
+
+Report issues: GitHub aurora-labs/meshsync #442 or support@
+
+P.S. TeaBuddy puck demo at Maker Faire — unrelated but fun
+
+---
+[DUMMY TEST DATA — fictional recipients]

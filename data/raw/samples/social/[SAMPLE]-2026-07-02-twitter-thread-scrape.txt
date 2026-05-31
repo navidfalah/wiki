@@ -1,0 +1,17 @@
+[SAMPLE] Twitter/X thread scrape — @AuroraLabs (July 2)
+
+@AuroraLabs: MeshSync 0.3.8 is live. Rejoin fixes, MQTT schema v2. Docs on wiki.
+
+@hardwarefan: still 6 nodes max?
+
+@AuroraLabs: recommend 6 for beta. 8 improving.
+
+@TeaBuddyHQ: congrats! separate kitchen universe here 🍵
+
+@AuroraLabs: 😊 see you at Maker Faire?
+
+@gardeningbob: CR2032 or CR2450?
+
+@AuroraLabs: CR2032. old blog typo fixed.
+
+[scrape missing image alt text attachments]

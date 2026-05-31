@@ -1,0 +1,22 @@
+[SAMPLE] Sprint retro — Aurora Labs, Sprint 14
+
+Went well:
++ mesh stable at 6 nodes in lab
++ wiki compiler heuristic mode works without API key
++ nova widget enclosure pebble shape approved (jonah won)
+
+Didn't go well:
+- docs still say hourly default (spec says 15 min) — AGAIN
+- support ticket #1042 still open
+- nobody updated index.md before demo
+
+Action items:
+1. contradiction linter for battery claims
+2. publish power budget spreadsheet
+3. invite 3 more beta testers from homelab forum
+
+Shoutout: Mira fixed sleep regression in 2 hours
+
+Parking lot:
+- TeaBuddy partnership? "smart garden tea" — rejected unanimously
+- rename MeshSync → MeshSink — rejected 4th time

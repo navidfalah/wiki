@@ -1,0 +1,21 @@
+[SAMPLE] Whiteboard photo transcription — Aurora lab (July 3)
+
+ILLEGIBLE CORNER: "PARENT? CHILD?"
+
+CLEAR SECTION — mesh topology:
+  [GW?] --- node A --- node B
+              |           |
+            node C      node D
+
+ARROW: "rejoin storm here when D drops"
+
+CLEAR SECTION — battery:
+  CR2032 × 1
+  "18mo @ 10 nodes" circled three times
+  "2yr marketing" crossed out
+
+STICKY NOTE (jonah): "pebble not hex"
+
+STICKY NOTE (mira): "teabuddy asked about timer sync — NO"
+
+PHONE NUMBER SCRIBBLE: blurred — ignore

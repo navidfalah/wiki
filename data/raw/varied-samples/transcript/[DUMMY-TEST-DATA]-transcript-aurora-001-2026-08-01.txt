@@ -1,0 +1,50 @@
+[DUMMY TEST DATA] — Transcript — Aurora Labs
+
+**Type:** transcript
+**Company:** Aurora Labs
+**Date:** 2026-08-01
+**Sequence:** 001
+**Owner:** Mira Chen
+**Product:** MeshSync
+**Compiler test:** varied-samples wave — target size 8–25 KB
+
+[TRANSCRIPT — auto-generated fictional meeting fragment]
+
+MODERATOR (Mira Chen): Thanks for joining. Topic: MeshSync beta readiness.
+Elena Voss: Power budget still shows 340µA spike on MeshSync rejoin — parent swap case.
+Mira Chen: We logged RSSI and hop count in 0.3.8. Need field trace from ticket #2099.
+Elena Voss: TeaBuddy team asked again about mesh timer sync. Out of scope for Aurora v1.
+Mira Chen: Copy says hourly reads; firmware default is fifteen minutes. Fix wiki first.
+Elena Voss: iOS 18 pairing — 45s timeout shipped in TeaBuddy 0.9.3. Android waitlist only.
+
+## Action items
+
+- Mira Chen: Update power budget doc before investor demo
+- Elena Voss: File TB-2101 for enclosure IP rating language
+- Both: Do not merge BLE stacks across product lines
+
+## Extended discussion (verbatim-style)
+Mira Chen: Segment 1 — discussing MeshSync vs SenseNode SN-400 positioning and local-first telemetry boundaries for seq 1.
+Elena Voss: Segment 2 — discussing MeshSync vs SenseNode SN-400 positioning and local-first telemetry boundaries for seq 1.
+Mira Chen: Segment 3 — discussing MeshSync vs SenseNode SN-400 positioning and local-first telemetry boundaries for seq 1.
+Elena Voss: Segment 4 — discussing MeshSync vs SenseNode SN-400 positioning and local-first telemetry boundaries for seq 1.
+Mira Chen: Segment 5 — discussing MeshSync vs SenseNode SN-400 positioning and local-first telemetry boundaries for seq 1.
+Elena Voss: Segment 6 — discussing MeshSync vs SenseNode SN-400 positioning and local-first telemetry boundaries for seq 1.
+Mira Chen: Segment 7 — discussing MeshSync vs SenseNode SN-400 positioning and local-first telemetry boundaries for seq 1.
+Elena Voss: Segment 8 — discussing MeshSync vs SenseNode SN-400 positioning and local-first telemetry boundaries for seq 1.
+Mira Chen: Segment 9 — discussing MeshSync vs SenseNode SN-400 positioning and local-first telemetry boundaries for seq 1.
+Elena Voss: Segment 10 — discussing MeshSync vs SenseNode SN-400 positioning and local-first telemetry boundaries for seq 1.
+Mira Chen: Segment 11 — discussing MeshSync vs SenseNode SN-400 positioning and local-first telemetry boundaries for seq 1.
+Elena Voss: Segment 12 — discussing MeshSync vs SenseNode SN-400 positioning and local-first telemetry boundaries for seq 1.
+Mira Chen: Segment 13 — discussing MeshSync vs SenseNode SN-400 positioning and local-first telemetry boundaries for seq 1.
+Elena Voss: Segment 14 — discussing MeshSync vs SenseNode SN-400 positioning and local-first telemetry boundaries for seq 1.
+Mira Chen: Segment 15 — discussing MeshSync vs SenseNode SN-400 positioning and local-first telemetry boundaries for seq 1.
+Elena Voss: Segment 16 — discussing MeshSync vs SenseNode SN-400 positioning and local-first telemetry boundaries for seq 1.
+Mira Chen: Segment 17 — discussing MeshSync vs SenseNode SN-400 positioning and local-first telemetry boundaries for seq 1.
+Elena Voss: Segment 18 — discussing MeshSync vs SenseNode SN-400 positioning and local-first telemetry boundaries for seq 1.
+Mira Chen: Segment 19 — discussing MeshSync vs SenseNode SN-400 positioning and local-first telemetry boundaries for seq 1.
+Elena Voss: Segment 20 — discussing MeshSync vs SenseNode SN-400 positioning and local-first telemetry boundaries for seq 1.
+Mira Chen: Segment 21 — discussing MeshSync vs SenseNode SN-400 positioning and local-first telemetry boundaries for seq 1.
+Elena Voss: Segment 22 — discussing MeshSync vs SenseNode SN-400 positioning and local-first telemetry boundaries for seq 1.
+Mira Chen: Segment 23 — discussing MeshSync vs SenseNode SN-400 positioning and local-first telemetry boundaries for seq 1.
+Elena Voss: Segment 24 — discussing MeshSync vs SenseNode SN-400 positioning and local-first telemetry boundaries for seq 1.

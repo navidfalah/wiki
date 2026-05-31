@@ -1,0 +1,33 @@
+[DUMMY TEST DATA — TeaBuddy fictional startup — Slack #engineering export 2026-06-03]
+
+#engineering · exported for wiki ingest test
+
+alex.kim  9:02 AM
+morning — did anyone run the compiler on the new dummy-test folder yet?
+
+sam.rivera  9:04 AM
+not yet. fixing BLE disconnect after sleep on the puck firmware
+also CR2032 math says we're at ~11mo battery not 12 @ 5 steeps/day — close enough for beta?
+
+alex.kim  9:06 AM
+ship it. update wiki after heuristic compile pls
+
+sam.rivera  9:08 AM
+preset timers locked:
+• green 3:00
+• black 5:00
+• herbal 7:00
+custom slider 1–10 min still flaky on edge values (0:59 bug)
+
+jamie.qa  9:15 AM
+[DUMMY] test ticket TB-12: LED stays on after buzz — reproducible 2/5 times
+
+sam.rivera  9:17 AM
+on it. might be race in steep_complete handler
+
+alex.kim  9:20 AM
+reminder: Dashboard workspace should show these raw files under data/raw/dummy-test/
+Analytics should pick up tags: TeaBuddy, BLE, CR2032
+
+sam.rivera  9:22 AM
+:tea: :battery: :white_check_mark:

@@ -1,0 +1,24 @@
+[SAMPLE] Email — trademark review request
+
+From: legal@auroralabs.example
+To: mira.chen@auroralabs.example, alex.kim@teabuddy.example
+Subject: SHARED COUNSEL — MeshSync vs TeaBuddy marks
+
+Mira / Alex,
+
+Preliminary clearance:
+- MeshSync: ok with caveat on similar mesh IoT marks
+- TeaBuddy: ok in class 21 kitchen gadgets
+- "Puck" alone: crowded — use TeaBuddy Puck together
+
+Avoid:
+- "SteepSync" (Alex — already rejected internally)
+- "Nova" alone conflicts with existing tech mark — use Nova Widget
+
+Co-marketing OK if logos separated 24px minimum.
+
+Regards,
+Outside counsel (fictional)
+
+---
+[DUMMY TEST DATA]

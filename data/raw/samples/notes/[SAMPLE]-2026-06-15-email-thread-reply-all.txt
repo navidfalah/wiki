@@ -1,0 +1,26 @@
+[SAMPLE] Email thread — RE: RE: FWD: Beta enclosure samples (DO NOT REPLY ALL)
+
+From: jonah.park@auroralabs.example
+To: mira.chen@auroralabs.example, team@auroralabs.example
+Subject: RE: gasket tolerances
+
+Mira — IP54 sample batch 3 looks acceptable. IP65 still needs $8k tool.
+Can we ship beta with "splash resistant" language only?
+
+---
+From: mira.chen@auroralabs.example
+To: everyone (+ accidental vendor)
+Subject: RE: RE: gasket tolerances
+
+Jonah please stop reply-all to the injection molder.
+
+Also: competitor teardown blog updated battery — we owe Alex a correction note.
+
+---
+From: alex.kim@teabuddy.example (WRONG THREAD?)
+Subject: RE: puck haptic motor
+
+Sorry wrong thread. Ignore.
+
+---
+[thread continues off-screen — 47 messages about lunch]

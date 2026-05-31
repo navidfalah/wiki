@@ -1,36 +1,28 @@
 ---
 id: overview
 title: Overview
-sidebar_label: Overview
-slug: /overview
 tags:
   - overview
-sources:
-  - none
-page_type: synthesis
+  - wiki
+last_updated: "2026-05-31T20:50:53.036762+00:00"
+sidebar_label: Overview
+slug: /overview
 ---
 
-# [Aurora Labs](/docs/entities/aurora-labs) Wiki Overview
+# Overview
 
-Auto-generated synthesis of all compiled sources.
+## Overview
 
-- **4** source summaries
-- **8** [entity](/docs/entities/sensenode-sn-400) pages
-- **3** [concept](/docs/concepts/battery) pages
+Synthesized from **3** raw chunk(s) (heuristic mode — set OPENAI_API_KEY for LLM drafts).
 
-## Entities
+## Key Details
 
-- [SenseNode SN-400](/docs/entities/sensenode-sn-400)
-- [Nova Widget v2](/docs/entities/nova-widget-v2)
-- [Aurora Labs](/docs/entities/aurora-labs)
-- [Nova Widget](/docs/entities/nova-widget)
-- [Mira Chen](/docs/entities/[mira](/docs/entities/mira)-chen)
-- [Jonah Park](/docs/entities/[jonah](/docs/entities/jonah)-park)
-- [Mira](/docs/entities/mira)
-- [Jonah](/docs/entities/jonah)
+- `bulk/samples/articles/[SAMPLE]-2026-06-11-nova-widget-spec-fragment.md` (chunk 0): # [SAMPLE] Nova Widget — spec fragment (incomplete export)  **Product:** Aurora Nova Widget v2 beta unit   **Owners:** Mira Chen ([firmware](./firmware.md)), Jonah Park ([hardware](./hardware.md))   **Status:** Draft — missing sections 4–7  ## Overview  Open-source soil moisture + temp sensor. [MeshSync](./meshsync.md) local mesh, no mandatory cloud...
+- `samples/articles/[SAMPLE]-2026-06-11-nova-widget-spec-fragment.md` (chunk 0): # [SAMPLE] Nova Widget — spec fragment (incomplete export)  **Product:** Aurora Nova Widget v2 beta unit   **Owners:** Mira Chen (firmware), Jonah Park (hardware)   **Status:** Draft — missing sections 4–7  ## Overview  Open-source soil moisture + temp sensor. MeshSync local mesh, no mandatory cloud...
+- `samples/articles/[SAMPLE]-2026-07-02-mqtt-export-schema.md` (chunk 0): # [SAMPLE] MQTT export schema — Nova Widget (optional local)  **Status:** Draft v2   **Owner:** Mira Chen   **Tags:** MeshSync, Nova Widget, MQTT  ## Overview  Optional local MQTT export. No cloud required. Compatible with Home Assistant hobbyist setups.  ## [Topic structure](./topic-structure.md)  ``` aurora/{device_id}/t...
 
-## Concepts
+## Sources
 
-- [Battery](/docs/concepts/[battery](/docs/concepts/battery))
-- [MeshSync](/docs/concepts/[meshsync](/docs/concepts/meshsync))
-- [mesh between nodes](/docs/concepts/mesh-between-nodes)
+- `bulk/samples/articles/[SAMPLE]-2026-06-11-nova-widget-spec-fragment.md` — chunk 0
+- `samples/articles/[SAMPLE]-2026-06-11-nova-widget-spec-fragment.md` — chunk 0
+- `samples/articles/[SAMPLE]-2026-07-02-mqtt-export-schema.md` — chunk 0

@@ -1,0 +1,20 @@
+[SAMPLE] MeshSync protocol header — v0.3 (excerpt)
+
+FILE: meshsync.h (generated wiki test excerpt)
+TAGS: MeshSync, Aurora, protocol
+
+#define MESHSYNC_MAX_NODES 32
+#define MESHSYNC_BETA_SAFE_NODES 6
+#define MESHSYNC_DEFAULT_INTERVAL_MIN 15
+
+typedef enum {
+  MESHSYNC_ROLE_PARENT,
+  MESHSYNC_ROLE_CHILD,
+  MESHSYNC_ROLE_LOST /* rejoin storm state */
+} meshsync_role_t;
+
+/* Parent election: RSSI-weighted random backoff — see whiteboard July 3 */
+
+/* NOTE: hourly interval deprecated — use MESHSYNC_DEFAULT_INTERVAL_MIN */
+
+/* TeaBuddy integration request denied — see partnership memo */

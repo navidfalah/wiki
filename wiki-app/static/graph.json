@@ -119,8 +119,16 @@
       "target": "summary"
     },
     {
+      "source": "firmware",
+      "target": "hardware"
+    },
+    {
       "source": "hardware",
       "target": "summary"
+    },
+    {
+      "source": "hardware",
+      "target": "firmware"
     },
     {
       "source": "intro",
@@ -143,8 +151,28 @@
       "target": "intro"
     },
     {
+      "source": "summary",
+      "target": "hardware"
+    },
+    {
+      "source": "summary",
+      "target": "firmware"
+    },
+    {
+      "source": "summary",
+      "target": "sensenode-sn-400"
+    },
+    {
       "source": "technical-decisions",
       "target": "why-were-doing-this"
+    },
+    {
+      "source": "technical-decisions",
+      "target": "product-idea-nova-widget"
+    },
+    {
+      "source": "why-were-doing-this",
+      "target": "product-idea-nova-widget"
     }
   ]
 }

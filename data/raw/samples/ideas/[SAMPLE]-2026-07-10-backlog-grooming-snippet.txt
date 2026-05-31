@@ -1,0 +1,24 @@
+[SAMPLE] Backlog grooming snippet — mixed products (July 10)
+
+AURORA P0:
+- Publish power budget spreadsheet
+- 0.3.9 rejoin hardening
+- Comparison page SenseNode SN-400
+
+TEABUDDY P0:
+- Android v1.1 beta
+- TB-142 cancel bug verification
+- Box copy audit all presets
+
+SHARED ICEBOX:
+- Plant Whisperer app (#47)
+- Contradiction linter
+- Wiki index auto-refresh
+
+QUICK WINS:
+- Add 40 extended dummy raw files for compiler stress test
+- Forum scrape fix thread #9102
+
+STALE:
+- Rename MeshSync → MeshSink (reject again)
+- KarpathyGarden product name (reject again)

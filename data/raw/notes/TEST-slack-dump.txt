@@ -1,0 +1,6 @@
+TEST DATA — Slack dump (dummy)
+
+mira: nova widget beta boards arrived
+jonah: meshsync pairing still flaky on 3-node mesh
+mira: senseNode teardown blog says our IP54 is weak
+jonah: fix before demo. firmware sprint this week.

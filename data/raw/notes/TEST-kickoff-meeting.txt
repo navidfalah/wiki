@@ -1,0 +1,13 @@
+TEST DATA — Kickoff meeting (dummy)
+
+Date: 2026-06-15
+Attendees: Mira Chen, Jonah Park
+
+## Why we're doing this
+Open sensors for gardeners who own their data.
+
+## Product idea: Nova Widget
+Soil moisture + temp sensor. MeshSync for range.
+
+## Technical decisions
+MCU: nRF52840. Battery target: 18 months.

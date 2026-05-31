@@ -1,0 +1,28 @@
+[SAMPLE] Support ticket #2201 — battery documentation wrong
+
+Status: CLOSED  
+Product: Aurora Nova Widget  
+Customer: blog reader (not beta)
+
+---
+
+CUSTOMER (2026-07-01):
+Alex's teardown blog listed CR2450. Your spec says CR2032. Which is correct?
+
+AGENT (Mira):
+CR2032 is correct. Blog corrected 2026-06-20. Wiki page updated.
+
+CUSTOMER:
+Marketing still says 2 year battery. Forum says 18 months.
+
+AGENT:
+Depends on node count and read interval (15 min default). Power budget doc publishing soon.
+
+CUSTOMER:
+Ok. Also unrelated — does TeaBuddy share the app?
+
+AGENT:
+No. Different product and company.
+
+---
+Tags: CR2032, battery, contradiction

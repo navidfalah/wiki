@@ -4,14 +4,14 @@ title: GROCERY
 tags:
   - grocery
   - wiki
-last_updated: "2026-05-31T19:17:18.625974+00:00"
+last_updated: "2026-05-31T20:50:51.485443+00:00"
 sidebar_label: GROCERY
 slug: /grocery
 ---
 
 # GROCERY
 
-## Overview
+## [Overview](./overview.md)
 
 Synthesized from **1** raw chunk(s) (heuristic mode — set OPENAI_API_KEY for LLM drafts).
 

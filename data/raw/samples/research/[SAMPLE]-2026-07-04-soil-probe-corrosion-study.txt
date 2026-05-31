@@ -1,0 +1,15 @@
+[SAMPLE] Research snippet — capacitive soil probe corrosion (forum compile)
+
+Source: HomeLab Sensors thread + PDF fragment
+Tags: Nova Widget, hardware, SenseNode
+
+Key points:
+- Cheap probes fail 6–9 months in acidic soil
+- SenseNode SN-400 uses coated probe — replacement $12
+- Aurora beta probe: gold-flashed PCB — untested long-term
+
+Jonah note: mention in comparison page under total cost of ownership
+
+Mira note: not v1 blocker — document in hardware page
+
+Unrelated tab still open: teabuddy haptic driver comparison

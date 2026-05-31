@@ -1,0 +1,17 @@
+[SAMPLE] Beta tester agreement — excerpt (Aurora Nova Widget)
+
+[DUMMY TEST DATA — not real legal]
+
+Section 4 — Confidentiality
+Beta firmware, MeshSync source partial, and power budget spreadsheets are confidential.
+
+Section 7 — Safety
+Device is IP54 splash-resistant only. Do not submerge. SenseNode-style outdoor burial not supported.
+
+Section 9 — Data
+Telemetry stays local. Optional MQTT export user-configured.
+
+Section 12 — No endorsement
+Beta tester may mention TeaBuddy or other products — no implied Aurora partnership.
+
+Signature: _____________ Date: _______

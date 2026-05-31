@@ -1,0 +1,21 @@
+[SAMPLE] Investor call transcript fragment — Aurora Labs (July 2)
+
+INVESTOR: Walk me through the moat against SenseNode.
+
+MIRA CHEN: Local mesh without subscription. Open firmware partial. Community integrations.
+
+INVESTOR: Battery life claims?
+
+MIRA: Engineering eighteen months at ten nodes, fifteen minute reads. Marketing rounds to two years — we're publishing the spreadsheet.
+
+INVESTOR: Eight-node mesh issue?
+
+MIRA: Mitigated in 0.3.8. Recommend six for beta customers.
+
+JONAH PARK: IP54 beta, IP65 when tooling funded.
+
+INVESTOR: TeaBuddy partnership?
+
+MIRA: Co-marketing only. Alex is friends. No merge.
+
+[fragment ends — recorder battery died]

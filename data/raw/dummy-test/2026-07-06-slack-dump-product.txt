@@ -1,0 +1,24 @@
+[DUMMY TEST DATA — TeaBuddy fictional startup — Slack #product export 2026-07-06]
+
+#product · exported for wiki ingest test
+
+alex.kim  10:01 AM
+herbal box copy still says 5 min in print proof v3. killing me.
+
+jamie.qa  10:03 AM
+firmware is 7. marketing PDF is 5. wiki says 7 after last compile. CONTRADICTION flag when?
+
+alex.kim  10:05 AM
+@sam.rivera can we ship with sticker overlay?
+
+sam.rivera  10:07 AM
+no. fix print. also aurora mira pinged about shared booth — still no from me unless they pay half
+
+alex.kim  10:12 AM
+nova widget pebble shape is cute. different universe. focus.
+
+jamie.qa  10:15 AM
+beta NPS raw: 42. pairing complaints down after 0.9.3.
+
+alex.kim  10:18 AM
+update dummy-test folder after next compile run pls

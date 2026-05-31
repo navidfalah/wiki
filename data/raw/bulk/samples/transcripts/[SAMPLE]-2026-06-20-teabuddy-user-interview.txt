@@ -1,0 +1,22 @@
+[SAMPLE] User interview #7 — TeaBuddy beta (fictional)
+
+Interviewer: Alex Kim  
+Participant: "Pat" (home tea enthusiast, Portland)
+
+ALEX: Walk me through your last steep session.
+
+PAT: I scanned the QR, paired fine. Green tea, three minutes. Phone was in living room, puck buzzed — I heard it through the wall. Good.
+
+ALEX: Any failures?
+
+PAT: Once the timer kept running after I cancelled in app. Had to power-cycle puck.
+
+ALEX: Would you pay $49?
+
+PAT: Maybe $39. I also have an Aurora soil sensor for tomatoes — different thing but same "nice hardware" vibe.
+
+ALEX: Nova Widget?
+
+PAT: Yeah the little pebble. Mesh thing is over my head but soil data is fun.
+
+[END — 34 min total, only excerpt transcribed]

@@ -1,0 +1,29 @@
+[SAMPLE] Support ticket #2156 — TeaBuddy pairing failure iOS 18
+
+Status: IN PROGRESS  
+Product: TeaBuddy Puck v0.9.2  
+Customer: redacted
+
+---
+
+CUSTOMER:
+QR scan works but BLE never connects on iPhone 15, iOS 18 beta.
+
+AGENT (Sam Rivera):
+Reproduced. CoreBluetooth permission prompt order wrong. Fix in 0.9.3.
+
+CUSTOMER:
+Also timer ran after cancel once.
+
+AGENT:
+Known bug TB-142. Workaround: long-press puck 5s to reset session.
+
+CUSTOMER:
+I have Aurora Nova sensors — wish one app for both.
+
+AGENT (draft never sent):
+Different companies, different apps. TeaBuddy local-only by design.
+
+---
+
+Escalation: Alex Kim wants FAQ entry before TestFlight public

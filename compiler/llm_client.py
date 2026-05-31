@@ -14,9 +14,8 @@ from typing import Any
 
 from dotenv import load_dotenv
 
-load_dotenv()
-
 PROJECT_ROOT = Path(__file__).resolve().parent.parent
+load_dotenv(PROJECT_ROOT / ".env")
 DEFAULT_CACHE_PATH = PROJECT_ROOT / "data" / ".llm-cache.sqlite"
 
 # Exceptions worth retrying (transient network / rate-limit / server errors).

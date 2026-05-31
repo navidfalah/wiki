@@ -4,14 +4,14 @@ title: "[TRANSCRIPT FRAGMENT — recording failed at 00:04:12]"
 tags:
   - transcript-fragment-recording-failed-at-000412
   - wiki
-last_updated: "2026-05-31T19:17:18.629144+00:00"
+last_updated: "2026-05-31T20:50:54.698069+00:00"
 sidebar_label: "[TRANSCRIPT FRAGMENT — recording failed at 00:04:12]"
 slug: /transcript-fragment-recording-failed-at-000412
 ---
 
 # [TRANSCRIPT FRAGMENT — recording failed at 00:04:12]
 
-## Overview
+## [Overview](./overview.md)
 
 Synthesized from **1** raw chunk(s) (heuristic mode — set OPENAI_API_KEY for LLM drafts).
 

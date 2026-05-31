@@ -1,0 +1,35 @@
+[DUMMY TEST DATA — TeaBuddy beta feedback snippets — fictional customer quotes]
+
+Source: pretend Typeform export, June 2026 beta (n=5 shown)
+
+---
+Tester: "MossGarden42"
+Rating: 4/5
+Comment: Love the green tea preset. Wish Android existed. Puck feels solid.
+Would pay: $25
+
+---
+Tester: "SteepAndRepeat"
+Rating: 5/5
+Comment: Finally stopped destroying my oolong. BLE paired first try.
+Bug: LED sometimes stuck on (see TB-12 in engineering slack dump)
+
+---
+Tester: "AlexFromNotThatAlex"
+Rating: 3/5
+Comment: Custom timer at 1 minute worked; at 10 minutes app crashed once.
+Battery % jumped from 80 to 60 after one day — display bug?
+
+---
+Tester: "TeaNerd_PDX"
+Rating: 5/5
+Comment: Tagline "Steep on time" is cheesy but accurate. CR2032 easy to find locally.
+Feature request: oolong preset (4 min) — not in v1
+
+---
+Tester: "Jamie_Internal"
+Rating: N/A (QA)
+Comment: [DUMMY] Use this file to verify Analytics tag counts increase after compile.
+Entities to expect: TeaBuddy Puck, Jamie Lo, MossGarden42 (handle)
+
+Summary for wiki: sentiment positive; top issues = Android waitlist, LED stuck, battery % glitch.

@@ -1,0 +1,21 @@
+[SAMPLE] Discord #local-iot snippet scrape — July 7
+
+UserSoil: aurora nova mqtt v2 any good?
+
+UserHA: works if you stay 6 nodes. rejoin drama at 8.
+
+UserTea: teabuddy puck cute. no mqtt tho.
+
+UserSoil: CR2032 in both? battery life?
+
+UserHA: nova ~18mo engineering claim. teabuddy ~12mo @ 5 steeps/day.
+
+UserSkeptic: still cheaper to use phone timer
+
+UserTea: haptic when phone in other room 🤷
+
+UserSoil: sensenode ip67 wins rain
+
+UserHA: subscription tax ugh
+
+[parser lost emoji reactions]

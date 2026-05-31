@@ -4,14 +4,14 @@ title: Naming brainstorm — DO NOT SEND TO CUSTOMERS
 tags:
   - naming-brainstorm-do-not-send-to-customers
   - wiki
-last_updated: "2026-05-31T19:17:18.627015+00:00"
+last_updated: "2026-05-31T20:50:51.533300+00:00"
 sidebar_label: Naming brainstorm — DO NOT SEND TO CUSTOMERS
 slug: /naming-brainstorm-do-not-send-to-customers
 ---
 
 # Naming brainstorm — DO NOT SEND TO CUSTOMERS
 
-## Overview
+## [Overview](./overview.md)
 
 Synthesized from **1** raw chunk(s) (heuristic mode — set OPENAI_API_KEY for LLM drafts).
 

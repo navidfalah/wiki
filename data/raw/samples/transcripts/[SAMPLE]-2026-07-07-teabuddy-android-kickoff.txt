@@ -1,0 +1,19 @@
+[SAMPLE] TeaBuddy Android kickoff — transcript (July 7)
+
+ALEX KIM: v1.1 centers Android. iOS stays parity feature-wise.
+
+SAM RIVERA: BLE GATT identical. Kotlin coroutines for timeout handling.
+
+JAMIE LO: QA needs 12 device matrix — Pixel, Samsung, OnePlus.
+
+ALEX: Timeline eight weeks. Firmware frozen at 1.0.0 except bugfixes.
+
+SAM: Aurora MeshSync folks keep asking to share codebase — still no.
+
+JAMIE: Herbal preset box sticker shipped?
+
+ALEX: Print vendor fixed. Seven minutes everywhere.
+
+SAM: Action: update dummy-test packaging brief in wiki after compile.
+
+[END — 22 min]

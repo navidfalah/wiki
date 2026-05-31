@@ -1,0 +1,15 @@
+[SAMPLE] Lunch-and-learn notes — "Local-first IoT" (July 5)
+
+Presenter: Alex Kim (TeaBuddy, invited guest at Aurora office)
+
+Topics:
+- BLE vs mesh tradeoffs for consumer gadgets
+- Why TeaBuddy rejected cloud accounts for v1
+- Demo: puck buzzer vs Nova Widget LED patterns
+
+Q&A highlights:
+- Mira: "Mesh complexity is worth it at 6+ garden sensors"
+- Alex: "Tea drinkers want one device one job"
+- Jonah: "Could share enclosure supplier contacts"
+
+Action: add cross-link wiki page teabuddy-cross-ref (already exists?)

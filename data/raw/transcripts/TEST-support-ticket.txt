@@ -1,0 +1,4 @@
+TEST DATA — Support ticket #2099 (dummy)
+
+Customer asks: Nova Widget vs SenseNode SN-400 for outdoor use?
+Agent reply draft: SenseNode has IP67; ours is IP54 beta. MeshSync has no cloud fee.

@@ -4,14 +4,14 @@ title: research tabs open right now (mental dump)
 tags:
   - research-tabs-open-right-now-mental-dump
   - wiki
-last_updated: "2026-05-31T19:17:18.627534+00:00"
+last_updated: "2026-05-31T20:50:53.083679+00:00"
 sidebar_label: research tabs open right now (mental dump)
 slug: /research-tabs-open-right-now-mental-dump
 ---
 
 # research tabs open right now (mental dump)
 
-## Overview
+## [Overview](./overview.md)
 
 Synthesized from **1** raw chunk(s) (heuristic mode — set OPENAI_API_KEY for LLM drafts).
 

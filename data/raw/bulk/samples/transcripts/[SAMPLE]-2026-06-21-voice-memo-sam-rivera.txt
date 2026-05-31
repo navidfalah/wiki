@@ -1,0 +1,17 @@
+[SAMPLE] Voice memo — Sam Rivera, auto-transcribed (low confidence)
+
+"okay firmware zero point nine three — pairing timeout increased to thirty seconds"
+
+"alex wants stronger haptic — motor driver limit is three volts don't exceed"
+
+"steep timer must survive background — iOS killed us twice use background task API"
+
+"do not rename teabuddy again it's fine"
+
+"mesh sync mesh sync — that's aurora not us stop mixing codebases"
+
+"contradiction in spec herbal preset seven minutes marketing says five — fix wiki"
+
+[inaudible — kettle boiling]
+
+"end memo"

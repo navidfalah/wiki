@@ -1,0 +1,21 @@
+[SAMPLE] Support training roleplay — Aurora + TeaBuddy cross-ticket (July 9)
+
+TRAINER: Customer owns both Nova Widget and TeaBuddy puck. One app request.
+
+TRAINEE: Different companies. Nova uses MeshSync garden app. TeaBuddy uses BLE kitchen app.
+
+TRAINER: Good. Customer cites SenseNode waterproof.
+
+TRAINEE: IP67 vs our IP54. Recommend cover. Link comparison page.
+
+TRAINER: Ticket #2099 rejoin loop?
+
+TRAINEE: Known issue. Update to 0.3.8. Stay at six nodes.
+
+TRAINER: TeaBuddy pairing iOS 18?
+
+TRAINEE: Fixed 0.9.3. Long-press reset for TB-142 cancel bug.
+
+TRAINER: Customer mentions CR2450 blog typo?
+
+TRAINEE: We use CR2032. Wiki corrected. Alex blog updated.

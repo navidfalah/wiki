@@ -1,0 +1,22 @@
+[SAMPLE] GitHub issue scrape — aurora-labs/meshsync #442
+
+Title: Rejoin storm persists at 8 nodes on 0.3.8
+State: open
+Labels: bug, power, beta
+
+@potato99 (2026-07-03):
+Still seeing multi-hour silence after adding 8th node. 0.3.8 flashed all units.
+
+@mira-chen (2026-07-03):
+Thanks — RSSI logs to support@ please. Workaround: cap at 6 nodes.
+
+@meshfan (2026-07-04):
+0.3.8 better but not fixed. SenseNode user laughing at mesh complexity.
+
+@teaguy (2026-07-04):
+wrong repo lol but hi mira
+
+@mira-chen (2026-07-05):
+0.3.9 milestone moved up. Parent election rewrite.
+
+[scrape truncated — 47 comments omitted]

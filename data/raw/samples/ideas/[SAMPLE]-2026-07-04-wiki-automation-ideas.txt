@@ -1,0 +1,17 @@
+[SAMPLE] Wiki automation ideas — July 4 dump
+
+1. Pre-commit hook: grep raw files for CONTRADICTION marker
+2. Auto-ingest slack exports from dummy-test/ folder
+3. Graph diff between compiles — show new entities
+4. LLM summarize support tickets into FAQ pages
+5. Orphan page linter (already on backlog #1)
+
+CROSS-PRODUCT:
+6. Shared glossary: CR2032, BLE, MeshSync, steep preset
+7. Unified "local-first manifesto" page — Aurora + TeaBuddy quotes
+
+REJECTED:
+8. Single app for both products — CEOs said no
+9. Mesh tea timer — jonah said "absolutely not"
+
+REFERENCE: karpathy llm wiki pattern, docusaurus graph plugin

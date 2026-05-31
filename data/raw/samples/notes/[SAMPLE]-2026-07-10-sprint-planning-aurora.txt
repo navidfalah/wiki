@@ -1,0 +1,20 @@
+[SAMPLE] Sprint 15 planning — Aurora Labs (July 10)
+
+Sprint goal: stabilize 8-node mesh + publish power budget
+
+Committed:
+- Mira: rejoin spike profiling on nRF5340 eval board
+- Jonah: comparison page update vs SenseNode SN-400
+- Intern: fix forum scrape CSS selector
+
+Stretch:
+- MQTT export CSV sample
+- OTA update design doc (not implement)
+
+Carried over:
+- Contradiction linter for battery claims
+- index.md refresh before investor demo
+
+Parking lot:
+- TeaBuddy co-marketing — revisit August
+- Rename MeshSync → MeshSink — NO (5th rejection)

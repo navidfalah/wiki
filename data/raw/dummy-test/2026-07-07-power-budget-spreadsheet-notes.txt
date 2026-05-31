@@ -1,0 +1,21 @@
+[DUMMY TEST DATA] Power budget working notes — Aurora Nova Widget
+
+Author: Mira Chen
+Tags: CR2032, MeshSync, power, Nova Widget
+
+Assumptions:
+- CR2032 nominal 220mAh (not 240 — datasheet variance)
+- Read interval: 15 min (spec authoritative)
+- Mesh size: 10 nodes (stress case)
+
+| State | Current | Duty | Daily mAh |
+|-------|---------|------|-----------|
+| Sleep | 4.2 µA | 99.7% | 0.10 |
+| Sample+TX | 12 mA | 0.03% | 0.05 |
+| Rejoin spike | 180 µA avg | 0.01% | 0.04 |
+
+Total ~0.19 mAh/day → ~18 months (engineering claim)
+
+Marketing slide "2 years" assumes 6 nodes + optimistic cell + hourly reads (WRONG interval)
+
+TeaBuddy puck comparison (Sam's numbers): ~0.35 mAh/day @ 5 steeps — 12mo target plausible

@@ -1,0 +1,15 @@
+[SAMPLE] Aurora Labs standup — July 1
+
+mira: 0.3.8 out. watching github issues for rejoin regressions
+jonah: gasket vendor quote IP65 still $8k — board said wait
+me: compiled wiki with heuristic mode — 40+ pages now??
+
+blockers:
+- alex blog battery typo still indexed somewhere (CR2450)
+- homelab forum scrape parser broken on nested quotes
+
+wins:
+- 3 new beta testers from thread #9102
+- teabuddy alex sent pebble-shaped stress ball joke gift
+
+todo: run extended dummy data generator before demo

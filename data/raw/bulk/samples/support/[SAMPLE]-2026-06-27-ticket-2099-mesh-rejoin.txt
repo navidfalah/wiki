@@ -1,0 +1,26 @@
+[SAMPLE] Support ticket #2099 — MeshSync rejoin loop
+
+Status: OPEN  
+Product: Aurora Nova Widget v2 beta  
+Customer: redacted (homelab enthusiast)
+
+---
+
+CUSTOMER (2026-06-27 09:14):
+After adding 8th node, whole mesh stops reporting for hours. Power cycle fixes temporarily.
+
+AGENT (internal note — Mira):
+Known issue. Rejoin spike. ETA fix in 0.3.8 firmware.
+
+CUSTOMER (2026-06-27 11:02):
+Neighbor's SenseNode handles 10 devices fine. Why mesh?
+
+AGENT (draft):
+MeshSync avoids cloud subscription. Tradeoff is complexity at scale. Recommend staying at 6 nodes until patch.
+
+INTERNAL — Jonah:
+Add to comparison page? "SenseNode: simpler topology, subscription."
+
+---
+
+Related: ticket #1042 (waterproof), ticket #2101 (battery math docs wrong)
