@@ -1,0 +1,18 @@
+.page {
+  max-width: var(--ifm-container-width-xl);
+  margin: 0 auto;
+  padding: 1.5rem var(--ifm-spacing-horizontal) 2rem;
+}
+
+.header {
+  margin-bottom: 1.25rem;
+}
+
+.header h1 {
+  margin-bottom: 0.5rem;
+}
+
+.header p {
+  margin: 0;
+  color: var(--ifm-color-emphasis-700);
+}

@@ -10,29 +10,27 @@ sources:
 page_type: synthesis
 ---
 
-# Aurora Labs Wiki Overview
+# [Aurora Labs](/docs/entities/aurora-labs) Wiki Overview
 
 Auto-generated synthesis of all compiled sources.
 
 - **4** source summaries
-- **20** [entity](/docs/entities/author) pages
+- **8** [entity](/docs/entities/sensenode-sn-400) pages
 - **3** [concept](/docs/concepts/battery) pages
 
 ## Entities
 
-- [Author:](/docs/entities/[author](/docs/entities/author))
-- [Status:](/docs/entities/[status](/docs/entities/status))
-- [Last edited:](/docs/entities/last-edited)
-- [MCU:](/docs/entities/[mcu](/docs/entities/mcu))
-- [Sensors:](/docs/entities/[sensors](/docs/entities/sensors))
-- [Battery:](/docs/entities/[battery](/docs/concepts/battery))
-- [Blog:](/docs/entities/[blog](/docs/entities/blog))
-- [Published:](/docs/entities/[published](/docs/entities/published))
-- [URL:](/docs/entities/[url](/docs/entities/url))
 - [SenseNode SN-400](/docs/entities/sensenode-sn-400)
+- [Nova Widget v2](/docs/entities/nova-widget-v2)
+- [Aurora Labs](/docs/entities/aurora-labs)
+- [Nova Widget](/docs/entities/nova-widget)
+- [Mira Chen](/docs/entities/[mira](/docs/entities/mira)-chen)
+- [Jonah Park](/docs/entities/[jonah](/docs/entities/jonah)-park)
+- [Mira](/docs/entities/mira)
+- [Jonah](/docs/entities/jonah)
 
 ## Concepts
 
-- [Battery:](/docs/concepts/battery)
-- [MeshSync](/docs/concepts/[meshsync](/docs/entities/meshsync))
+- [Battery](/docs/concepts/[battery](/docs/concepts/battery))
+- [MeshSync](/docs/concepts/[meshsync](/docs/concepts/meshsync))
 - [mesh between nodes](/docs/concepts/mesh-between-nodes)

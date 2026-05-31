@@ -12,9 +12,9 @@ sources:
 page_type: concept
 ---
 
-# [MeshSync](/docs/entities/meshsync)
+# MeshSync
 
-[Concept](/docs/concepts/battery) extracted from [2026 05 20 Competitor Teardown Blog](/docs/sources/2026-05-20-competitor-teardown-[blog](/docs/entities/blog)).
+[Concept](/docs/concepts/battery) extracted from [2026 05 20 Competitor Teardown Blog](/docs/sources/2026-05-20-competitor-teardown-blog).
 
 ## Notes
 

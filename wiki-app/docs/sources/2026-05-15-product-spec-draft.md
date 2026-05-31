@@ -16,7 +16,7 @@ page_type: source
 
 ## Summary
 
-Auto-compiled from `articles/2026-05-15-product-spec-draft.md`. Key terms: [Author](/docs/entities/author):, [Status](/docs/entities/status):, [Last edited](/docs/entities/last-edited):, [MCU](/docs/entities/mcu):, [Sensors](/docs/entities/sensors):.
+Auto-compiled from `articles/2026-05-15-product-spec-draft.md`. Key terms: Author, Status, Last edited, MCU, Sensors.
 
 ## Key points
 
@@ -29,14 +29,14 @@ Auto-compiled from `articles/2026-05-15-product-spec-draft.md`. Key terms: [Auth
 
 ## Extracted terms
 
-- Author:
-- Status:
-- Last edited:
-- MCU:
-- Sensors:
-- Battery:
-- Antenna:
+- Author
+- Status
+- Last edited
+- MCU
+- Sensors
+- Battery
+- Antenna
 - Default: every 15 minutes
-- Target average current:
+- Target average current
 - 24 months
 - 18 months minimum

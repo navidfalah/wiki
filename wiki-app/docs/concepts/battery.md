@@ -1,7 +1,7 @@
 ---
 id: concepts-battery
-title: Battery:
-sidebar_label: Battery:
+title: Battery
+sidebar_label: Battery
 slug: /concepts/battery
 tags:
   - concept
@@ -11,7 +11,7 @@ sources:
 page_type: concept
 ---
 
-# Battery:
+# Battery
 
 Concept extracted from [2026 05 15 Product Spec Draft](/docs/sources/2026-05-15-product-spec-draft).
 

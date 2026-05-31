@@ -8,7 +8,7 @@ from pathlib import Path
 PROJECT_ROOT = Path(__file__).resolve().parent.parent
 RAW_DIR = PROJECT_ROOT / "data" / "raw"
 OUTPUT_DIR = PROJECT_ROOT / "wiki-app" / "docs"
-STATE_FILE = PROJECT_ROOT / "data" / ".compiler-state.json"
+STATE_FILE = PROJECT_ROOT / "data" / "state.json"
 
 
 @dataclass

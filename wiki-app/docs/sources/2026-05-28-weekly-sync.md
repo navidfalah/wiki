@@ -10,13 +10,13 @@ sources:
 page_type: source
 ---
 
-# Weekly sync — Aurora Labs
+# Weekly sync — [Aurora Labs](/docs/entities/aurora-labs)
 
 **Raw source:** `transcripts/2026-05-28-weekly-sync.md`
 
 ## Summary
 
-Auto-compiled from `transcripts/2026-05-28-weekly-sync.md`. Key terms: [Date](/docs/entities/date):, [Type](/docs/entities/type):, [Mira](/docs/entities/mira):, [Jonah](/docs/entities/jonah):.
+Auto-compiled from `transcripts/2026-05-28-weekly-sync.md`. Key terms: Date, Type, [Mira](/docs/entities/mira), [Jonah](/docs/entities/jonah).
 
 ## Key points
 
@@ -24,7 +24,7 @@ Auto-compiled from `transcripts/2026-05-28-weekly-sync.md`. Key terms: [Date](/d
 
 ## Extracted terms
 
-- Date:
-- Type:
-- Mira:
-- Jonah:
+- Date
+- Type
+- Mira
+- Jonah

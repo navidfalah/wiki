@@ -1,0 +1,19 @@
+[TRANSCRIPT FRAGMENT — recording failed at 00:04:12]
+
+MIRA: So the fifteen minute default is—
+
+JONAH: —hourly was kickoff though.
+
+MIRA: Spec says fifteen. Marketing can say two years but engineering wants eighteen months minimum at ten nodes.
+
+UNKNOWN VOICE: (cough)
+
+JONAH: Alex's blog had the wrong battery. CR2450. We use two-oh-three-two.
+
+MIRA: We should ingest that correction into the wiki.
+
+[END FRAGMENT]
+
+action items lost in corruption:
+- [???] revalidate battery math
+- [???] reply to Hardware Habit comment

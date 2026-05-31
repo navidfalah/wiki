@@ -1,0 +1,34 @@
+.backlinks {
+  margin-top: 2.5rem;
+  padding-top: 1.5rem;
+}
+
+.divider {
+  margin-bottom: 1.5rem;
+  border: none;
+  border-top: 1px solid var(--ifm-color-emphasis-300);
+}
+
+.heading {
+  font-size: 1.25rem;
+  margin-bottom: 0.35rem;
+}
+
+.subtitle {
+  color: var(--ifm-color-emphasis-700);
+  font-size: 0.9rem;
+  margin-bottom: 0.75rem;
+}
+
+.list {
+  margin: 0;
+  padding-left: 1.25rem;
+}
+
+.list li {
+  margin-bottom: 0.35rem;
+}
+
+.list a {
+  font-weight: 500;
+}

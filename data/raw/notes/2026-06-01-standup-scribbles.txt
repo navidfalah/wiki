@@ -1,0 +1,21 @@
+STANDUP — june 1?? (late again)
+
+mira: mesh still weird at 8 nodes. spike 110µA on rejoin. "fine for beta"
+
+jonah: gasket samples = meh. IP54 ok. IP65 = $8k tool rip
+
+me: forgot to update the wiki AGAIN
+
+TODO ???
+- fix cron job on staging (maybe?)
+- ask about solar trickle — jonah yes / mira no
+- lunch
+
+random: why do CR2032 cells cost more at the hardware store than online
+
+---
+fragment: "open sensors for people who own their data" — still good?
+
+# touch test
+
+# incremental test

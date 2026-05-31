@@ -1,0 +1,75 @@
+.entity {
+  background: rgba(255, 193, 7, 0.25);
+  border-bottom: 1px dashed #ffc107;
+  padding: 0 0.1em;
+  border-radius: 0.15em;
+}
+
+.concept {
+  background: rgba(33, 150, 243, 0.18);
+  border-bottom: 1px dashed #2196f3;
+  padding: 0 0.1em;
+  border-radius: 0.15em;
+}
+
+.tag {
+  background: rgba(156, 39, 176, 0.16);
+  border-bottom: 1px dashed #9c27b0;
+  padding: 0 0.1em;
+  border-radius: 0.15em;
+}
+
+.link {
+  background: rgba(76, 175, 80, 0.16);
+  border-radius: 0.2em;
+  padding: 0 0.15em;
+}
+
+.link a {
+  color: var(--ifm-color-primary);
+  text-decoration: none;
+  font-weight: 600;
+}
+
+.link a:hover {
+  text-decoration: underline;
+}
+
+.markdown {
+  font-size: 0.95rem;
+  line-height: 1.6;
+}
+
+.h1,
+.h2,
+.h3 {
+  margin: 1rem 0 0.5rem;
+}
+
+.paragraph,
+.listItem,
+.quote {
+  margin: 0.35rem 0;
+}
+
+.listItem {
+  padding-left: 1rem;
+  position: relative;
+}
+
+.listItem::before {
+  content: '•';
+  position: absolute;
+  left: 0;
+  color: var(--ifm-color-emphasis-600);
+}
+
+.quote {
+  border-left: 3px solid var(--ifm-color-emphasis-300);
+  padding-left: 0.75rem;
+  color: var(--ifm-color-emphasis-700);
+}
+
+.spacer {
+  height: 0.5rem;
+}

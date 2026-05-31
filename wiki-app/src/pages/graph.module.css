@@ -1,0 +1,21 @@
+.page {
+  display: flex;
+  flex-direction: column;
+  max-width: var(--ifm-container-width-xl);
+  margin: 0 auto;
+  padding: 1.5rem var(--ifm-spacing-horizontal);
+  min-height: calc(100vh - var(--ifm-navbar-height) - 4rem);
+}
+
+.header {
+  margin-bottom: 1rem;
+}
+
+.header h1 {
+  margin-bottom: 0.5rem;
+}
+
+.header p {
+  margin: 0;
+  color: var(--ifm-color-emphasis-700);
+}

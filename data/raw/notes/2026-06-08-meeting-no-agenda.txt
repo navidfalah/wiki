@@ -1,0 +1,18 @@
+"meeting" — no agenda, 23 min
+
+attendees: mira, jonah, me (took notes badly)
+
+topics wandered:
+- competitor teardown blog — mostly fair, wrong battery once fixed
+- should we publish power numbers? mira cautious
+- beta tester list: 12 people, 3 farmers, rest hobbyists
+- someone mentioned obsidian graph view. everyone nodded.
+
+decisions made: none formally
+
+decisions implied:
+- ship IP54 beta first
+- don't rename anything
+- wiki needs love (again)
+
+next meeting: tbd "when mesh stable"

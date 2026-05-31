@@ -13,7 +13,7 @@ page_type: entity
 
 # [Nova Widget](/docs/entities/nova-widget) v2
 
-[Entity](/docs/entities/author) extracted from [2026 05 20 Competitor Teardown Blog](/docs/sources/2026-05-20-competitor-teardown-[blog](/docs/entities/blog)).
+[Entity](/docs/entities/sensenode-sn-400) extracted from [2026 05 20 Competitor Teardown Blog](/docs/sources/2026-05-20-competitor-teardown-blog).
 
 ## Notes
 

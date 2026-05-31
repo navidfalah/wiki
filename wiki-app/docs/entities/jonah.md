@@ -1,7 +1,7 @@
 ---
 id: entities-jonah
-title: Jonah:
-sidebar_label: Jonah:
+title: Jonah
+sidebar_label: Jonah
 slug: /entities/jonah
 tags:
   - entity
@@ -11,9 +11,9 @@ sources:
 page_type: entity
 ---
 
-# Jonah:
+# Jonah
 
-[Entity](/docs/entities/author) extracted from [2026 05 28 Weekly Sync](/docs/sources/2026-05-28-weekly-sync).
+[Entity](/docs/entities/sensenode-sn-400) extracted from [2026 05 28 Weekly Sync](/docs/sources/2026-05-28-weekly-sync).
 
 ## Notes
 

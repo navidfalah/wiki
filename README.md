@@ -6,74 +6,79 @@ Personal knowledge base using the **[Karpathy LLM Wiki pattern](https://gist.git
 
 ```
 llm-wiki-project/
-├── data/
-│   └── raw/                 # Junk / source files (you add here)
-├── compiler/                # Python pipeline (LLM + heuristics)
-│   ├── main.py              # Orchestrator
-│   ├── llm_client.py        # OpenAI-compatible API
-│   ├── synthesizer.py       # Summarize & categorize
-│   └── linker.py            # Cross-link injection
+├── build_wiki.sh            # One-command: compile + Docusaurus build
+├── data/raw/                # Junk / source files (you add here)
+├── compiler/                # Python pipeline
+│   └── main.py              # Full orchestrator (5 steps, rich logs)
 └── wiki-app/                # Docusaurus static site
-    ├── docs/                # Generated markdown output
-    └── docusaurus.config.js
+    └── docs/                # Generated output (do not edit by hand)
 ```
 
-## Quick start
+## One-command build
 
-### 1. Add junk data
+```bash
+chmod +x build_wiki.sh
+./build_wiki.sh
+```
 
-Drop `.md` files into `data/raw/` (subfolders like `articles/`, `notes/`, `transcripts/` are fine).
+Heuristic mode (no API key):
 
-### 2. Compile wiki
+```bash
+./build_wiki.sh --heuristic-only
+```
+
+## Pipeline (compiler/main.py)
+
+| Step | Name | Action |
+|------|------|--------|
+| 1 | Data Reading | Scan `data/raw/`, split into chunks |
+| 2 | Extraction | Extract topics, entities, concepts |
+| 3 | Synthesis | Write draft pages → `compiler/temp_output/` |
+| 4 | Indexing | Build `temp_output/index.json` |
+| 5 | Cross-linking | Inject links → `wiki-app/docs/` |
+
+## Manual setup
+
+### Python compiler
 
 ```bash
 cd compiler
 python3 -m venv .venv
 source .venv/bin/activate
 pip install -r requirements.txt
-python main.py --force
+python main.py
 ```
 
-Without `OPENAI_API_KEY`, the compiler uses **heuristic mode** (regex extraction). With a key in `.env`, it uses the LLM for richer synthesis.
+### Initialize Docusaurus (first time only)
 
-### 3. Browse the site
+If `wiki-app/` does not exist yet, run from the **repo root**:
+
+```bash
+npm create docusaurus@latest wiki-app classic -- --javascript
+```
+
+When prompted, choose:
+- **Type:** classic
+- **Language:** JavaScript
+- **Package name:** llm-wiki-app
+
+Then replace the generated config with this project's files, or merge these settings into `wiki-app/docusaurus.config.js`:
+
+- `docs.path` → `'docs'` (compiler output directory)
+- `docs.routeBasePath` → `'docs'`
+- `docs.sidebarPath` → `'./sidebars.js'`
+- `blog` → disabled
+
+Install dependencies and preview:
 
 ```bash
 cd wiki-app
 npm install
-npm start
+npm start        # dev server → http://localhost:3000
+npm run build    # static output → wiki-app/build/
 ```
 
-Open http://localhost:3000 — redirects to `/docs/index`.
-
-## Pipeline flow
-
-```mermaid
-flowchart LR
-    A[data/raw/*.md] --> B[synthesizer.py]
-    B --> C[linker.py]
-    C --> D[wiki-app/docs/]
-    D --> E[Docusaurus site]
-    B -.-> F[llm_client.py]
-```
-
-| Step | Module | Role |
-|------|--------|------|
-| Ingest | `main.py` | Discover raw files, run pipeline |
-| Synthesize | `synthesizer.py` | Source summaries, entities, concepts |
-| Link | `linker.py` | `[[wikilinks]]` → markdown links |
-| Output | `main.py` | Write Docusaurus frontmatter to `wiki-app/docs/` |
-
-## Sample data
-
-Fictional **Aurora Labs** startup junk data is pre-loaded in `data/raw/`:
-
-- `notes/2026-05-01-kickoff-notes.md`
-- `articles/2026-05-15-product-spec-draft.md`
-- `articles/2026-05-20-competitor-teardown-blog.md`
-- `transcripts/2026-05-28-weekly-sync.md`
-
-## Configuration
+### Environment
 
 Copy `.env.example` → `.env`:
 
@@ -82,8 +87,14 @@ OPENAI_API_KEY=sk-...
 OPENAI_MODEL=gpt-4o-mini
 ```
 
-## Cursor workflows
+Without a key, the compiler uses **heuristic mode** (no API calls).
 
-See `AGENTS.md` for ingest / query / lint conventions when using Cursor as the wiki maintainer alongside the Python compiler.
+## Sample data
 
-See `PROMPTS.md` for starter Cursor prompts.
+Fictional **Aurora Labs** junk data is pre-loaded under `data/raw/`. Generate more with:
+
+```bash
+python compiler/generate_junk_data.py
+```
+
+See `AGENTS.md` and `PROMPTS.md` for Cursor workflows.

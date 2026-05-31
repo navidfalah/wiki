@@ -9,4 +9,7 @@ venv/
 node_modules/
 wiki-app/build/
 wiki-app/.docusaurus/
-data/.compiler-state.json
+data/state.json
+data/.llm-cache.sqlite
+compiler/temp_output/*
+!compiler/temp_output/.gitkeep

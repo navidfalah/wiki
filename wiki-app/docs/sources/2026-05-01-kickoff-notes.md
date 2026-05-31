@@ -10,13 +10,13 @@ sources:
 page_type: source
 ---
 
-# Aurora Labs — Kickoff Meeting Notes
+# [Aurora Labs](/docs/entities/aurora-labs) — Kickoff Meeting Notes
 
 **Raw source:** `notes/2026-05-01-kickoff-notes.md`
 
 ## Summary
 
-Auto-compiled from `notes/2026-05-01-kickoff-notes.md`. Key terms: [Date](/docs/entities/date):, [Attendees](/docs/entities/attendees):, [Location](/docs/entities/location):, Mission statement (draft):, [Nova Widget](/docs/entities/nova-widget).
+Auto-compiled from `notes/2026-05-01-kickoff-notes.md`. Key terms: Date, Attendees, Location, Mission statement (draft), [Nova Widget](/docs/entities/nova-widget).
 
 ## Key points
 
@@ -29,15 +29,15 @@ Auto-compiled from `notes/2026-05-01-kickoff-notes.md`. Key terms: [Date](/docs/
 
 ## Extracted terms
 
-- Date:
-- Attendees:
-- Location:
-- Mission statement (draft):
+- Date
+- Attendees
+- Location
+- Mission statement (draft)
 - Nova Widget
 - [mesh between nodes](/docs/concepts/mesh-between-nodes)
-- [MeshSync](/docs/entities/meshsync)
+- [MeshSync](/docs/concepts/meshsync)
 - 2 years on CR2032
 - hourly
-- [Mira](/docs/entities/mira) Chen
-- [Jonah](/docs/entities/jonah) Park
+- [Mira Chen](/docs/entities/[mira](/docs/entities/mira)-chen)
+- [Jonah Park](/docs/entities/[jonah](/docs/entities/jonah)-park)
 - Aurora Labs

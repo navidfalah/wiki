@@ -1,0 +1,18 @@
+GROCERY
+- milk
+- batteries (CR2032 x4)  <-- nova prototypes
+- coffee
+- that one cheese
+
+PROJECT IDEA #47: "Plant Whisperer"
+app that yells at you when soil is dry. connects to nova widget??
+monetization: idk stickers
+
+PROJECT IDEA #48: reverse mesh — phones as nodes (bad idea?)
+
+thought @ 2am: what if wiki maintained itself. like karpathy thing.
+note to self: look up "llm wiki pattern"
+
+call dentist Thursday
+
+unfinished sentence: the enclosure needs to be more like a pebble and less like a

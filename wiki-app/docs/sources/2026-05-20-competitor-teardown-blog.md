@@ -1,7 +1,7 @@
 ---
 id: sources-2026-05-20-competitor-teardown-blog
-title: Teardown: SenseNode SN-400 vs the indie sensor crowd
-sidebar_label: Teardown: SenseNode SN-400 vs the indie sensor crowd
+title: "Teardown: SenseNode SN-400 vs the indie sensor crowd"
+sidebar_label: "Teardown: SenseNode SN-400 vs the indie sensor crowd"
 slug: /sources/2026-05-20-competitor-teardown-blog
 tags:
   - auto-ingest
@@ -12,11 +12,11 @@ page_type: source
 
 # Teardown: [SenseNode SN-400](/docs/entities/sensenode-sn-400) vs the indie sensor crowd
 
-**Raw source:** `articles/2026-05-20-competitor-teardown-[blog](/docs/entities/blog).md`
+**Raw source:** `articles/2026-05-20-competitor-teardown-blog.md`
 
 ## Summary
 
-Auto-compiled from `articles/2026-05-20-competitor-teardown-blog.md`. Key terms: Blog:, [Author](/docs/entities/author):, [Published](/docs/entities/published):, [URL](/docs/entities/url):, SenseNode SN-400.
+Auto-compiled from `articles/2026-05-20-competitor-teardown-blog.md`. Key terms: Blog, Author, Published, URL, SenseNode SN-400.
 
 ## Key points
 
@@ -28,15 +28,15 @@ Auto-compiled from `articles/2026-05-20-competitor-teardown-blog.md`. Key terms:
 
 ## Extracted terms
 
-- Blog:
-- Author:
-- Published:
-- URL:
+- Blog
+- Author
+- Published
+- URL
 - SenseNode SN-400
 - [Nova Widget](/docs/entities/nova-widget) v2
-- Aurora Labs
+- [Aurora Labs](/docs/entities/aurora-labs)
 - IP67
 - ~22 months
 - IP54
-- [MeshSync](/docs/entities/meshsync)
+- [MeshSync](/docs/concepts/meshsync)
 - 2 years at 15-min readings

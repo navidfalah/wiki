@@ -1,56 +1,90 @@
 ---
 id: index
-title: Index
-sidebar_label: Index
-slug: /index
+title: Wiki Map of Content
 tags:
   - index
-sources:
-  - none
-page_type: synthesis
+  - moc
+  - wiki
+last_updated: "2026-05-31T19:31:11.405883+00:00"
+sidebar_label: Wiki Index
+slug: /index
 ---
 
-# Wiki Index
+# Wiki Map of Content
 
-Content catalog — start here when querying.
+> Auto-generated index of **36** pages, organized by topic and tags.
 
-## Concepts
+## Overview
 
-- [Battery:](/docs/concepts/[battery](/docs/concepts/battery)) — [Concept](/docs/concepts/battery): Battery:
-- [mesh between nodes](/docs/concepts/mesh-between-nodes) — Concept: [mesh between nodes](/docs/concepts/mesh-between-nodes)
-- [MeshSync](/docs/concepts/[meshsync](/docs/entities/meshsync)) — Concept: MeshSync
-
-## Entitys
-
-- [Attendees:](/docs/entities/[attendees](/docs/entities/attendees)) — [Entity](/docs/entities/author): Attendees:
-- [Author:](/docs/entities/[author](/docs/entities/author)) — Entity: Author:
-- [Battery:](/docs/entities/battery) — Entity: Battery:
-- [Blog:](/docs/entities/[blog](/docs/entities/blog)) — Entity: Blog:
-- [Date:](/docs/entities/[date](/docs/entities/date)) — Entity: Date:
-- [Jonah:](/docs/entities/[jonah](/docs/entities/jonah)) — Entity: Jonah:
-- [Last edited:](/docs/entities/last-edited) — Entity: [Last edited](/docs/entities/last-edited):
-- [Location:](/docs/entities/[location](/docs/entities/location)) — Entity: Location:
-- [MCU:](/docs/entities/[mcu](/docs/entities/mcu)) — Entity: MCU:
-- [MeshSync](/docs/entities/meshsync) — Entity: MeshSync
-- [Mira:](/docs/entities/[mira](/docs/entities/mira)) — Entity: Mira:
-- [Mission statement (draft):](/docs/entities/mission-statement-draft) — Entity: Mission statement (draft):
-- [Nova Widget](/docs/entities/nova-widget) — Entity: [Nova Widget](/docs/entities/nova-widget)
-- [Nova Widget v2](/docs/entities/nova-widget-v2) — Entity: [Nova Widget v2](/docs/entities/nova-widget-v2)
-- [Published:](/docs/entities/[published](/docs/entities/published)) — Entity: Published:
-- [SenseNode SN-400](/docs/entities/sensenode-sn-400) — Entity: [SenseNode SN-400](/docs/entities/sensenode-sn-400)
-- [Sensors:](/docs/entities/[sensors](/docs/entities/sensors)) — Entity: Sensors:
-- [Status:](/docs/entities/[status](/docs/entities/status)) — Entity: Status:
-- [Type:](/docs/entities/[type](/docs/entities/type)) — Entity: Type:
-- [URL:](/docs/entities/[url](/docs/entities/url)) — Entity: URL:
+- [Overview](./overview.md) — Auto-generated synthesis of all compiled sources.
 
 ## Sources
 
-- [Aurora Labs — Kickoff Meeting Notes](/docs/sources/2026-05-01-kickoff-notes) — Summary of [Aurora Labs — Kickoff Meeting Notes](/docs/sources/2026-05-01-kickoff-notes)
-- [Nova Widget v2 — Product Spec (DRAFT)](/docs/sources/2026-05-15-product-spec-draft) — Summary of Nova Widget v2 — Product Spec (DRAFT)
-- [Teardown: SenseNode SN-400 vs the indie sensor crowd](/docs/sources/2026-05-20-competitor-teardown-blog) — Summary of [Teardown: SenseNode SN-400 vs the indie sensor crowd](/docs/sources/2026-05-20-competitor-teardown-blog)
-- [Weekly sync — Aurora Labs](/docs/sources/2026-05-28-weekly-sync) — Summary of [Weekly sync — Aurora Labs](/docs/sources/2026-05-28-weekly-sync)
+- [Aurora Labs — Kickoff Meeting Notes](./sources/2026-05-01-kickoff-notes.md) — Auto-compiled from notes/2026-05-01-kickoff-notes.md. Key terms: Date, Attendees, Location, Mission statement (draft), N…
+- [Nova Widget v2 — Product Spec (DRAFT)](./sources/2026-05-15-product-spec-draft.md) — Auto-compiled from articles/2026-05-15-product-spec-draft.md. Key terms: Author, Status, Last edited, MCU, Sensors.
+- [Teardown: SenseNode SN-400 vs the indie sensor crowd](./sources/2026-05-20-competitor-teardown-blog.md) — Auto-compiled from articles/2026-05-20-competitor-teardown-blog.md. Key terms: Blog, Author, Published, URL, SenseNode S…
+- [Weekly sync — Aurora Labs](./sources/2026-05-28-weekly-sync.md) — Auto-compiled from transcripts/2026-05-28-weekly-sync.md. Key terms: Date, Type, Mira, Jonah.
 
-## Synthesis
+## Entities
 
-- [Overview](/docs/[overview](/docs/overview)) — High-level wiki overview
+- [Aurora Labs](./entities/aurora-labs.md) — Entity extracted from 2026 05 20 Competitor Teardown Blog.
+- [Jonah](./entities/jonah.md) — Entity extracted from 2026 05 28 Weekly Sync.
+- [Jonah Park](./entities/jonah-park.md) — Entity extracted from 2026 05 01 Kickoff Notes.
+- [Mira](./entities/mira.md) — Entity extracted from 2026 05 28 Weekly Sync.
+- [Mira Chen](./entities/mira-chen.md) — Entity extracted from 2026 05 01 Kickoff Notes.
+- [Nova Widget](./entities/nova-widget.md) — Entity extracted from 2026 05 01 Kickoff Notes.
+- [Nova Widget v2](./entities/nova-widget-v2.md) — Entity extracted from 2026 05 20 Competitor Teardown Blog.
+- [SenseNode SN-400](./entities/sensenode-sn-400.md) — Entity extracted from 2026 05 20 Competitor Teardown Blog.
 
+## Concepts
+
+- [Battery](./concepts/battery.md) — Concept extracted from 2026 05 15 Product Spec Draft.
+- [mesh between nodes](./concepts/mesh-between-nodes.md) — Concept extracted from 2026 05 01 Kickoff Notes.
+- [MeshSync](./concepts/meshsync.md) — Concept extracted from 2026 05 20 Competitor Teardown Blog.
+
+## Products & Hardware
+
+### Aurora Labs
+
+- [Aurora Nova Widget v2 (beta unit)](./aurora-nova-widget-v2-beta-unit.md) — Synthesized from 1 raw chunk(s) (heuristic mode — set OPENAIAPIKEY for LLM drafts).
+- [Intro](./intro.md) — Synthesized from 1 raw chunk(s) (heuristic mode — set OPENAIAPIKEY for LLM drafts).
+- [Product idea: Nova Widget](./product-idea-nova-widget.md) — Synthesized from 1 raw chunk(s) (heuristic mode — set OPENAIAPIKEY for LLM drafts).
+- [SenseNode SN-400](./sensenode-sn-400.md) — Synthesized from 1 raw chunk(s) (heuristic mode — set OPENAIAPIKEY for LLM drafts).
+
+### Battery
+
+- [Hardware](./hardware.md) — Synthesized from 1 raw chunk(s) (heuristic mode — set OPENAIAPIKEY for LLM drafts).
+
+## Engineering & Protocols
+
+- [Firmware](./firmware.md) — Synthesized from 1 raw chunk(s) (heuristic mode — set OPENAIAPIKEY for LLM drafts).
+- [Technical decisions](./technical-decisions.md) — Synthesized from 1 raw chunk(s) (heuristic mode — set OPENAIAPIKEY for LLM drafts).
+
+## Team & Organization
+
+- [Weekly sync — Aurora Labs](./weekly-sync-aurora-labs.md) — Synthesized from 1 raw chunk(s) (heuristic mode — set OPENAIAPIKEY for LLM drafts).
+- [Why we're doing this](./why-were-doing-this.md) — Synthesized from 1 raw chunk(s) (heuristic mode — set OPENAIAPIKEY for LLM drafts).
+
+## Meetings & Transcripts
+
+- ["meeting" — no agenda, 23 min](./meeting-no-agenda-23-min.md) — Synthesized from 1 raw chunk(s) (heuristic mode — set OPENAIAPIKEY for LLM drafts).
+- [[TRANSCRIPT FRAGMENT — recording failed at 00:04:12]](./transcript-fragment-recording-failed-at-000412.md) — Synthesized from 1 raw chunk(s) (heuristic mode — set OPENAIAPIKEY for LLM drafts).
+- [STANDUP — june 1?? (late again)](./standup-june-1-late-again.md) — Synthesized from 1 raw chunk(s) (heuristic mode — set OPENAIAPIKEY for LLM drafts).
+- [Voice memo transcription (auto, low confidence)](./voice-memo-transcription-auto-low-confidence.md) — Synthesized from 1 raw chunk(s) (heuristic mode — set OPENAIAPIKEY for LLM drafts).
+
+## Ideas & Research
+
+- [BACKLOG — unsorted junk drawer](./backlog-unsorted-junk-drawer.md) — Synthesized from 1 raw chunk(s) (heuristic mode — set OPENAIAPIKEY for LLM drafts).
+- [GROCERY](./grocery.md) — Synthesized from 1 raw chunk(s) (heuristic mode — set OPENAIAPIKEY for LLM drafts).
+- [Naming brainstorm — DO NOT SEND TO CUSTOMERS](./naming-brainstorm-do-not-send-to-customers.md) — Synthesized from 1 raw chunk(s) (heuristic mode — set OPENAIAPIKEY for LLM drafts).
+- [research tabs open right now (mental dump)](./research-tabs-open-right-now-mental-dump.md) — Synthesized from 1 raw chunk(s) (heuristic mode — set OPENAIAPIKEY for LLM drafts).
+
+## External & Community
+
+- [Forum: HomeLab Sensors — Thread #8821 (scraped badly)](./forum-homelab-sensors-thread-8821-scraped-badly.md) — Synthesized from 1 raw chunk(s) (heuristic mode — set OPENAIAPIKEY for LLM drafts).
+- [Summary](./summary.md) — Synthesized from 1 raw chunk(s) (heuristic mode — set OPENAIAPIKEY for LLM drafts).
+- [Support inbox dump — ticket #1042 (redacted names)](./support-inbox-dump-ticket-1042-redacted-names.md) — Synthesized from 1 raw chunk(s) (heuristic mode — set OPENAIAPIKEY for LLM drafts).
+
+---
+
+*Last generated: 2026-05-31T19:31:11.405871+00:00*
