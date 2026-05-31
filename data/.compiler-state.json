@@ -1,0 +1,67 @@
+{
+  "processed": {
+    "articles/2026-05-15-product-spec-draft.md": {
+      "mtime": 1780254225.6261632,
+      "pages": [
+        "sources/2026-05-15-product-spec-draft",
+        "concepts/battery"
+      ],
+      "at": "2026-05-31T19:06:43.979055+00:00"
+    },
+    "articles/2026-05-20-competitor-teardown-blog.md": {
+      "mtime": 1780254225.6259248,
+      "pages": [
+        "sources/2026-05-20-competitor-teardown-blog",
+        "entities/sensenode-sn-400",
+        "entities/nova-widget-v2",
+        "entities/aurora-labs",
+        "concepts/meshsync"
+      ],
+      "at": "2026-05-31T19:06:43.979395+00:00"
+    },
+    "notes/2026-05-01-kickoff-notes.md": {
+      "mtime": 1780254225.6269577,
+      "pages": [
+        "sources/2026-05-01-kickoff-notes",
+        "entities/nova-widget",
+        "entities/mira-chen",
+        "entities/jonah-park",
+        "entities/aurora-labs",
+        "concepts/mesh-between-nodes",
+        "concepts/meshsync"
+      ],
+      "at": "2026-05-31T19:06:43.979513+00:00"
+    },
+    "transcripts/2026-05-28-weekly-sync.md": {
+      "mtime": 1780254225.6272478,
+      "pages": [
+        "sources/2026-05-28-weekly-sync",
+        "entities/mira",
+        "entities/jonah"
+      ],
+      "at": "2026-05-31T19:06:43.979651+00:00"
+    }
+  },
+  "runs": [
+    {
+      "at": "2026-05-31T19:05:00.798493+00:00",
+      "mode": "heuristic",
+      "pages_written": 29
+    },
+    {
+      "at": "2026-05-31T19:06:22.119345+00:00",
+      "mode": "heuristic",
+      "pages_written": 21
+    },
+    {
+      "at": "2026-05-31T19:06:28.051493+00:00",
+      "mode": "heuristic",
+      "pages_written": 20
+    },
+    {
+      "at": "2026-05-31T19:06:43.985239+00:00",
+      "mode": "heuristic",
+      "pages_written": 17
+    }
+  ]
+}
