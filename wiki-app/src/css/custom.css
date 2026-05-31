@@ -1,0 +1,8 @@
+:root {
+  --ifm-color-primary: #2e8555;
+  --ifm-code-font-size: 95%;
+}
+
+.markdown h1:first-child {
+  margin-bottom: 1rem;
+}
