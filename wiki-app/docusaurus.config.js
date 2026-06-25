@@ -83,11 +83,6 @@ const config = {
             position: 'left',
           },
           {
-            to: '/knowledge-graph',
-            label: 'Knowledge Graph',
-            position: 'left',
-          },
-          {
             to: '/workspace',
             label: 'Dashboard',
             position: 'left',

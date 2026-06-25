@@ -31,18 +31,14 @@ export function fetchDocDetail(docPath, apiBase = DEFAULT_WIKI_API_URL) {
 
 export function buildStreamUrl(
   apiBase = DEFAULT_WIKI_API_URL,
-  { heuristicOnly = true, force = false } = {},
+  { force = false } = {},
 ) {
   const params = new URLSearchParams();
-  if (heuristicOnly) {
-    params.set('heuristic_only', 'true');
-  } else {
-    params.set('heuristic_only', 'false');
-  }
   if (force) {
     params.set('force', 'true');
   }
-  return `${apiBase}/api/build/stream?${params.toString()}`;
+  const query = params.toString();
+  return `${apiBase}/api/build/stream${query ? `?${query}` : ''}`;
 }
 
 export function fetchBuildStatus(apiBase = DEFAULT_WIKI_API_URL) {

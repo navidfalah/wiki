@@ -1,0 +1,142 @@
+╭──────────────────────────────────────────────────────────╮
+│ LLM Wiki Compiler                                        │
+│ Raw dir: /Users/navid.falah/Desktop/wiki/data/raw        │
+│ Output:  /Users/navid.falah/Desktop/wiki/wiki-app/docs   │
+│ State:   /Users/navid.falah/Desktop/wiki/data/state.json │
+│ Mode:    LLM + cache (force rebuild)                     │
+╰──────────────────────────────────────────────────────────╯
+╭────────────────────────── Step 1/5 — Data Reading ───────────────────────────╮
+│ Scan data/raw/ and split files into text chunks                              │
+╰──────────────────────────────────────────────────────────────────────────────╯
+                                  Raw sources                                   
+┏━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┳━━━━━━━━━━━━━━━┳━━━━━━━━┓
+┃ File                                                ┃ MD5           ┃   Size ┃
+┡━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━╇━━━━━━━━━━━━━━━╇━━━━━━━━┩
+│ articles/2026-05-15-product-spec-draft.md           │ 9b9873a1efb4… │ 1.4 KB │
+│ articles/2026-05-20-competitor-teardown-blog.md     │ 7f4e1148b59e… │ 1.6 KB │
+│ articles/TEST-product-brief.md                      │ 617086c1d9d5… │ 0.2 KB │
+│ articles/scraped-forum-thread.txt                   │ 55b502304d12… │ 0.5 KB │
+│ articles/voice-memo-transcription.txt               │ 439327ae9955… │ 0.4 KB │
+│ dummy-test/2026-07-01-firmware-changelog.md         │ 942237860f17… │ 0.8 KB │
+│ dummy-test/2026-07-02-aurora-meshsync-release-note… │ 8f02bd0993b7… │ 0.9 KB │
+│ dummy-test/2026-07-04-investor-update-draft.txt     │ 72c757387917… │ 0.8 KB │
+│ dummy-test/2026-07-06-slack-dump-product.txt        │ e440ae911460… │ 0.7 KB │
+│ dummy-test/2026-07-07-power-budget-spreadsheet-not… │ 2393c47d1fed… │ 0.7 KB │
+│ dummy-test/2026-07-08-customer-onboarding-faq.md    │ ca30339d7d8b… │ 0.7 KB │
+│ ideas/2026-06-07-product-naming-brainstorm.txt      │ fc7ecd43aeba… │ 0.4 KB │
+│ ideas/backlog-shower-thoughts.txt                   │ 5d7f2f7e8df4… │ 0.5 KB │
+│ notes/2026-05-01-kickoff-notes.md                   │ 9593fd5150d3… │ 1.6 KB │
+│ notes/2026-06-01-standup-scribbles.txt              │ d4e43a923ec8… │ 0.5 KB │
+│ notes/2026-06-03-grocery-and-ideas.txt              │ 708a5ee02d00… │ 0.5 KB │
+│ notes/2026-06-08-meeting-no-agenda.txt              │ 4577813c66b7… │ 0.5 KB │
+│ notes/2026-06-10-fragmented-research.txt            │ ae165b24bb26… │ 0.5 KB │
+│ notes/TEST-kickoff-meeting.txt                      │ 44b227eafb9f… │ 0.3 KB │
+│ notes/TEST-slack-dump.txt                           │ 508ec0694573… │ 0.2 KB │
+│ samples/articles/[SAMPLE]-2026-06-11-nova-widget-s… │ 6086503947ec… │ 0.9 KB │
+│ samples/articles/[SAMPLE]-2026-06-17-broken-markdo… │ 6f9e0037037e… │ 0.7 KB │
+│ samples/articles/[SAMPLE]-2026-07-02-mqtt-export-s… │ d82de84afca9… │ 0.7 KB │
+│ samples/articles/[SAMPLE]-2026-07-04-ota-update-de… │ 1415ef626725… │ 0.6 KB │
+│ samples/articles/[SAMPLE]-2026-07-08-homelab-integ… │ 9a6eda1910be… │ 0.7 KB │
+│ samples/articles/[SAMPLE]-2026-07-09-competitive-l… │ 8dc6aaa12f8d… │ 0.9 KB │
+│ samples/articles/[SAMPLE]-2026-07-11-wiki-compiler… │ 39585fdf7aee… │ 0.8 KB │
+│ samples/emails/[SAMPLE]-2026-07-01-beta-invite-bat… │ a812e66b3e86… │ 0.5 KB │
+│ samples/emails/[SAMPLE]-2026-07-08-legal-review-tr… │ 19563acdcf39… │ 0.6 KB │
+│ samples/forums/[SAMPLE]-2026-06-29-homelab-sensors… │ ba0ef32c06da… │ 0.8 KB │
+│ samples/forums/[SAMPLE]-2026-07-03-github-issue-me… │ 6b2b10ffad10… │ 0.6 KB │
+│ samples/forums/[SAMPLE]-2026-07-10-hackernews-thre… │ e6f58e5cefe7… │ 0.6 KB │
+│ samples/ideas/[SAMPLE]-2026-07-04-wiki-automation-… │ ad03c2ead55a… │ 0.6 KB │
+│ samples/ideas/[SAMPLE]-2026-07-10-backlog-grooming… │ 8e71199b45c1… │ 0.5 KB │
+│ samples/legal/[SAMPLE]-2026-07-04-beta-tester-agre… │ ad3034d38972… │ 0.6 KB │
+│ samples/notes/[SAMPLE]-2026-06-12-meshsync-debug-s… │ 765218aabe47… │ 0.5 KB │
+│ samples/notes/[SAMPLE]-2026-06-16-sprint-retro-aur… │ 412fa25b762e… │ 0.7 KB │
+│ samples/notes/[SAMPLE]-2026-07-01-aurora-standup.t… │ 4ad9571d7d48… │ 0.5 KB │
+│ samples/notes/[SAMPLE]-2026-07-05-lunch-and-learn-… │ d5a03a6889ac… │ 0.5 KB │
+│ samples/notes/[SAMPLE]-2026-07-10-sprint-planning-… │ 96f471ea0ed7… │ 0.5 KB │
+│ samples/research/[SAMPLE]-2026-07-02-ble-pairing-i… │ 09d3933fb145… │ 0.7 KB │
+│ samples/research/[SAMPLE]-2026-07-04-soil-probe-co… │ 11653c9fabc9… │ 0.5 KB │
+│ samples/research/[SAMPLE]-2026-07-06-lorawan-vs-me… │ 1c643eb643f6… │ 0.6 KB │
+│ samples/social/[SAMPLE]-2026-07-02-twitter-thread-… │ e2ab0980d506… │ 0.4 KB │
+│ samples/specs/[SAMPLE]-2026-07-03-nova-widget-hard… │ b63a35fefa74… │ 0.5 KB │
+│ samples/specs/[SAMPLE]-2026-07-07-meshsync-protoco… │ a37a71e7fd7d… │ 0.6 KB │
+│ samples/support/[SAMPLE]-2026-06-27-ticket-2099-me… │ cadedae5b7d4… │ 0.7 KB │
+│ samples/support/[SAMPLE]-2026-07-01-ticket-2201-ba… │ 11147d32b555… │ 0.6 KB │
+│ samples/support/[SAMPLE]-2026-07-04-ticket-2210-mq… │ acbb9b6773bf… │ 0.6 KB │
+│ samples/support/[SAMPLE]-2026-07-08-ticket-2222-wa… │ d419ffef30f9… │ 0.6 KB │
+│ samples/transcripts/[SAMPLE]-2026-06-19-mira-jonah… │ db6bcdad873e… │ 0.7 KB │
+│ samples/transcripts/[SAMPLE]-2026-07-02-investor-c… │ f3d698ee27fe… │ 0.6 KB │
+│ samples/transcripts/[SAMPLE]-2026-07-09-support-tr… │ 20c9e20e71da… │ 0.7 KB │
+│ samples/transcripts/[SAMPLE]-2026-07-11-podcast-ou… │ 2cfd9db803dd… │ 0.7 KB │
+│ transcripts/2026-05-28-weekly-sync.md               │ edb781e114a6… │ 0.8 KB │
+│ transcripts/2026-06-05-sync-fragment.txt            │ 717adc4c686e… │ 0.5 KB │
+│ transcripts/TEST-support-ticket.txt                 │ 56386aff413c… │ 0.2 KB │
+└─────────────────────────────────────────────────────┴───────────────┴────────┘
+  Reading and chunking files… ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 0:00:00
+
+✓ Read 57 files → 57 chunks
+╭─────────────────────────── Step 2/5 — Extraction ────────────────────────────╮
+│ Extract topics — skip unchanged files via MD5 state                          │
+╰──────────────────────────────────────────────────────────────────────────────╯
+Extract 1/57 (1.8%) — articles/2026-05-15-product-spec-draft.md
+Extract 5/57 (8.8%) — articles/voice-memo-transcription.txt
+Extract 10/57 (17.5%) — dummy-test/2026-07-07-power-budget-spreadsheet-notes.txt
+Extract 15/57 (26.3%) — notes/2026-06-01-standup-scribbles.txt
+Extract 20/57 (35.1%) — notes/TEST-slack-dump.txt
+Extract 25/57 (43.9%) — samples/articles/[SAMPLE]-2026-07-08-homelab-integration-guide.md
+Extract 30/57 (52.6%) — samples/forums/[SAMPLE]-2026-06-29-homelab-sensors-nova-scrape.html.txt
+Extract 35/57 (61.4%) — samples/legal/[SAMPLE]-2026-07-04-beta-tester-agreement-snippet.txt
+Extract 40/57 (70.2%) — samples/notes/[SAMPLE]-2026-07-10-sprint-planning-aurora.txt
+Extract 45/57 (78.9%) — samples/specs/[SAMPLE]-2026-07-03-nova-widget-hardware-rev-C.md
+Extract 50/57 (87.7%) — samples/support/[SAMPLE]-2026-07-08-ticket-2222-waterproof-confusion.txt
+Extract 55/57 (96.5%) — transcripts/2026-05-28-weekly-sync.md
+Extract 57/57 (100.0%) — transcripts/TEST-support-ticket.txt
+  Extract transcripts/TEST-support-ticket.txt ━━━━━━━ 100% 57/57 0:04:47 0:00:00
+
+                               Incremental status                               
+┏━━━━━━━━━━━━━━━━━━━━━┳━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┓
+┃ Status              ┃ Files                                                  ┃
+┡━━━━━━━━━━━━━━━━━━━━━╇━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┩
+│ New                 │ articles/2026-05-15-product-spec-draft.md,             │
+│                     │ articles/2026-05-20-competitor-teardown-blog.md,       │
+│                     │ articles/TEST-product-brief.md,                        │
+│                     │ articles/scraped-forum-thread.txt,                     │
+│                     │ articles/voice-memo-transcription.txt (+52)            │
+│ Modified            │ —                                                      │
+│ Deleted             │ —                                                      │
+│ Skipped (unchanged) │ —                                                      │
+└─────────────────────┴────────────────────────────────────────────────────────┘
+✓ Extracted 57 chunks (265 topic tags) · state → 
+/Users/navid.falah/Desktop/wiki/data/state.json
+╭──────────────────────────── Step 3/5 — Synthesis ────────────────────────────╮
+│ Regenerate only topic pages affected by changed files                        │
+╰──────────────────────────────────────────────────────────────────────────────╯
+Synthesize 1/174 (0.6%) — AI & LLMs
+Synthesize 3/174 (1.7%) — Aurora Nova
+Synthesize 6/174 (3.4%) — Battery Life
+Synthesize 9/174 (5.2%) — Beta Programs
+Synthesize 12/174 (6.9%) — Bluetooth Low Energy (BLE)
+Synthesize 15/174 (8.6%) — Business Operations
+Synthesize 18/174 (10.3%) — Communication
+Synthesize 21/174 (12.1%) — Confidentiality
+Synthesize 24/174 (13.8%) — Corrosion
+Synthesize 27/174 (15.5%) — Customer Support FAQ
+Synthesize 30/174 (17.2%) — Data Ownership
+Synthesize 33/174 (19.0%) — Development Tools
+Synthesize 36/174 (20.7%) — Electrical Design
+Synthesize 39/174 (22.4%) — Firmware
+Synthesize 42/174 (24.1%) — Firmware Updates
+Synthesize 45/174 (25.9%) — Garden Sensors
+Synthesize 48/174 (27.6%) — Hacker News
+Synthesize 51/174 (29.3%) — Hardware Development
+Synthesize 54/174 (31.0%) — Hardware Failure
+Synthesize 57/174 (32.8%) — Heuristic Mode
+Synthesize 60/174 (34.5%) — Homelab Integration
+Synthesize 63/174 (36.2%) — Internal Documentation
+Synthesize 66/174 (37.9%) — Investor Relations
+Synthesize 69/174 (39.7%) — IoT Device Design
+Synthesize 72/174 (41.4%) — IoT Sensors
+Synthesize 75/174 (43.1%) — Knowledge Management
+Synthesize 78/174 (44.8%) — Legal Review
+Synthesize 81/174 (46.6%) — Local-first Gadgets
+Synthesize 84/174 (48.3%) — Maker Faire
+Synthesize 87/174 (50.0%) — Market Research
+Synthesize 90/174 (51.7%) — Mechanical Design

@@ -5,27 +5,20 @@ from __future__ import annotations
 import hashlib
 import json
 import re
+from collections.abc import Callable
 from dataclasses import asdict, dataclass, field
 from datetime import datetime, timezone
 from pathlib import Path
+from typing import TypeAlias
 
-from llm_client import LLMClient
-from models import RAW_DIR, STATE_FILE, WikiPage
+ProgressCallback: TypeAlias = Callable[[int, int, str], None]
+
+from llm_client import LLMClient, require_llm
+from models import RAW_DIR, STATE_FILE
 from yaml_frontmatter import yaml_quote
 
 COMPILER_DIR = Path(__file__).resolve().parent
 TEMP_OUTPUT_DIR = COMPILER_DIR / "temp_output"
-
-SYSTEM_PROMPT = """You are a wiki compiler. Given a raw markdown source, extract structured wiki content.
-Return JSON only with this shape:
-{
-  "source_title": "string",
-  "source_summary": "one line",
-  "entities": [{"name": "...", "summary": "...", "tags": ["..."]}],
-  "concepts": [{"name": "...", "summary": "...", "tags": ["..."]}],
-  "key_points": ["bullet", "..."]
-}
-Use concise prose. Flag contradictions in key_points when present."""
 
 
 def slugify(text: str) -> str:
@@ -33,331 +26,6 @@ def slugify(text: str) -> str:
     text = re.sub(r"[^\w\s-]", "", text)
     text = re.sub(r"[\s_]+", "-", text)
     return text.strip("-")[:80]
-
-
-def _relative_raw_path(path: Path) -> str:
-    return str(path.relative_to(RAW_DIR)).replace("\\", "/")
-
-
-def _extract_title(content: str, fallback: str) -> str:
-    for line in content.splitlines():
-        if line.startswith("# "):
-            return line[2:].strip()
-    return fallback
-
-
-def _extract_bold_terms(content: str) -> list[str]:
-    terms = re.findall(r"\*\*([^*]+)\*\*", content)
-    seen: set[str] = set()
-    result: list[str] = []
-    for term in terms:
-        cleaned = term.strip().rstrip(":")
-        if len(cleaned) < 3 or cleaned.lower() in seen:
-            continue
-        seen.add(cleaned.lower())
-        result.append(cleaned)
-    return result[:12]
-
-
-def _extract_headers(content: str) -> list[str]:
-    headers: list[str] = []
-    for line in content.splitlines():
-        if line.startswith("## ") and not line.startswith("### "):
-            headers.append(line[3:].strip())
-    return headers
-
-
-SKIP_ENTITY_TERMS = {
-    "date",
-    "author",
-    "published",
-    "last edited",
-    "status",
-    "location",
-    "attendees",
-    "type",
-    "url",
-    "blog",
-    "mcu",
-    "sensors",
-    "battery",
-    "mesh",
-    "mission statement (draft)",
-    "default: every 15 minutes",
-    "target average current",
-    "2 years on cr2032",
-}
-
-
-def _is_entity_candidate(term: str) -> bool:
-    lower = term.lower().strip()
-    if lower in SKIP_ENTITY_TERMS:
-        return False
-    if len(term) < 4:
-        return False
-    keywords = ("labs", "widget", "chen", "park", "sensenode", "aurora", "nova", "mira", "jonah")
-    if any(k in lower for k in keywords):
-        return True
-    return term[0].isupper() and " " in term
-
-
-def synthesize_with_heuristics(raw_path: Path, content: str) -> list[WikiPage]:
-    """Rule-based synthesis when no LLM API key is configured."""
-    rel = _relative_raw_path(raw_path)
-    stem = raw_path.stem
-    title = _extract_title(content, stem)
-    bold_terms = _extract_bold_terms(content)
-    headers = _extract_headers(content)
-
-    pages: list[WikiPage] = []
-
-    key_points = []
-    for header in headers[:6]:
-        key_points.append(f"- **{header}** — mentioned in source")
-    if not key_points:
-        key_points.append("- Source ingested; see raw file for full content.")
-
-    source_body = "\n".join(
-        [
-            f"# {title}",
-            "",
-            f"**Raw source:** `{rel}`",
-            "",
-            "## Summary",
-            "",
-            f"Auto-compiled from `{rel}`. Key terms: {', '.join(bold_terms[:5]) or 'none detected'}.",
-            "",
-            "## Key points",
-            "",
-            *key_points,
-            "",
-            "## Extracted terms",
-            "",
-            *[f"- {term}" for term in bold_terms],
-        ]
-    )
-    pages.append(
-        WikiPage(
-            slug=f"sources/{stem}",
-            title=title,
-            page_type="source",
-            body=source_body,
-            tags=["auto-ingest"],
-            sources=[rel],
-            summary=f"Summary of {title}",
-        )
-    )
-
-    entity_candidates = [t for t in bold_terms if _is_entity_candidate(t)][:6]
-
-    for name in entity_candidates:
-        slug = slugify(name)
-        pages.append(
-            WikiPage(
-                slug=f"entities/{slug}",
-                title=name,
-                page_type="entity",
-                body="\n".join(
-                    [
-                        f"# {name}",
-                        "",
-                        f"Entity extracted from [[sources/{stem}]].",
-                        "",
-                        "## Notes",
-                        "",
-                        f"Mentioned in `{rel}`. Run with OPENAI_API_KEY for richer synthesis.",
-                    ]
-                ),
-                tags=["entity", "auto-ingest"],
-                sources=[rel],
-                summary=f"Entity: {name}",
-            )
-        )
-
-    concept_candidates = [
-        t
-        for t in bold_terms
-        if any(k in t.lower() for k in ("mesh", "battery", "protocol", "power", "sync"))
-    ][:4]
-
-    for name in concept_candidates:
-        slug = slugify(name)
-        pages.append(
-            WikiPage(
-                slug=f"concepts/{slug}",
-                title=name,
-                page_type="concept",
-                body="\n".join(
-                    [
-                        f"# {name}",
-                        "",
-                        f"Concept extracted from [[sources/{stem}]].",
-                        "",
-                        "## Notes",
-                        "",
-                        f"Referenced in `{rel}`.",
-                    ]
-                ),
-                tags=["concept", "auto-ingest"],
-                sources=[rel],
-                summary=f"Concept: {name}",
-            )
-        )
-
-    return pages
-
-
-def synthesize_with_llm(raw_path: Path, content: str, llm: LLMClient) -> list[WikiPage]:
-    """LLM-powered synthesis with structured JSON output."""
-    rel = _relative_raw_path(raw_path)
-    stem = raw_path.stem
-    data = llm.complete_json(
-        SYSTEM_PROMPT,
-        f"Raw file: {rel}\n\n---\n\n{content[:12000]}",
-    )
-
-    pages: list[WikiPage] = []
-    source_title = data.get("source_title", stem)
-    key_points = data.get("key_points", [])
-
-    source_body = "\n".join(
-        [
-            f"# {source_title}",
-            "",
-            f"**Raw source:** `{rel}`",
-            "",
-            "## Summary",
-            "",
-            data.get("source_summary", ""),
-            "",
-            "## Key points",
-            "",
-            *[f"- {p}" for p in key_points],
-        ]
-    )
-    pages.append(
-        WikiPage(
-            slug=f"sources/{stem}",
-            title=source_title,
-            page_type="source",
-            body=source_body,
-            tags=["llm-ingest"],
-            sources=[rel],
-            summary=data.get("source_summary", source_title),
-        )
-    )
-
-    for entity in data.get("entities", []):
-        name = entity["name"]
-        slug = slugify(name)
-        pages.append(
-            WikiPage(
-                slug=f"entities/{slug}",
-                title=name,
-                page_type="entity",
-                body=f"# {name}\n\n{entity.get('summary', '')}\n\n## Sources\n\n- `{rel}`",
-                tags=entity.get("tags", ["entity"]),
-                sources=[rel],
-                summary=entity.get("summary", name)[:120],
-            )
-        )
-
-    for concept in data.get("concepts", []):
-        name = concept["name"]
-        slug = slugify(name)
-        pages.append(
-            WikiPage(
-                slug=f"concepts/{slug}",
-                title=name,
-                page_type="concept",
-                body=f"# {concept['name']}\n\n{concept.get('summary', '')}\n\n## Sources\n\n- `{rel}`",
-                tags=concept.get("tags", ["concept"]),
-                sources=[rel],
-                summary=concept.get("summary", name)[:120],
-            )
-        )
-
-    return pages
-
-
-def synthesize_file(raw_path: Path, llm: LLMClient | None = None) -> list[WikiPage]:
-    content = raw_path.read_text(encoding="utf-8")
-    if llm and llm.available:
-        return synthesize_with_llm(raw_path, content, llm)
-    return synthesize_with_heuristics(raw_path, content)
-
-
-def merge_pages(pages: list[WikiPage]) -> list[WikiPage]:
-    """Merge pages that share the same slug, combining sources and body sections."""
-    by_slug: dict[str, WikiPage] = {}
-    for page in pages:
-        existing = by_slug.get(page.slug)
-        if existing is None:
-            by_slug[page.slug] = page
-            continue
-        merged_sources = list(dict.fromkeys(existing.sources + page.sources))
-        existing.sources = merged_sources
-        existing.body += f"\n\n---\n\n_Update from {page.sources[-1]}_\n\n{page.body}"
-        existing.tags = list(dict.fromkeys(existing.tags + page.tags))
-    return list(by_slug.values())
-
-
-def build_overview(pages: list[WikiPage]) -> WikiPage:
-    entities = [p for p in pages if p.page_type == "entity"]
-    concepts = [p for p in pages if p.page_type == "concept"]
-    sources = [p for p in pages if p.page_type == "source"]
-
-    lines = [
-        "# Aurora Labs Wiki Overview",
-        "",
-        "Auto-generated synthesis of all compiled sources.",
-        "",
-        f"- **{len(sources)}** source summaries",
-        f"- **{len(entities)}** entity pages",
-        f"- **{len(concepts)}** concept pages",
-        "",
-        "## Entities",
-        "",
-        *[f"- [[{e.slug}|{e.title}]]" for e in entities[:10]],
-        "",
-        "## Concepts",
-        "",
-        *[f"- [[{c.slug}|{c.title}]]" for c in concepts[:10]],
-    ]
-    return WikiPage(
-        slug="overview",
-        title="Overview",
-        page_type="synthesis",
-        body="\n".join(lines),
-        tags=["overview"],
-        summary="High-level wiki overview",
-    )
-
-
-def build_index(pages: list[WikiPage]) -> WikiPage:
-    sections: dict[str, list[WikiPage]] = {}
-    for page in sorted(pages, key=lambda p: p.slug):
-        bucket = page.page_type + "s" if not page.page_type.endswith("s") else page.page_type
-        if page.slug == "index":
-            continue
-        sections.setdefault(bucket, []).append(page)
-
-    lines = ["# Wiki Index", "", "Content catalog — start here when querying.", ""]
-    for section, items in sorted(sections.items()):
-        lines.append(f"## {section.title()}")
-        lines.append("")
-        for item in items:
-            lines.append(f"- [[{item.slug}|{item.title}]] — {item.summary or item.title}")
-        lines.append("")
-
-    return WikiPage(
-        slug="index",
-        title="Index",
-        page_type="synthesis",
-        body="\n".join(lines),
-        tags=["index"],
-        summary="Master catalog of all wiki pages",
-    )
 
 
 # ---------------------------------------------------------------------------
@@ -419,7 +87,7 @@ class RawChunk:
 
 @dataclass
 class ChunkExtraction:
-    """LLM/heuristic extraction results for one chunk."""
+    """LLM extraction results for one chunk."""
 
     source_path: str
     chunk_index: int
@@ -609,11 +277,14 @@ def cleanup_stale_drafts(
 
 
 def discover_raw_text_files(raw_dir: Path | None = None) -> list[Path]:
-    """Return all .txt and .md files under data/raw/."""
+    """Return all .txt and .md files under data/raw/, excluding _archive/."""
     root = raw_dir or RAW_DIR
     files: list[Path] = []
     for pattern in ("*.txt", "*.md"):
-        files.extend(root.rglob(pattern))
+        for path in root.rglob(pattern):
+            if "_archive" in path.parts:
+                continue
+            files.append(path)
     return sorted(set(files))
 
 
@@ -664,57 +335,19 @@ def _parse_extraction_json(raw: str) -> dict:
     return json.loads(match.group())
 
 
-def _extract_chunk_heuristic(chunk: RawChunk) -> ChunkExtraction:
-    """Fallback extraction when no LLM API key is available."""
-    bold = _extract_bold_terms(chunk.text)
-    headers = _extract_headers(chunk.text)
-
-    topics: list[str] = []
-    for header in headers[:3]:
-        topics.append(header)
-    if not topics and chunk.text:
-        first_line = chunk.text.splitlines()[0].strip().lstrip("#").strip()
-        if first_line:
-            topics.append(first_line[:80])
-
-    entities = [
-        {"name": name, "description": f"Mentioned in {chunk.source_path}"}
-        for name in (t for t in bold if _is_entity_candidate(t))
-    ][:5]
-
-    concepts = [
-        {"name": name, "description": f"Referenced in {chunk.source_path}"}
-        for name in bold
-        if any(k in name.lower() for k in ("mesh", "battery", "protocol", "power", "sync", "wiki"))
-    ][:5]
-
-    if not topics:
-        topics = ["General Notes"]
-
-    return ChunkExtraction(
-        source_path=chunk.source_path,
-        chunk_index=chunk.chunk_index,
-        text=chunk.text,
-        topics=topics,
-        entities=entities,
-        concepts=concepts,
-    )
-
-
 def extract_chunk_topics(
     chunk: RawChunk,
     llm: LLMClient | None = None,
 ) -> ChunkExtraction:
     """Extract topics, entities, and concepts from a single text chunk."""
-    if llm is None or not llm.available:
-        return _extract_chunk_heuristic(chunk)
+    client = require_llm(llm)
 
     prompt = (
         f"Source file: {chunk.source_path}\n"
         f"Chunk index: {chunk.chunk_index}\n\n"
         f"---\n\n{chunk.text[:8000]}"
     )
-    raw = llm.generate_response(prompt, CHUNK_EXTRACTION_SYSTEM_PROMPT)
+    raw = client.generate_response(prompt, CHUNK_EXTRACTION_SYSTEM_PROMPT)
     data = _parse_extraction_json(raw)
 
     return ChunkExtraction(
@@ -740,6 +373,7 @@ def extract_topics_from_raw_files(
     raw_dir: Path | None = None,
     *,
     force: bool = False,
+    on_progress: ProgressCallback | None = None,
 ) -> dict:
     """
     Read text files from data/raw/ and extract topics per chunk.
@@ -747,7 +381,7 @@ def extract_topics_from_raw_files(
     Uses MD5 hashes stored in data/state.json to skip unchanged files on
     subsequent runs. Only new or modified files are sent to the LLM.
     """
-    llm = llm or LLMClient()
+    llm = require_llm(llm)
     root = raw_dir or RAW_DIR
     state = load_state()
     files_state: dict[str, dict] = state.setdefault("files", {})
@@ -761,16 +395,30 @@ def extract_topics_from_raw_files(
     for rel in changes.deleted:
         files_state.pop(rel, None)
 
-    for rel in changes.to_process:
+    to_process = changes.to_process
+    total_files = len(to_process)
+    for index, rel in enumerate(to_process, start=1):
         path = path_by_rel[rel]
         md5 = compute_file_md5(path)
         file_chunks = _chunks_for_file(path, root)
-        extractions = [extract_chunk_topics(chunk, llm) for chunk in file_chunks]
+        extractions = []
+        chunk_count = len(file_chunks)
+        for chunk_index, chunk in enumerate(file_chunks, start=1):
+            extractions.append(extract_chunk_topics(chunk, llm))
+            if on_progress and chunk_count > 1:
+                on_progress(
+                    index,
+                    total_files,
+                    f"{rel} (chunk {chunk_index}/{chunk_count})",
+                )
         files_state[rel] = {
             "md5": md5,
             "chunks": _chunk_dicts_from_extractions(extractions),
             "processed_at": _utc_now_iso(),
         }
+        save_state(state)
+        if on_progress:
+            on_progress(index, total_files, rel)
 
     state["runs"].append(
         {
@@ -898,6 +546,7 @@ def synthesize_topic_wiki_pages(
     output_dir: Path | None = None,
     *,
     dirty_topics: set[str] | None = None,
+    on_progress: ProgressCallback | None = None,
 ) -> tuple[list[Path], list[str]]:
     """
     For each unique topic, write a Markdown wiki page synthesizing related chunks.
@@ -905,74 +554,50 @@ def synthesize_topic_wiki_pages(
     When dirty_topics is set, only those topics are regenerated; existing drafts
     for unchanged topics are kept to save API calls.
     """
-    llm = llm or LLMClient()
+    llm = require_llm(llm)
     out_dir = output_dir or TEMP_OUTPUT_DIR
     out_dir.mkdir(parents=True, exist_ok=True)
 
     written: list[Path] = []
     skipped: list[str] = []
 
+    work: list[tuple[str, list[dict]]] = []
     for topic, entries in grouped_topics.items():
         entries = _dedupe_chunk_entries(entries)
         topic_slug = slugify(topic) or "untitled-topic"
         out_path = out_dir / f"{topic_slug}.md"
-
         if dirty_topics is not None and topic not in dirty_topics and out_path.exists():
             skipped.append(topic)
             continue
+        work.append((topic, entries))
 
-        if llm.available:
-            chunk_blocks = []
-            for entry in entries:
-                chunk_blocks.append(
-                    f"### Source: `{entry['source']}` (chunk {entry['chunk_index']})\n\n"
-                    f"{entry['text']}"
-                )
-            prompt = (
-                f"Topic: {topic}\n"
-                f"Suggested id: {topic_slug}\n"
-                f"Suggested tags: {json.dumps(_derive_tags(topic, entries))}\n"
-                f"Required last_updated: {_utc_now_iso()}\n\n"
-                f"Synthesize the following {len(entries)} raw chunk(s) into one wiki page:\n\n"
-                + "\n\n---\n\n".join(chunk_blocks)
+    total = len(work)
+    for index, (topic, entries) in enumerate(work, start=1):
+        topic_slug = slugify(topic) or "untitled-topic"
+        out_path = out_dir / f"{topic_slug}.md"
+
+        chunk_blocks = []
+        for entry in entries:
+            chunk_blocks.append(
+                f"### Source: `{entry['source']}` (chunk {entry['chunk_index']})\n\n"
+                f"{entry['text']}"
             )
-            body = llm.generate_response(prompt, WIKI_PAGE_SYSTEM_PROMPT)
-        else:
-            body = _heuristic_topic_page(topic, entries)
+        prompt = (
+            f"Topic: {topic}\n"
+            f"Suggested id: {topic_slug}\n"
+            f"Suggested tags: {json.dumps(_derive_tags(topic, entries))}\n"
+            f"Required last_updated: {_utc_now_iso()}\n\n"
+            f"Synthesize the following {len(entries)} raw chunk(s) into one wiki page:\n\n"
+            + "\n\n---\n\n".join(chunk_blocks)
+        )
+        body = llm.generate_response(prompt, WIKI_PAGE_SYSTEM_PROMPT)
 
         out_path.write_text(body.strip() + "\n", encoding="utf-8")
         written.append(out_path)
+        if on_progress:
+            on_progress(index, total, topic)
 
     return written, skipped
-
-
-def _heuristic_topic_page(topic: str, entries: list[dict]) -> str:
-    """Draft wiki page without LLM when no API key is configured."""
-    doc_id = slugify(topic) or "untitled-topic"
-    frontmatter = build_docusaurus_frontmatter(
-        doc_id=doc_id,
-        title=topic,
-        tags=_derive_tags(topic, entries),
-    )
-    lines = [
-        frontmatter,
-        "",
-        f"# {topic}",
-        "",
-        "## Overview",
-        "",
-        f"Synthesized from **{len(entries)}** raw chunk(s) (heuristic mode — set OPENAI_API_KEY for LLM drafts).",
-        "",
-        "## Key Details",
-        "",
-    ]
-    for entry in entries:
-        preview = entry["text"][:300].replace("\n", " ")
-        lines.append(f"- `{entry['source']}` (chunk {entry['chunk_index']}): {preview}...")
-    lines.extend(["", "## Sources", ""])
-    for entry in entries:
-        lines.append(f"- `{entry['source']}` — chunk {entry['chunk_index']}")
-    return "\n".join(lines)
 
 
 def run_topic_synthesis_pipeline(
@@ -988,7 +613,7 @@ def run_topic_synthesis_pipeline(
 
     Respects MD5 state in data/state.json unless force=True.
     """
-    llm = llm or LLMClient()
+    llm = require_llm(llm)
     out_dir = output_dir or TEMP_OUTPUT_DIR
     out_dir.mkdir(parents=True, exist_ok=True)
 
@@ -1054,18 +679,12 @@ if __name__ == "__main__":
         description="Extract topics from raw files and synthesize grouped wiki drafts"
     )
     parser.add_argument(
-        "--heuristic-only",
-        action="store_true",
-        help="Skip LLM even when OPENAI_API_KEY is set",
-    )
-    parser.add_argument(
         "--force",
         action="store_true",
         help="Reprocess all raw files regardless of MD5 state",
     )
     args = parser.parse_args()
 
-    client = LLMClient(api_key="") if args.heuristic_only else LLMClient()
-    result = run_topic_synthesis_pipeline(llm=client, force=args.force)
+    result = run_topic_synthesis_pipeline(force=args.force)
     print(json.dumps(result, indent=2))
 

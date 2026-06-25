@@ -222,6 +222,16 @@ class LLMClient:
         return json.loads(match.group())
 
 
+def require_llm(llm: LLMClient | None = None) -> LLMClient:
+    """Return an LLM client or raise if OPENAI_API_KEY is not configured."""
+    client = llm or LLMClient()
+    if not client.available:
+        raise RuntimeError(
+            "OPENAI_API_KEY is required. Copy .env.example to .env and set your API key."
+        )
+    return client
+
+
 def generate_response(
     prompt: str,
     system_prompt: str,

@@ -4,12 +4,23 @@
 from __future__ import annotations
 
 import argparse
+import sys
 import time
+from collections.abc import Callable
 from pathlib import Path
 
 from rich.console import Console
 from rich.panel import Panel
-from rich.progress import BarColumn, Progress, SpinnerColumn, TextColumn, TimeElapsedColumn
+from rich.progress import (
+    BarColumn,
+    MofNCompleteColumn,
+    Progress,
+    SpinnerColumn,
+    TaskProgressColumn,
+    TextColumn,
+    TimeElapsedColumn,
+    TimeRemainingColumn,
+)
 from rich.table import Table
 from rich.text import Text
 
@@ -19,7 +30,7 @@ from linker import (
     update_topic_index,
 )
 from moc_generator import generate_moc
-from llm_client import LLMClient
+from llm_client import LLMClient, require_llm
 from models import OUTPUT_DIR, RAW_DIR, STATE_FILE
 from synthesizer import (
     TEMP_OUTPUT_DIR,
@@ -29,6 +40,7 @@ from synthesizer import (
     group_chunks_by_topic,
     read_raw_chunks,
     scan_raw_file_changes,
+    slugify,
     synthesize_topic_wiki_pages,
     topics_affected_by_sources,
     cleanup_stale_drafts,
@@ -36,6 +48,46 @@ from synthesizer import (
 )
 
 console = Console()
+
+
+def _progress_columns() -> list:
+    return [
+        SpinnerColumn(),
+        TextColumn("[progress.description]{task.description}"),
+        BarColumn(bar_width=32),
+        TaskProgressColumn(),
+        MofNCompleteColumn(),
+        TimeElapsedColumn(),
+        TimeRemainingColumn(),
+    ]
+
+
+def _make_progress_callback(
+    progress: Progress,
+    task_id: int,
+    *,
+    label: str,
+    log_every: int = 1,
+) -> Callable[[int, int, str], None]:
+    """Update Rich progress bar and print plain lines for dashboard/SSE logs."""
+
+    def on_progress(current: int, total: int, detail: str) -> None:
+        pct = (100.0 * current / total) if total else 0.0
+        short = detail if len(detail) <= 72 else f"…{detail[-69:]}"
+        progress.update(
+            task_id,
+            completed=current,
+            total=max(total, 1),
+            description=f"{label} [dim]{short}[/]",
+        )
+        if current == 1 or current == total or current % log_every == 0:
+            console.print(
+                f"[cyan]{label}[/] {current}/{total} ({pct:.1f}%) — {detail}",
+                soft_wrap=True,
+            )
+            sys.stdout.flush()
+
+    return on_progress
 
 
 def _step_banner(step: int, total: int, title: str, detail: str) -> None:
@@ -104,23 +156,36 @@ def step_read_data() -> list:
 
 def step_extract(chunks: list, llm: LLMClient, *, force: bool) -> dict:
     """Step 2: Extract topics, entities, and concepts from each chunk."""
-    mode = "LLM" if llm.available else "heuristic"
+    mode = "LLM"
     changes = scan_raw_file_changes(RAW_DIR, load_state(), force=force)
+    total = len(changes.to_process)
 
     if not force and not changes.has_changes:
         console.print("[yellow]No raw file changes detected — using cached extractions[/]")
 
     with Progress(
-        SpinnerColumn(),
-        TextColumn("[progress.description]{task.description}"),
-        TimeElapsedColumn(),
+        *_progress_columns(),
         console=console,
+        refresh_per_second=4,
     ) as progress:
-        progress.add_task(
-            f"Extracting topics via {mode} ({len(changes.to_process)} to process, "
-            f"{len(changes.unchanged)} cached)…"
+        task = progress.add_task(
+            f"Extracting topics via {mode} ({total} files, {len(changes.unchanged)} cached)…",
+            total=max(total, 1),
         )
-        extractions = extract_topics_from_raw_files(llm=llm, raw_dir=RAW_DIR, force=force)
+        on_progress = _make_progress_callback(
+            progress,
+            task,
+            label="Extract",
+            log_every=5 if total > 50 else 1,
+        )
+        extractions = extract_topics_from_raw_files(
+            llm=llm,
+            raw_dir=RAW_DIR,
+            force=force,
+            on_progress=on_progress if total else None,
+        )
+        if total:
+            progress.update(task, completed=total)
 
     incremental = extractions.get("incremental", {})
     _print_incremental_table(incremental)
@@ -142,7 +207,7 @@ def step_synthesize(extractions: dict, llm: LLMClient, *, force: bool) -> dict:
     grouped = group_chunks_by_topic(extractions)
     TEMP_OUTPUT_DIR.mkdir(parents=True, exist_ok=True)
 
-    mode = "LLM" if llm.available else "heuristic"
+    mode = "LLM"
     incremental = extractions.get("incremental", {})
     changed_sources = set(
         incremental.get("new", [])
@@ -160,26 +225,41 @@ def step_synthesize(extractions: dict, llm: LLMClient, *, force: bool) -> dict:
     removed_drafts = cleanup_stale_drafts(grouped, TEMP_OUTPUT_DIR)
     removed_filenames = {p.name for p in removed_drafts}
 
+    if dirty_topics is None:
+        regen_count = len(grouped)
+    else:
+        regen_count = 0
+        for topic in grouped:
+            slug = slugify(topic) or "untitled-topic"
+            out_path = TEMP_OUTPUT_DIR / f"{slug}.md"
+            if topic not in dirty_topics and out_path.exists():
+                continue
+            regen_count += 1
+
     with Progress(
-        SpinnerColumn(),
-        TextColumn("[progress.description]{task.description}"),
-        BarColumn(),
-        TextColumn("{task.completed}/{task.total}"),
-        TimeElapsedColumn(),
+        *_progress_columns(),
         console=console,
+        refresh_per_second=4,
     ) as progress:
-        regen_count = len(grouped) if dirty_topics is None else len(dirty_topics)
         task = progress.add_task(
             f"Synthesizing wiki drafts ({mode})…",
             total=max(regen_count, 1),
+        )
+        on_progress = _make_progress_callback(
+            progress,
+            task,
+            label="Synthesize",
+            log_every=3 if regen_count > 30 else 1,
         )
         written, skipped = synthesize_topic_wiki_pages(
             grouped,
             llm=llm,
             output_dir=TEMP_OUTPUT_DIR,
             dirty_topics=dirty_topics,
+            on_progress=on_progress if regen_count else None,
         )
-        progress.update(task, completed=regen_count)
+        if regen_count:
+            progress.update(task, completed=regen_count)
 
     written_filenames = {p.name for p in written}
     console.print(
@@ -244,35 +324,44 @@ def step_link(
     index_delta: IndexDelta,
     llm: LLMClient,
     *,
-    use_llm: bool,
     written_filenames: set[str],
     removed_filenames: set[str],
     force: bool,
 ) -> list[Path]:
     """Step 5: Incrementally inject links and export affected pages."""
-    mode = "LLM" if (use_llm and llm.available) else "heuristic"
+    mode = "LLM"
 
     with Progress(
-        SpinnerColumn(),
-        TextColumn("[progress.description]{task.description}"),
-        BarColumn(),
-        TextColumn("{task.completed}/{task.total}"),
-        TimeElapsedColumn(),
+        *_progress_columns(),
         console=console,
+        refresh_per_second=4,
     ) as progress:
         task = progress.add_task(f"Cross-linking pages ({mode})…", total=1)
+        log_cb: dict[str, Callable[[int, int, str], None] | None] = {"fn": None}
+
+        def on_progress(current: int, total: int, detail: str) -> None:
+            if log_cb["fn"] is None:
+                progress.update(task, total=max(total, 1))
+                log_cb["fn"] = _make_progress_callback(
+                    progress,
+                    task,
+                    label="Link",
+                    log_every=5 if total > 40 else 1,
+                )
+            assert log_cb["fn"] is not None
+            log_cb["fn"](current, total, detail)
+
         written, skipped = link_and_export_pages(
             topic_index,
             temp_dir=TEMP_OUTPUT_DIR,
             output_dir=OUTPUT_DIR,
             llm=llm,
-            use_llm=use_llm,
             dirty_filenames=written_filenames,
             removed_filenames=removed_filenames,
             index_delta=index_delta,
             force=force,
+            on_progress=on_progress,
         )
-        progress.update(task, completed=1)
 
     console.print(
         f"[green]✓[/] Linked [bold]{len(written)}[/] pages, "
@@ -281,11 +370,15 @@ def step_link(
     return written
 
 
-def run_pipeline(*, use_llm: bool = True, force: bool = False) -> int:
+def run_pipeline(*, force: bool = False) -> int:
     """Run the full compiler pipeline sequentially."""
     start = time.perf_counter()
-    llm = LLMClient(api_key="") if not use_llm else LLMClient()
-    mode_label = "LLM + cache" if llm.available else "heuristic (no API key)"
+    try:
+        llm = require_llm()
+    except RuntimeError as exc:
+        console.print(f"[red]Error:[/] {exc}")
+        return 1
+    mode_label = "LLM + cache"
 
     console.print(
         Panel.fit(
@@ -322,7 +415,6 @@ def run_pipeline(*, use_llm: bool = True, force: bool = False) -> int:
         topic_index,
         index_delta,
         llm,
-        use_llm=use_llm,
         written_filenames=synth_result["written_filenames"],
         removed_filenames=synth_result["removed_filenames"],
         force=force,
@@ -357,17 +449,12 @@ def main() -> None:
         description="Run the full LLM Wiki compiler pipeline"
     )
     parser.add_argument(
-        "--heuristic-only",
-        action="store_true",
-        help="Skip LLM API calls even when OPENAI_API_KEY is set",
-    )
-    parser.add_argument(
         "--force",
         action="store_true",
         help="Reprocess all raw files regardless of MD5 hashes in state.json",
     )
     args = parser.parse_args()
-    raise SystemExit(run_pipeline(use_llm=not args.heuristic_only, force=args.force))
+    raise SystemExit(run_pipeline(force=args.force))
 
 
 if __name__ == "__main__":

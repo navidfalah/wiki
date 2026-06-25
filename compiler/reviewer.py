@@ -14,7 +14,7 @@ from rich.console import Console
 from rich.panel import Panel
 from rich.progress import BarColumn, Progress, SpinnerColumn, TextColumn, TimeElapsedColumn
 
-from llm_client import LLMClient
+from llm_client import LLMClient, require_llm
 from linker import INDEX_JSON
 from models import OUTPUT_DIR, STATE_FILE
 from synthesizer import load_state
@@ -216,70 +216,6 @@ def review_page_with_llm(
     )
 
 
-def review_page_heuristic(
-    *,
-    topic: str,
-    wiki_body: str,
-    source_entries: list[dict],
-) -> PageReview:
-    """Basic structural checks when no LLM API key is available."""
-    review = PageReview(topic=topic, page_path=Path())
-
-    if not source_entries:
-        review.severity = "major"
-        review.summary = "No raw source chunks mapped to this topic."
-        review.structural_issues.append(
-            {
-                "type": "attribution",
-                "description": "Topic has no linked raw chunks in state.json.",
-                "source_refs": [],
-            }
-        )
-        return review
-
-    expected_sources = {
-        f"{entry['source']} (chunk {entry['chunk_index']})"
-        for entry in _dedupe_chunk_entries(source_entries)
-    }
-    listed_sources = set(
-        re.findall(r"`([^`]+)` — chunk (\d+)", wiki_body)
-    )
-    listed_refs = {f"{src} (chunk {idx})" for src, idx in listed_sources}
-
-    missing_in_page = expected_sources - listed_refs
-    if missing_in_page:
-        review.structural_issues.append(
-            {
-                "type": "attribution",
-                "description": "Sources section omits chunks that were tagged with this topic.",
-                "source_refs": sorted(missing_in_page),
-            }
-        )
-
-    chunk_count_match = re.search(r"Synthesized from \*\*(\d+)\*\* raw chunk", wiki_body)
-    if chunk_count_match:
-        declared = int(chunk_count_match.group(1))
-        actual = len(_dedupe_chunk_entries(source_entries))
-        if declared != actual:
-            review.structural_issues.append(
-                {
-                    "type": "other",
-                    "description": (
-                        f"Page declares {declared} source chunk(s) but state.json maps {actual}."
-                    ),
-                    "source_refs": sorted(expected_sources),
-                }
-            )
-
-    if review.structural_issues:
-        review.severity = "minor"
-        review.summary = "Heuristic review found structural attribution mismatches."
-    else:
-        review.summary = "Heuristic review found no obvious structural issues."
-
-    return review
-
-
 def discover_pages(
     docs_dir: Path,
     topic_index: dict[str, str],
@@ -319,20 +255,12 @@ def run_review(
     docs_dir: Path | None = None,
     report_path: Path | None = None,
     llm: LLMClient | None = None,
-    use_llm: bool = True,
     topic_filter: str | None = None,
     indexed_only: bool = True,
 ) -> Path:
     docs = docs_dir or OUTPUT_DIR
     report = report_path or DEFAULT_REPORT_PATH
-    client = llm or LLMClient(api_key="" if not use_llm else None)
-    use_api = use_llm and client.available
-
-    if use_llm and not client.available:
-        console = Console()
-        console.print(
-            "[yellow]No OPENAI_API_KEY — falling back to heuristic review.[/]"
-        )
+    client = require_llm(llm)
 
     state = load_state()
     grouped = build_grouped_from_state(state)
@@ -356,7 +284,7 @@ def run_review(
             "[bold]LLM Wiki Reviewer[/]\n"
             f"Docs:   [dim]{docs}[/]\n"
             f"Report: [dim]{report}[/]\n"
-            f"Mode:   [yellow]{'LLM' if use_api else 'heuristic'}[/]\n"
+            f"Mode:   [yellow]LLM[/]\n"
             f"Pages:  [bold]{len(pages)}[/]",
             border_style="blue",
         )
@@ -379,19 +307,12 @@ def run_review(
             source_entries = grouped.get(_normalize_topic(topic), [])
 
             try:
-                if use_api:
-                    result = review_page_with_llm(
-                        topic=topic,
-                        wiki_body=wiki_body,
-                        source_entries=source_entries,
-                        llm=client,
-                    )
-                else:
-                    result = review_page_heuristic(
-                        topic=topic,
-                        wiki_body=wiki_body,
-                        source_entries=source_entries,
-                    )
+                result = review_page_with_llm(
+                    topic=topic,
+                    wiki_body=wiki_body,
+                    source_entries=source_entries,
+                    llm=client,
+                )
             except Exception as exc:
                 result = PageReview(
                     topic=topic,
@@ -405,7 +326,7 @@ def run_review(
             reviews.append(result)
             progress.advance(task)
 
-    report_text = format_report(reviews, docs_dir=docs, used_llm=use_api)
+    report_text = format_report(reviews, docs_dir=docs)
     report.parent.mkdir(parents=True, exist_ok=True)
     report.write_text(report_text, encoding="utf-8")
 
@@ -432,13 +353,13 @@ def run_review(
     return report
 
 
-def format_report(reviews: list[PageReview], *, docs_dir: Path, used_llm: bool) -> str:
+def format_report(reviews: list[PageReview], *, docs_dir: Path) -> str:
     lines = [
         "LLM Wiki Review Report",
         "=" * 72,
         f"Generated: { _utc_now_iso() }",
         f"Docs directory: {docs_dir}",
-        f"Review mode: {'LLM' if used_llm else 'heuristic'}",
+        "Review mode: LLM",
         f"Pages reviewed: {len(reviews)}",
         "",
     ]
@@ -548,11 +469,6 @@ def main() -> None:
         help="Review only topics whose title contains this substring (case-insensitive)",
     )
     parser.add_argument(
-        "--heuristic-only",
-        action="store_true",
-        help="Skip LLM calls; run basic structural checks only",
-    )
-    parser.add_argument(
         "--all-docs",
         action="store_true",
         help="Review every markdown file under docs/, not just index.json topics",
@@ -570,7 +486,6 @@ def main() -> None:
     run_review(
         docs_dir=args.docs_dir,
         report_path=args.output,
-        use_llm=not args.heuristic_only,
         topic_filter=args.topic,
         indexed_only=not args.all_docs,
     )

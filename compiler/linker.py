@@ -6,17 +6,21 @@ from __future__ import annotations
 import argparse
 import json
 import re
+from collections.abc import Callable
 from dataclasses import dataclass, field
 from datetime import datetime, timezone
 from pathlib import Path
+from typing import TypeAlias
 
-from llm_client import LLMClient
+ProgressCallback: TypeAlias = Callable[[int, int, str], None]
+
+from llm_client import LLMClient, require_llm
 from link_overrides import (
     apply_connection_overrides,
     load_link_overrides,
     override_source_topics,
 )
-from models import OUTPUT_DIR, WikiPage
+from models import OUTPUT_DIR
 from yaml_frontmatter import yaml_quote
 
 COMPILER_DIR = Path(__file__).resolve().parent
@@ -368,76 +372,6 @@ def _remove_broken_links(body: str, removed_files: set[str]) -> str:
     return body
 
 
-_MD_LINK_RE = re.compile(r"\[[^\]]*\]\([^)]*\)")
-
-
-def _link_plain_text_segment(
-    segment: str,
-    *,
-    page_title: str,
-    current_filename: str | None,
-    candidates: list[tuple[str, str]],
-) -> str:
-    linked = segment
-    for title, filename in candidates:
-        if title.lower() == page_title.lower():
-            continue
-        if current_filename and filename == current_filename:
-            continue
-        pattern = re.compile(
-            rf"(?<!\[)(?<!\w)({re.escape(title)})(?!\]\()",
-            re.IGNORECASE,
-        )
-        linked = pattern.sub(rf"[\1](./{filename})", linked, count=1)
-    return linked
-
-
-def link_page_heuristic(
-    content: str,
-    *,
-    page_title: str,
-    topic_index: dict[str, str],
-) -> str:
-    """Inject links without LLM by matching known topic titles in plain text."""
-    current_filename = None
-    for title, filename in topic_index.items():
-        if title.lower() == page_title.lower():
-            current_filename = filename
-            break
-
-    candidates = sorted(topic_index.items(), key=lambda item: len(item[0]), reverse=True)
-
-    parts: list[str] = []
-    last = 0
-    for match in _MD_LINK_RE.finditer(content):
-        if match.start() > last:
-            parts.append(
-                _link_plain_text_segment(
-                    content[last : match.start()],
-                    page_title=page_title,
-                    current_filename=current_filename,
-                    candidates=candidates,
-                )
-            )
-        parts.append(match.group(0))
-        last = match.end()
-    if last < len(content):
-        parts.append(
-            _link_plain_text_segment(
-                content[last:],
-                page_title=page_title,
-                current_filename=current_filename,
-                candidates=candidates,
-            )
-        )
-    return "".join(parts) if parts else _link_plain_text_segment(
-        content,
-        page_title=page_title,
-        current_filename=current_filename,
-        candidates=candidates,
-    )
-
-
 from mdx_sanitize import sanitize_for_mdx
 
 
@@ -469,11 +403,11 @@ def link_and_export_pages(
     temp_dir: Path | None = None,
     output_dir: Path | None = None,
     llm: LLMClient | None = None,
-    use_llm: bool = True,
     dirty_filenames: set[str] | None = None,
     removed_filenames: set[str] | None = None,
     index_delta: IndexDelta | None = None,
     force: bool = False,
+    on_progress: ProgressCallback | None = None,
 ) -> tuple[list[Path], list[str]]:
     """
     Inject links into draft pages and export to wiki-app/docs/.
@@ -487,8 +421,7 @@ def link_and_export_pages(
 
     index = topic_index or load_topic_index(root / "index.json")
     delta = index_delta or IndexDelta()
-    client = llm or LLMClient()
-    llm_on = use_llm and client.available
+    client = require_llm(llm)
 
     dirty = dirty_filenames or set()
     removed = removed_filenames or set()
@@ -519,11 +452,15 @@ def link_and_export_pages(
     written: list[Path] = []
     skipped: list[str] = []
 
-    for draft_path in discover_draft_pages(root):
+    to_link = [
+        draft_path
+        for draft_path in discover_draft_pages(root)
+        if draft_path.name in relink_targets
+    ]
+    total = len(to_link)
+
+    for index, draft_path in enumerate(to_link, start=1):
         filename = draft_path.name
-        if filename not in relink_targets:
-            skipped.append(filename)
-            continue
 
         content = draft_path.read_text(encoding="utf-8")
         title = _extract_title_from_markdown(content, _title_from_filename(filename))
@@ -531,19 +468,12 @@ def link_and_export_pages(
         link_source = body if existing_fm is not None else content
         link_source = _remove_broken_links(link_source, removed_files)
 
-        if llm_on:
-            linked_body = link_page_with_llm(
-                link_source,
-                page_title=title,
-                topic_index=index,
-                llm=client,
-            )
-        else:
-            linked_body = link_page_heuristic(
-                link_source,
-                page_title=title,
-                topic_index=index,
-            )
+        linked_body = link_page_with_llm(
+            link_source,
+            page_title=title,
+            topic_index=index,
+            llm=client,
+        )
 
         linked_body = _remove_broken_links(linked_body, removed_files)
         linked_body = apply_connection_overrides(
@@ -562,6 +492,12 @@ def link_and_export_pages(
         target = out_dir / filename
         target.write_text(final_md, encoding="utf-8")
         written.append(target)
+        if on_progress:
+            on_progress(index, total, filename)
+
+    for draft_path in discover_draft_pages(root):
+        if draft_path.name not in relink_targets:
+            skipped.append(draft_path.name)
 
     return written, skipped
 
@@ -589,82 +525,11 @@ def _write_docs_index_page(topic_index: dict[str, str], output_dir: Path) -> Pat
     return path
 
 
-# ---------------------------------------------------------------------------
-# Legacy helpers used by compiler/main.py (WikiPage pipeline)
-# ---------------------------------------------------------------------------
-
-
-def _link_map(pages: list[WikiPage]) -> dict[str, str]:
-    mapping: dict[str, str] = {}
-    for page in pages:
-        doc_path = f"/docs/{page.slug}"
-        mapping[page.title.lower()] = doc_path
-        slug_tail = page.slug.split("/")[-1].replace("-", " ")
-        mapping[slug_tail.lower()] = doc_path
-        for tag in page.tags:
-            if len(tag) > 3:
-                mapping.setdefault(tag.lower(), doc_path)
-    return mapping
-
-
-def _replace_wikilinks(body: str) -> str:
-    def repl(match: re.Match[str]) -> str:
-        inner = match.group(1)
-        if "|" in inner:
-            target, label = inner.split("|", 1)
-        else:
-            target, label = inner, inner.split("/")[-1].replace("-", " ").title()
-        href = f"/docs/{target.strip()}"
-        return f"[{label.strip()}]({href})"
-
-    return re.sub(r"\[\[([^\]]+)\]\]", repl, body)
-
-
-def inject_cross_links(pages: list[WikiPage]) -> list[WikiPage]:
-    link_map = _link_map(pages)
-    sorted_terms = sorted(link_map.keys(), key=len, reverse=True)
-    linked: list[WikiPage] = []
-
-    for page in pages:
-        body = _replace_wikilinks(page.body)
-        for term in sorted_terms:
-            href = link_map[term]
-            if href == f"/docs/{page.slug}":
-                continue
-            pattern = re.compile(
-                rf"(?<!\[)\b({re.escape(term)})\b(?!\]\()", re.IGNORECASE
-            )
-            body = pattern.sub(rf"[\1]({href})", body, count=1)
-        page.body = body
-        linked.append(page)
-
-    return linked
-
-
-def to_docusaurus_markdown(page: WikiPage) -> str:
-    """Legacy: wrap WikiPage dataclass as Docusaurus markdown."""
-    tags_yaml = "\n".join(f"  - {t}" for t in page.tags) or "  - wiki"
-    sources_yaml = "\n".join(f"  - {s}" for s in page.sources) or "  - none"
-    return (
-        f"---\n"
-        f"id: {page.doc_id}\n"
-        f"title: {_yaml_str(page.title)}\n"
-        f"sidebar_label: {_yaml_str(page.title)}\n"
-        f"slug: /{page.slug}\n"
-        f"tags:\n{tags_yaml}\n"
-        f"sources:\n{sources_yaml}\n"
-        f"page_type: {page.page_type}\n"
-        f"---\n\n"
-        f"{page.body}\n"
-    )
-
-
 def run_linker_pipeline(
     *,
     temp_dir: Path | None = None,
     output_dir: Path | None = None,
     llm: LLMClient | None = None,
-    use_llm: bool = True,
     dirty_filenames: set[str] | None = None,
     removed_filenames: set[str] | None = None,
     force: bool = False,
@@ -684,7 +549,6 @@ def run_linker_pipeline(
         temp_dir=root,
         output_dir=output_dir,
         llm=llm,
-        use_llm=use_llm,
         dirty_filenames=dirty_filenames,
         removed_filenames=removed_filenames,
         index_delta=index_delta,
@@ -712,11 +576,6 @@ def main() -> None:
         description="Build topic index and link draft pages into wiki-app/docs/"
     )
     parser.add_argument(
-        "--heuristic-only",
-        action="store_true",
-        help="Use regex linking instead of LLM",
-    )
-    parser.add_argument(
         "--skip-index",
         action="store_true",
         help="Use existing temp_output/index.json instead of rebuilding",
@@ -728,10 +587,7 @@ def main() -> None:
     )
     args = parser.parse_args()
 
-    client = LLMClient(api_key="") if args.heuristic_only else LLMClient()
     result = run_linker_pipeline(
-        llm=client,
-        use_llm=not args.heuristic_only,
         force=args.force or not args.skip_index,
     )
     print(json.dumps(result, indent=2))

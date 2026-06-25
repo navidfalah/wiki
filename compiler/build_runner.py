@@ -27,7 +27,6 @@ def sse_event(event_type: str, payload: dict) -> str:
 
 async def stream_compiler_build(
     *,
-    heuristic_only: bool = True,
     force: bool = False,
 ) -> AsyncIterator[str]:
     """Yield Server-Sent Events while main.py runs."""
@@ -37,8 +36,6 @@ async def stream_compiler_build(
         return
 
     cmd = [sys.executable, "-u", str(MAIN_PY)]
-    if heuristic_only:
-        cmd.append("--heuristic-only")
     if force:
         cmd.append("--force")
 

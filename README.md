@@ -28,7 +28,7 @@ The sample domain is fictional **Aurora Labs** (open IoT sensors), cross-linked 
 
 ## Project overview
 
-LLM Wiki turns unstructured text (meeting notes, email threads, forum scrapes, half-finished specs) into a linked markdown wiki suitable for Docusaurus. The compiler can run in **LLM mode** (OpenAI-compatible API) or **heuristic mode** (no API key — rule-based extraction and synthesis).
+LLM Wiki turns unstructured text (meeting notes, email threads, forum scrapes, half-finished specs) into a linked markdown wiki suitable for Docusaurus. The compiler uses an **OpenAI-compatible API** for extraction, synthesis, and cross-linking (`OPENAI_API_KEY` required).
 
 ### Architecture
 
@@ -87,7 +87,7 @@ flowchart TB
 | Component | Technology | Role |
 |-----------|------------|------|
 | Compiler | Python 3.12+ | Orchestration in `main.py`; modules for synthesis, linking, MOC, analytics |
-| LLM client | OpenAI SDK + SQLite cache | Optional extraction/synthesis/linking; falls back to heuristics |
+| LLM client | OpenAI SDK + SQLite cache | Extraction, synthesis, and link injection (required) |
 | API server | FastAPI + Uvicorn | REST endpoints and SSE build streaming on port **8000** |
 | Frontend | Docusaurus 3 + React 18 | Docs site plus custom pages (`/workspace`, `/analytics`, `/graph`, `/knowledge-graph`) |
 | Styling | Tailwind CSS 3 | Dashboard UI (`tailwind.config.js`; `preflight: false` to coexist with Docusaurus) |
@@ -117,7 +117,7 @@ wiki/
 │
 ├── compiler/
 │   ├── main.py                  # Full 5-step pipeline orchestrator
-│   ├── synthesizer.py           # Chunking, extraction, heuristic/LLM synthesis
+│   ├── synthesizer.py           # Chunking, extraction, LLM synthesis
 │   ├── linker.py                # Topic index + cross-link injection
 │   ├── moc_generator.py         # Hierarchical index.md (Map of Content)
 │   ├── server.py                # FastAPI API for dashboards
@@ -183,7 +183,7 @@ pip install -r requirements.txt
 python main.py --force      # First full compile
 ```
 
-Without an API key, the compiler automatically uses **heuristic mode**.
+Set `OPENAI_API_KEY` in `.env` before compiling. Without a key, `python main.py` exits with an error.
 
 ### 3. Start the API server (for dashboards)
 
@@ -218,7 +218,6 @@ From the repo root:
 ```bash
 chmod +x build_wiki.sh
 ./build_wiki.sh                  # LLM mode if OPENAI_API_KEY is set
-./build_wiki.sh --heuristic-only # Force heuristics even with a key
 ./build_wiki.sh --force          # Reprocess all raw files (ignore state.json)
 ```
 
@@ -237,25 +236,21 @@ Entry point: `compiler/main.py`. The pipeline runs five sequential steps, then g
 | Step | Name | Module | Action |
 |------|------|--------|--------|
 | 1 | **Data reading** | `synthesizer.py` | Recursively scan `data/raw/` for `.txt` and `.md`; split into ~2000-char paragraph chunks |
-| 2 | **Extraction** | `synthesizer.py` | Per chunk: extract topics, entities, concepts (LLM or heuristics). Skip unchanged files via MD5 in `data/state.json` |
+| 2 | **Extraction** | `synthesizer.py` | Per chunk: extract topics, entities, concepts via LLM. Skip unchanged files via MD5 in `data/state.json` |
 | 3 | **Synthesis** | `synthesizer.py` | Group chunks by topic; write draft wiki pages to `compiler/temp_output/` |
 | 4 | **Indexing** | `linker.py` | Build/update `compiler/temp_output/index.json` mapping topic titles → filenames |
 | 5 | **Cross-linking** | `linker.py` | Inject internal markdown links; export final pages to `wiki-app/docs/` |
 | + | **Map of Content** | `moc_generator.py` | Generate hierarchical `wiki-app/docs/index.md` from tags and page types |
 
-### Heuristic vs LLM mode
+### LLM pipeline
 
-| Mode | When | Behavior |
-|------|------|----------|
-| **Heuristic** | No `OPENAI_API_KEY`, or `--heuristic-only` | Extracts headers, bold terms, and keyword entities; builds pages from templates. No API calls. |
-| **LLM** | Valid `OPENAI_API_KEY` and no `--heuristic-only` | Uses chat completions for extraction, synthesis, and optional link injection. Responses cached in `data/.llm-cache.sqlite`. |
+The compiler requires a valid `OPENAI_API_KEY` (or compatible endpoint via `OPENAI_BASE_URL`). It uses chat completions for extraction, synthesis, and link injection. Responses are cached in `data/.llm-cache.sqlite`.
 
 ### CLI flags
 
 ```bash
 python main.py                 # Incremental run (only changed raw files)
 python main.py --force         # Reprocess every file regardless of MD5
-python main.py --heuristic-only # Skip LLM even when API key is present
 ```
 
 Incremental behavior:
@@ -312,7 +307,7 @@ CORS is enabled for `http://localhost:3000` and `http://127.0.0.1:3000`.
 | `GET` | `/api/docs/{path}` | Single page body, front matter, and outbound links |
 | `GET` | `/api/state` | Contents of `data/state.json` |
 | `GET` | `/api/build/status` | `{ "running": true/false }` |
-| `GET` | `/api/build/stream` | **SSE** — run compiler; query params: `heuristic_only`, `force` |
+| `GET` | `/api/build/stream` | **SSE** — run compiler; query param: `force` |
 | `GET` | `/api/knowledge-graph` | Topics, detected links, manual overrides, effective graph |
 | `PUT` | `/api/knowledge-graph/overrides` | Save connection rules to `data/link_overrides.json` |
 | `GET` | `/api/analytics` | Summary metrics, tag index, dead-link audit |
@@ -351,7 +346,7 @@ Key components:
 - `WikiGraph` — topic graph visualization
 - `KnowledgeGraphExplorer` — connection editor with require/block rules
 - `AnalyticsAudit` — metrics and tag drill-down
-- Shared UI: `PageShell`, `PageHeader`, `Button`, `EmptyState`, `Skeleton`, `NavPill`
+- Shared UI: `PageShell`, `PageHeader`, `DashboardNav`, `Button`
 
 **Important:** Dashboard pages require the API server running on port 8000. The static docs under `/docs` work without the API.
 
@@ -576,7 +571,7 @@ OPENAI_MODEL=gpt-4o-mini
 
 | Variable | Required | Description |
 |----------|----------|-------------|
-| `OPENAI_API_KEY` | No | Enables LLM mode; omit for heuristics only |
+| `OPENAI_API_KEY` | **Yes** | OpenAI-compatible API key for the compiler |
 | `OPENAI_BASE_URL` | No | OpenAI-compatible API base URL |
 | `OPENAI_MODEL` | No | Model name (default `gpt-4o-mini`) |
 
@@ -618,7 +613,7 @@ Workflow: `.github/workflows/wiki-build.yml`
 
 1. Checkout
 2. Python 3.12 — `pip install -r compiler/requirements.txt`
-3. `python compiler/main.py` (heuristic if no secrets; add `OPENAI_API_KEY` repo secret for LLM CI)
+3. `python compiler/main.py` (requires `OPENAI_API_KEY` repo secret)
 4. Node 20 — `npm ci` in `wiki-app/`
 5. `npm run build` with `GITHUB_PAGES=true`
 6. Upload `wiki-app/build` as Pages artifact
@@ -725,7 +720,7 @@ Only one SSE compile can run at a time. Wait for the current build to finish or 
 
 - Use incremental runs (default, no `--force`) during development
 - Procedural bulk data can produce 1000+ files; expect longer compile times
-- Use `--heuristic-only` to avoid LLM latency and API costs
+- Use incremental runs (default, no `--force`) during development to reduce API calls
 
 ### GitHub Pages broken links
 

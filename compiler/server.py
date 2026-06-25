@@ -380,7 +380,7 @@ async def build_status() -> dict[str, bool]:
 
 
 @app.get("/api/build/stream")
-async def build_stream(heuristic_only: bool = True, force: bool = False) -> StreamingResponse:
+async def build_stream(force: bool = False) -> StreamingResponse:
     """Run main.py and stream compiler logs via Server-Sent Events."""
     if _build_lock.locked():
         raise HTTPException(status_code=409, detail="A build is already running")
@@ -388,7 +388,6 @@ async def build_stream(heuristic_only: bool = True, force: bool = False) -> Stre
     async def event_generator():
         async with _build_lock:
             async for event in stream_compiler_build(
-                heuristic_only=heuristic_only,
                 force=force,
             ):
                 yield event
