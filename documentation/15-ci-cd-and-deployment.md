@@ -9,7 +9,7 @@
 
 1. Checkout
 2. Python 3.12 — `pip install -r compiler/requirements.txt`
-3. `python compiler/main.py` (incremental; heuristic if no secret)
+3. `python compiler/main.py` (incremental; requires the `OPENAI_API_KEY` secret — see below)
 4. Node 20 — `npm ci` in `wiki-app/`
 5. `npm run build` with:
    - `GITHUB_PAGES=true`
@@ -31,7 +31,16 @@ Site URL pattern: `https://<org>.github.io/<repo>/`
 
 ### LLM in CI
 
-Add repository secret `OPENAI_API_KEY` to run LLM mode in CI. Without it, heuristic mode runs (no API cost).
+The compiler is LLM-only, so the `OPENAI_API_KEY` repository secret is **required** —
+without it the "Run compiler pipeline" step fails and the build does not deploy. Add it
+under Settings → Secrets and variables → Actions, then pass it to the workflow step:
+
+```yaml
+- name: Run compiler pipeline
+  run: python compiler/main.py
+  env:
+    OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
+```
 
 **Note:** API server and dashboards are **not** deployed — static site only.
 
@@ -39,7 +48,7 @@ Add repository secret `OPENAI_API_KEY` to run LLM mode in CI. Without it, heuris
 
 ```bash
 ./build_wiki.sh
-./build_wiki.sh --force --heuristic-only
+./build_wiki.sh --force
 ```
 
 Output: `wiki-app/build/`

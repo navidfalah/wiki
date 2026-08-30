@@ -6,7 +6,7 @@ from __future__ import annotations
 import argparse
 from pathlib import Path
 
-RAW_DIR = Path(__file__).resolve().parent.parent / "data" / "raw"
+RAW_DIR = Path(__file__).resolve().parent.parent.parent.parent / "data" / "raw"
 VARIED_DIR = "varied-samples"
 DUMMY_PREFIX = "[DUMMY TEST DATA]"
 

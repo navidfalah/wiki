@@ -22,18 +22,52 @@ Every Python module in `compiler/` with responsibilities and key entry points.
 
 | Symbol | Role |
 |--------|------|
-| `discover_raw_text_files()` | Find `.txt`/`.md` under raw dir |
-| `split_text_into_chunks()` | ~2000 char paragraph chunks |
-| `read_raw_chunks()` | All files → `RawChunk` list |
-| `extract_chunk_topics()` | Per-chunk extraction (LLM or heuristic) |
+| `discover_raw_source_files()` | Find every recognized source under raw dir (text/email/image/file) |
+| `_chunks_for_file()` | Dispatch by extension to text chunking / `email_ingest` / `media_ingest` |
+| `read_raw_chunks()` | All files → `RawChunk` list (needs `llm` if images present) |
+| `extract_chunk_topics()` | Per-chunk LLM extraction (same prompt regardless of `source_type`) |
 | `extract_topics_from_raw_files()` | Step 2 with MD5 incremental |
-| `group_chunks_by_topic()` | Topic → chunk list map |
-| `synthesize_topic_wiki_pages()` | Write drafts to `temp_output/` |
+| `group_chunks_by_topic()` | Topic → chunk list map (carries `source_type`) |
+| `synthesize_topic_wiki_pages()` | Write drafts to `temp_output/`, appends References & Trust |
 | `compute_file_md5()` | File hash for state |
 | `load_state()` / `save_state()` | `data/state.json` |
 | `scan_raw_file_changes()` | `FileChangeSet` |
 | `slugify()` | URL-safe slugs |
-| `synthesize_topic_wiki_pages()` | Grouped topic → draft markdown |
+| `RawChunk` / `ChunkExtraction` | `source_type: "text" \| "email" \| "image" \| "file"` |
+
+### `text_chunking.py`
+
+`split_text_into_chunks()` — paragraph-based chunking shared by
+`synthesizer.py`, `media_ingest.py`, and `email_ingest.py` (kept in its own
+stdlib-only module so those don't have to import `synthesizer.py`).
+
+### `media_ingest.py`
+
+| Symbol | Role |
+|--------|------|
+| `build_image_chunk()` | Vision-caption an image → chunk dict, copies file to `static/media/` |
+| `build_file_chunks()` | PDF/CSV/JSON text extraction, or opaque attachment for other types |
+| `copy_media_to_static()` / `copy_bytes_to_static()` | Content-hash-deduped copy into `wiki-app/static/media/` |
+| `docs_relative_media_link()` | Build a `../static/media/...` link from a docs page |
+| `IMAGE_EXTENSIONS`, `TEXT_EXTRACTABLE_FILE_EXTENSIONS`, `OPAQUE_FILE_EXTENSIONS` | Recognized extension sets |
+
+### `email_ingest.py`
+
+| Symbol | Role |
+|--------|------|
+| `parse_eml()` | Parse one `.eml` → `ParsedEmail` (headers, body, attachments) |
+| `build_email_chunks()` | `ParsedEmail` → chunk dict(s), saves attachments via `media_ingest` |
+| `EMAIL_EXTENSIONS` | `{".eml"}` |
+
+### `trust.py`
+
+| Symbol | Role |
+|--------|------|
+| `resolve_trust()` | Glob rules (from `data/source_trust.json`) → source-type default → `TrustInfo` |
+| `build_references()` | Dedupe a topic's chunk entries → numbered `ReferenceEntry` list |
+| `render_references_markdown()` | Deterministic `## References & Trust` table |
+| `load_trust_config()` / `save_trust_config()` | Read/write `data/source_trust.json` |
+| `TRUST_LEVELS` | `unverified < low < medium < high < verified` |
 
 ### `linker.py`
 
@@ -42,7 +76,6 @@ Every Python module in `compiler/` with responsibilities and key entry points.
 | `build_topic_index()` | Full index rebuild |
 | `update_topic_index()` | Incremental index update |
 | `load_topic_index()` | Read `index.json` |
-| `link_page_heuristic()` | Regex title → link injection |
 | `link_page_with_llm()` | LLM link injection |
 | `link_and_export_pages()` | Step 5 export to `wiki-app/docs/` |
 | `wrap_docusaurus_doc()` | Front matter wrapper |
@@ -64,8 +97,9 @@ Every Python module in `compiler/` with responsibilities and key entry points.
 |--------|------|
 | `LLMClient` | OpenAI SDK wrapper |
 | `ResponseCache` | SQLite `data/.llm-cache.sqlite` |
-| `make_cache_key()` | SHA256 cache key |
+| `make_cache_key()` / `make_image_cache_key()` | SHA256 cache key (text prompt / image content hash) |
 | `generate_response()` | Chat completion + retry |
+| `describe_image()` | Vision-capable chat completion (image captioning) + retry |
 | `complete_json()` | JSON parse helper |
 
 ### `reviewer.py`
@@ -121,7 +155,6 @@ FastAPI app — all `/api/*` routes. See [12-api-server.md](./12-api-server.md).
 
 ### `models.py`
 
-Path constants: `PROJECT_ROOT`, `RAW_DIR`, `OUTPUT_DIR`, `STATE_FILE`  
 Path constants: `PROJECT_ROOT`, `RAW_DIR`, `OUTPUT_DIR`, `STATE_FILE`
 
 ### `yaml_frontmatter.py`
@@ -140,14 +173,19 @@ CLI to re-quote broken front matter fields in `wiki-app/docs/`
 
 MDX body repair utility
 
-## Test data generators
+## Test data generators (`scripts/dev/`)
+
+Dev-only — not imported by the compiler pipeline. See
+[09-test-data-generation.md](./09-test-data-generation.md).
 
 | Module | Function |
 |--------|----------|
+| `generate_dummy_data.py` | Dispatcher CLI: `python generate_dummy_data.py <junk\|bulk\|extended\|varied\|keep-aurora>` |
 | `generate_junk_data.py` | `generate_junk_data()` — 10 seed files |
 | `generate_bulk_dummy_data.py` | `generate_bulk_dummy_data()`, `generate_procedural_dummy_test_data()` |
 | `generate_varied_dummy_data.py` | `generate_varied_dummy_data()` |
 | `generate_extended_dummy_data.py` | Extended wave-2 file dict |
+| `keep_aurora_raw.py` | Archive non-Aurora raw files to `data/_archive_non_aurora/` |
 
 ## Shell scripts
 
@@ -165,3 +203,4 @@ MDX body repair utility
 
 - [05-compiler-pipeline.md](./05-compiler-pipeline.md)
 - [09-test-data-generation.md](./09-test-data-generation.md)
+- [19-multimedia-email-and-trust.md](./19-multimedia-email-and-trust.md)

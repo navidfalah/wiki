@@ -12,5 +12,8 @@ wiki-app/.docusaurus/
 data/state.json
 data/.llm-cache.sqlite
 data/_archive_non_aurora/
+data/last-compile.log
 compiler/temp_output/*
 !compiler/temp_output/.gitkeep
+wiki-app/static/media/*
+!wiki-app/static/media/.gitkeep

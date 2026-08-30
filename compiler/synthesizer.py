@@ -7,15 +7,24 @@ import json
 import re
 from collections.abc import Callable
 from dataclasses import asdict, dataclass, field
-from datetime import datetime, timezone
+from datetime import UTC, datetime
 from pathlib import Path
-from typing import TypeAlias
 
-ProgressCallback: TypeAlias = Callable[[int, int, str], None]
-
+import email_ingest
+import media_ingest
+import trust
 from llm_client import LLMClient, require_llm
 from models import RAW_DIR, STATE_FILE
-from yaml_frontmatter import yaml_quote
+from text_chunking import split_text_into_chunks
+from yaml_frontmatter import DRAFT_GENERATED_NOTE, insert_generated_banner, yaml_quote
+
+EMAIL_EXTENSIONS = email_ingest.EMAIL_EXTENSIONS
+IMAGE_EXTENSIONS = media_ingest.IMAGE_EXTENSIONS
+FILE_EXTENSIONS = media_ingest.FILE_EXTENSIONS
+TEXT_EXTENSIONS = {".txt", ".md"}
+ALL_SOURCE_EXTENSIONS = TEXT_EXTENSIONS | EMAIL_EXTENSIONS | IMAGE_EXTENSIONS | FILE_EXTENSIONS
+
+ProgressCallback = Callable[[int, int, str], None]
 
 COMPILER_DIR = Path(__file__).resolve().parent
 TEMP_OUTPUT_DIR = COMPILER_DIR / "temp_output"
@@ -68,12 +77,24 @@ Frontmatter rules:
 
 Body rules (after the closing ---):
 - Start with an H1 matching the topic title
-- Include sections: Overview, Key Details, Related Entities, Related Concepts, Contradictions (if any), Sources
+- Include sections: Overview, Key Details, Related Entities, Related Concepts, Contradictions (if any)
 - Merge overlapping facts; flag contradictions with a blockquote starting with **Contradiction:**
 - Use bullet lists and short paragraphs
-- End with a ## Sources section listing source file paths
+- Some source chunks may themselves be an image caption, an email, or an
+  extracted file/PDF excerpt rather than a plain note — treat them as
+  first-class content, and preserve any embedded ![...](...) image or
+  [...](...) download links from the source chunks verbatim
+- Do NOT add your own "Sources" or "References" section — one is appended
+  automatically after your content, listing every source with its trust level
 
 Return ONLY the complete Markdown file (frontmatter + body). No commentary."""
+
+
+# "text" (a .txt/.md note), "email" (a .eml message), "image" (a captioned
+# image), or "file" (an extracted/attached PDF, CSV, JSON, or opaque file).
+# See media_ingest.py / email_ingest.py for how non-text chunks are built,
+# and trust.py for how source_type feeds into the default trust level.
+SourceType = str
 
 
 @dataclass
@@ -83,6 +104,7 @@ class RawChunk:
     source_path: str
     chunk_index: int
     text: str
+    source_type: SourceType = "text"
 
 
 @dataclass
@@ -95,6 +117,7 @@ class ChunkExtraction:
     topics: list[str] = field(default_factory=list)
     entities: list[dict[str, str]] = field(default_factory=list)
     concepts: list[dict[str, str]] = field(default_factory=list)
+    source_type: SourceType = "text"
 
 
 @dataclass
@@ -153,7 +176,7 @@ def scan_raw_file_changes(
     files_state: dict = state.setdefault("files", {})
 
     current: dict[str, Path] = {}
-    for path in discover_raw_text_files(root):
+    for path in discover_raw_source_files(root):
         rel = str(path.relative_to(root)).replace("\\", "/")
         current[rel] = path
 
@@ -177,16 +200,59 @@ def scan_raw_file_changes(
 
 
 def _utc_now_iso() -> str:
-    return datetime.now(timezone.utc).isoformat()
+    return datetime.now(UTC).isoformat()
 
 
-def _chunks_for_file(path: Path, raw_dir: Path) -> list[RawChunk]:
+def _raw_chunk_from_dict(rel_source: str, chunk_dict: dict) -> RawChunk:
+    """Wrap a media_ingest/email_ingest chunk dict into a RawChunk.
+
+    Those modules return plain dicts (not RawChunk) to stay import-free of
+    this module; ``media_link`` is metadata for callers that want the asset
+    URL directly (unused here since it's already embedded in ``text``).
+    """
+    return RawChunk(
+        source_path=rel_source,
+        chunk_index=chunk_dict["chunk_index"],
+        text=chunk_dict["text"],
+        source_type=chunk_dict.get("source_type", "file"),
+    )
+
+
+def _chunks_for_file(path: Path, raw_dir: Path, llm: LLMClient | None = None) -> list[RawChunk]:
+    """Build RawChunks for one raw source file, dispatching by extension.
+
+    Text/markdown files are chunked directly; everything else is delegated to
+    the dedicated ingestor for that source type (email_ingest.py for .eml,
+    media_ingest.py for images and other file attachments), which returns
+    plain chunk dicts that get wrapped into RawChunk here. This keeps
+    email_ingest.py/media_ingest.py free of any dependency on synthesizer.py.
+    """
     rel = str(path.relative_to(raw_dir)).replace("\\", "/")
-    content = path.read_text(encoding="utf-8")
-    return [
-        RawChunk(source_path=rel, chunk_index=index, text=text)
-        for index, text in enumerate(split_text_into_chunks(content))
-    ]
+    suffix = path.suffix.lower()
+
+    if suffix in {".txt", ".md"}:
+        content = path.read_text(encoding="utf-8")
+        return [
+            RawChunk(source_path=rel, chunk_index=index, text=text, source_type="text")
+            for index, text in enumerate(split_text_into_chunks(content))
+        ]
+
+    if suffix in EMAIL_EXTENSIONS:
+        chunk_dicts = email_ingest.build_email_chunks(path, rel)
+        return [_raw_chunk_from_dict(rel, cd) for cd in chunk_dicts]
+
+    if suffix in IMAGE_EXTENSIONS:
+        client = require_llm(llm)
+        chunk_dict = media_ingest.build_image_chunk(path, rel, client)
+        return [_raw_chunk_from_dict(rel, chunk_dict)]
+
+    if suffix in FILE_EXTENSIONS:
+        chunk_dicts = media_ingest.build_file_chunks(path, rel)
+        return [_raw_chunk_from_dict(rel, cd) for cd in chunk_dicts]
+
+    # Unrecognized extension shouldn't reach here given discover_raw_source_files
+    # filters to known extensions, but degrade gracefully rather than crash.
+    return []
 
 
 def _chunk_dicts_from_extractions(extractions: list[ChunkExtraction]) -> list[dict]:
@@ -197,6 +263,7 @@ def _chunk_dicts_from_extractions(extractions: list[ChunkExtraction]) -> list[di
             "topics": ext.topics,
             "entities": ext.entities,
             "concepts": ext.concepts,
+            "source_type": ext.source_type,
         }
         for ext in extractions
     ]
@@ -211,6 +278,7 @@ def _extractions_from_cached_chunks(source_path: str, chunks: list[dict]) -> lis
             topics=chunk.get("topics", []),
             entities=chunk.get("entities", []),
             concepts=chunk.get("concepts", []),
+            source_type=chunk.get("source_type", "text"),
         )
         for chunk in chunks
     ]
@@ -276,54 +344,41 @@ def cleanup_stale_drafts(
     return removed
 
 
-def discover_raw_text_files(raw_dir: Path | None = None) -> list[Path]:
-    """Return all .txt and .md files under data/raw/, excluding _archive/."""
+def discover_raw_source_files(raw_dir: Path | None = None) -> list[Path]:
+    """Return every recognized raw source file under data/raw/, excluding _archive/.
+
+    Covers plain text/markdown notes, .eml emails, images, and the file types
+    listed in media_ingest.FILE_EXTENSIONS (PDF/CSV/JSON/DOCX/XLSX/PPTX/ZIP).
+    Hidden files (dotfiles like .gitkeep) and unrecognized extensions are
+    skipped rather than ingested as opaque noise.
+    """
     root = raw_dir or RAW_DIR
     files: list[Path] = []
-    for pattern in ("*.txt", "*.md"):
-        for path in root.rglob(pattern):
-            if "_archive" in path.parts:
-                continue
-            files.append(path)
+    for path in root.rglob("*"):
+        if not path.is_file():
+            continue
+        if "_archive" in path.parts:
+            continue
+        if path.name.startswith("."):
+            continue
+        if path.suffix.lower() not in ALL_SOURCE_EXTENSIONS:
+            continue
+        files.append(path)
     return sorted(set(files))
 
 
-def split_text_into_chunks(content: str, *, max_chars: int = 2000) -> list[str]:
-    """Split file content into paragraph-based chunks for extraction."""
-    paragraphs = [p.strip() for p in re.split(r"\n\s*\n", content) if p.strip()]
-    if not paragraphs:
-        return [content.strip()] if content.strip() else []
+def read_raw_chunks(raw_dir: Path | None = None, llm: LLMClient | None = None) -> list[RawChunk]:
+    """Read every raw source file (text, email, image, file) and chunk it.
 
-    chunks: list[str] = []
-    current: list[str] = []
-    current_len = 0
-
-    for para in paragraphs:
-        para_len = len(para)
-        if current and current_len + para_len + 2 > max_chars:
-            chunks.append("\n\n".join(current))
-            current = [para]
-            current_len = para_len
-        else:
-            current.append(para)
-            current_len += para_len + 2
-
-    if current:
-        chunks.append("\n\n".join(current))
-
-    return chunks
-
-
-def read_raw_chunks(raw_dir: Path | None = None) -> list[RawChunk]:
-    """Read every raw text file and split it into chunks."""
+    ``llm`` is required only if images are present (for captioning) — pass it
+    whenever the caller already has one, since the compiler is LLM-only
+    anyway and there's no cheaper fallback for describing an image.
+    """
     root = raw_dir or RAW_DIR
     chunks: list[RawChunk] = []
 
-    for path in discover_raw_text_files(root):
-        rel = str(path.relative_to(root)).replace("\\", "/")
-        content = path.read_text(encoding="utf-8")
-        for index, text in enumerate(split_text_into_chunks(content)):
-            chunks.append(RawChunk(source_path=rel, chunk_index=index, text=text))
+    for path in discover_raw_source_files(root):
+        chunks.extend(_chunks_for_file(path, root, llm))
 
     return chunks
 
@@ -365,6 +420,7 @@ def extract_chunk_topics(
             for c in data.get("concepts", [])
             if isinstance(c, dict) and c.get("name")
         ],
+        source_type=chunk.source_type,
     )
 
 
@@ -389,7 +445,7 @@ def extract_topics_from_raw_files(
 
     path_by_rel = {
         str(p.relative_to(root)).replace("\\", "/"): p
-        for p in discover_raw_text_files(root)
+        for p in discover_raw_source_files(root)
     }
 
     for rel in changes.deleted:
@@ -400,7 +456,7 @@ def extract_topics_from_raw_files(
     for index, rel in enumerate(to_process, start=1):
         path = path_by_rel[rel]
         md5 = compute_file_md5(path)
-        file_chunks = _chunks_for_file(path, root)
+        file_chunks = _chunks_for_file(path, root, llm)
         extractions = []
         chunk_count = len(file_chunks)
         for chunk_index, chunk in enumerate(file_chunks, start=1):
@@ -456,7 +512,8 @@ def group_chunks_by_topic(extractions: dict) -> dict[str, list[dict]]:
               "chunk_index": 0,
               "text": "...",
               "entities": [...],
-              "concepts": [...]
+              "concepts": [...],
+              "source_type": "text"
             },
             ...
           ],
@@ -475,6 +532,7 @@ def group_chunks_by_topic(extractions: dict) -> dict[str, list[dict]]:
                 "text": chunk["text"],
                 "entities": chunk.get("entities", []),
                 "concepts": chunk.get("concepts", []),
+                "source_type": chunk.get("source_type", "text"),
             }
             for topic in topics:
                 topic_key = topic.strip()
@@ -528,6 +586,22 @@ def build_docusaurus_frontmatter(
     )
 
 
+_LLM_SOURCES_SECTION_RE = re.compile(
+    r"\n#{2,3}\s*(Sources|References)\b.*?(?=\n#{1,3}\s|\Z)",
+    re.DOTALL | re.IGNORECASE,
+)
+
+
+def _strip_llm_authored_sources_section(body: str) -> str:
+    """Safety net: drop any Sources/References section the LLM wrote anyway.
+
+    WIKI_PAGE_SYSTEM_PROMPT tells the model not to add one (the deterministic
+    one from trust.py is appended right after this runs), but models don't
+    always follow instructions — this keeps the page from ending up with two.
+    """
+    return _LLM_SOURCES_SECTION_RE.sub("", body)
+
+
 def _dedupe_chunk_entries(entries: list[dict]) -> list[dict]:
     seen: set[tuple[str, int]] = set()
     unique: list[dict] = []
@@ -557,6 +631,7 @@ def synthesize_topic_wiki_pages(
     llm = require_llm(llm)
     out_dir = output_dir or TEMP_OUTPUT_DIR
     out_dir.mkdir(parents=True, exist_ok=True)
+    trust_config = trust.load_trust_config()
 
     written: list[Path] = []
     skipped: list[str] = []
@@ -578,8 +653,9 @@ def synthesize_topic_wiki_pages(
 
         chunk_blocks = []
         for entry in entries:
+            source_type = entry.get("source_type", "text")
             chunk_blocks.append(
-                f"### Source: `{entry['source']}` (chunk {entry['chunk_index']})\n\n"
+                f"### Source: `{entry['source']}` (chunk {entry['chunk_index']}, type: {source_type})\n\n"
                 f"{entry['text']}"
             )
         prompt = (
@@ -591,6 +667,14 @@ def synthesize_topic_wiki_pages(
             + "\n\n---\n\n".join(chunk_blocks)
         )
         body = llm.generate_response(prompt, WIKI_PAGE_SYSTEM_PROMPT)
+        body = _strip_llm_authored_sources_section(body.strip())
+
+        references = trust.build_references(entries, trust_config)
+        references_md = trust.render_references_markdown(references)
+        if references_md:
+            body = body.rstrip() + "\n\n" + references_md
+
+        body = insert_generated_banner(body.strip(), DRAFT_GENERATED_NOTE)
 
         out_path.write_text(body.strip() + "\n", encoding="utf-8")
         written.append(out_path)

@@ -11,7 +11,7 @@ from dead_link_checker import find_broken_links
 from link_overrides import detect_topic_links
 from linker import INDEX_JSON, load_topic_index
 from models import OUTPUT_DIR, RAW_DIR
-from synthesizer import compute_file_md5, discover_raw_text_files, load_state, slugify
+from synthesizer import compute_file_md5, discover_raw_source_files, load_state, slugify
 
 
 @dataclass
@@ -103,7 +103,7 @@ def _count_processed_raw_files(state: dict) -> tuple[int, int]:
     total = 0
     files_state = state.get("files", {})
 
-    for path in discover_raw_text_files(RAW_DIR):
+    for path in discover_raw_source_files(RAW_DIR):
         total += 1
         rel = str(path.relative_to(RAW_DIR)).replace("\\", "/")
         md5 = compute_file_md5(path)

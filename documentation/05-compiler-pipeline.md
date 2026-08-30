@@ -1,7 +1,7 @@
 # 05 — Compiler Pipeline
 
 Entry point: `compiler/main.py`  
-Function: `run_pipeline(use_llm=True, force=False)`
+Function: `run_pipeline(*, force=False)`
 
 ## Overview
 
@@ -23,15 +23,15 @@ Terminal output uses the `rich` library: step banners, progress bars, incrementa
 ```bash
 python main.py                   # incremental
 python main.py --force           # ignore MD5 cache
-python main.py --heuristic-only  # no LLM calls
 ```
 
 | Flag | Effect |
 |------|--------|
 | `--force` | Reprocess every raw file; regenerate all topics; full re-link |
-| `--heuristic-only` | Pass empty API key to `LLMClient` — forces rule-based extraction/synthesis/linking |
 
-Exit code: `0` on success, `1` if no raw files found.
+Requires `OPENAI_API_KEY` — the pipeline calls `require_llm()` at start and exits `1`
+immediately if it's unset. Exit code: `0` on success, `1` if no raw files found or the
+LLM client can't be initialized.
 
 ## Step 1 — Data reading
 
@@ -62,7 +62,7 @@ For each raw file (or only changed files unless `--force`):
 5. Save to `state["files"][rel_path]` with `md5`, `chunks`, `processed_at`
 6. Append run record to `state["runs"]`
 
-See [06-extraction-and-synthesis.md](./06-extraction-and-synthesis.md) for heuristic vs LLM extraction rules.
+See [06-extraction-and-synthesis.md](./06-extraction-and-synthesis.md) for extraction details.
 
 ## Step 3 — Synthesis
 
@@ -104,7 +104,7 @@ Maps **display title** → **filename** (not slug path). Used by linker for inje
 For each draft in `temp_output/` that needs re-linking:
 
 1. Read draft body (strip existing front matter for linking pass)
-2. Inject links — LLM or heuristic title matching against `index.json`
+2. Inject links via the LLM, matched against `index.json` titles
 3. Apply `data/link_overrides.json` require/block rules
 4. Sanitize for MDX (`mdx_sanitize.py`)
 5. Wrap with Docusaurus front matter (`id`, `title`, `sidebar_label`, `slug`, `page_type`)
@@ -141,7 +141,7 @@ Meta tags excluded from categorization: `wiki`, `auto-ingest`, `llm-ingest`, `in
 `build_wiki.sh` at repo root:
 
 1. Ensures `compiler/.venv`
-2. Runs `python compiler/main.py "$@"` (forwards `--force`, `--heuristic-only`)
+2. Runs `python compiler/main.py "$@"` (forwards `--force`)
 3. Runs `npm run build` in `wiki-app/`
 
 Aborts Docusaurus build if compiler exits non-zero.
@@ -150,7 +150,8 @@ Aborts Docusaurus build if compiler exits non-zero.
 
 `/api/build/stream` spawns the same `main.py` via `build_runner.py`:
 
-- Default query params: `heuristic_only=true`, `force=false`
+- Query param: `force` (default `false`) — forwarded to `main.py` as `--force`
+- Requires `OPENAI_API_KEY` in the server's environment; `main.py` exits `1` immediately otherwise
 - Streams SSE events: `start`, `log`, `done`, `error`
 - Only one build at a time (`409` if lock held)
 - Strips ANSI escape codes from Rich output before streaming

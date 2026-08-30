@@ -6,8 +6,8 @@ You maintain this wiki alongside the **Python compiler** in `compiler/`. Humans 
 
 | Layer | Path | Owner |
 |-------|------|-------|
-| Raw sources | `data/raw/` | Human — never modify via LLM |
-| Compiler | `compiler/` | Python pipeline + optional LLM API |
+| Raw sources | `data/raw/` (text, `.eml`, images, PDF/CSV/JSON/DOCX/XLSX/PPTX/ZIP) | Human — never modify via LLM |
+| Compiler | `compiler/` | Python pipeline, LLM-only (requires `OPENAI_API_KEY`) |
 | Wiki output | `wiki-app/docs/` | Generated markdown (Docusaurus) |
 | Static site | `wiki-app/` | React/Docusaurus viewer |
 | Schema | `AGENTS.md` | Human + LLM co-evolution |

@@ -1,0 +1,18 @@
+[tool.ruff]
+line-length = 100
+target-version = "py312"
+exclude = ["temp_output", ".venv"]
+
+[tool.ruff.lint]
+select = ["E", "F", "I", "UP", "B"]
+# E501: line length is handled by editors, not worth failing CI over.
+# UP040: `type X = ...` (PEP 695) needs Python 3.12; keep the portable
+# `TypeAlias` form so the compiler still imports on 3.11 runners/venvs.
+ignore = ["E501", "UP040"]
+
+[tool.ruff.lint.per-file-ignores]
+# FastAPI's Depends()/Body() pattern relies on call expressions as defaults.
+"server.py" = ["B008"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]

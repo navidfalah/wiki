@@ -6,17 +6,25 @@ How fictional sample files are created under `data/raw/`. All generators write *
 
 | Script | Default output | Count | Style |
 |--------|----------------|-------|-------|
-| `generate_junk_data.py` | `notes/`, `transcripts/`, `articles/`, `ideas/` | 10 fixed | Hand-written Karpathy-style junk |
-| `generate_bulk_dummy_data.py` | `samples/` + procedural subdirs | 20 + 85 | Curated `[SAMPLE]` + templates |
-| `generate_varied_dummy_data.py` | `varied-samples/{type}/` | 35 | Large multi-format (3–15 KB) |
-| `generate_extended_dummy_data.py` | `dummy-test/`, `samples/*` | 42 | Wave-2 curated ops docs |
+| `scripts/dev/generate_junk_data.py` | `notes/`, `transcripts/`, `articles/`, `ideas/` | 10 fixed | Hand-written Karpathy-style junk |
+| `scripts/dev/generate_bulk_dummy_data.py` | `samples/` + procedural subdirs | 20 + 85 | Curated `[SAMPLE]` + templates |
+| `scripts/dev/generate_varied_dummy_data.py` | `varied-samples/{type}/` | 35 | Large multi-format (3–15 KB) |
+| `scripts/dev/generate_extended_dummy_data.py` | `dummy-test/`, `samples/*` | 42 | Wave-2 curated ops docs |
 
-All run from `compiler/`:
+All live in `compiler/scripts/dev/` — dev-only, not imported by the compiler pipeline.
+Run each standalone, or through the `generate_dummy_data.py` dispatcher:
 
 ```bash
 cd compiler
-python generate_junk_data.py [--overwrite] [--output ../data/raw]
+python scripts/dev/generate_junk_data.py [--overwrite] [--output ../data/raw]
+
+# equivalent, via the dispatcher:
+python scripts/dev/generate_dummy_data.py junk [--overwrite] [--output ../data/raw]
 ```
+
+There's also `scripts/dev/keep_aurora_raw.py`, a one-off maintenance script that moves
+non-Aurora-Labs raw files into `data/_archive_non_aurora/` — not a data generator, but
+lives alongside them since it's dev-only tooling too.
 
 ## Filename and body markers
 
@@ -28,7 +36,7 @@ python generate_junk_data.py [--overwrite] [--output ../data/raw]
 
 **Safe to delete:** All generated test files. Regenerate with `--overwrite`.
 
-## 1. generate_junk_data.py
+## 1. scripts/dev/generate_junk_data.py
 
 **Purpose:** Original seed set — messy Aurora Labs notes mimicking real knowledge-work chaos.
 
@@ -49,7 +57,7 @@ python generate_junk_data.py [--overwrite] [--output ../data/raw]
 
 **Intentional mess:** Typos, incomplete sentences, contradictions (15 min vs hourly), Karpathy wiki references.
 
-## 2. generate_bulk_dummy_data.py
+## 2. scripts/dev/generate_bulk_dummy_data.py
 
 Unified CLI for curated samples and procedural bulk.
 
@@ -88,14 +96,14 @@ Example: `bulk/[DUMMY-TEST-DATA]-greengrid-forum-scrape-395-2026-07-16.txt`
 ### CLI flags
 
 ```bash
-python generate_bulk_dummy_data.py                    # samples + procedural
-python generate_bulk_dummy_data.py --samples-only
-python generate_bulk_dummy_data.py --dummy-only
-python generate_bulk_dummy_data.py --dummy-only --count 200 --start-seq 100
-python generate_bulk_dummy_data.py --dummy-only --only-subdir bulk --count 50
-python generate_bulk_dummy_data.py --varied-only      # delegates to varied generator
-python generate_bulk_dummy_data.py --overwrite
-python generate_bulk_dummy_data.py --output /path/to/data/raw
+python scripts/dev/generate_bulk_dummy_data.py                    # samples + procedural
+python scripts/dev/generate_bulk_dummy_data.py --samples-only
+python scripts/dev/generate_bulk_dummy_data.py --dummy-only
+python scripts/dev/generate_bulk_dummy_data.py --dummy-only --count 200 --start-seq 100
+python scripts/dev/generate_bulk_dummy_data.py --dummy-only --only-subdir bulk --count 50
+python scripts/dev/generate_bulk_dummy_data.py --varied-only      # delegates to varied generator
+python scripts/dev/generate_bulk_dummy_data.py --overwrite
+python scripts/dev/generate_bulk_dummy_data.py --output /path/to/data/raw
 ```
 
 | Flag | Default | Description |
@@ -110,7 +118,7 @@ python generate_bulk_dummy_data.py --output /path/to/data/raw
 | `--only-subdir DIR` | all | Restrict procedural output |
 | `--min-bytes` / `--max-bytes` | 3000 / 12000 | For `--varied-only` |
 
-## 3. generate_varied_dummy_data.py
+## 3. scripts/dev/generate_varied_dummy_data.py
 
 **Purpose:** Stress-test chunking and linking with realistic document sizes.
 
@@ -136,14 +144,14 @@ python generate_bulk_dummy_data.py --output /path/to/data/raw
 **Padding:** `FILLER_PARAGRAPHS` — domain sentences about MeshSync, TeaBuddy, battery contradictions, etc.
 
 ```bash
-python generate_varied_dummy_data.py
-python generate_varied_dummy_data.py --count 50 --overwrite
-python generate_varied_dummy_data.py --min-bytes 8000 --max-bytes 25000
-python generate_varied_dummy_data.py --clean --overwrite   # wipe varied-samples/ first
-python generate_varied_dummy_data.py --stats-only          # size stats only
+python scripts/dev/generate_varied_dummy_data.py
+python scripts/dev/generate_varied_dummy_data.py --count 50 --overwrite
+python scripts/dev/generate_varied_dummy_data.py --min-bytes 8000 --max-bytes 25000
+python scripts/dev/generate_varied_dummy_data.py --clean --overwrite   # wipe varied-samples/ first
+python scripts/dev/generate_varied_dummy_data.py --stats-only          # size stats only
 ```
 
-## 4. generate_extended_dummy_data.py
+## 4. scripts/dev/generate_extended_dummy_data.py
 
 **Purpose:** Wave-2 hand-authored set (42 files).
 
@@ -154,16 +162,16 @@ python generate_varied_dummy_data.py --stats-only          # size stats only
 - `samples/emails/`, `research/`, `specs/`, `legal/`, `social/`
 
 ```bash
-python generate_extended_dummy_data.py [--overwrite] [--output ../data/raw]
+python scripts/dev/generate_extended_dummy_data.py [--overwrite] [--output ../data/raw]
 ```
 
 ## Recommended full seed workflow
 
 ```bash
-python compiler/generate_junk_data.py
-python compiler/generate_bulk_dummy_data.py --overwrite
-python compiler/generate_extended_dummy_data.py --overwrite
-python compiler/generate_varied_dummy_data.py --overwrite
+python compiler/scripts/dev/generate_junk_data.py
+python compiler/scripts/dev/generate_bulk_dummy_data.py --overwrite
+python compiler/scripts/dev/generate_extended_dummy_data.py --overwrite
+python compiler/scripts/dev/generate_varied_dummy_data.py --overwrite
 cd compiler && python main.py --force
 ```
 

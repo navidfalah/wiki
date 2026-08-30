@@ -23,28 +23,33 @@ wiki/
 
 ```
 data/
-├── raw/                      # ALL compiler input (.txt, .md, recursive)
-│   ├── notes/
+├── raw/                      # ALL compiler input, recursive
+│   ├── notes/                 # .txt / .md
 │   ├── transcripts/
 │   ├── articles/
 │   ├── ideas/
-│   ├── emails/
+│   ├── emails/                 # .eml — see email_ingest.py
 │   ├── specs/
 │   ├── research/
 │   ├── dummy-test/
 │   ├── bulk/
-│   ├── samples/              # [SAMPLE] curated narratives
+│   ├── samples/               # [SAMPLE] curated narratives
 │   │   ├── notes/, articles/, transcripts/, ...
 │   │   └── bulk/
-│   └── varied-samples/       # Large multi-type test files
+│   └── varied-samples/        # Large multi-type test files
 │       ├── transcript/, prd/, email/, adr/, ...
 │
 ├── state.json                # Incremental compiler state (gitignored, created on compile)
 ├── link_overrides.json       # Manual knowledge-graph connection rules
+├── source_trust.json         # Per-source trust level rules — see trust.py
 └── .llm-cache.sqlite         # LLM response cache (gitignored, optional)
 ```
 
-**Note:** Only `.txt` and `.md` under `data/raw/` are read. Other extensions are ignored.
+**Recognized extensions under `data/raw/`:** `.txt` `.md` (text), `.eml`
+(email), `.png` `.jpg` `.jpeg` `.gif` `.webp` `.bmp` (image), `.pdf` `.csv`
+`.json` `.docx` `.xlsx` `.pptx` `.zip` (file attachment). See
+[19-multimedia-email-and-trust.md](./19-multimedia-email-and-trust.md).
+Everything else (and dotfiles like `.gitkeep`) is ignored.
 
 ## `compiler/`
 
@@ -52,9 +57,13 @@ data/
 compiler/
 ├── main.py                   # Full 5-step pipeline entry point
 ├── synthesizer.py            # Chunking, extraction, synthesis
+├── text_chunking.py          # Shared paragraph-chunking (text/email/file)
+├── media_ingest.py           # Images + file attachments → chunks
+├── email_ingest.py           # .eml parsing → chunks
+├── trust.py                  # Source trust levels + References & Trust section
 ├── linker.py                 # Topic index, cross-link injection, export
 ├── moc_generator.py          # Hierarchical index.md
-├── llm_client.py             # OpenAI client, cache, retries
+├── llm_client.py             # OpenAI client, cache, retries, vision captioning
 ├── link_overrides.py         # require/block connection rules
 ├── server.py                 # FastAPI API (:8000)
 ├── build_runner.py           # SSE subprocess wrapper for main.py
@@ -68,14 +77,30 @@ compiler/
 ├── fix_mdx_body.py           # MDX body fixes
 ├── run_server.sh             # Start API with venv
 ├── requirements.txt
-├── review_report.txt         # Output of reviewer.py (if run)
+├── requirements-dev.txt      # + ruff, pytest
+├── pyproject.toml            # ruff + pytest config
+├── review_report.txt         # Output of reviewer.py (if run, not committed)
 ├── temp_output/              # Draft pages + index.json (intermediate)
 │   ├── *.md
 │   └── index.json
-├── generate_junk_data.py       # 10 seed Aurora junk files
-├── generate_bulk_dummy_data.py # [SAMPLE] + procedural bulk
-├── generate_varied_dummy_data.py
-├── generate_extended_dummy_data.py
+├── tests/                    # pytest suite for pure-logic modules
+│   ├── test_yaml_frontmatter.py
+│   ├── test_mdx_sanitize.py
+│   ├── test_synthesizer.py
+│   ├── test_linker.py
+│   ├── test_link_overrides.py
+│   ├── test_media_ingest.py
+│   ├── test_email_ingest.py
+│   ├── test_trust.py
+│   ├── test_multimedia_pipeline.py     # mixed source types, end-to-end w/ fake LLM
+│   └── test_generated_banner_pipeline.py
+├── scripts/dev/               # Dev-only test-data generators (not part of the pipeline)
+│   ├── generate_dummy_data.py         # Dispatcher CLI for the generators below
+│   ├── generate_junk_data.py          # 10 seed Aurora junk files
+│   ├── generate_bulk_dummy_data.py    # [SAMPLE] + procedural bulk
+│   ├── generate_varied_dummy_data.py
+│   ├── generate_extended_dummy_data.py
+│   └── keep_aurora_raw.py             # Archive non-Aurora raw files
 └── .venv/                    # Python virtualenv (local, gitignored)
 ```
 
@@ -118,6 +143,9 @@ wiki-app/
 │   └── css/custom.css
 ├── plugins/
 │   └── backlinksPlugin.js    # Backlinks for doc pages
+├── static/
+│   └── media/                # Ingested images/attachments (content-hash deduped,
+│                              # gitignored except .gitkeep — see media_ingest.py)
 └── build/                    # Production output (after npm run build)
 ```
 
@@ -125,6 +153,7 @@ wiki-app/
 
 ```
 .github/workflows/wiki-build.yml   # CI: compile → build → GitHub Pages
+.github/workflows/pr-checks.yml    # CI: lint + pytest + build on pull_request
 ```
 
 ## Files you should not commit

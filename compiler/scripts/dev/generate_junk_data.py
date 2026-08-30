@@ -5,7 +5,7 @@ from __future__ import annotations
 
 from pathlib import Path
 
-RAW_DIR = Path(__file__).resolve().parent.parent / "data" / "raw"
+RAW_DIR = Path(__file__).resolve().parent.parent.parent.parent / "data" / "raw"
 
 JUNK_FILES: dict[str, str] = {
     "notes/2026-06-01-standup-scribbles.txt": """STANDUP — june 1?? (late again)

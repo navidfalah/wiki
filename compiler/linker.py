@@ -8,20 +8,25 @@ import json
 import re
 from collections.abc import Callable
 from dataclasses import dataclass, field
-from datetime import datetime, timezone
+from datetime import UTC, datetime
 from pathlib import Path
-from typing import TypeAlias
 
-ProgressCallback: TypeAlias = Callable[[int, int, str], None]
-
-from llm_client import LLMClient, require_llm
 from link_overrides import (
     apply_connection_overrides,
     load_link_overrides,
     override_source_topics,
 )
+from llm_client import LLMClient, require_llm
+from mdx_sanitize import sanitize_for_mdx
 from models import OUTPUT_DIR
-from yaml_frontmatter import yaml_quote
+from yaml_frontmatter import (
+    FINAL_GENERATED_NOTE,
+    insert_generated_banner,
+    strip_generated_banner,
+    yaml_quote,
+)
+
+ProgressCallback = Callable[[int, int, str], None]
 
 COMPILER_DIR = Path(__file__).resolve().parent
 TEMP_OUTPUT_DIR = COMPILER_DIR / "temp_output"
@@ -111,7 +116,8 @@ def _finalize_linked_doc(
     """Merge linked body with Docusaurus frontmatter (preserve synthesizer fields)."""
     doc_id = Path(filename).stem
     slug = f"/{doc_id}"
-    now = datetime.now(timezone.utc).isoformat()
+    now = datetime.now(UTC).isoformat()
+    linked_body = strip_generated_banner(linked_body)
 
     if existing_frontmatter:
         fm = existing_frontmatter
@@ -139,7 +145,7 @@ def _finalize_linked_doc(
         if "slug:" not in fm:
             fm += f"\nslug: {slug}"
         body = sanitize_for_mdx(linked_body.strip())
-        return f"---\n{fm}\n---\n\n{body}\n"
+        return insert_generated_banner(f"---\n{fm}\n---\n\n{body}\n", FINAL_GENERATED_NOTE)
 
     return wrap_docusaurus_doc(
         title=title,
@@ -372,9 +378,6 @@ def _remove_broken_links(body: str, removed_files: set[str]) -> str:
     return body
 
 
-from mdx_sanitize import sanitize_for_mdx
-
-
 def wrap_docusaurus_doc(
     *,
     title: str,
@@ -385,7 +388,7 @@ def wrap_docusaurus_doc(
     """Wrap linked markdown with Docusaurus frontmatter."""
     doc_id = Path(filename).stem
     slug = f"/{doc_id}"
-    return (
+    content = (
         f"---\n"
         f"id: {doc_id}\n"
         f"title: {_yaml_str(title)}\n"
@@ -393,8 +396,9 @@ def wrap_docusaurus_doc(
         f"slug: {slug}\n"
         f"page_type: {page_type}\n"
         f"---\n\n"
-        f"{sanitize_for_mdx(body.strip())}\n"
+        f"{sanitize_for_mdx(strip_generated_banner(body).strip())}\n"
     )
+    return insert_generated_banner(content, FINAL_GENERATED_NOTE)
 
 
 def link_and_export_pages(
@@ -466,6 +470,7 @@ def link_and_export_pages(
         title = _extract_title_from_markdown(content, _title_from_filename(filename))
         existing_fm, body = _split_frontmatter(content)
         link_source = body if existing_fm is not None else content
+        link_source = strip_generated_banner(link_source)
         link_source = _remove_broken_links(link_source, removed_files)
 
         linked_body = link_page_with_llm(

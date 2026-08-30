@@ -28,14 +28,14 @@ The sample domain is fictional **Aurora Labs** (open IoT sensors), cross-linked 
 
 ## Project overview
 
-LLM Wiki turns unstructured text (meeting notes, email threads, forum scrapes, half-finished specs) into a linked markdown wiki suitable for Docusaurus. The compiler uses an **OpenAI-compatible API** for extraction, synthesis, and cross-linking (`OPENAI_API_KEY` required).
+LLM Wiki turns unstructured raw sources — meeting notes, `.eml` email threads, forum scrapes, half-finished specs, images, and PDF/CSV/JSON/DOCX/XLSX/PPTX/ZIP attachments — into a linked markdown wiki suitable for Docusaurus. The compiler uses an **OpenAI-compatible API** for extraction, synthesis, cross-linking, and image captioning (`OPENAI_API_KEY` required). See [documentation/19-multimedia-email-and-trust.md](./documentation/19-multimedia-email-and-trust.md) for how non-text sources and source-trust/citation tracking work.
 
 ### Architecture
 
 ```mermaid
 flowchart TB
     subgraph input [Human input]
-        RAW["data/raw/<br/>.txt and .md files"]
+        RAW["data/raw/<br/>text, .eml, images, PDF/CSV/JSON/DOCX/..."]
     end
 
     subgraph compiler [Python compiler — compiler/]
@@ -110,32 +110,41 @@ wiki/
 │   └── wiki-build.yml           # CI: compile → build → GitHub Pages
 │
 ├── data/
-│   ├── raw/                     # Raw source files (.txt, .md) — you add here
+│   ├── raw/                     # Raw sources: text, .eml, images, files — you add here
 │   ├── state.json               # Incremental compiler state (MD5 hashes, extractions)
 │   ├── link_overrides.json      # Manual knowledge-graph connection rules
+│   ├── source_trust.json        # Per-source trust level rules (trust.py)
 │   └── .llm-cache.sqlite        # LLM response cache (created when using API)
 │
 ├── compiler/
 │   ├── main.py                  # Full 5-step pipeline orchestrator
 │   ├── synthesizer.py           # Chunking, extraction, LLM synthesis
+│   ├── text_chunking.py         # Shared paragraph-chunking helper
+│   ├── media_ingest.py          # Images + file attachments → chunks
+│   ├── email_ingest.py          # .eml parsing → chunks
+│   ├── trust.py                 # Source trust levels + References & Trust section
 │   ├── linker.py                # Topic index + cross-link injection
 │   ├── moc_generator.py         # Hierarchical index.md (Map of Content)
 │   ├── server.py                # FastAPI API for dashboards
 │   ├── build_runner.py          # SSE subprocess wrapper for main.py
 │   ├── analytics.py             # Metrics, tag index, dead-link audit
-│   ├── llm_client.py            # OpenAI client, retries, SQLite cache
+│   ├── llm_client.py            # OpenAI client, retries, SQLite cache, vision captioning
 │   ├── link_overrides.py        # Knowledge graph overrides
 │   ├── run_server.sh            # Start API on :8000
 │   ├── temp_output/             # Draft pages + index.json (pre-link)
-│   ├── generate_junk_data.py    # 10 Aurora Labs seed files
-│   ├── generate_bulk_dummy_data.py   # [SAMPLE] + procedural bulk generators
-│   ├── generate_varied_dummy_data.py # Large multi-type varied files
-│   ├── generate_extended_dummy_data.py # Wave-2 curated sample set
+│   ├── tests/                   # pytest suite (pure logic + fake-LLM pipeline tests)
+│   ├── scripts/dev/generate_dummy_data.py          # Dispatcher CLI for the generators below
+│   ├── scripts/dev/generate_junk_data.py           # 10 Aurora Labs seed files
+│   ├── scripts/dev/generate_bulk_dummy_data.py     # [SAMPLE] + procedural bulk generators
+│   ├── scripts/dev/generate_varied_dummy_data.py   # Large multi-type varied files
+│   ├── scripts/dev/generate_extended_dummy_data.py # Wave-2 curated sample set
+│   ├── scripts/dev/keep_aurora_raw.py              # Archive non-Aurora raw files
 │   └── requirements.txt
 │
 └── wiki-app/
     ├── docusaurus.config.js     # Site config; customFields.wikiApiUrl
     ├── docs/                    # Compiler output (generated markdown)
+    ├── static/media/            # Ingested images/attachments (content-hash deduped)
     ├── src/
     │   ├── pages/               # workspace, analytics, graph, knowledge-graph
     │   ├── components/          # DataWorkspace, WikiGraph, AnalyticsAudit, …
@@ -155,9 +164,12 @@ wiki/
 | **npm** | Comes with Node | Install wiki-app dependencies |
 | **Git** | Any recent | Clone and CI deploy |
 
+Required:
+
+- **OpenAI API key** (or compatible endpoint) — the compiler is LLM-only; extraction, synthesis, linking, and image captioning all need it
+
 Optional:
 
-- **OpenAI API key** (or compatible endpoint) for LLM extraction, synthesis, and linking
 - **GitHub Pages** enabled on the repo for automated deploy from `main`
 
 ---
@@ -170,7 +182,7 @@ Optional:
 git clone <your-repo-url> wiki
 cd wiki
 cp .env.example .env
-# Edit .env and set OPENAI_API_KEY if you want LLM mode (optional)
+# Edit .env and set OPENAI_API_KEY — required, the compiler is LLM-only
 ```
 
 ### 2. Python compiler (virtualenv)
@@ -377,22 +389,22 @@ Recurring characters: Mira Chen, Jonah Park, Sam Rivera, Alex Kim, Jamie Lo, and
 
 ---
 
-### `generate_junk_data.py` — seed Aurora Labs junk (10 files)
+### `scripts/dev/generate_junk_data.py` — seed Aurora Labs junk (10 files)
 
 Original Karpathy-style messy notes: standups, grocery lists, forum scrapes, voice memos.
 
 ```bash
 cd compiler
-python generate_junk_data.py
-python generate_junk_data.py --overwrite
-python generate_junk_data.py --output ../data/raw
+python scripts/dev/generate_junk_data.py
+python scripts/dev/generate_junk_data.py --overwrite
+python scripts/dev/generate_junk_data.py --output ../data/raw
 ```
 
 **Output:** `data/raw/notes/`, `transcripts/`, `articles/`, `ideas/` (10 predefined files).
 
 ---
 
-### `generate_bulk_dummy_data.py` — bulk [SAMPLE] + procedural files
+### `scripts/dev/generate_bulk_dummy_data.py` — bulk [SAMPLE] + procedural files
 
 Unified CLI for three generation modes.
 
@@ -400,29 +412,29 @@ Unified CLI for three generation modes.
 cd compiler
 
 # Default: 20 [SAMPLE] files in samples/ + 85 procedural [DUMMY TEST DATA] files
-python generate_bulk_dummy_data.py
+python scripts/dev/generate_bulk_dummy_data.py
 
 # Only legacy [SAMPLE] narrative set (20 files)
-python generate_bulk_dummy_data.py --samples-only
+python scripts/dev/generate_bulk_dummy_data.py --samples-only
 
 # Only procedural [DUMMY TEST DATA] files (default count: 85)
-python generate_bulk_dummy_data.py --dummy-only
+python scripts/dev/generate_bulk_dummy_data.py --dummy-only
 
 # Procedural count and sequence offset
-python generate_bulk_dummy_data.py --dummy-only --count 200 --start-seq 100
+python scripts/dev/generate_bulk_dummy_data.py --dummy-only --count 200 --start-seq 100
 
 # Write procedural files only under one subdir
-python generate_bulk_dummy_data.py --dummy-only --only-subdir bulk --count 50
+python scripts/dev/generate_bulk_dummy_data.py --dummy-only --only-subdir bulk --count 50
 
-# Large varied files (delegates to generate_varied_dummy_data.py)
-python generate_bulk_dummy_data.py --varied-only
-python generate_bulk_dummy_data.py --varied-only --count 50 --min-bytes 5000 --max-bytes 20000
+# Large varied files (delegates to scripts/dev/generate_varied_dummy_data.py)
+python scripts/dev/generate_bulk_dummy_data.py --varied-only
+python scripts/dev/generate_bulk_dummy_data.py --varied-only --count 50 --min-bytes 5000 --max-bytes 20000
 
 # Replace existing files
-python generate_bulk_dummy_data.py --overwrite
+python scripts/dev/generate_bulk_dummy_data.py --overwrite
 
 # Custom output root
-python generate_bulk_dummy_data.py --output /path/to/data/raw
+python scripts/dev/generate_bulk_dummy_data.py --output /path/to/data/raw
 ```
 
 **Flags summary:**
@@ -446,7 +458,7 @@ python generate_bulk_dummy_data.py --output /path/to/data/raw
 
 ---
 
-### `generate_varied_dummy_data.py` — large multi-type files (10 doc types)
+### `scripts/dev/generate_varied_dummy_data.py` — large multi-type files (10 doc types)
 
 Generates **35 files by default** (3–15 KB each) under `data/raw/varied-samples/{type}/`.
 
@@ -467,26 +479,26 @@ Generates **35 files by default** (3–15 KB each) under `data/raw/varied-sample
 
 ```bash
 cd compiler
-python generate_varied_dummy_data.py
-python generate_varied_dummy_data.py --count 50 --overwrite
-python generate_varied_dummy_data.py --min-bytes 8000 --max-bytes 25000
-python generate_varied_dummy_data.py --clean --overwrite   # wipe varied-samples/ first
-python generate_varied_dummy_data.py --stats-only          # print size stats without writing
+python scripts/dev/generate_varied_dummy_data.py
+python scripts/dev/generate_varied_dummy_data.py --count 50 --overwrite
+python scripts/dev/generate_varied_dummy_data.py --min-bytes 8000 --max-bytes 25000
+python scripts/dev/generate_varied_dummy_data.py --clean --overwrite   # wipe varied-samples/ first
+python scripts/dev/generate_varied_dummy_data.py --stats-only          # print size stats without writing
 ```
 
-Also invokable via `generate_bulk_dummy_data.py --varied-only`.
+Also invokable via `scripts/dev/generate_bulk_dummy_data.py --varied-only`.
 
 ---
 
-### `generate_extended_dummy_data.py` — wave-2 curated set (42 files)
+### `scripts/dev/generate_extended_dummy_data.py` — wave-2 curated set (42 files)
 
 Hand-authored wave-2 content: firmware changelogs, QA matrices, investor drafts, MQTT schema, legal snippets, social scrapes, and more `[SAMPLE]` files across new categories (`emails/`, `research/`, `specs/`, `legal/`, `social/`).
 
 ```bash
 cd compiler
-python generate_extended_dummy_data.py
-python generate_extended_dummy_data.py --overwrite
-python generate_extended_dummy_data.py --output ../data/raw
+python scripts/dev/generate_extended_dummy_data.py
+python scripts/dev/generate_extended_dummy_data.py --overwrite
+python scripts/dev/generate_extended_dummy_data.py --output ../data/raw
 ```
 
 **Output locations:**
@@ -500,16 +512,16 @@ python generate_extended_dummy_data.py --output ../data/raw
 
 ```bash
 # Minimal seed data for first compile
-python compiler/generate_junk_data.py
+python compiler/scripts/dev/generate_junk_data.py
 
 # Rich narrative + bulk procedural data
-python compiler/generate_bulk_dummy_data.py --overwrite
+python compiler/scripts/dev/generate_bulk_dummy_data.py --overwrite
 
 # Wave-2 curated samples
-python compiler/generate_extended_dummy_data.py --overwrite
+python compiler/scripts/dev/generate_extended_dummy_data.py --overwrite
 
 # Large files for chunk/linker stress tests
-python compiler/generate_varied_dummy_data.py --overwrite
+python compiler/scripts/dev/generate_varied_dummy_data.py --overwrite
 
 # Full recompile
 cd compiler && python main.py --force
@@ -521,7 +533,7 @@ cd compiler && python main.py --force
 
 ```
 data/
-├── raw/                         # All compiler input (.txt, .md, recursive)
+├── raw/                         # All compiler input (text, .eml, images, files — recursive)
 │   ├── notes/                   # Standups, scribbles (seed + generated)
 │   ├── transcripts/             # Meeting/support transcripts
 │   ├── articles/                # Spec fragments, blog scrapes
@@ -677,7 +689,7 @@ Run all compiler commands from `compiler/` with the venv activated, or use `buil
 No raw files found under data/raw/
 ```
 
-Ensure at least one `.txt` or `.md` file exists under `data/raw/`. Run `python generate_junk_data.py` for seed data.
+Ensure at least one `.txt` or `.md` file exists under `data/raw/`. Run `python scripts/dev/generate_junk_data.py` for seed data.
 
 ### YAML front matter errors
 

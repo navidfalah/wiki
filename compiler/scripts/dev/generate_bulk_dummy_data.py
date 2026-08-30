@@ -5,7 +5,7 @@ from __future__ import annotations
 
 from pathlib import Path
 
-RAW_DIR = Path(__file__).resolve().parent.parent / "data" / "raw"
+RAW_DIR = Path(__file__).resolve().parent.parent.parent.parent / "data" / "raw"
 SAMPLES_DIR = RAW_DIR / "samples"
 
 # 20 new files — Aurora Labs + TeaBuddy, mixed formats

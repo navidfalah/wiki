@@ -4,7 +4,11 @@ Everything under `data/` and intermediate compiler output.
 
 ## `data/raw/` — compiler input
 
-The only directory humans routinely add files to. Recursive scan for `.txt` and `.md`.
+The only directory humans routinely add files to. Recursively scanned for
+`.txt`/`.md` (text), `.eml` (email), images, and PDF/CSV/JSON/DOCX/XLSX/PPTX/ZIP
+(file attachments) — see
+[19-multimedia-email-and-trust.md](./19-multimedia-email-and-trust.md) for
+how each non-text type is handled.
 
 ### Typical subfolders (this repo)
 

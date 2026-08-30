@@ -1,0 +1,21 @@
+{
+  "version": 1,
+  "default_by_source_type": {
+    "text": "medium",
+    "email": "medium",
+    "image": "low",
+    "file": "medium"
+  },
+  "rules": [
+    {
+      "pattern": "samples/**",
+      "level": "unverified",
+      "reason": "Hand-authored fictional demo content, not a real source"
+    },
+    {
+      "pattern": "dummy-test/**",
+      "level": "unverified",
+      "reason": "Procedurally generated test data"
+    }
+  ]
+}

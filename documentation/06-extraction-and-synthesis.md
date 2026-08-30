@@ -8,14 +8,17 @@ How raw text becomes structured extractions and draft wiki pages.
 ### Discovery
 
 ```python
-discover_raw_text_files(RAW_DIR)  # rglob("*.txt") + rglob("*.md")
+discover_raw_source_files(RAW_DIR)  # every recognized extension, not just text
 ```
 
-Returns sorted unique paths. Symlinks follow normal filesystem behavior.
+Returns sorted unique paths across text, email, image, and file-attachment
+extensions (see [19-multimedia-email-and-trust.md](./19-multimedia-email-and-trust.md)
+for the full extension list). Symlinks follow normal filesystem behavior.
 
-### Split algorithm
+### Split algorithm (text)
 
-`split_text_into_chunks(content, max_chars=2000)`:
+`split_text_into_chunks(content, max_chars=2000)` — now in `text_chunking.py`,
+shared with `media_ingest.py` and `email_ingest.py`:
 
 1. Split on blank lines → paragraphs
 2. Accumulate paragraphs until adding the next would exceed 2000 chars
@@ -23,6 +26,16 @@ Returns sorted unique paths. Symlinks follow normal filesystem behavior.
 4. Empty file → no chunks (file skipped in practice if empty)
 
 **Implication:** A 12 KB varied-sample PRD becomes 6–8 chunks. A 31-line forum scrape is usually 1 chunk.
+
+### Non-text sources
+
+`.eml`, image, and file-attachment sources don't go through
+`split_text_into_chunks` directly on their raw bytes — `_chunks_for_file()`
+dispatches them to `email_ingest.build_email_chunks()` or
+`media_ingest.build_image_chunk()` / `build_file_chunks()` first, which
+produce ordinary chunk text (an email's headers+body, an image's caption, a
+PDF's extracted text) that *those* functions then paragraph-chunk the same
+way if it's long. See [19-multimedia-email-and-trust.md](./19-multimedia-email-and-trust.md).
 
 ### RawChunk structure
 
@@ -32,6 +45,7 @@ class RawChunk:
     source_path: str   # e.g. "bulk/[DUMMY-TEST-DATA]-aurora-..."
     chunk_index: int   # 0-based per file
     text: str
+    source_type: str = "text"   # "text" | "email" | "image" | "file"
 ```
 
 ## Extraction (Step 2)
@@ -46,35 +60,13 @@ concepts: list[dict]    # {"name": "Battery", "description": "..."}
 
 Stored in `data/state.json` under `files[rel_path].chunks[]`.
 
-### Heuristic extraction (`_extract_chunk_heuristic`)
+### Heuristic extraction (removed)
 
-When `LLMClient.available` is false:
-
-| Field | Source |
-|-------|--------|
-| **Topics** | Up to 3 `##` headers; else first line (max 80 chars); fallback `"General Notes"` |
-| **Entities** | `**bold**` terms passing `_is_entity_candidate()` (max 5) |
-| **Concepts** | Bold terms containing: mesh, battery, protocol, power, sync, wiki (max 5) |
-
-#### Entity candidate rules (`_is_entity_candidate`)
-
-Rejected if:
-
-- In `SKIP_ENTITY_TERMS` (date, author, status, mcu, sensors, …)
-- Shorter than 4 characters
-
-Accepted if:
-
-- Contains keywords: labs, widget, chen, park, sensenode, aurora, nova, mira, jonah
-- OR: capitalized multi-word term (`"Mira Chen"`)
-
-#### Bold term extraction
-
-Regex: `\*\*([^*]+)\*\*` — deduplicated, max 12 terms, strips trailing `:`
+Earlier versions of the compiler fell back to rule-based extraction (header/bold-term
+scraping) when no API key was set. That path has been removed — extraction is now
+LLM-only. See [08-llm-and-heuristics.md](./08-llm-and-heuristics.md).
 
 ### LLM extraction
-
-When API key is set:
 
 - System prompt: `CHUNK_EXTRACTION_SYSTEM_PROMPT` (in `synthesizer.py`)
 - Input: source path, chunk index, chunk text (truncated to 8000 chars)
@@ -131,42 +123,24 @@ Example: topic `"MeshSync"` → `meshsync.md`
 
 `topics_affected_by_sources()` maps changed file paths → topic names via grouped index.
 
-### Heuristic topic page (`_heuristic_topic_page`)
+### Heuristic topic page (removed)
 
-Structure:
-
-```markdown
----
-id: meshsync
-title: MeshSync
-tags:
-  - wiki
-  - meshsync
-last_updated: "2026-..."
----
-
-# MeshSync
-
-## Overview
-Synthesized from **N** raw chunk(s) (heuristic mode — set OPENAI_API_KEY for LLM drafts).
-
-## Key Details
-- `path/to/raw` (chunk 0): first 300 chars preview...
-
-## Sources
-- `path/to/raw` — chunk 0
-```
-
-Tags derived by `_derive_tags()`: topic slug + entity/concept slugs from chunk metadata (max 8 tags).
+The rule-based topic-page template (`_heuristic_topic_page`) was removed along with
+heuristic extraction. All topic pages are now LLM-synthesized.
 
 ### LLM topic page
 
 Prompt includes:
 
 - Topic name, suggested id, tags, timestamp
-- All chunk blocks: `### Source: path (chunk N)` + full text
+- All chunk blocks: `### Source: path (chunk N, type: text|email|image|file)` + full text
 
-System prompt: `WIKI_PAGE_SYSTEM_PROMPT` — asks for markdown with front matter.
+System prompt: `WIKI_PAGE_SYSTEM_PROMPT` — asks for markdown with front matter,
+and explicitly tells the model **not** to write its own Sources/References
+section. After the response comes back, `synthesize_topic_wiki_pages()`
+strips any such section the model wrote anyway (safety net) and appends a
+deterministic `## References & Trust` table built from `trust.py` — see
+[19-multimedia-email-and-trust.md](./19-multimedia-email-and-trust.md).
 
 ### Legacy per-file synthesis (removed)
 
