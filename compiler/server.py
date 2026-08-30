@@ -24,7 +24,7 @@ from link_overrides import (
 )
 from linker import INDEX_JSON, load_topic_index
 from models import OUTPUT_DIR, RAW_DIR, STATE_FILE
-from synthesizer import compute_file_md5, discover_raw_text_files, load_state, slugify
+from synthesizer import compute_file_md5, discover_raw_source_files, load_state, slugify
 
 COMPILER_DIR = Path(__file__).resolve().parent
 REVIEW_REPORT_PATH = COMPILER_DIR / "review_report.txt"
@@ -252,7 +252,7 @@ def list_raw_files() -> dict[str, Any]:
     state = load_state()
     files: list[dict[str, Any]] = []
 
-    for path in discover_raw_text_files(RAW_DIR):
+    for path in discover_raw_source_files(RAW_DIR):
         rel = str(path.relative_to(RAW_DIR)).replace("\\", "/")
         md5 = compute_file_md5(path)
         status = _raw_file_status(rel, md5, state)

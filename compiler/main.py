@@ -36,7 +36,7 @@ from synthesizer import (
     TEMP_OUTPUT_DIR,
     cleanup_stale_drafts,
     compute_file_md5,
-    discover_raw_text_files,
+    discover_raw_source_files,
     extract_topics_from_raw_files,
     group_chunks_by_topic,
     load_state,
@@ -120,9 +120,9 @@ def _print_incremental_table(incremental: dict) -> None:
     console.print(table)
 
 
-def step_read_data() -> list:
-    """Step 1: Read all raw text files and split into chunks."""
-    raw_files = discover_raw_text_files(RAW_DIR)
+def step_read_data(llm: LLMClient) -> list:
+    """Step 1: Read all raw source files (text/email/image/file) and split into chunks."""
+    raw_files = discover_raw_source_files(RAW_DIR)
     if not raw_files:
         console.print(f"[red]No raw files found under[/] {RAW_DIR}")
         return []
@@ -147,7 +147,7 @@ def step_read_data() -> list:
         console=console,
     ) as progress:
         task = progress.add_task("Reading and chunking files…", total=len(raw_files))
-        chunks = read_raw_chunks(RAW_DIR)
+        chunks = read_raw_chunks(RAW_DIR, llm)
         progress.update(task, completed=len(raw_files))
 
     console.print(f"[green]✓[/] Read [bold]{len(raw_files)}[/] files → [bold]{len(chunks)}[/] chunks")
@@ -393,7 +393,7 @@ def run_pipeline(*, force: bool = False) -> int:
     )
 
     _step_banner(1, 5, "Data Reading", "Scan data/raw/ and split files into text chunks")
-    chunks = step_read_data()
+    chunks = step_read_data(llm)
     if not chunks:
         return 1
 

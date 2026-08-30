@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import base64
 import hashlib
 import json
 import os
@@ -48,6 +49,22 @@ def _utc_now_iso() -> str:
 def make_cache_key(system_prompt: str, prompt: str, model: str) -> str:
     """Stable hash for an exact system_prompt + prompt + model combination."""
     payload = f"{system_prompt}\0{prompt}\0{model}".encode()
+    return hashlib.sha256(payload).hexdigest()
+
+
+IMAGE_MIME_TYPES = {
+    ".png": "image/png",
+    ".jpg": "image/jpeg",
+    ".jpeg": "image/jpeg",
+    ".gif": "image/gif",
+    ".webp": "image/webp",
+    ".bmp": "image/bmp",
+}
+
+
+def make_image_cache_key(image_bytes: bytes, system_prompt: str, model: str) -> str:
+    """Stable hash for an exact (image content, prompt, model) combination."""
+    payload = hashlib.sha256(image_bytes).digest() + f"\0{system_prompt}\0{model}".encode()
     return hashlib.sha256(payload).hexdigest()
 
 
@@ -146,6 +163,32 @@ class LLMClient:
             self._client = OpenAI(api_key=self.api_key, base_url=self.base_url)
         return self._client
 
+    def _chat_completion_with_retries(self, messages: list[dict[str, Any]], *, temperature: float) -> str:
+        """Call chat.completions.create with the shared retry/backoff policy."""
+        last_error: Exception | None = None
+        for attempt in range(1, self.max_retries + 1):
+            try:
+                response = self._get_client().chat.completions.create(
+                    model=self.model,
+                    temperature=temperature,
+                    messages=messages,
+                )
+                return response.choices[0].message.content or ""
+            except RETRYABLE_EXCEPTIONS as exc:
+                last_error = exc
+                if attempt >= self.max_retries:
+                    break
+                delay = self.retry_base_delay * (2 ** (attempt - 1))
+                time.sleep(delay)
+            except Exception as exc:
+                raise RuntimeError(
+                    f"LLM API call failed (non-retryable): {exc}"
+                ) from exc
+
+        raise RuntimeError(
+            f"LLM API call failed after {self.max_retries} attempt(s): {last_error}"
+        ) from last_error
+
     def generate_response(
         self,
         prompt: str,
@@ -173,41 +216,78 @@ class LLMClient:
             if cached is not None:
                 return cached
 
-        last_error: Exception | None = None
-        for attempt in range(1, self.max_retries + 1):
-            try:
-                response = self._get_client().chat.completions.create(
-                    model=self.model,
-                    temperature=temperature,
-                    messages=[
-                        {"role": "system", "content": system_prompt},
-                        {"role": "user", "content": prompt},
-                    ],
-                )
-                content = response.choices[0].message.content or ""
-                if cache_on:
-                    self.cache.set(
-                        cache_key,
-                        system_prompt=system_prompt,
-                        prompt=prompt,
-                        model=self.model,
-                        response=content,
-                    )
-                return content
-            except RETRYABLE_EXCEPTIONS as exc:
-                last_error = exc
-                if attempt >= self.max_retries:
-                    break
-                delay = self.retry_base_delay * (2 ** (attempt - 1))
-                time.sleep(delay)
-            except Exception as exc:
-                raise RuntimeError(
-                    f"LLM API call failed (non-retryable): {exc}"
-                ) from exc
+        content = self._chat_completion_with_retries(
+            [
+                {"role": "system", "content": system_prompt},
+                {"role": "user", "content": prompt},
+            ],
+            temperature=temperature,
+        )
+        if cache_on:
+            self.cache.set(
+                cache_key,
+                system_prompt=system_prompt,
+                prompt=prompt,
+                model=self.model,
+                response=content,
+            )
+        return content
 
-        raise RuntimeError(
-            f"LLM API call failed after {self.max_retries} attempt(s): {last_error}"
-        ) from last_error
+    def describe_image(
+        self,
+        image_path: Path,
+        system_prompt: str,
+        *,
+        prompt: str = "Describe this image.",
+        temperature: float = 0.2,
+        use_cache: bool | None = None,
+    ) -> str:
+        """
+        Caption an image via a vision-capable chat completion.
+
+        Requires a vision-capable model (the default gpt-4o-mini supports
+        this). Cached separately from generate_response, keyed by the image's
+        own content hash rather than a text prompt, so re-captioning the same
+        image file (even if renamed/moved) is a cache hit.
+        """
+        if not self.available:
+            raise RuntimeError(
+                "No OPENAI_API_KEY set. Add a key to .env or pass api_key= to LLMClient."
+            )
+
+        image_bytes = image_path.read_bytes()
+        mime = IMAGE_MIME_TYPES.get(image_path.suffix.lower(), "application/octet-stream")
+        cache_on = self.cache_enabled if use_cache is None else use_cache
+        cache_key = make_image_cache_key(image_bytes, system_prompt, self.model)
+
+        if cache_on:
+            cached = self.cache.get(cache_key)
+            if cached is not None:
+                return cached
+
+        data_url = f"data:{mime};base64,{base64.b64encode(image_bytes).decode('ascii')}"
+        content = self._chat_completion_with_retries(
+            [
+                {"role": "system", "content": system_prompt},
+                {
+                    "role": "user",
+                    "content": [
+                        {"type": "text", "text": prompt},
+                        {"type": "image_url", "image_url": {"url": data_url}},
+                    ],
+                },
+            ],
+            temperature=temperature,
+        )
+        if cache_on:
+            self.cache.set(
+                cache_key,
+                system_prompt=system_prompt,
+                prompt=f"<image:{image_path.name}>",
+                model=self.model,
+                response=content,
+            )
+        return content
 
     def complete(self, system: str, user: str, temperature: float = 0.2) -> str:
         """Backward-compatible alias: system=user order matches prior API."""

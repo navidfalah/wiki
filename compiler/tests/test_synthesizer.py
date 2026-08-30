@@ -2,7 +2,7 @@ from pathlib import Path
 
 from synthesizer import (
     compute_file_md5,
-    discover_raw_text_files,
+    discover_raw_source_files,
     scan_raw_file_changes,
     slugify,
     split_text_into_chunks,
@@ -50,7 +50,7 @@ def test_compute_file_md5(tmp_path: Path):
     assert compute_file_md5(f) == hashlib.md5(b"hello world").hexdigest()
 
 
-def test_discover_raw_text_files_excludes_archive(tmp_path: Path):
+def test_discover_raw_source_files_excludes_archive(tmp_path: Path):
     (tmp_path / "notes").mkdir()
     (tmp_path / "notes" / "a.txt").write_text("a")
     (tmp_path / "notes" / "b.md").write_text("b")
@@ -59,9 +59,23 @@ def test_discover_raw_text_files_excludes_archive(tmp_path: Path):
     archive.mkdir()
     (archive / "old.txt").write_text("old")
 
-    found = discover_raw_text_files(tmp_path)
+    found = discover_raw_source_files(tmp_path)
     names = {p.name for p in found}
-    assert names == {"a.txt", "b.md"}
+    assert names == {"a.txt", "b.md", "c.json"}
+
+
+def test_discover_raw_source_files_includes_media_and_emails(tmp_path: Path):
+    (tmp_path / "note.md").write_text("hi")
+    (tmp_path / "photo.png").write_bytes(b"\x89PNG")
+    (tmp_path / "thread.eml").write_text("Subject: x\n\nbody")
+    (tmp_path / "spec.pdf").write_bytes(b"%PDF-1.4")
+    (tmp_path / "archive.zip").write_bytes(b"PK\x03\x04")
+    (tmp_path / ".gitkeep").write_text("")
+    (tmp_path / "ignored.exe").write_bytes(b"MZ")
+
+    found = discover_raw_source_files(tmp_path)
+    names = {p.name for p in found}
+    assert names == {"note.md", "photo.png", "thread.eml", "spec.pdf", "archive.zip"}
 
 
 def test_scan_raw_file_changes_detects_new_modified_deleted(tmp_path: Path):

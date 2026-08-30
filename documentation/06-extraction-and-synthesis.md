@@ -8,14 +8,17 @@ How raw text becomes structured extractions and draft wiki pages.
 ### Discovery
 
 ```python
-discover_raw_text_files(RAW_DIR)  # rglob("*.txt") + rglob("*.md")
+discover_raw_source_files(RAW_DIR)  # every recognized extension, not just text
 ```
 
-Returns sorted unique paths. Symlinks follow normal filesystem behavior.
+Returns sorted unique paths across text, email, image, and file-attachment
+extensions (see [19-multimedia-email-and-trust.md](./19-multimedia-email-and-trust.md)
+for the full extension list). Symlinks follow normal filesystem behavior.
 
-### Split algorithm
+### Split algorithm (text)
 
-`split_text_into_chunks(content, max_chars=2000)`:
+`split_text_into_chunks(content, max_chars=2000)` — now in `text_chunking.py`,
+shared with `media_ingest.py` and `email_ingest.py`:
 
 1. Split on blank lines → paragraphs
 2. Accumulate paragraphs until adding the next would exceed 2000 chars
@@ -23,6 +26,16 @@ Returns sorted unique paths. Symlinks follow normal filesystem behavior.
 4. Empty file → no chunks (file skipped in practice if empty)
 
 **Implication:** A 12 KB varied-sample PRD becomes 6–8 chunks. A 31-line forum scrape is usually 1 chunk.
+
+### Non-text sources
+
+`.eml`, image, and file-attachment sources don't go through
+`split_text_into_chunks` directly on their raw bytes — `_chunks_for_file()`
+dispatches them to `email_ingest.build_email_chunks()` or
+`media_ingest.build_image_chunk()` / `build_file_chunks()` first, which
+produce ordinary chunk text (an email's headers+body, an image's caption, a
+PDF's extracted text) that *those* functions then paragraph-chunk the same
+way if it's long. See [19-multimedia-email-and-trust.md](./19-multimedia-email-and-trust.md).
 
 ### RawChunk structure
 
@@ -32,6 +45,7 @@ class RawChunk:
     source_path: str   # e.g. "bulk/[DUMMY-TEST-DATA]-aurora-..."
     chunk_index: int   # 0-based per file
     text: str
+    source_type: str = "text"   # "text" | "email" | "image" | "file"
 ```
 
 ## Extraction (Step 2)
@@ -119,9 +133,14 @@ heuristic extraction. All topic pages are now LLM-synthesized.
 Prompt includes:
 
 - Topic name, suggested id, tags, timestamp
-- All chunk blocks: `### Source: path (chunk N)` + full text
+- All chunk blocks: `### Source: path (chunk N, type: text|email|image|file)` + full text
 
-System prompt: `WIKI_PAGE_SYSTEM_PROMPT` — asks for markdown with front matter.
+System prompt: `WIKI_PAGE_SYSTEM_PROMPT` — asks for markdown with front matter,
+and explicitly tells the model **not** to write its own Sources/References
+section. After the response comes back, `synthesize_topic_wiki_pages()`
+strips any such section the model wrote anyway (safety net) and appends a
+deterministic `## References & Trust` table built from `trust.py` — see
+[19-multimedia-email-and-trust.md](./19-multimedia-email-and-trust.md).
 
 ### Legacy per-file synthesis (removed)
 

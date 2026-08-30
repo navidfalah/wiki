@@ -28,14 +28,14 @@ The sample domain is fictional **Aurora Labs** (open IoT sensors), cross-linked 
 
 ## Project overview
 
-LLM Wiki turns unstructured text (meeting notes, email threads, forum scrapes, half-finished specs) into a linked markdown wiki suitable for Docusaurus. The compiler uses an **OpenAI-compatible API** for extraction, synthesis, and cross-linking (`OPENAI_API_KEY` required).
+LLM Wiki turns unstructured raw sources — meeting notes, `.eml` email threads, forum scrapes, half-finished specs, images, and PDF/CSV/JSON/DOCX/XLSX/PPTX/ZIP attachments — into a linked markdown wiki suitable for Docusaurus. The compiler uses an **OpenAI-compatible API** for extraction, synthesis, cross-linking, and image captioning (`OPENAI_API_KEY` required). See [documentation/19-multimedia-email-and-trust.md](./documentation/19-multimedia-email-and-trust.md) for how non-text sources and source-trust/citation tracking work.
 
 ### Architecture
 
 ```mermaid
 flowchart TB
     subgraph input [Human input]
-        RAW["data/raw/<br/>.txt and .md files"]
+        RAW["data/raw/<br/>text, .eml, images, PDF/CSV/JSON/DOCX/..."]
     end
 
     subgraph compiler [Python compiler — compiler/]
@@ -110,32 +110,41 @@ wiki/
 │   └── wiki-build.yml           # CI: compile → build → GitHub Pages
 │
 ├── data/
-│   ├── raw/                     # Raw source files (.txt, .md) — you add here
+│   ├── raw/                     # Raw sources: text, .eml, images, files — you add here
 │   ├── state.json               # Incremental compiler state (MD5 hashes, extractions)
 │   ├── link_overrides.json      # Manual knowledge-graph connection rules
+│   ├── source_trust.json        # Per-source trust level rules (trust.py)
 │   └── .llm-cache.sqlite        # LLM response cache (created when using API)
 │
 ├── compiler/
 │   ├── main.py                  # Full 5-step pipeline orchestrator
 │   ├── synthesizer.py           # Chunking, extraction, LLM synthesis
+│   ├── text_chunking.py         # Shared paragraph-chunking helper
+│   ├── media_ingest.py          # Images + file attachments → chunks
+│   ├── email_ingest.py          # .eml parsing → chunks
+│   ├── trust.py                 # Source trust levels + References & Trust section
 │   ├── linker.py                # Topic index + cross-link injection
 │   ├── moc_generator.py         # Hierarchical index.md (Map of Content)
 │   ├── server.py                # FastAPI API for dashboards
 │   ├── build_runner.py          # SSE subprocess wrapper for main.py
 │   ├── analytics.py             # Metrics, tag index, dead-link audit
-│   ├── llm_client.py            # OpenAI client, retries, SQLite cache
+│   ├── llm_client.py            # OpenAI client, retries, SQLite cache, vision captioning
 │   ├── link_overrides.py        # Knowledge graph overrides
 │   ├── run_server.sh            # Start API on :8000
 │   ├── temp_output/             # Draft pages + index.json (pre-link)
-│   ├── scripts/dev/generate_junk_data.py    # 10 Aurora Labs seed files
-│   ├── scripts/dev/generate_bulk_dummy_data.py   # [SAMPLE] + procedural bulk generators
-│   ├── scripts/dev/generate_varied_dummy_data.py # Large multi-type varied files
+│   ├── tests/                   # pytest suite (pure logic + fake-LLM pipeline tests)
+│   ├── scripts/dev/generate_dummy_data.py          # Dispatcher CLI for the generators below
+│   ├── scripts/dev/generate_junk_data.py           # 10 Aurora Labs seed files
+│   ├── scripts/dev/generate_bulk_dummy_data.py     # [SAMPLE] + procedural bulk generators
+│   ├── scripts/dev/generate_varied_dummy_data.py   # Large multi-type varied files
 │   ├── scripts/dev/generate_extended_dummy_data.py # Wave-2 curated sample set
+│   ├── scripts/dev/keep_aurora_raw.py              # Archive non-Aurora raw files
 │   └── requirements.txt
 │
 └── wiki-app/
     ├── docusaurus.config.js     # Site config; customFields.wikiApiUrl
     ├── docs/                    # Compiler output (generated markdown)
+    ├── static/media/            # Ingested images/attachments (content-hash deduped)
     ├── src/
     │   ├── pages/               # workspace, analytics, graph, knowledge-graph
     │   ├── components/          # DataWorkspace, WikiGraph, AnalyticsAudit, …
@@ -155,9 +164,12 @@ wiki/
 | **npm** | Comes with Node | Install wiki-app dependencies |
 | **Git** | Any recent | Clone and CI deploy |
 
+Required:
+
+- **OpenAI API key** (or compatible endpoint) — the compiler is LLM-only; extraction, synthesis, linking, and image captioning all need it
+
 Optional:
 
-- **OpenAI API key** (or compatible endpoint) for LLM extraction, synthesis, and linking
 - **GitHub Pages** enabled on the repo for automated deploy from `main`
 
 ---
@@ -170,7 +182,7 @@ Optional:
 git clone <your-repo-url> wiki
 cd wiki
 cp .env.example .env
-# Edit .env and set OPENAI_API_KEY if you want LLM mode (optional)
+# Edit .env and set OPENAI_API_KEY — required, the compiler is LLM-only
 ```
 
 ### 2. Python compiler (virtualenv)
@@ -521,7 +533,7 @@ cd compiler && python main.py --force
 
 ```
 data/
-├── raw/                         # All compiler input (.txt, .md, recursive)
+├── raw/                         # All compiler input (text, .eml, images, files — recursive)
 │   ├── notes/                   # Standups, scribbles (seed + generated)
 │   ├── transcripts/             # Meeting/support transcripts
 │   ├── articles/                # Spec fragments, blog scrapes

@@ -26,6 +26,7 @@ Detailed project documentation, split by topic. Start with [01-overview.md](./01
 | [16-troubleshooting.md](./16-troubleshooting.md) | Common errors and fixes |
 | [17-compiler-module-reference.md](./17-compiler-module-reference.md) | Every Python module in `compiler/` |
 | [18-sample-domain.md](./18-sample-domain.md) | Fictional companies, characters, intentional contradictions |
+| [19-multimedia-email-and-trust.md](./19-multimedia-email-and-trust.md) | Images, file attachments, email ingestion, source trust & references |
 
 ---
 
@@ -50,6 +51,9 @@ Detailed project documentation, split by topic. Start with [01-overview.md](./01
 
 **“I want to customize linking or front matter”**  
 → 07 → 13 → 17
+
+**“I want to ingest images, PDFs, or emails”**  
+→ 19 → 06 → 09
 
 **“Dashboard / API not working”**  
 → 11 → 12 → 16
