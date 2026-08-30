@@ -30,6 +30,8 @@ The sample domain is fictional **Aurora Labs** (open IoT sensors), cross-linked 
 
 LLM Wiki turns unstructured raw sources — meeting notes, `.eml` email threads, forum scrapes, half-finished specs, images, and PDF/CSV/JSON/DOCX/XLSX/PPTX/ZIP attachments — into a linked markdown wiki suitable for Docusaurus. The compiler uses an **OpenAI-compatible API** for extraction, synthesis, cross-linking, and image captioning (`OPENAI_API_KEY` required). See [documentation/19-multimedia-email-and-trust.md](./documentation/19-multimedia-email-and-trust.md) for how non-text sources and source-trust/citation tracking work.
 
+Three dedicated "engine" modules sit on top of the base pipeline, each with its own dashboard page and unit tests, independent of one another: an **email knowledge engine** (browse ingested `.eml` threads on their own, see [documentation/20-email-resources-and-chat-engines.md](./documentation/20-email-resources-and-chat-engines.md)), a **resources engine** (every cited source deduped across pages, reusable independent of which page cites it), and a **RAG chat engine** (ask questions over the compiled wiki and get cited answers — works with or without an LLM configured). The dashboard defaults to a minimal, light-only theme.
+
 ### Architecture
 
 ```mermaid
@@ -54,12 +56,15 @@ flowchart TB
     subgraph output [Static site — wiki-app/]
         DOCS["wiki-app/docs/<br/>linked markdown"]
         MOC["index.md Map of Content"]
-        DOCUSAURUS["Docusaurus + React<br/>custom dashboard pages"]
+        DOCUSAURUS["Docusaurus + React<br/>/workspace /chat /emails /resources /graph /analytics"]
     end
 
     subgraph api [Optional API — port 8000]
-        FASTAPI["FastAPI server<br/>server.py"]
+        FASTAPI["FastAPI server<br/>server.py (thin router)"]
         SSE["SSE build stream"]
+        EMAILENG["email_engine.py"]
+        RESENG["resources_engine.py"]
+        RAGENG["rag_engine.py"]
     end
 
     RAW --> S1
@@ -70,14 +75,21 @@ flowchart TB
     FASTAPI --> DOCS
     FASTAPI --> STATE
     SSE --> S1
+    FASTAPI --> EMAILENG
+    FASTAPI --> RESENG
+    FASTAPI --> RAGENG
+    EMAILENG --> RAW
+    RESENG --> DOCS
+    RAGENG --> DOCS
 ```
 
 | Layer | Path | Owner | Description |
 |-------|------|-------|-------------|
 | Raw sources | `data/raw/` | Human | Source-of-truth junk data. Never edit via automated agents without explicit intent. |
 | Compiler | `compiler/` | Python pipeline | Reads raw files, extracts structure, writes drafts, links pages. |
+| Engines | `compiler/email_engine.py`, `resources_engine.py`, `rag_engine.py` | Python, pure functions | Email browsing, deduped cross-page resources, and RAG chat — each independent, unit-tested without a running server. |
 | Wiki output | `wiki-app/docs/` | Generated | Docusaurus-ready markdown with YAML front matter. |
-| Static site | `wiki-app/` | React/Docusaurus | Browsing UI, graphs, analytics, live compile dashboard. |
+| Static site | `wiki-app/` | React/Docusaurus | Browsing UI, chat, email/resource explorers, graphs, analytics, live compile dashboard. Light/white theme only. |
 | Agent schema | `AGENTS.md` | Human + LLM | Workflows for compile, ingest, query, and lint. |
 
 ---
@@ -225,7 +237,7 @@ npm start
 
 Site: **http://localhost:3000**
 
-Open **Dashboard** at http://localhost:3000/workspace to browse raw files, trigger live compiles, and inspect synthesized pages.
+Open **Dashboard** at http://localhost:3000/workspace to browse raw files, trigger live compiles, and inspect synthesized pages. From there, **Chat** (`/chat`) answers questions over the compiled wiki, **Emails** (`/emails`) browses ingested `.eml` threads, and **Resources** (`/resources`) lists every cited source deduped across pages.
 
 ### 5. One-command production build
 
