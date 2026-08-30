@@ -8,7 +8,7 @@ import json
 import re
 from collections import defaultdict
 from dataclasses import dataclass, field
-from datetime import datetime, timezone
+from datetime import UTC, datetime
 from pathlib import Path
 
 import yaml
@@ -137,7 +137,7 @@ class PageMeta:
 
 
 def _utc_now_iso() -> str:
-    return datetime.now(timezone.utc).isoformat()
+    return datetime.now(UTC).isoformat()
 
 
 def _split_frontmatter(content: str) -> tuple[dict, str]:
@@ -158,7 +158,7 @@ def _extract_summary(body: str, max_len: int = 120) -> str:
         stripped = line.strip()
         if not stripped or stripped.startswith("#"):
             continue
-        if stripped.startswith(("-", "*", "|", ">")):
+        if stripped.startswith(("-", "*", "|", ">", "<!--")):
             continue
         text = re.sub(r"\[([^\]]+)\]\([^)]+\)", r"\1", stripped)
         text = re.sub(r"[*_`]", "", text)

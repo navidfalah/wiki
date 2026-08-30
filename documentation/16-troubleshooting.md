@@ -22,7 +22,7 @@ No raw files found under data/raw/
 Ensure at least one `.txt` or `.md` exists under `data/raw/`:
 
 ```bash
-cd compiler && python generate_junk_data.py
+cd compiler && python scripts/dev/generate_junk_data.py
 ```
 
 ## YAML front matter errors
@@ -79,7 +79,7 @@ Only one SSE compile at a time. Wait for completion or restart API server to rel
 | Cause | Fix |
 |-------|-----|
 | 1000+ raw files | Use incremental runs (no `--force`) |
-| LLM latency | `--heuristic-only` |
+| LLM latency | Keep `data/.llm-cache.sqlite` around; avoid `--force` |
 | Large varied samples | Expected — chunk count scales with size |
 
 ## `state.json` corruption
@@ -112,7 +112,7 @@ Compiler runs `mdx_sanitize.py` on export. If manual edits introduce raw `<` or 
 
 | Error | Fix |
 |-------|-----|
-| `No OPENAI_API_KEY set` | Add key to `.env` or use `--heuristic-only` |
+| `No OPENAI_API_KEY set` / `OPENAI_API_KEY is required` | The compiler is LLM-only — there is no heuristic fallback. Add a key to `.env` (local) or set the `OPENAI_API_KEY` repo secret (CI). |
 | Rate limit | Wait; cache reduces repeat calls |
 | Invalid JSON from LLM | Retry; check model compatibility |
 

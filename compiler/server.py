@@ -5,7 +5,6 @@ from __future__ import annotations
 
 import asyncio
 import json
-import os
 import re
 from pathlib import Path
 from typing import Any, Literal
@@ -14,8 +13,8 @@ from fastapi import Body, FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import StreamingResponse
 
-from build_runner import stream_compiler_build
 from analytics import build_analytics, get_tag_detail
+from build_runner import stream_compiler_build
 from link_overrides import (
     LINK_OVERRIDES_PATH,
     build_knowledge_graph_payload,
@@ -24,7 +23,6 @@ from link_overrides import (
     validate_connections,
 )
 from linker import INDEX_JSON, load_topic_index
-
 from models import OUTPUT_DIR, RAW_DIR, STATE_FILE
 from synthesizer import compute_file_md5, discover_raw_text_files, load_state, slugify
 

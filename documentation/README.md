@@ -13,9 +13,9 @@ Detailed project documentation, split by topic. Start with [01-overview.md](./01
 | [03-architecture.md](./03-architecture.md) | Layers, data flow, ownership rules, mental model |
 | [04-repository-structure.md](./04-repository-structure.md) | Every top-level folder and important file |
 | [05-compiler-pipeline.md](./05-compiler-pipeline.md) | The 5 steps + MOC, CLI flags, incremental builds |
-| [06-extraction-and-synthesis.md](./06-extraction-and-synthesis.md) | Chunking, topic extraction, page drafting, heuristics detail |
+| [06-extraction-and-synthesis.md](./06-extraction-and-synthesis.md) | Chunking, topic extraction, page drafting |
 | [07-linking-moc-and-pages.md](./07-linking-moc-and-pages.md) | Cross-links, index.json, MOC, page format, overrides |
-| [08-llm-and-heuristics.md](./08-llm-and-heuristics.md) | API client, cache, retries, when each mode runs |
+| [08-llm-and-heuristics.md](./08-llm-and-heuristics.md) | API client, cache, retries, LLM-only requirement |
 | [09-test-data-generation.md](./09-test-data-generation.md) | All four generator scripts, markers, CLI flags |
 | [10-data-layout-and-state.md](./10-data-layout-and-state.md) | `data/raw/`, state.json, link_overrides, temp_output |
 | [11-wiki-app-and-dashboards.md](./11-wiki-app-and-dashboards.md) | Docusaurus, React pages, components, routes |

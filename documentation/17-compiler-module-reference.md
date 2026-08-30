@@ -25,7 +25,7 @@ Every Python module in `compiler/` with responsibilities and key entry points.
 | `discover_raw_text_files()` | Find `.txt`/`.md` under raw dir |
 | `split_text_into_chunks()` | ~2000 char paragraph chunks |
 | `read_raw_chunks()` | All files → `RawChunk` list |
-| `extract_chunk_topics()` | Per-chunk extraction (LLM or heuristic) |
+| `extract_chunk_topics()` | Per-chunk LLM extraction |
 | `extract_topics_from_raw_files()` | Step 2 with MD5 incremental |
 | `group_chunks_by_topic()` | Topic → chunk list map |
 | `synthesize_topic_wiki_pages()` | Write drafts to `temp_output/` |
@@ -42,7 +42,6 @@ Every Python module in `compiler/` with responsibilities and key entry points.
 | `build_topic_index()` | Full index rebuild |
 | `update_topic_index()` | Incremental index update |
 | `load_topic_index()` | Read `index.json` |
-| `link_page_heuristic()` | Regex title → link injection |
 | `link_page_with_llm()` | LLM link injection |
 | `link_and_export_pages()` | Step 5 export to `wiki-app/docs/` |
 | `wrap_docusaurus_doc()` | Front matter wrapper |
@@ -121,7 +120,6 @@ FastAPI app — all `/api/*` routes. See [12-api-server.md](./12-api-server.md).
 
 ### `models.py`
 
-Path constants: `PROJECT_ROOT`, `RAW_DIR`, `OUTPUT_DIR`, `STATE_FILE`  
 Path constants: `PROJECT_ROOT`, `RAW_DIR`, `OUTPUT_DIR`, `STATE_FILE`
 
 ### `yaml_frontmatter.py`
@@ -140,14 +138,19 @@ CLI to re-quote broken front matter fields in `wiki-app/docs/`
 
 MDX body repair utility
 
-## Test data generators
+## Test data generators (`scripts/dev/`)
+
+Dev-only — not imported by the compiler pipeline. See
+[09-test-data-generation.md](./09-test-data-generation.md).
 
 | Module | Function |
 |--------|----------|
+| `generate_dummy_data.py` | Dispatcher CLI: `python generate_dummy_data.py <junk\|bulk\|extended\|varied\|keep-aurora>` |
 | `generate_junk_data.py` | `generate_junk_data()` — 10 seed files |
 | `generate_bulk_dummy_data.py` | `generate_bulk_dummy_data()`, `generate_procedural_dummy_test_data()` |
 | `generate_varied_dummy_data.py` | `generate_varied_dummy_data()` |
 | `generate_extended_dummy_data.py` | Extended wave-2 file dict |
+| `keep_aurora_raw.py` | Archive non-Aurora raw files to `data/_archive_non_aurora/` |
 
 ## Shell scripts
 

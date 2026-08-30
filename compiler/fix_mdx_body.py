@@ -9,6 +9,7 @@ from pathlib import Path
 
 from mdx_sanitize import sanitize_for_mdx
 
+
 def _split_frontmatter(content: str) -> tuple[str | None, str]:
     if not content.startswith("---"):
         return None, content

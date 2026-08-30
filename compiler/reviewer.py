@@ -7,15 +7,15 @@ import argparse
 import json
 import re
 from dataclasses import dataclass, field
-from datetime import datetime, timezone
+from datetime import UTC, datetime
 from pathlib import Path
 
 from rich.console import Console
 from rich.panel import Panel
 from rich.progress import BarColumn, Progress, SpinnerColumn, TextColumn, TimeElapsedColumn
 
-from llm_client import LLMClient, require_llm
 from linker import INDEX_JSON
+from llm_client import LLMClient, require_llm
 from models import OUTPUT_DIR, STATE_FILE
 from synthesizer import load_state
 
@@ -69,7 +69,7 @@ class PageReview:
 
 
 def _utc_now_iso() -> str:
-    return datetime.now(timezone.utc).isoformat()
+    return datetime.now(UTC).isoformat()
 
 
 def strip_frontmatter(content: str) -> str:

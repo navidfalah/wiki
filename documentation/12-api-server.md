@@ -102,7 +102,7 @@ GET /api/build/status
 ### Stream
 
 ```
-GET /api/build/stream?heuristic_only=true&force=false
+GET /api/build/stream?force=false
 ```
 
 **Content-Type:** `text/event-stream`
@@ -118,7 +118,7 @@ GET /api/build/stream?heuristic_only=true&force=false
 
 **Concurrency:** Only one build at a time. Second request → HTTP **409** `"A build is already running"`.
 
-**Implementation:** `build_runner.py` spawns `python -u main.py` with `--heuristic-only` / `--force` flags. Strips ANSI codes from Rich terminal output.
+**Implementation:** `build_runner.py` spawns `python -u main.py` with an optional `--force` flag. Strips ANSI codes from Rich terminal output. The server process must have `OPENAI_API_KEY` set in its environment — `main.py` is LLM-only and exits `1` immediately otherwise.
 
 ## Knowledge graph
 

@@ -8,7 +8,7 @@ import os
 import re
 import sqlite3
 import time
-from datetime import datetime, timezone
+from datetime import UTC, datetime
 from pathlib import Path
 from typing import Any
 
@@ -42,12 +42,12 @@ except ImportError:  # pragma: no cover - openai not installed in some environme
 
 
 def _utc_now_iso() -> str:
-    return datetime.now(timezone.utc).isoformat()
+    return datetime.now(UTC).isoformat()
 
 
 def make_cache_key(system_prompt: str, prompt: str, model: str) -> str:
     """Stable hash for an exact system_prompt + prompt + model combination."""
-    payload = f"{system_prompt}\0{prompt}\0{model}".encode("utf-8")
+    payload = f"{system_prompt}\0{prompt}\0{model}".encode()
     return hashlib.sha256(payload).hexdigest()
 
 

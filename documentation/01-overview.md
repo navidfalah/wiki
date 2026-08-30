@@ -50,14 +50,13 @@ The repo ships with fictional IoT companies used as pipeline stress tests:
 
 Replace `data/raw/` with your own topic when ready. The sample data is disposable.
 
-## Operating modes
+## Operating mode
 
-| Mode | Trigger | API calls |
-|------|---------|-----------|
-| **Heuristic** | No `OPENAI_API_KEY`, or `--heuristic-only` | None |
-| **LLM** | Valid key in `.env` | Extraction, synthesis, optional linking |
-
-Heuristic mode works immediately after `pip install`. LLM mode produces richer prose and uses a SQLite cache at `data/.llm-cache.sqlite`.
+The compiler is **LLM-only** — every step that interprets or writes content (extraction,
+synthesis, linking) requires a valid `OPENAI_API_KEY` in `.env`. There is no heuristic /
+offline fallback. Responses are cached in a SQLite file at `data/.llm-cache.sqlite`, so
+re-running the compiler on unchanged input costs no extra API calls. See
+[08-llm-and-heuristics.md](./08-llm-and-heuristics.md).
 
 ## Key URLs (local dev)
 

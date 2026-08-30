@@ -68,14 +68,25 @@ compiler/
 ├── fix_mdx_body.py           # MDX body fixes
 ├── run_server.sh             # Start API with venv
 ├── requirements.txt
-├── review_report.txt         # Output of reviewer.py (if run)
+├── requirements-dev.txt      # + ruff, pytest
+├── pyproject.toml            # ruff + pytest config
+├── review_report.txt         # Output of reviewer.py (if run, not committed)
 ├── temp_output/              # Draft pages + index.json (intermediate)
 │   ├── *.md
 │   └── index.json
-├── generate_junk_data.py       # 10 seed Aurora junk files
-├── generate_bulk_dummy_data.py # [SAMPLE] + procedural bulk
-├── generate_varied_dummy_data.py
-├── generate_extended_dummy_data.py
+├── tests/                    # pytest suite for pure-logic modules
+│   ├── test_yaml_frontmatter.py
+│   ├── test_mdx_sanitize.py
+│   ├── test_synthesizer.py
+│   ├── test_linker.py
+│   └── test_link_overrides.py
+├── scripts/dev/               # Dev-only test-data generators (not part of the pipeline)
+│   ├── generate_dummy_data.py         # Dispatcher CLI for the generators below
+│   ├── generate_junk_data.py          # 10 seed Aurora junk files
+│   ├── generate_bulk_dummy_data.py    # [SAMPLE] + procedural bulk
+│   ├── generate_varied_dummy_data.py
+│   ├── generate_extended_dummy_data.py
+│   └── keep_aurora_raw.py             # Archive non-Aurora raw files
 └── .venv/                    # Python virtualenv (local, gitignored)
 ```
 

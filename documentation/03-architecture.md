@@ -80,6 +80,13 @@ Understanding the split between `temp_output/` and `wiki-app/docs/` is essential
 
 The linker reads drafts from `temp_output/`, injects links, wraps/sanitizes for MDX, and writes to `wiki-app/docs/`.
 
+Every generated file carries an `<!-- AUTO-GENERATED ... -->` HTML comment right after
+its frontmatter — a draft-specific note in `temp_output/`, a different final note in
+`wiki-app/docs/` — so an editor opening either file sees immediately that it's
+compiler output and where edits actually belong. The linker strips the draft's note
+before linking and writes its own; see `insert_generated_banner()` /
+`strip_generated_banner()` in `yaml_frontmatter.py`.
+
 ## Incremental vs full rebuild
 
 | Flag | Step 2 | Step 3 | Step 5 |
@@ -89,20 +96,24 @@ The linker reads drafts from `temp_output/`, injects links, wraps/sanitizes for 
 
 Incremental behavior is critical when `data/raw/` has 1000+ test files.
 
-## Heuristic vs LLM (architectural view)
+## LLM-only pipeline
 
-Both modes run the **same 5-step pipeline**. Only the implementations inside extraction, synthesis, and linking differ:
+The compiler is **LLM-only** — extraction, synthesis, and linking all call `LLMClient`
+directly and raise via `require_llm()` if `OPENAI_API_KEY` is unset. There is no
+heuristic/offline code path:
 
 ```
                     ┌─────────────────┐
                     │   main.py       │
                     └────────┬────────┘
                              │
-              ┌──────────────┴──────────────┐
-              ▼                             ▼
-     LLMClient.available=true      LLMClient.available=false
-              │                             │
-     OpenAI + SQLite cache          Rules: headers, bold, keywords
+                      require_llm()
+                             │
+                 ┌───────────┴───────────┐
+                 ▼                       ▼
+          key present              key missing
+                 │                       │
+       OpenAI + SQLite cache     RuntimeError, exit 1
 ```
 
 ## API layer (optional)
@@ -133,7 +144,7 @@ Dashboard pages are **client-side React**; they fetch from port 8000.
 1. **Raw files are truth** — the wiki is a derived, lossy-but-useful view.
 2. **Linking is a separate pass** — synthesis writes content; linker connects it.
 3. **Idempotent-ish compiles** — MD5 state enables fast iteration.
-4. **Heuristic fallback** — no API key required for full pipeline.
+4. **LLM-only, cached** — no offline fallback; the SQLite response cache keeps repeat compiles cheap.
 5. **Sample domain is disposable** — clear `data/raw/`, add yours, `--force`.
 
 ## Next

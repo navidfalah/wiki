@@ -29,22 +29,22 @@ from linker import (
     link_and_export_pages,
     update_topic_index,
 )
-from moc_generator import generate_moc
 from llm_client import LLMClient, require_llm
+from moc_generator import generate_moc
 from models import OUTPUT_DIR, RAW_DIR, STATE_FILE
 from synthesizer import (
     TEMP_OUTPUT_DIR,
+    cleanup_stale_drafts,
     compute_file_md5,
     discover_raw_text_files,
     extract_topics_from_raw_files,
     group_chunks_by_topic,
+    load_state,
     read_raw_chunks,
     scan_raw_file_changes,
     slugify,
     synthesize_topic_wiki_pages,
     topics_affected_by_sources,
-    cleanup_stale_drafts,
-    load_state,
 )
 
 console = Console()

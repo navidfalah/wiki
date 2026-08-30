@@ -22,7 +22,7 @@ cd wiki
 cp .env.example .env
 ```
 
-Edit `.env` only if you want LLM mode:
+Edit `.env` and set your API key — the compiler is **LLM-only** and will not run without one:
 
 ```env
 OPENAI_API_KEY=sk-...
@@ -30,7 +30,8 @@ OPENAI_BASE_URL=https://api.openai.com/v1
 OPENAI_MODEL=gpt-4o-mini
 ```
 
-Without a key, the compiler uses **heuristic mode** automatically.
+Without a key, `python main.py` exits immediately with an error. See
+[08-llm-and-heuristics.md](./08-llm-and-heuristics.md).
 
 ## Python setup (compiler)
 
@@ -64,7 +65,7 @@ Expected output: Rich terminal panels for Steps 1–5, then Map of Content gener
 If you see `No raw files found under data/raw/`:
 
 ```bash
-python generate_junk_data.py    # from compiler/ — creates 10 seed files
+python scripts/dev/generate_junk_data.py    # from compiler/ — creates 10 seed files
 python main.py --force
 ```
 
@@ -119,7 +120,6 @@ From repo root:
 ```bash
 chmod +x build_wiki.sh
 ./build_wiki.sh                  # compile + Docusaurus build
-./build_wiki.sh --heuristic-only # force heuristics even with API key
 ./build_wiki.sh --force          # pass --force to compiler
 ```
 
@@ -140,16 +140,15 @@ cd wiki-app && npm run serve
 ## CLI quick reference
 
 ```bash
-# Compiler (from compiler/)
+# Compiler (from compiler/) — requires OPENAI_API_KEY
 python main.py                   # incremental
 python main.py --force           # reprocess all raw files
-python main.py --heuristic-only  # skip LLM even with key
 
 # Test data generators (from compiler/)
-python generate_junk_data.py [--overwrite]
-python generate_bulk_dummy_data.py [--overwrite] [--samples-only | --dummy-only | --varied-only]
-python generate_varied_dummy_data.py [--overwrite] [--count N]
-python generate_extended_dummy_data.py [--overwrite]
+python scripts/dev/generate_junk_data.py [--overwrite]
+python scripts/dev/generate_bulk_dummy_data.py [--overwrite] [--samples-only | --dummy-only | --varied-only]
+python scripts/dev/generate_varied_dummy_data.py [--overwrite] [--count N]
+python scripts/dev/generate_extended_dummy_data.py [--overwrite]
 
 # Maintenance
 python fix_frontmatter.py [--dry-run] [--docs-dir PATH]

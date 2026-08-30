@@ -68,9 +68,9 @@ GITHUB_ORG: ${{ github.repository_owner }}
 GITHUB_REPO: ${{ github.event.repository.name }}
 ```
 
-Optional repo secret:
+Required repo secret:
 
-- `OPENAI_API_KEY` — enables LLM mode in CI (otherwise heuristic)
+- `OPENAI_API_KEY` — the compiler is LLM-only (see [08-llm-and-heuristics.md](./08-llm-and-heuristics.md)); without this secret set, `python compiler/main.py` fails immediately and the workflow build step fails.
 
 ## `AGENTS.md`
 

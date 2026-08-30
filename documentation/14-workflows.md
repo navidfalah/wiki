@@ -62,10 +62,10 @@ Check for:
 
 ```bash
 cd compiler
-python generate_junk_data.py --overwrite
-python generate_bulk_dummy_data.py --overwrite
-python generate_extended_dummy_data.py --overwrite
-python generate_varied_dummy_data.py --overwrite
+python scripts/dev/generate_junk_data.py --overwrite
+python scripts/dev/generate_bulk_dummy_data.py --overwrite
+python scripts/dev/generate_extended_dummy_data.py --overwrite
+python scripts/dev/generate_varied_dummy_data.py --overwrite
 python main.py --force
 ```
 

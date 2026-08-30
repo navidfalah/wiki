@@ -127,10 +127,10 @@ wiki/
 │   ├── link_overrides.py        # Knowledge graph overrides
 │   ├── run_server.sh            # Start API on :8000
 │   ├── temp_output/             # Draft pages + index.json (pre-link)
-│   ├── generate_junk_data.py    # 10 Aurora Labs seed files
-│   ├── generate_bulk_dummy_data.py   # [SAMPLE] + procedural bulk generators
-│   ├── generate_varied_dummy_data.py # Large multi-type varied files
-│   ├── generate_extended_dummy_data.py # Wave-2 curated sample set
+│   ├── scripts/dev/generate_junk_data.py    # 10 Aurora Labs seed files
+│   ├── scripts/dev/generate_bulk_dummy_data.py   # [SAMPLE] + procedural bulk generators
+│   ├── scripts/dev/generate_varied_dummy_data.py # Large multi-type varied files
+│   ├── scripts/dev/generate_extended_dummy_data.py # Wave-2 curated sample set
 │   └── requirements.txt
 │
 └── wiki-app/
@@ -377,22 +377,22 @@ Recurring characters: Mira Chen, Jonah Park, Sam Rivera, Alex Kim, Jamie Lo, and
 
 ---
 
-### `generate_junk_data.py` — seed Aurora Labs junk (10 files)
+### `scripts/dev/generate_junk_data.py` — seed Aurora Labs junk (10 files)
 
 Original Karpathy-style messy notes: standups, grocery lists, forum scrapes, voice memos.
 
 ```bash
 cd compiler
-python generate_junk_data.py
-python generate_junk_data.py --overwrite
-python generate_junk_data.py --output ../data/raw
+python scripts/dev/generate_junk_data.py
+python scripts/dev/generate_junk_data.py --overwrite
+python scripts/dev/generate_junk_data.py --output ../data/raw
 ```
 
 **Output:** `data/raw/notes/`, `transcripts/`, `articles/`, `ideas/` (10 predefined files).
 
 ---
 
-### `generate_bulk_dummy_data.py` — bulk [SAMPLE] + procedural files
+### `scripts/dev/generate_bulk_dummy_data.py` — bulk [SAMPLE] + procedural files
 
 Unified CLI for three generation modes.
 
@@ -400,29 +400,29 @@ Unified CLI for three generation modes.
 cd compiler
 
 # Default: 20 [SAMPLE] files in samples/ + 85 procedural [DUMMY TEST DATA] files
-python generate_bulk_dummy_data.py
+python scripts/dev/generate_bulk_dummy_data.py
 
 # Only legacy [SAMPLE] narrative set (20 files)
-python generate_bulk_dummy_data.py --samples-only
+python scripts/dev/generate_bulk_dummy_data.py --samples-only
 
 # Only procedural [DUMMY TEST DATA] files (default count: 85)
-python generate_bulk_dummy_data.py --dummy-only
+python scripts/dev/generate_bulk_dummy_data.py --dummy-only
 
 # Procedural count and sequence offset
-python generate_bulk_dummy_data.py --dummy-only --count 200 --start-seq 100
+python scripts/dev/generate_bulk_dummy_data.py --dummy-only --count 200 --start-seq 100
 
 # Write procedural files only under one subdir
-python generate_bulk_dummy_data.py --dummy-only --only-subdir bulk --count 50
+python scripts/dev/generate_bulk_dummy_data.py --dummy-only --only-subdir bulk --count 50
 
-# Large varied files (delegates to generate_varied_dummy_data.py)
-python generate_bulk_dummy_data.py --varied-only
-python generate_bulk_dummy_data.py --varied-only --count 50 --min-bytes 5000 --max-bytes 20000
+# Large varied files (delegates to scripts/dev/generate_varied_dummy_data.py)
+python scripts/dev/generate_bulk_dummy_data.py --varied-only
+python scripts/dev/generate_bulk_dummy_data.py --varied-only --count 50 --min-bytes 5000 --max-bytes 20000
 
 # Replace existing files
-python generate_bulk_dummy_data.py --overwrite
+python scripts/dev/generate_bulk_dummy_data.py --overwrite
 
 # Custom output root
-python generate_bulk_dummy_data.py --output /path/to/data/raw
+python scripts/dev/generate_bulk_dummy_data.py --output /path/to/data/raw
 ```
 
 **Flags summary:**
@@ -446,7 +446,7 @@ python generate_bulk_dummy_data.py --output /path/to/data/raw
 
 ---
 
-### `generate_varied_dummy_data.py` — large multi-type files (10 doc types)
+### `scripts/dev/generate_varied_dummy_data.py` — large multi-type files (10 doc types)
 
 Generates **35 files by default** (3–15 KB each) under `data/raw/varied-samples/{type}/`.
 
@@ -467,26 +467,26 @@ Generates **35 files by default** (3–15 KB each) under `data/raw/varied-sample
 
 ```bash
 cd compiler
-python generate_varied_dummy_data.py
-python generate_varied_dummy_data.py --count 50 --overwrite
-python generate_varied_dummy_data.py --min-bytes 8000 --max-bytes 25000
-python generate_varied_dummy_data.py --clean --overwrite   # wipe varied-samples/ first
-python generate_varied_dummy_data.py --stats-only          # print size stats without writing
+python scripts/dev/generate_varied_dummy_data.py
+python scripts/dev/generate_varied_dummy_data.py --count 50 --overwrite
+python scripts/dev/generate_varied_dummy_data.py --min-bytes 8000 --max-bytes 25000
+python scripts/dev/generate_varied_dummy_data.py --clean --overwrite   # wipe varied-samples/ first
+python scripts/dev/generate_varied_dummy_data.py --stats-only          # print size stats without writing
 ```
 
-Also invokable via `generate_bulk_dummy_data.py --varied-only`.
+Also invokable via `scripts/dev/generate_bulk_dummy_data.py --varied-only`.
 
 ---
 
-### `generate_extended_dummy_data.py` — wave-2 curated set (42 files)
+### `scripts/dev/generate_extended_dummy_data.py` — wave-2 curated set (42 files)
 
 Hand-authored wave-2 content: firmware changelogs, QA matrices, investor drafts, MQTT schema, legal snippets, social scrapes, and more `[SAMPLE]` files across new categories (`emails/`, `research/`, `specs/`, `legal/`, `social/`).
 
 ```bash
 cd compiler
-python generate_extended_dummy_data.py
-python generate_extended_dummy_data.py --overwrite
-python generate_extended_dummy_data.py --output ../data/raw
+python scripts/dev/generate_extended_dummy_data.py
+python scripts/dev/generate_extended_dummy_data.py --overwrite
+python scripts/dev/generate_extended_dummy_data.py --output ../data/raw
 ```
 
 **Output locations:**
@@ -500,16 +500,16 @@ python generate_extended_dummy_data.py --output ../data/raw
 
 ```bash
 # Minimal seed data for first compile
-python compiler/generate_junk_data.py
+python compiler/scripts/dev/generate_junk_data.py
 
 # Rich narrative + bulk procedural data
-python compiler/generate_bulk_dummy_data.py --overwrite
+python compiler/scripts/dev/generate_bulk_dummy_data.py --overwrite
 
 # Wave-2 curated samples
-python compiler/generate_extended_dummy_data.py --overwrite
+python compiler/scripts/dev/generate_extended_dummy_data.py --overwrite
 
 # Large files for chunk/linker stress tests
-python compiler/generate_varied_dummy_data.py --overwrite
+python compiler/scripts/dev/generate_varied_dummy_data.py --overwrite
 
 # Full recompile
 cd compiler && python main.py --force
@@ -677,7 +677,7 @@ Run all compiler commands from `compiler/` with the venv activated, or use `buil
 No raw files found under data/raw/
 ```
 
-Ensure at least one `.txt` or `.md` file exists under `data/raw/`. Run `python generate_junk_data.py` for seed data.
+Ensure at least one `.txt` or `.md` file exists under `data/raw/`. Run `python scripts/dev/generate_junk_data.py` for seed data.
 
 ### YAML front matter errors
 

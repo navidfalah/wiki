@@ -46,35 +46,13 @@ concepts: list[dict]    # {"name": "Battery", "description": "..."}
 
 Stored in `data/state.json` under `files[rel_path].chunks[]`.
 
-### Heuristic extraction (`_extract_chunk_heuristic`)
+### Heuristic extraction (removed)
 
-When `LLMClient.available` is false:
-
-| Field | Source |
-|-------|--------|
-| **Topics** | Up to 3 `##` headers; else first line (max 80 chars); fallback `"General Notes"` |
-| **Entities** | `**bold**` terms passing `_is_entity_candidate()` (max 5) |
-| **Concepts** | Bold terms containing: mesh, battery, protocol, power, sync, wiki (max 5) |
-
-#### Entity candidate rules (`_is_entity_candidate`)
-
-Rejected if:
-
-- In `SKIP_ENTITY_TERMS` (date, author, status, mcu, sensors, …)
-- Shorter than 4 characters
-
-Accepted if:
-
-- Contains keywords: labs, widget, chen, park, sensenode, aurora, nova, mira, jonah
-- OR: capitalized multi-word term (`"Mira Chen"`)
-
-#### Bold term extraction
-
-Regex: `\*\*([^*]+)\*\*` — deduplicated, max 12 terms, strips trailing `:`
+Earlier versions of the compiler fell back to rule-based extraction (header/bold-term
+scraping) when no API key was set. That path has been removed — extraction is now
+LLM-only. See [08-llm-and-heuristics.md](./08-llm-and-heuristics.md).
 
 ### LLM extraction
-
-When API key is set:
 
 - System prompt: `CHUNK_EXTRACTION_SYSTEM_PROMPT` (in `synthesizer.py`)
 - Input: source path, chunk index, chunk text (truncated to 8000 chars)
@@ -131,33 +109,10 @@ Example: topic `"MeshSync"` → `meshsync.md`
 
 `topics_affected_by_sources()` maps changed file paths → topic names via grouped index.
 
-### Heuristic topic page (`_heuristic_topic_page`)
+### Heuristic topic page (removed)
 
-Structure:
-
-```markdown
----
-id: meshsync
-title: MeshSync
-tags:
-  - wiki
-  - meshsync
-last_updated: "2026-..."
----
-
-# MeshSync
-
-## Overview
-Synthesized from **N** raw chunk(s) (heuristic mode — set OPENAI_API_KEY for LLM drafts).
-
-## Key Details
-- `path/to/raw` (chunk 0): first 300 chars preview...
-
-## Sources
-- `path/to/raw` — chunk 0
-```
-
-Tags derived by `_derive_tags()`: topic slug + entity/concept slugs from chunk metadata (max 8 tags).
+The rule-based topic-page template (`_heuristic_topic_page`) was removed along with
+heuristic extraction. All topic pages are now LLM-synthesized.
 
 ### LLM topic page
 

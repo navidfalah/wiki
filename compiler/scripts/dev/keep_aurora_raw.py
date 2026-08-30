@@ -6,7 +6,7 @@ from __future__ import annotations
 import shutil
 from pathlib import Path
 
-PROJECT_ROOT = Path(__file__).resolve().parent.parent
+PROJECT_ROOT = Path(__file__).resolve().parent.parent.parent.parent
 RAW = PROJECT_ROOT / "data" / "raw"
 ARCHIVE = PROJECT_ROOT / "data" / "_archive_non_aurora"
 

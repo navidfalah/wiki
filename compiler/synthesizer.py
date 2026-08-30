@@ -7,15 +7,14 @@ import json
 import re
 from collections.abc import Callable
 from dataclasses import asdict, dataclass, field
-from datetime import datetime, timezone
+from datetime import UTC, datetime
 from pathlib import Path
-from typing import TypeAlias
-
-ProgressCallback: TypeAlias = Callable[[int, int, str], None]
 
 from llm_client import LLMClient, require_llm
 from models import RAW_DIR, STATE_FILE
-from yaml_frontmatter import yaml_quote
+from yaml_frontmatter import DRAFT_GENERATED_NOTE, insert_generated_banner, yaml_quote
+
+ProgressCallback = Callable[[int, int, str], None]
 
 COMPILER_DIR = Path(__file__).resolve().parent
 TEMP_OUTPUT_DIR = COMPILER_DIR / "temp_output"
@@ -177,7 +176,7 @@ def scan_raw_file_changes(
 
 
 def _utc_now_iso() -> str:
-    return datetime.now(timezone.utc).isoformat()
+    return datetime.now(UTC).isoformat()
 
 
 def _chunks_for_file(path: Path, raw_dir: Path) -> list[RawChunk]:
@@ -591,6 +590,7 @@ def synthesize_topic_wiki_pages(
             + "\n\n---\n\n".join(chunk_blocks)
         )
         body = llm.generate_response(prompt, WIKI_PAGE_SYSTEM_PROMPT)
+        body = insert_generated_banner(body.strip(), DRAFT_GENERATED_NOTE)
 
         out_path.write_text(body.strip() + "\n", encoding="utf-8")
         written.append(out_path)

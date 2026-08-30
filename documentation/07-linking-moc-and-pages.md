@@ -23,13 +23,10 @@ Built by `build_topic_index()` (full) or `update_topic_index()` (incremental).
 
 ## Cross-linking (Step 5)
 
-### Heuristic linking (`link_page_heuristic`)
+### Heuristic linking (removed)
 
-1. Sort index titles by length (longest first) — avoids partial matches
-2. Skip self-links (current page title / filename)
-3. Walk content; skip regions inside existing `[...](...)` markdown links
-4. Replace first plain-text occurrence of each title with `[Title](./filename.md)`
-5. Case-insensitive match; word-boundary aware
+A regex-based fallback (`link_page_heuristic`) that matched index titles by longest-match
+word-boundary substitution has been removed. Linking is now LLM-only.
 
 ### LLM linking (`link_page_with_llm`)
 
