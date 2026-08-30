@@ -1,0 +1,22 @@
+Subject: MeshSync battery drain =?utf-8?b?4oCU?= field report batch 4
+From: Mira Chen <mira.chen@auroralabs.example>
+To: eng-team@auroralabs.example
+Cc: jonah.park@auroralabs.example
+Date: Tue, 02 Jun 2026 09:14:00 -0700
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: quoted-printable
+MIME-Version: 1.0
+
+[DUMMY TEST DATA =E2=80=94 fictional]
+
+Team,
+
+Batch 4 field units are reporting battery drain roughly 30% faster than spec =
+once MeshSync relay mode is enabled. Read interval is set to 15 minutes per t=
+he current firmware default (0.3.8), so this isn't an interval misconfigurati=
+on.
+
+Suspect the relay radio is staying awake between hops instead of sleeping. Fi=
+led as MESH-118.
+
+Mira

@@ -27,6 +27,7 @@ Detailed project documentation, split by topic. Start with [01-overview.md](./01
 | [17-compiler-module-reference.md](./17-compiler-module-reference.md) | Every Python module in `compiler/` |
 | [18-sample-domain.md](./18-sample-domain.md) | Fictional companies, characters, intentional contradictions |
 | [19-multimedia-email-and-trust.md](./19-multimedia-email-and-trust.md) | Images, file attachments, email ingestion, source trust & references |
+| [20-email-resources-and-chat-engines.md](./20-email-resources-and-chat-engines.md) | Email knowledge engine, Resources explorer, RAG chat engine |
 
 ---
 
@@ -54,6 +55,9 @@ Detailed project documentation, split by topic. Start with [01-overview.md](./01
 
 **“I want to ingest images, PDFs, or emails”**  
 → 19 → 06 → 09
+
+**“I want the email engine, resources explorer, or chat”**  
+→ 20 → 12 → 11
 
 **“Dashboard / API not working”**  
 → 11 → 12 → 16

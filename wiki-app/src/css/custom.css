@@ -2,9 +2,31 @@
 @tailwind components;
 @tailwind utilities;
 
+/*
+ * Minimal, white-first theme. Dark mode is disabled in docusaurus.config.js
+ * (colorMode.disableSwitch), so these are the only values that matter.
+ */
 :root {
-  --ifm-color-primary: #2e8555;
+  --ifm-color-primary: #111827;
+  --ifm-color-primary-dark: #0b0f18;
+  --ifm-color-primary-darker: #05070c;
+  --ifm-color-primary-darkest: #000000;
+  --ifm-color-primary-light: #1f2937;
+  --ifm-color-primary-lighter: #374151;
+  --ifm-color-primary-lightest: #4b5563;
+
+  --ifm-background-color: #ffffff;
+  --ifm-background-surface-color: #ffffff;
+  --ifm-navbar-background-color: #ffffff;
+  --ifm-footer-background-color: #ffffff;
   --ifm-code-font-size: 95%;
+  --ifm-font-color-base: #1f2937;
+  --ifm-toc-border-color: #e5e7eb;
+  --ifm-hr-border-color: #e5e7eb;
+}
+
+.navbar {
+  box-shadow: 0 1px 0 0 rgb(0 0 0 / 0.06);
 }
 
 .markdown h1:first-child {

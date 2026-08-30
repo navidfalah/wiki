@@ -89,7 +89,7 @@ flowchart TB
 | Compiler | Python 3.12+ | Orchestration in `main.py`; modules for synthesis, linking, MOC, analytics |
 | LLM client | OpenAI SDK + SQLite cache | Extraction, synthesis, and link injection (required) |
 | API server | FastAPI + Uvicorn | REST endpoints and SSE build streaming on port **8000** |
-| Frontend | Docusaurus 3 + React 18 | Docs site plus custom pages (`/workspace`, `/analytics`, `/graph`, `/knowledge-graph`) |
+| Frontend | Docusaurus 3 + React 18 | Docs site plus custom pages (`/workspace`, `/chat`, `/emails`, `/resources`, `/analytics`, `/graph`, `/knowledge-graph`) |
 | Styling | Tailwind CSS 3 | Dashboard UI (`tailwind.config.js`; `preflight: false` to coexist with Docusaurus) |
 | Graphs | `react-force-graph-2d` | Topic graph and knowledge graph visualizations |
 | Build UX | Server-Sent Events | Live compiler log stream from `/api/build/stream` |
@@ -123,6 +123,10 @@ wiki/
 │   ├── media_ingest.py          # Images + file attachments → chunks
 │   ├── email_ingest.py          # .eml parsing → chunks
 │   ├── trust.py                 # Source trust levels + References & Trust section
+│   ├── doc_utils.py             # Shared frontmatter/topic-lookup helpers for the engines below
+│   ├── email_engine.py          # Email knowledge engine (backs /emails)
+│   ├── resources_engine.py      # Deduped, cross-page resources engine (backs /resources)
+│   ├── rag_engine.py            # RAG chat engine over compiled docs (backs /chat)
 │   ├── linker.py                # Topic index + cross-link injection
 │   ├── moc_generator.py         # Hierarchical index.md (Map of Content)
 │   ├── server.py                # FastAPI API for dashboards
@@ -146,8 +150,8 @@ wiki/
     ├── docs/                    # Compiler output (generated markdown)
     ├── static/media/            # Ingested images/attachments (content-hash deduped)
     ├── src/
-    │   ├── pages/               # workspace, analytics, graph, knowledge-graph
-    │   ├── components/          # DataWorkspace, WikiGraph, AnalyticsAudit, …
+    │   ├── pages/               # workspace, chat, emails, resources, analytics, graph, knowledge-graph
+    │   ├── components/          # DataWorkspace, ChatEngine, EmailEngine, ResourcesExplorer, WikiGraph, AnalyticsAudit, …
     │   └── utils/wikiApi.js     # API client helpers
     ├── tailwind.config.js
     └── package.json
@@ -324,6 +328,12 @@ CORS is enabled for `http://localhost:3000` and `http://127.0.0.1:3000`.
 | `PUT` | `/api/knowledge-graph/overrides` | Save connection rules to `data/link_overrides.json` |
 | `GET` | `/api/analytics` | Summary metrics, tag index, dead-link audit |
 | `GET` | `/api/analytics/tags/{tag}` | Raw chunks and pages for a tag |
+| `GET` | `/api/emails` | List ingested `.eml` sources with parsed headers, status, trust |
+| `GET` | `/api/emails/{path}` | Full email body, attachments, and the wiki pages it fed |
+| `GET` | `/api/resources` | Every cited source, deduped, with citing pages (filter: `q`, `source_type`, `trust`) |
+| `GET` | `/api/resources/{path}` | One resource's citing pages + raw content preview |
+| `POST` | `/api/chat` | RAG chat over the compiled wiki — `{"message", "history"}` in, `{"answer", "sources", "mode"}` out |
+| `GET` | `/api/chat/status` | Corpus size and whether an LLM is configured for chat |
 | `GET` | `/api/review-report` | Contents of `compiler/review_report.txt` if present |
 
 SSE events from `/api/build/stream`:
@@ -345,6 +355,9 @@ Docusaurus serves compiled docs at `/docs/…`. Custom React pages (Tailwind-sty
 | Route | Page | Purpose |
 |-------|------|---------|
 | `/workspace` | **Dashboard** | Browse raw vs compiled files; live compile via SSE; pipeline metrics |
+| `/chat` | **Chat** | RAG chat over the compiled wiki — cited, grounded answers (`compiler/rag_engine.py`) |
+| `/emails` | **Emails** | Email knowledge engine — browse/search ingested `.eml` threads and what they fed into the wiki |
+| `/resources` | **Resources** | Every cited source, deduped, browsable independent of which page cites it |
 | `/analytics` | **Analytics & Audit** | Tag explorer, dead-link report, compiler metrics |
 | `/graph` | **Topic Graph** | Force-directed graph from `index.json` cross-links |
 | `/knowledge-graph` | **Knowledge Graph Explorer** | Detected + manual connections; edit overrides saved to `data/link_overrides.json` |

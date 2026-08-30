@@ -74,3 +74,52 @@ export function fetchAnalyticsTag(tag, apiBase = DEFAULT_WIKI_API_URL) {
   const encoded = encodeURIComponent(tag);
   return apiFetch(`/api/analytics/tags/${encoded}`, apiBase);
 }
+
+export function fetchEmails(apiBase = DEFAULT_WIKI_API_URL) {
+  return apiFetch('/api/emails', apiBase);
+}
+
+export function fetchEmailDetail(filePath, apiBase = DEFAULT_WIKI_API_URL) {
+  const encoded = filePath
+    .split('/')
+    .map((segment) => encodeURIComponent(segment))
+    .join('/');
+  return apiFetch(`/api/emails/${encoded}`, apiBase);
+}
+
+export function fetchResources(
+  { q = '', sourceType = '', trust = '' } = {},
+  apiBase = DEFAULT_WIKI_API_URL,
+) {
+  const params = new URLSearchParams();
+  if (q) params.set('q', q);
+  if (sourceType) params.set('source_type', sourceType);
+  if (trust) params.set('trust', trust);
+  const query = params.toString();
+  return apiFetch(`/api/resources${query ? `?${query}` : ''}`, apiBase);
+}
+
+export function fetchResourceDetail(sourcePath, apiBase = DEFAULT_WIKI_API_URL) {
+  const encoded = sourcePath
+    .split('/')
+    .map((segment) => encodeURIComponent(segment))
+    .join('/');
+  return apiFetch(`/api/resources/${encoded}`, apiBase);
+}
+
+export function fetchChatStatus(apiBase = DEFAULT_WIKI_API_URL) {
+  return apiFetch('/api/chat/status', apiBase);
+}
+
+export async function sendChatMessage(message, history = [], apiBase = DEFAULT_WIKI_API_URL) {
+  const response = await fetch(`${apiBase}/api/chat`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ message, history }),
+  });
+  if (!response.ok) {
+    const text = await response.text();
+    throw new Error(text || `Chat request failed (${response.status})`);
+  }
+  return response.json();
+}
