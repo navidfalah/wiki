@@ -19,11 +19,22 @@ numbers, API keys/secrets, phone numbers, IPv4 addresses — and leaves names
 and email addresses untouched unless a caller explicitly opts into a
 stricter policy, with that tradeoff documented in
 documentation/30-pii-redaction.md rather than assumed.
+
+**Optional NER tier.** A 2025/2026 literature pass (documentation/30) found
+a real regex-only recall gap: NER catches free-text PII mentions (a
+location named in a sentence, e.g.) that have no fixed pattern to match
+against. This module stays regex-only, dependency-free, and always-available
+by default — but redact_text() accepts an optional `ner_backend` callable
+so a caller who has spaCy installed can plug in an NER pass without this
+module gaining a hard dependency on it. See `load_spacy_ner_backend()`.
+Deliberately does NOT add a person-name NER category — that would silently
+undercut the name-visibility tradeoff above.
 """
 
 from __future__ import annotations
 
 import re
+from collections.abc import Callable
 from dataclasses import dataclass, field
 
 _PATTERNS: dict[str, re.Pattern[str]] = {
@@ -67,6 +78,13 @@ def _luhn_valid(digits: str) -> bool:
 DEFAULT_CATEGORIES = frozenset({"ssn", "credit_card", "api_key", "phone_number", "ipv4_address"})
 STRICT_CATEGORIES = frozenset(DEFAULT_CATEGORIES | {"email"})
 
+# Categories only an NER backend can find — regex can't recognize "Austin"
+# or "the Berlin office" as a location without a fixed pattern. Deliberately
+# NOT including a person-name category: this module's whole design tradeoff
+# (see module docstring) is leaving names visible for entity resolution, and
+# an NER tier that redacted names by default would silently break that.
+NER_CATEGORIES = frozenset({"location"})
+
 
 @dataclass(frozen=True)
 class RedactionPolicy:
@@ -78,6 +96,10 @@ class RedactionPolicy:
 
 DEFAULT_POLICY = RedactionPolicy()
 STRICT_POLICY = RedactionPolicy(categories=STRICT_CATEGORIES)
+# Adds the optional NER-only "location" category on top of STRICT_POLICY.
+# Still does nothing unless a caller also passes an ner_backend to
+# redact_text() — this policy alone doesn't pull in a dependency.
+NER_AUGMENTED_POLICY = RedactionPolicy(categories=STRICT_CATEGORIES | NER_CATEGORIES)
 
 
 @dataclass(frozen=True)
@@ -107,7 +129,52 @@ def _find_matches(text: str, category: str) -> list[re.Match[str]]:
     return matches
 
 
-def redact_text(text: str, policy: RedactionPolicy = DEFAULT_POLICY) -> RedactionResult:
+# An NER backend takes text and returns (start, end, category, value) spans —
+# the same shape redact_text() already builds from regex matches, so NER
+# hits merge into the exact same sort/placeholder/overlap-resolution logic
+# without redact_text() needing to know or care where a span came from.
+NerBackend = Callable[[str], list[tuple[int, int, str, str]]]
+
+_SPACY_LABEL_TO_CATEGORY = {"GPE": "location", "LOC": "location"}
+
+
+def load_spacy_ner_backend(model: str = "en_core_web_sm") -> NerBackend | None:
+    """Build an NerBackend from spaCy, or return None if spaCy (the pip
+    package) or the requested model isn't installed — never raises, so a
+    caller can do `backend = load_spacy_ner_backend(); redact_text(text,
+    policy, ner_backend=backend)` unconditionally and get regex-only
+    behavior on a machine without spaCy, same graceful-degradation shape as
+    entity_resolution.py's optional embedding/LLM tiers.
+
+    Not exercised against a real spaCy model in this environment (no NER
+    library installed here — see documentation/30-pii-redaction.md); the
+    mechanism is tested via a fake NerBackend, the same honest split as
+    every other live-model-dependent tier in this project.
+    """
+    try:
+        import spacy
+    except ImportError:
+        return None
+    try:
+        nlp = spacy.load(model)
+    except OSError:
+        return None
+
+    def backend(text: str) -> list[tuple[int, int, str, str]]:
+        doc = nlp(text)
+        spans = []
+        for ent in doc.ents:
+            category = _SPACY_LABEL_TO_CATEGORY.get(ent.label_)
+            if category is not None:
+                spans.append((ent.start_char, ent.end_char, category, ent.text))
+        return spans
+
+    return backend
+
+
+def redact_text(
+    text: str, policy: RedactionPolicy = DEFAULT_POLICY, *, ner_backend: NerBackend | None = None
+) -> RedactionResult:
     """Redact every match of policy's categories, replacing each with a
     stable per-value placeholder (repeated occurrences of the same value
     in one call get the same placeholder, e.g. two mentions of the same
@@ -115,10 +182,18 @@ def redact_text(text: str, policy: RedactionPolicy = DEFAULT_POLICY) -> Redactio
     keeps whatever referential structure the original had, without ever
     exposing the value itself.
     """
+    regex_categories = policy.categories - NER_CATEGORIES
+    ner_categories = policy.categories & NER_CATEGORIES
+
     all_matches: list[tuple[int, int, str, str]] = []  # (start, end, category, value)
-    for category in policy.categories:
+    for category in regex_categories:
         for match in _find_matches(text, category):
             all_matches.append((match.start(), match.end(), category, match.group()))
+
+    if ner_categories and ner_backend is not None:
+        for start, end, category, value in ner_backend(text):
+            if category in ner_categories:
+                all_matches.append((start, end, category, value))
 
     all_matches.sort(key=lambda m: m[0])
 

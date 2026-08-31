@@ -42,3 +42,25 @@ def test_run_eval_reports_a_false_positive_for_an_unexpected_match():
     report = pre.run_eval([fixture])
     assert report.false_positives == 1
     assert report.precision == 0.0
+
+
+def _fake_location_ner_backend(text: str) -> list[tuple[int, int, str, str]]:
+    start = text.find("Austin")
+    return [(start, start + len("Austin"), "location", "Austin")] if start != -1 else []
+
+
+def test_ner_only_fixtures_are_undetectable_without_a_backend():
+    """Documents the honest baseline: NER_ONLY_FIXTURES are unreachable by
+    the regex-only pipeline on purpose -- that's the whole point of the
+    literature-review gap this tier closes."""
+    report = pre.run_eval(pre.NER_ONLY_FIXTURES, pre.NER_AUGMENTED_POLICY)
+    assert report.false_negatives == len(pre.NER_ONLY_FIXTURES)
+    assert report.recall == 0.0
+
+
+def test_ner_only_fixtures_score_perfectly_with_a_backend():
+    report = pre.run_eval(pre.NER_ONLY_FIXTURES, pre.NER_AUGMENTED_POLICY, ner_backend=_fake_location_ner_backend)
+    assert report.precision == 1.0
+    assert report.recall == 1.0
+    assert report.false_positives == 0
+    assert report.false_negatives == 0

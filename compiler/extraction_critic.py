@@ -236,3 +236,43 @@ def apply_critic_pass(
     cleaned = re.sub(r"[ \t]+\n", "\n", cleaned)
     cleaned = re.sub(r"\n{3,}", "\n\n", cleaned)
     return cleaned.strip(), report
+
+
+DEFAULT_REGENERATE_THRESHOLD = 0.2
+
+
+def should_regenerate(
+    original_body: str, cleaned_body: str, threshold: float = DEFAULT_REGENERATE_THRESHOLD
+) -> bool:
+    """True when stripping flagged sentences removed more than `threshold`
+    of the draft's length — a signal the draft was heavily unsupported, not
+    just one stray fabricated detail, and worth a fresh regeneration attempt
+    rather than shipping a mutilated page. Stripping-only (apply_critic_pass
+    alone) can leave a draft with dangling transitions or a section that no
+    longer makes sense once its supporting sentence is gone; a page that
+    lost a fifth of its content to the critic is exactly that case.
+    """
+    if not original_body:
+        return False
+    removed_fraction = 1 - (len(cleaned_body) / len(original_body))
+    return removed_fraction > threshold
+
+
+def build_regeneration_feedback(report: CriticReport) -> str:
+    """Turn a CriticReport's flagged sentences into system-prompt guidance
+    for a regeneration attempt — the same "feed the failure back in and try
+    again" shape as Self-RAG/Corrective RAG's regenerate-on-failed-grounding
+    loop, applied here as a single bounded retry (see should_regenerate())
+    rather than an open-ended one, to keep the extra LLM cost predictable.
+    """
+    if not report.flagged:
+        return ""
+    lines = [
+        f'- "{item.sentence}" ({item.reason})' if item.reason else f'- "{item.sentence}"'
+        for item in report.flagged
+    ]
+    return (
+        "A fact-checking pass over a previous draft found the following claims were NOT "
+        "supported by the source excerpts. Do not repeat these claims, or anything "
+        "similar in substance, in this draft:\n" + "\n".join(lines)
+    )

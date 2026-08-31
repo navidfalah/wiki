@@ -216,6 +216,7 @@ def step_synthesize(
     apply_critic: bool = False,
     extra_system_context: str = "",
     critic_samples: int = 1,
+    critic_regenerate: bool = False,
 ) -> dict:
     """Step 3: Group by topic and write draft wiki pages to temp_output/."""
     grouped = group_chunks_by_topic(extractions)
@@ -274,6 +275,7 @@ def step_synthesize(
             apply_critic=apply_critic,
             extra_system_context=extra_system_context,
             critic_samples=critic_samples,
+            critic_regenerate=critic_regenerate,
         )
         if regen_count:
             progress.update(task, completed=regen_count)
@@ -392,6 +394,7 @@ def run_pipeline(
     force: bool = False,
     apply_critic: bool = False,
     critic_samples: int = 1,
+    critic_regenerate: bool = False,
     use_corrections: bool = False,
     redact_pii: bool = False,
 ) -> int:
@@ -440,6 +443,7 @@ def run_pipeline(
         apply_critic=apply_critic,
         extra_system_context=extra_system_context,
         critic_samples=critic_samples,
+        critic_regenerate=critic_regenerate,
     )
 
     _step_banner(4, 5, "Indexing", "Incrementally update index.json for changed drafts")
@@ -514,6 +518,17 @@ def main() -> None:
         ),
     )
     parser.add_argument(
+        "--critic-regenerate",
+        action="store_true",
+        default=os.getenv("WIKI_CRITIC_REGENERATE", "").lower() in {"1", "true", "yes"},
+        help=(
+            "When the critic strips more than 20%% of a page's length, regenerate it once "
+            "with the critic's findings fed back into the prompt, instead of shipping a "
+            "heavily-stripped draft. Only meaningful with --critic-pass; adds up to one "
+            "extra LLM call per affected page. Also settable via WIKI_CRITIC_REGENERATE."
+        ),
+    )
+    parser.add_argument(
         "--use-corrections",
         action="store_true",
         default=os.getenv("WIKI_USE_CORRECTIONS", "").lower() in {"1", "true", "yes"},
@@ -540,6 +555,7 @@ def main() -> None:
             force=args.force,
             apply_critic=args.critic_pass,
             critic_samples=args.critic_samples,
+            critic_regenerate=args.critic_regenerate,
             use_corrections=args.use_corrections,
             redact_pii=args.redact_pii,
         )

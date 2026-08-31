@@ -14,7 +14,13 @@ import email_ingest
 import media_ingest
 import pii_redaction
 import trust
-from extraction_critic import DEFAULT_SAMPLE_TEMPERATURE, apply_critic_pass
+from extraction_critic import (
+    DEFAULT_REGENERATE_THRESHOLD,
+    DEFAULT_SAMPLE_TEMPERATURE,
+    apply_critic_pass,
+    build_regeneration_feedback,
+    should_regenerate,
+)
 from llm_client import LLMClient, require_llm
 from models import RAW_DIR, STATE_FILE
 from text_chunking import split_text_into_chunks
@@ -658,6 +664,8 @@ def synthesize_topic_wiki_pages(
     extra_system_context: str = "",
     critic_samples: int = 1,
     critic_sample_temperature: float = DEFAULT_SAMPLE_TEMPERATURE,
+    critic_regenerate: bool = False,
+    critic_regenerate_threshold: float = DEFAULT_REGENERATE_THRESHOLD,
 ) -> tuple[list[Path], list[str]]:
     """
     For each unique topic, write a Markdown wiki page synthesizing related chunks.
@@ -674,6 +682,18 @@ def synthesize_topic_wiki_pages(
     critic_samples>1 (only meaningful with apply_critic=True) runs the critic
     multiple times per page and only strips a sentence a majority of passes
     flagged — see extraction_critic.review_draft_for_grounding() for why.
+
+    critic_regenerate=True (only meaningful with apply_critic=True) adds a
+    single bounded retry: when the critic strips more than
+    critic_regenerate_threshold (default 20%) of the draft's length, that's
+    a signal of heavy fabrication, not one stray detail, and stripping alone
+    can leave a page with dangling transitions. Instead, the page is
+    regenerated once with the critic's specific findings fed back into the
+    prompt as "don't repeat these claims" guidance, then critiqued again —
+    the same "feed the failure back in and retry" shape as Self-RAG/
+    Corrective RAG, bounded to one retry to keep the extra cost predictable.
+    Off by default (main.py's --critic-regenerate / WIKI_CRITIC_REGENERATE),
+    same opt-in convention as apply_critic itself.
 
     extra_system_context, when non-empty, is appended to both
     WIKI_PAGE_SYSTEM_PROMPT and (when apply_critic=True) the critic's system
@@ -729,6 +749,7 @@ def synthesize_topic_wiki_pages(
 
         if apply_critic:
             source_text = "\n\n---\n\n".join(chunk_blocks)
+            pre_critic_body = body
             body, critic_report = apply_critic_pass(
                 source_text,
                 body,
@@ -745,6 +766,24 @@ def synthesize_topic_wiki_pages(
                 )
                 if on_progress:
                     on_progress(index, total, console_note)
+
+                if critic_regenerate and should_regenerate(
+                    pre_critic_body, body, critic_regenerate_threshold
+                ):
+                    feedback = build_regeneration_feedback(critic_report)
+                    regen_system_prompt = f"{system_prompt}\n\n{feedback}" if feedback else system_prompt
+                    regenerated = llm.generate_response(prompt, regen_system_prompt)
+                    regenerated = _strip_llm_authored_sources_section(regenerated.strip())
+                    body, critic_report = apply_critic_pass(
+                        source_text,
+                        regenerated,
+                        llm,
+                        extra_system_context=extra_system_context,
+                        samples=critic_samples,
+                        sample_temperature=critic_sample_temperature,
+                    )
+                    if on_progress:
+                        on_progress(index, total, f"regenerated '{topic}' after heavy critic flagging")
 
         references = trust.build_references(entries, trust_config)
         references_md = trust.render_references_markdown(references)

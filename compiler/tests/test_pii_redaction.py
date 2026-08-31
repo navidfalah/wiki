@@ -1,4 +1,13 @@
-from pii_redaction import DEFAULT_POLICY, STRICT_POLICY, RedactionPolicy, redact_text
+from pii_redaction import (
+    DEFAULT_POLICY,
+    NER_AUGMENTED_POLICY,
+    NER_CATEGORIES,
+    STRICT_CATEGORIES,
+    STRICT_POLICY,
+    RedactionPolicy,
+    load_spacy_ner_backend,
+    redact_text,
+)
 from synthesizer import RawChunk, extract_chunk_topics
 
 
@@ -135,3 +144,60 @@ def test_extract_chunk_topics_without_redact_pii_sends_the_original_text():
     extract_chunk_topics(chunk, llm, redact_pii=False)
     prompt, _system_prompt = llm.calls[0]
     assert "123-45-6789" in prompt
+
+
+def _fake_location_ner_backend(text: str) -> list[tuple[int, int, str, str]]:
+    """Stands in for load_spacy_ner_backend()'s real NER pass -- finds
+    'Austin' the same way a real NER model would (as a span with no fixed
+    pattern), so the mechanism is testable without spaCy installed."""
+    spans = []
+    needle = "Austin"
+    start = text.find(needle)
+    if start != -1:
+        spans.append((start, start + len(needle), "location", needle))
+    return spans
+
+
+def test_ner_backend_is_a_no_op_without_the_location_category_in_policy():
+    result = redact_text("The team is based in Austin.", DEFAULT_POLICY, ner_backend=_fake_location_ner_backend)
+    assert "Austin" in result.text  # DEFAULT_POLICY doesn't include "location"
+
+
+def test_ner_augmented_policy_without_a_backend_leaves_locations_untouched():
+    # The policy alone doesn't pull in NER -- a backend must be passed too.
+    result = redact_text("The team is based in Austin.", NER_AUGMENTED_POLICY)
+    assert "Austin" in result.text
+
+
+def test_ner_augmented_policy_with_a_backend_redacts_the_location():
+    result = redact_text("The team is based in Austin.", NER_AUGMENTED_POLICY, ner_backend=_fake_location_ner_backend)
+    assert "Austin" not in result.text
+    assert "[LOCATION_1]" in result.text
+    assert result.findings[0].category == "location"
+
+
+def test_ner_backend_still_composes_with_regex_categories():
+    text = "Contact from Austin: SSN 123-45-6789 on file."
+    result = redact_text(text, NER_AUGMENTED_POLICY, ner_backend=_fake_location_ner_backend)
+    assert "Austin" not in result.text
+    assert "123-45-6789" not in result.text
+    categories_found = {f.category for f in result.findings}
+    assert categories_found == {"location", "ssn"}
+
+
+def test_ner_categories_is_disjoint_from_default_and_strict_categories():
+    assert NER_CATEGORIES.isdisjoint(STRICT_CATEGORIES)
+
+
+def test_ner_categories_never_includes_a_person_name_category():
+    # The whole point: an NER tier must not silently redact names by
+    # default, since entity resolution (task #6) needs them visible.
+    assert "person" not in NER_CATEGORIES
+    assert "name" not in NER_CATEGORIES
+
+
+def test_load_spacy_ner_backend_returns_none_when_spacy_is_not_installed():
+    # This environment genuinely has no spaCy installed (see
+    # documentation/30) -- exercises the real graceful-degradation path,
+    # not a simulation of it.
+    assert load_spacy_ner_backend() is None

@@ -48,6 +48,66 @@ step (one extra full-page call), so it's wired through as an explicit flag
 (`--critic-pass` / `WIKI_CRITIC_PASS=true`) rather than silently changed
 behavior for existing users — same pattern as `--force`.
 
+## Self-consistency (optional, off by default)
+
+`review_draft_for_grounding(..., samples=3)` (and `apply_critic_pass(...,
+samples=3)` / `main.py --critic-samples 3`) runs the critic call multiple
+times at a non-zero `sample_temperature` instead of once at `temperature=0`,
+and only flags a sentence a **majority** of the independent passes agreed
+on — the standard self-consistency pattern for reducing an LLM judge's
+flakiness on a single noisy sample.
+
+**What this does and doesn't protect against, stated plainly.**
+Self-consistency catches *random* flakiness — a pass that misreads a source
+excerpt or hallucinates a flag this one time, outvoted by the other
+samples. It does **not** catch a *systematic* bias the model repeats on
+every sample: if the critic model has a consistent blind spot (e.g. it
+reliably fails to flag fabricated dates specifically, or reliably
+over-flags a phrasing pattern it misreads as unsupported), sampling it
+three times just returns the same wrong answer three times, and the
+majority vote confirms the bias with false confidence rather than
+correcting it. This isn't a hypothetical caveat — a 2026 study on
+self-consistency and cross-model agreement found that agreement across
+samples correlates with confidence, not correctness, when the underlying
+error is shared rather than random. Practically: `samples=3` is worth
+enabling once the live-model eval (below) shows the critic has noisy,
+inconsistent judgment on borderline cases; it is not a substitute for that
+eval, and it would not be expected to fix a systematic hallucination-type
+the critic reliably misses on every pass.
+
+## Bounded regenerate loop (optional, off by default)
+
+A second literature-motivated gap, closed: the critic pass by default only
+*strips* flagged sentences — it never asks the model to try again. Self-RAG
+and Corrective RAG both regenerate (or re-retrieve) when grounding fails,
+rather than just deleting the offending content; a page that loses a fifth
+of its length to stripping can end up with dangling transitions or a
+section that no longer reads coherently.
+
+`synthesize_topic_wiki_pages(..., critic_regenerate=True)` (also
+`main.py --critic-regenerate` / `WIKI_CRITIC_REGENERATE=true`) adds exactly
+one bounded retry: `extraction_critic.should_regenerate()` checks whether
+stripping removed more than 20% of the draft's length (configurable via
+`critic_regenerate_threshold`); if so,
+`extraction_critic.build_regeneration_feedback()` turns the critic's
+flagged sentences and reasons into "do not repeat these claims" guidance,
+appended to the system prompt for one fresh synthesis call, which is then
+critiqued again. The retry is **bounded to one attempt** — this doesn't
+loop until clean, it tries once with better guidance and accepts whatever
+comes back, to keep the worst-case cost predictable (at most one extra
+synthesis call *and* one extra critic call per page, only on pages that
+needed it).
+
+**Off by default**, layered on top of `--critic-pass` (itself off by
+default) and `--critic-samples` (also off by default) — three independent
+opt-ins, each adding real LLM cost, each explicit rather than assumed.
+Mechanism-tested end to end in
+`tests/test_extraction_critic.py::test_synthesize_topic_wiki_pages_regenerates_after_heavy_flagging`
+via a `FakeHeavyHallucinationLLM` that returns a heavily-fabricated first
+draft, a clean regenerated draft once it sees the "do not repeat" feedback,
+and a matching critic response for each — no live model, same honest
+mechanism-vs-judgment-quality split as the rest of this document.
+
 ## Two-tier evaluation
 
 Same split as the rest of this project's LLM-touching code (see
@@ -93,11 +153,11 @@ examples the same way `data/trust_eval_dataset.json` grew from 24 to 29
 claims — see [21](./21-trust-eval-dataset.md)) is the natural next step
 once API access is available — at that point the precision/recall numbers
 belong in this document, replacing this paragraph. It's also the natural
-place to try `extraction_critic.review_draft_for_grounding(..., samples=3)`
-(self-consistency majority-vote, added alongside this dataset-growth pass)
-against the same fixtures, to see whether it measurably changes precision/
-recall versus the single-pass default — right now that comparison is only
-possible in principle, not run.
+place to try `samples=3` (see "Self-consistency" above) against the same
+fixtures, to see whether it measurably changes precision/recall versus the
+single-pass default and, ideally, whether any residual errors are the
+random-flakiness kind self-consistency can fix or the systematic kind it
+can't — right now that comparison is only possible in principle, not run.
 
 ## Next
 

@@ -17,7 +17,14 @@ from __future__ import annotations
 
 from dataclasses import dataclass
 
-from pii_redaction import STRICT_CATEGORIES, RedactionPolicy, redact_text
+from pii_redaction import (
+    NER_AUGMENTED_POLICY,
+    STRICT_CATEGORIES,
+    NerBackend,
+    RedactionPolicy,
+    load_spacy_ner_backend,
+    redact_text,
+)
 
 ALL_CATEGORIES_POLICY = RedactionPolicy(categories=STRICT_CATEGORIES)
 
@@ -110,6 +117,24 @@ FIXTURES: list[Fixture] = [
     ),
 ]
 
+# Kept separate from FIXTURES (not scored by the always-offline run_eval()
+# call in __main__ below): these require the optional NER tier to pass at
+# all, so mixing them into FIXTURES would turn a real false-negative *by
+# design* (no NER backend available) into a misleading permanent failure of
+# the regex-only headline numbers. See "Optional NER tier" in
+# documentation/30-pii-redaction.md.
+NER_ONLY_FIXTURES: list[Fixture] = [
+    Fixture(
+        "location_mention_no_fixed_pattern",
+        # No email/phone/SSN-shaped substring here at all -- a location
+        # mentioned in free text has no fixed pattern for regex to match
+        # against, which is exactly the recall gap the literature review
+        # named (regex-only vs. regex+NER hybrid).
+        "The relay hardware ships from our Austin warehouse before reaching customers.",
+        frozenset({("location", "Austin")}),
+    ),
+]
+
 
 @dataclass(frozen=True)
 class EvalReport:
@@ -122,7 +147,12 @@ class EvalReport:
     false_negative_examples: list[tuple[str, str, str]]
 
 
-def run_eval(fixtures: list[Fixture] = FIXTURES, policy: RedactionPolicy = ALL_CATEGORIES_POLICY) -> EvalReport:
+def run_eval(
+    fixtures: list[Fixture] = FIXTURES,
+    policy: RedactionPolicy = ALL_CATEGORIES_POLICY,
+    *,
+    ner_backend: NerBackend | None = None,
+) -> EvalReport:
     true_positives = 0
     false_positives = 0
     false_negatives = 0
@@ -130,7 +160,7 @@ def run_eval(fixtures: list[Fixture] = FIXTURES, policy: RedactionPolicy = ALL_C
     fn_examples: list[tuple[str, str, str]] = []
 
     for fixture in fixtures:
-        result = redact_text(fixture.text, policy)
+        result = redact_text(fixture.text, policy, ner_backend=ner_backend)
         found = {(f.category, f.original) for f in result.findings}
 
         for hit in found & fixture.expected:
@@ -160,3 +190,20 @@ if __name__ == "__main__":
         print("\nFalse negatives:")
         for fixture_name, category, value in report.false_negative_examples:
             print(f"  [{fixture_name}] {category}: {value!r}")
+
+    print("\n=== Optional NER tier (location category) ===")
+    ner_backend = load_spacy_ner_backend()
+    if ner_backend is None:
+        print(
+            "No spaCy installed in this environment — NER_ONLY_FIXTURES not run. "
+            "See 'Optional NER tier' in documentation/30-pii-redaction.md for how "
+            "to install spaCy and reproduce these numbers."
+        )
+    else:
+        ner_report = run_eval(NER_ONLY_FIXTURES, NER_AUGMENTED_POLICY, ner_backend=ner_backend)
+        print(f"precision={ner_report.precision:.2f} recall={ner_report.recall:.2f}")
+        print(
+            f"true_positives={ner_report.true_positives} "
+            f"false_positives={ner_report.false_positives} "
+            f"false_negatives={ner_report.false_negatives}"
+        )

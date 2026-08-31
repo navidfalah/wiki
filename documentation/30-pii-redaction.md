@@ -113,6 +113,54 @@ confirms the generic mixed-alnum branch of `api_key` — not just the
 `sk-`/`pk-`/`rk-` vendor-prefix branch — catches a real secret shape
 (a GitHub-style token) on its own.
 
+## Optional NER tier (a literature-review finding, closed)
+
+A 2025/2026 literature pass on PII detection found a real, named recall
+gap: regex-only detection misses free-text PII mentions that have no fixed
+pattern — a location named in a sentence ("our Austin warehouse"), for
+instance, which no `\b...\b` pattern can find without effectively
+implementing a gazetteer. Published benchmarks put a regex+NER hybrid
+noticeably ahead of regex alone on recall for exactly this class of miss.
+
+This module stays regex-only, dependency-free, and always-available *by
+default* — that's still the right default given this project's actual
+constraint (redaction has to run before any network call, including before
+an NER model download would even be possible on first use). But
+`redact_text()` now accepts an optional `ner_backend` callable
+(`pii_redaction.NerBackend`) that plugs into the exact same
+sort/placeholder/overlap-resolution pipeline the regex matches already go
+through — an NER hit is just another `(start, end, category, value)` span
+to that pipeline, it doesn't care where it came from.
+
+`load_spacy_ner_backend()` builds one from spaCy if it's installed, and
+returns `None` (not an error) if the package or model isn't present — same
+graceful-degradation shape as `entity_resolution.py`'s optional embedding/
+LLM tiers. **This environment has no spaCy installed**, so
+`pii_redaction_eval.py`'s NER section prints a skip message rather than a
+number:
+
+```
+=== Optional NER tier (location category) ===
+No spaCy installed in this environment — NER_ONLY_FIXTURES not run. ...
+```
+
+To reproduce real numbers: `pip install spacy && python -m spacy download
+en_core_web_sm`, then re-run `python pii_redaction_eval.py` — it auto-
+detects the backend and scores `NER_ONLY_FIXTURES` (kept separate from the
+main `FIXTURES` list precisely so the always-offline headline numbers
+above don't silently start depending on an optional dependency being
+present).
+
+**Deliberately no person-name NER category.** `NER_CATEGORIES` currently
+holds only `"location"`. A `"person"` category would be the most obvious
+thing NER is good at, and it's the one thing this module must *not* add by
+default — the whole point of the design tradeoff at the top of this
+document is keeping names visible for entity resolution ([26](./26-entity-resolution.md)).
+An NER tier that quietly started redacting "Mira Chen" would undo that on
+its own. If a future caller genuinely wants person-name redaction (e.g. for
+external sharing rather than internal RAG), it should be its own explicit,
+separately-named policy — not a side effect of enabling the location tier.
+
 ## Next
 
 - [26-entity-resolution.md](./26-entity-resolution.md) — the feature this module's default policy is deliberately designed not to interfere with

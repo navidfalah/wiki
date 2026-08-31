@@ -9,7 +9,13 @@ documentation/24-extraction-critic.md for that — it requires
 OPENAI_API_KEY and is not run as part of this suite.
 """
 
-from extraction_critic import CriticReport, apply_critic_pass, review_draft_for_grounding
+from extraction_critic import (
+    CriticReport,
+    apply_critic_pass,
+    build_regeneration_feedback,
+    review_draft_for_grounding,
+    should_regenerate,
+)
 from synthesizer import synthesize_topic_wiki_pages
 
 
@@ -169,6 +175,90 @@ class FakeSynthesisAndCriticLLM:
         )
 
 
+class FakeHeavyHallucinationLLM:
+    """Simulates a first draft that's mostly fabricated (heavily flagged by
+    the critic), a regeneration call once told what to avoid, and a clean
+    second draft the critic approves -- exercises the full
+    critic_regenerate=True loop end to end."""
+
+    available = True
+
+    FABRICATED = (
+        "It shipped in firmware version 9.9.9 on a date nobody recorded, fixing an "
+        "issue nobody filed, per an engineer nobody named."
+    )
+    GROUNDED = "The relay radio drains the battery faster than spec."
+    REGENERATED = "The relay radio drains the battery faster than spec, per the field report."
+
+    def __init__(self):
+        self.calls: list[tuple[str, str]] = []
+        self._critic_calls = 0
+
+    def generate_response(self, prompt: str, system_prompt: str, temperature: float = 0.2) -> str:
+        self.calls.append((prompt, system_prompt))
+        if "fact-checking critic" in system_prompt.lower():
+            self._critic_calls += 1
+            if self._critic_calls == 1:
+                return f'{{"flagged": [{{"sentence": "{self.FABRICATED}", "reason": "unsupported"}}]}}'
+            return '{"flagged": []}'
+        if "do not repeat" in system_prompt.lower():
+            return self._page(self.REGENERATED)
+        return self._page(f"{self.GROUNDED} {self.FABRICATED}")
+
+    def _page(self, body_sentence: str) -> str:
+        return (
+            "---\nid: meshsync\ntitle: MeshSync\ntags:\n  - wiki\n"
+            "last_updated: 2026-01-01T00:00:00+00:00\n---\n\n"
+            f"# MeshSync\n\n## Overview\n{body_sentence}\n"
+        )
+
+
+def test_synthesize_topic_wiki_pages_regenerates_after_heavy_flagging(tmp_path):
+    grouped = {
+        "MeshSync": [
+            {
+                "source": "notes/meshsync.md",
+                "source_type": "text",
+                "chunk_index": 0,
+                "text": "The relay radio drains the battery faster than spec.",
+            }
+        ]
+    }
+    out_dir = tmp_path / "out"
+    llm = FakeHeavyHallucinationLLM()
+    written, _skipped = synthesize_topic_wiki_pages(
+        grouped, llm=llm, output_dir=out_dir, apply_critic=True, critic_regenerate=True
+    )
+    body = written[0].read_text(encoding="utf-8")
+    assert "9.9.9" not in body
+    assert llm.REGENERATED in body
+    # 4 calls: initial synthesis, critic (flags heavily), regenerated
+    # synthesis, critic again (clean) -- the full bounded retry loop.
+    assert len(llm.calls) == 4
+
+
+def test_synthesize_topic_wiki_pages_does_not_regenerate_when_disabled(tmp_path):
+    grouped = {
+        "MeshSync": [
+            {
+                "source": "notes/meshsync.md",
+                "source_type": "text",
+                "chunk_index": 0,
+                "text": "The relay radio drains the battery faster than spec.",
+            }
+        ]
+    }
+    out_dir = tmp_path / "out"
+    llm = FakeHeavyHallucinationLLM()
+    written, _skipped = synthesize_topic_wiki_pages(
+        grouped, llm=llm, output_dir=out_dir, apply_critic=True, critic_regenerate=False
+    )
+    body = written[0].read_text(encoding="utf-8")
+    assert "9.9.9" not in body  # still stripped by the plain critic pass
+    assert llm.REGENERATED not in body  # but no regeneration happened
+    assert len(llm.calls) == 2  # initial synthesis + one critic pass, no retry
+
+
 def test_synthesize_topic_wiki_pages_with_critic_strips_flagged_sentence(tmp_path):
     grouped = {
         "MeshSync": [
@@ -308,3 +398,33 @@ def test_apply_critic_pass_forwards_samples_to_review():
     assert len(llm.calls) == 2
     assert "released on March 3rd" not in cleaned
     assert len(report.flagged) == 1
+
+
+def test_should_regenerate_true_when_a_lot_was_stripped():
+    original = "A" * 100
+    cleaned = "A" * 70  # 30% removed
+    assert should_regenerate(original, cleaned, threshold=0.2) is True
+
+
+def test_should_regenerate_false_when_little_was_stripped():
+    original = "A" * 100
+    cleaned = "A" * 95  # 5% removed
+    assert should_regenerate(original, cleaned, threshold=0.2) is False
+
+
+def test_should_regenerate_false_on_empty_original():
+    assert should_regenerate("", "", threshold=0.2) is False
+
+
+def test_build_regeneration_feedback_empty_when_nothing_flagged():
+    assert build_regeneration_feedback(CriticReport()) == ""
+
+
+def test_build_regeneration_feedback_lists_flagged_sentences_and_reasons():
+    report = review_draft_for_grounding(SOURCE, DRAFT_WITH_HALLUCINATION, FakeCriticLLM(
+        '{"flagged": [{"sentence": "The fix shipped in firmware version 4.2.0 released on March 3rd.", '
+        '"reason": "no version or date in source"}]}'
+    ))
+    feedback = build_regeneration_feedback(report)
+    assert "The fix shipped in firmware version 4.2.0 released on March 3rd." in feedback
+    assert "no version or date in source" in feedback
