@@ -147,3 +147,35 @@ def test_link_and_export_pages_sends_the_real_topic_index_to_the_llm(tmp_path: P
         # The bug would have put an integer (e.g. "1" or "2") in place of
         # the real JSON-encoded index -- a bare digit line, not a mapping.
         assert '"MeshSync"' in prompt or "MeshSync" in prompt
+
+
+def test_link_and_export_pages_applies_the_mechanical_pass_before_the_llm(tmp_path: Path):
+    """The deterministic mechanical_linker pass should run before the LLM
+    ever sees the page -- an exact-title mention should already be linked
+    in the prompt the LLM receives (and, since _RecordingLinkerLLM echoes
+    the page back unchanged, in the exported output too)."""
+    temp_dir = tmp_path / "temp_output"
+    docs_dir = tmp_path / "docs"
+    temp_dir.mkdir()
+    docs_dir.mkdir()
+
+    (temp_dir / "meshsync.md").write_text("# MeshSync\n\nThe protocol.\n", encoding="utf-8")
+    (temp_dir / "nova-widget.md").write_text(
+        "# Nova Widget\n\nThe Nova Widget uses MeshSync for range extension.\n", encoding="utf-8"
+    )
+    topic_index, _ = build_topic_index(temp_dir, temp_dir / "index.json")
+
+    llm = _RecordingLinkerLLM()
+    written, _skipped = link_and_export_pages(
+        topic_index,
+        temp_dir=temp_dir,
+        output_dir=docs_dir,
+        llm=llm,
+        dirty_filenames={"meshsync.md", "nova-widget.md"},
+        removed_filenames=set(),
+        force=True,
+    )
+
+    nova_page = next(p for p in written if p.name == "nova-widget.md")
+    exported = nova_page.read_text(encoding="utf-8")
+    assert "[MeshSync](./meshsync.md)" in exported

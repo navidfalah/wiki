@@ -18,6 +18,7 @@ from link_overrides import (
 )
 from llm_client import LLMClient, require_llm
 from mdx_sanitize import sanitize_for_mdx
+from mechanical_linker import auto_link_exact_titles
 from models import OUTPUT_DIR
 from yaml_frontmatter import (
     FINAL_GENERATED_NOTE,
@@ -472,6 +473,12 @@ def link_and_export_pages(
         link_source = body if existing_fm is not None else content
         link_source = strip_generated_banner(link_source)
         link_source = _remove_broken_links(link_source, removed_files)
+
+        # Deterministic floor pass: guarantee every unambiguous, exact
+        # mention of another page's title is linked regardless of what the
+        # LLM catches. Runs before the LLM pass, not instead of it -- see
+        # mechanical_linker.py's module docstring for why both matter.
+        link_source = auto_link_exact_titles(link_source, index, self_title=title).body
 
         linked_body = link_page_with_llm(
             link_source,

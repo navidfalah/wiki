@@ -23,10 +23,49 @@ Built by `build_topic_index()` (full) or `update_topic_index()` (incremental).
 
 ## Cross-linking (Step 5)
 
-### Heuristic linking (removed)
+### A critical bug, found and fixed
 
-A regex-based fallback (`link_page_heuristic`) that matched index titles by longest-match
-word-boundary substitution has been removed. Linking is now LLM-only.
+`link_and_export_pages()` had a variable-shadowing bug: `index` held the
+real topic index dict, but `for index, draft_path in enumerate(to_link, ...)`
+silently rebound it to the loop counter for the rest of the function, so
+`link_page_with_llm()` received an integer instead of the actual
+title→filename mapping — on every page, every compile, since this code was
+written. Confirmed directly: with the bug present, the real prompt sent to
+the model read `Topic index (title → filename):\n1` — a bare digit, not
+JSON. No existing test caught it because the only test exercising this
+function used a `FakeLLM` that echoes the page back without ever looking at
+what was in the prompt. Fixed by renaming the loop variable; a new
+regression test
+(`test_link_and_export_pages_sends_the_real_topic_index_to_the_llm`)
+inspects the actual prompt content and was verified to fail against the
+bug and pass against the fix.
+
+### Mechanical linking (`mechanical_linker.py`, new)
+
+A regex-based pre-pass (`auto_link_exact_titles`) similar in shape to a
+`link_page_heuristic` function that used to exist here and was
+**deliberately removed** in an earlier refactor (commit `09a7f31`) —
+important precedent, addressed directly rather than quietly reintroduced.
+That removal eliminated an entire parallel *no-LLM compile mode*
+(extraction, synthesis, **and** linking, all duplicated as heuristic
+fallbacks) in favor of "the compiler is LLM-only." This module is not that
+mode coming back: the LLM is still mandatory (`link_and_export_pages()`
+still calls `require_llm()` and still runs `link_page_with_llm()` on every
+page, unconditionally), and extraction/synthesis are untouched. What's new
+is narrower — a deterministic pass that runs *before* the LLM call, so
+every unambiguous, exact-title mention gets linked as a guaranteed floor,
+and the LLM only has to find what this pass structurally can't
+(paraphrased or indirect references). See `mechanical_linker.py`'s module
+docstring for the full reasoning and `tests/test_mechanical_linker.py` for
+the mechanism tests (word-boundary matching, code-fence/heading/existing-link
+protection, longest-title-first preference, idempotency).
+
+**Real, measured impact** (run against the 174 pages already compiled
+under `wiki-app/docs/`, using their own titles as the topic index): 126 of
+174 pages (72%) had at least one exact-title mention of another page that
+was never linked; 789 such mentions total across the corpus. That gap is
+the direct, measurable consequence of the shadowing bug above — the LLM
+pass was working from a broken index the whole time.
 
 ### LLM linking (`link_page_with_llm`)
 
@@ -36,6 +75,11 @@ System prompt `LINKER_SYSTEM_PROMPT` in `linker.py`:
 - Do not link the page's own title
 - Do not modify existing links or code spans
 - Do not change factual content
+
+Runs after the mechanical pass above, on link_source that pass has already
+partially linked — its job is now catching what the mechanical pass
+structurally cannot (paraphrases, indirect references), not carrying the
+entire cross-linking burden alone.
 
 ### Relink targets (incremental)
 
