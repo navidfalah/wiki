@@ -15,6 +15,7 @@ data/review_corrections.json
 data/user_study_results.json
 data/_archive_non_aurora/
 data/last-compile.log
+data/connectors/
 compiler/temp_output/*
 !compiler/temp_output/.gitkeep
 wiki-app/static/media/*
