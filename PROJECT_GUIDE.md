@@ -34,6 +34,8 @@ cd ../wiki-app && npm install && npm start
 | Module reference | [17-compiler-module-reference.md](./documentation/17-compiler-module-reference.md) |
 | Sample domain | [18-sample-domain.md](./documentation/18-sample-domain.md) |
 | Multimedia, email, trust & references | [19-multimedia-email-and-trust.md](./documentation/19-multimedia-email-and-trust.md) |
+| Email engine, Resources, Chat (RAG) | [20-email-resources-and-chat-engines.md](./documentation/20-email-resources-and-chat-engines.md) |
+| Trust-propagation eval dataset | [21-trust-eval-dataset.md](./documentation/21-trust-eval-dataset.md) |
 
 ## Also see
 

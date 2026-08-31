@@ -3,7 +3,7 @@ import clsx from 'clsx';
 
 export default function PageShell({ children, className, wide = false }) {
   return (
-    <main className="min-h-[calc(100vh-60px)] bg-gray-50">
+    <main className="min-h-[calc(100vh-60px)] bg-white">
       <div
         className={clsx(
           'mx-auto px-4 py-8 sm:px-6',

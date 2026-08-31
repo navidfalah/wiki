@@ -1,0 +1,32 @@
+Subject: Nova Widget beta =?utf-8?b?4oCU?= firmware 0.3.9 candidate
+From: Aurora Labs Beta <beta@auroralabs.example>
+To: beta-testers@auroralabs.example
+Date: Wed, 10 Jun 2026 08:00:00 -0700
+MIME-Version: 1.0
+Content-Type: multipart/mixed; boundary="===============2728108131569358167=="
+
+--===============2728108131569358167==
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: quoted-printable
+
+[DUMMY TEST DATA =E2=80=94 fictional]
+
+Hi beta testers,
+
+0.3.9 is up for the batch 4 retest =E2=80=94 this build addresses the MeshSyn=
+c relay battery drain reported earlier this week (MESH-118). Flash before add=
+ing more than 6 nodes to a mesh.
+
+Please report anything unusual to support@auroralabs.example.
+
+=E2=80=94 Aurora Labs
+
+--===============2728108131569358167==
+Content-Type: text/plain
+Content-Transfer-Encoding: base64
+Content-Disposition: attachment; filename="release-notes-0.3.9.txt"
+MIME-Version: 1.0
+
+MC4zLjk6IGZpeGVzIE1FU0gtMTE4IHJlbGF5IHJhZGlvIHNsZWVwIHRpbWVyLgo=
+
+--===============2728108131569358167==--

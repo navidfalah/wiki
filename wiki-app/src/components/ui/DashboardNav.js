@@ -5,6 +5,9 @@ import clsx from 'clsx';
 
 const LINKS = [
   { to: '/workspace', label: 'Dashboard' },
+  { to: '/chat', label: 'Chat' },
+  { to: '/emails', label: 'Emails' },
+  { to: '/resources', label: 'Resources' },
   { to: '/graph', label: 'Graph' },
   { to: '/analytics', label: 'Analytics' },
 ];

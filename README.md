@@ -30,6 +30,8 @@ The sample domain is fictional **Aurora Labs** (open IoT sensors), cross-linked 
 
 LLM Wiki turns unstructured raw sources — meeting notes, `.eml` email threads, forum scrapes, half-finished specs, images, and PDF/CSV/JSON/DOCX/XLSX/PPTX/ZIP attachments — into a linked markdown wiki suitable for Docusaurus. The compiler uses an **OpenAI-compatible API** for extraction, synthesis, cross-linking, and image captioning (`OPENAI_API_KEY` required). See [documentation/19-multimedia-email-and-trust.md](./documentation/19-multimedia-email-and-trust.md) for how non-text sources and source-trust/citation tracking work.
 
+Three dedicated "engine" modules sit on top of the base pipeline, each with its own dashboard page and unit tests, independent of one another: an **email knowledge engine** (browse ingested `.eml` threads on their own, see [documentation/20-email-resources-and-chat-engines.md](./documentation/20-email-resources-and-chat-engines.md)), a **resources engine** (every cited source deduped across pages, reusable independent of which page cites it), and a **RAG chat engine** (ask questions over the compiled wiki and get cited answers — works with or without an LLM configured). The dashboard defaults to a minimal, light-only theme.
+
 ### Architecture
 
 ```mermaid
@@ -54,12 +56,15 @@ flowchart TB
     subgraph output [Static site — wiki-app/]
         DOCS["wiki-app/docs/<br/>linked markdown"]
         MOC["index.md Map of Content"]
-        DOCUSAURUS["Docusaurus + React<br/>custom dashboard pages"]
+        DOCUSAURUS["Docusaurus + React<br/>/workspace /chat /emails /resources /graph /analytics"]
     end
 
     subgraph api [Optional API — port 8000]
-        FASTAPI["FastAPI server<br/>server.py"]
+        FASTAPI["FastAPI server<br/>server.py (thin router)"]
         SSE["SSE build stream"]
+        EMAILENG["email_engine.py"]
+        RESENG["resources_engine.py"]
+        RAGENG["rag_engine.py"]
     end
 
     RAW --> S1
@@ -70,14 +75,21 @@ flowchart TB
     FASTAPI --> DOCS
     FASTAPI --> STATE
     SSE --> S1
+    FASTAPI --> EMAILENG
+    FASTAPI --> RESENG
+    FASTAPI --> RAGENG
+    EMAILENG --> RAW
+    RESENG --> DOCS
+    RAGENG --> DOCS
 ```
 
 | Layer | Path | Owner | Description |
 |-------|------|-------|-------------|
 | Raw sources | `data/raw/` | Human | Source-of-truth junk data. Never edit via automated agents without explicit intent. |
 | Compiler | `compiler/` | Python pipeline | Reads raw files, extracts structure, writes drafts, links pages. |
+| Engines | `compiler/email_engine.py`, `resources_engine.py`, `rag_engine.py` | Python, pure functions | Email browsing, deduped cross-page resources, and RAG chat — each independent, unit-tested without a running server. |
 | Wiki output | `wiki-app/docs/` | Generated | Docusaurus-ready markdown with YAML front matter. |
-| Static site | `wiki-app/` | React/Docusaurus | Browsing UI, graphs, analytics, live compile dashboard. |
+| Static site | `wiki-app/` | React/Docusaurus | Browsing UI, chat, email/resource explorers, graphs, analytics, live compile dashboard. Light/white theme only. |
 | Agent schema | `AGENTS.md` | Human + LLM | Workflows for compile, ingest, query, and lint. |
 
 ---
@@ -89,7 +101,7 @@ flowchart TB
 | Compiler | Python 3.12+ | Orchestration in `main.py`; modules for synthesis, linking, MOC, analytics |
 | LLM client | OpenAI SDK + SQLite cache | Extraction, synthesis, and link injection (required) |
 | API server | FastAPI + Uvicorn | REST endpoints and SSE build streaming on port **8000** |
-| Frontend | Docusaurus 3 + React 18 | Docs site plus custom pages (`/workspace`, `/analytics`, `/graph`, `/knowledge-graph`) |
+| Frontend | Docusaurus 3 + React 18 | Docs site plus custom pages (`/workspace`, `/chat`, `/emails`, `/resources`, `/analytics`, `/graph`, `/knowledge-graph`) |
 | Styling | Tailwind CSS 3 | Dashboard UI (`tailwind.config.js`; `preflight: false` to coexist with Docusaurus) |
 | Graphs | `react-force-graph-2d` | Topic graph and knowledge graph visualizations |
 | Build UX | Server-Sent Events | Live compiler log stream from `/api/build/stream` |
@@ -123,6 +135,10 @@ wiki/
 │   ├── media_ingest.py          # Images + file attachments → chunks
 │   ├── email_ingest.py          # .eml parsing → chunks
 │   ├── trust.py                 # Source trust levels + References & Trust section
+│   ├── doc_utils.py             # Shared frontmatter/topic-lookup helpers for the engines below
+│   ├── email_engine.py          # Email knowledge engine (backs /emails)
+│   ├── resources_engine.py      # Deduped, cross-page resources engine (backs /resources)
+│   ├── rag_engine.py            # RAG chat engine over compiled docs (backs /chat)
 │   ├── linker.py                # Topic index + cross-link injection
 │   ├── moc_generator.py         # Hierarchical index.md (Map of Content)
 │   ├── server.py                # FastAPI API for dashboards
@@ -146,8 +162,8 @@ wiki/
     ├── docs/                    # Compiler output (generated markdown)
     ├── static/media/            # Ingested images/attachments (content-hash deduped)
     ├── src/
-    │   ├── pages/               # workspace, analytics, graph, knowledge-graph
-    │   ├── components/          # DataWorkspace, WikiGraph, AnalyticsAudit, …
+    │   ├── pages/               # workspace, chat, emails, resources, analytics, graph, knowledge-graph
+    │   ├── components/          # DataWorkspace, ChatEngine, EmailEngine, ResourcesExplorer, WikiGraph, AnalyticsAudit, …
     │   └── utils/wikiApi.js     # API client helpers
     ├── tailwind.config.js
     └── package.json
@@ -221,7 +237,7 @@ npm start
 
 Site: **http://localhost:3000**
 
-Open **Dashboard** at http://localhost:3000/workspace to browse raw files, trigger live compiles, and inspect synthesized pages.
+Open **Dashboard** at http://localhost:3000/workspace to browse raw files, trigger live compiles, and inspect synthesized pages. From there, **Chat** (`/chat`) answers questions over the compiled wiki, **Emails** (`/emails`) browses ingested `.eml` threads, and **Resources** (`/resources`) lists every cited source deduped across pages.
 
 ### 5. One-command production build
 
@@ -324,6 +340,12 @@ CORS is enabled for `http://localhost:3000` and `http://127.0.0.1:3000`.
 | `PUT` | `/api/knowledge-graph/overrides` | Save connection rules to `data/link_overrides.json` |
 | `GET` | `/api/analytics` | Summary metrics, tag index, dead-link audit |
 | `GET` | `/api/analytics/tags/{tag}` | Raw chunks and pages for a tag |
+| `GET` | `/api/emails` | List ingested `.eml` sources with parsed headers, status, trust |
+| `GET` | `/api/emails/{path}` | Full email body, attachments, and the wiki pages it fed |
+| `GET` | `/api/resources` | Every cited source, deduped, with citing pages (filter: `q`, `source_type`, `trust`) |
+| `GET` | `/api/resources/{path}` | One resource's citing pages + raw content preview |
+| `POST` | `/api/chat` | RAG chat over the compiled wiki — `{"message", "history"}` in, `{"answer", "sources", "mode"}` out |
+| `GET` | `/api/chat/status` | Corpus size and whether an LLM is configured for chat |
 | `GET` | `/api/review-report` | Contents of `compiler/review_report.txt` if present |
 
 SSE events from `/api/build/stream`:
@@ -345,6 +367,9 @@ Docusaurus serves compiled docs at `/docs/…`. Custom React pages (Tailwind-sty
 | Route | Page | Purpose |
 |-------|------|---------|
 | `/workspace` | **Dashboard** | Browse raw vs compiled files; live compile via SSE; pipeline metrics |
+| `/chat` | **Chat** | RAG chat over the compiled wiki — cited, grounded answers (`compiler/rag_engine.py`) |
+| `/emails` | **Emails** | Email knowledge engine — browse/search ingested `.eml` threads and what they fed into the wiki |
+| `/resources` | **Resources** | Every cited source, deduped, browsable independent of which page cites it |
 | `/analytics` | **Analytics & Audit** | Tag explorer, dead-link report, compiler metrics |
 | `/graph` | **Topic Graph** | Force-directed graph from `index.json` cross-links |
 | `/knowledge-graph` | **Knowledge Graph Explorer** | Detected + manual connections; edit overrides saved to `data/link_overrides.json` |

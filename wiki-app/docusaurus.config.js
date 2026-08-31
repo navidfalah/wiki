@@ -68,6 +68,11 @@ const config = {
   themeConfig:
     /** @type {import('@docusaurus/preset-classic').ThemeConfig} */
     ({
+      colorMode: {
+        defaultMode: 'light',
+        disableSwitch: true,
+        respectPrefersColorScheme: false,
+      },
       navbar: {
         title: 'Aurora Labs Wiki',
         items: [
@@ -88,6 +93,21 @@ const config = {
             position: 'left',
           },
           {
+            to: '/chat',
+            label: 'Chat',
+            position: 'left',
+          },
+          {
+            to: '/emails',
+            label: 'Emails',
+            position: 'left',
+          },
+          {
+            to: '/resources',
+            label: 'Resources',
+            position: 'left',
+          },
+          {
             to: '/analytics',
             label: 'Analytics',
             position: 'left',
@@ -100,7 +120,7 @@ const config = {
         ],
       },
       footer: {
-        style: 'dark',
+        style: 'light',
         copyright: `LLM Wiki — compiled ${new Date().getFullYear()}`,
       },
       docs: {
