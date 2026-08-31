@@ -41,6 +41,7 @@ cd ../wiki-app && npm install && npm start
 | Extraction critic (grounded synthesis) | [24-extraction-critic.md](./documentation/24-extraction-critic.md) |
 | Hybrid retrieval (BM25 + embeddings + reranker) | [25-hybrid-retrieval.md](./documentation/25-hybrid-retrieval.md) |
 | Entity resolution / coreference | [26-entity-resolution.md](./documentation/26-entity-resolution.md) |
+| Temporal / bi-temporal fact modeling | [27-temporal-modeling.md](./documentation/27-temporal-modeling.md) |
 
 ## Also see
 
