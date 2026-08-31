@@ -1,0 +1,75 @@
+name: llm-wiki
+
+services:
+  compiler-api:
+    build:
+      context: .
+      dockerfile: compiler/Dockerfile
+    container_name: llm-wiki-compiler
+    env_file:
+      - path: .env
+        required: false
+    environment:
+      # Defaults point at OpenAI; override in .env (or here) to use Gemini,
+      # a local Ollama container (see the `ollama` service below and
+      # documentation/33-docker-and-local-llm.md), or any other
+      # OpenAI-compatible endpoint.
+      OPENAI_BASE_URL: ${OPENAI_BASE_URL:-https://api.openai.com/v1}
+      OPENAI_MODEL: ${OPENAI_MODEL:-gpt-4o-mini}
+      OPENAI_EMBEDDING_MODEL: ${OPENAI_EMBEDDING_MODEL:-text-embedding-3-small}
+    volumes:
+      # Mutable data shared with the host and (for docs/media) the
+      # wiki-app service — not baked into the image, so a compile's output
+      # survives a rebuild and is visible outside the container.
+      - ./data:/app/data
+      - ./wiki-app/docs:/app/wiki-app/docs
+      - ./wiki-app/static/media:/app/wiki-app/static/media
+      - ./compiler/temp_output:/app/compiler/temp_output
+      # Live code mount for development — edits on the host apply without
+      # a rebuild; server.py's own uvicorn reload=True picks them up.
+      - ./compiler:/app/compiler
+    ports:
+      - "8000:8000"
+    restart: unless-stopped
+
+  wiki-app:
+    build:
+      context: ./wiki-app
+      dockerfile: Dockerfile
+    container_name: llm-wiki-frontend
+    environment:
+      WIKI_API_URL: ${WIKI_API_URL:-http://localhost:8000}
+    volumes:
+      - ./wiki-app:/app
+      # Anonymous volume so the container's own npm-installed
+      # node_modules isn't shadowed by the host bind mount above (the host
+      # doesn't have node_modules unless `npm install` was run there too).
+      - wiki-app-node-modules:/app/node_modules
+    ports:
+      - "3000:3000"
+    depends_on:
+      - compiler-api
+    restart: unless-stopped
+
+  # Optional local LLM, for OPENAI_BASE_URL=http://ollama:11434/v1 instead
+  # of a paid API — not started by a plain `docker compose up`; run
+  # `docker compose --profile local-llm up` to include it. See
+  # documentation/33-docker-and-local-llm.md for the full switch-over.
+  ollama:
+    image: ollama/ollama:latest
+    container_name: llm-wiki-ollama
+    profiles: ["local-llm"]
+    volumes:
+      - ollama-data:/root/.ollama
+      - ./docker/ollama-entrypoint.sh:/ollama-entrypoint.sh:ro
+    entrypoint: ["/bin/sh", "/ollama-entrypoint.sh"]
+    environment:
+      OLLAMA_CHAT_MODEL: ${OLLAMA_CHAT_MODEL:-llama3.2}
+      OLLAMA_EMBED_MODEL: ${OLLAMA_EMBED_MODEL:-nomic-embed-text}
+    ports:
+      - "11434:11434"
+    restart: unless-stopped
+
+volumes:
+  wiki-app-node-modules:
+  ollama-data:

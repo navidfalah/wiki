@@ -1,0 +1,16 @@
+.git
+.github
+node_modules
+wiki-app/node_modules
+wiki-app/build
+wiki-app/.docusaurus
+compiler/.venv
+compiler/temp_output
+**/__pycache__
+*.pyc
+.env
+data/.llm-cache.sqlite
+data/state.json
+data/review_corrections.json
+data/user_study_results.json
+data/last-compile.log

@@ -192,6 +192,20 @@ Optional:
 
 ## Quick start
 
+**Docker (both services, one command):**
+
+```bash
+cp .env.example .env   # add an API key, or skip and use the local LLM below
+docker compose up --build
+```
+
+Compiler/API at http://localhost:8000, wiki-app at http://localhost:3000.
+For a local LLM (Ollama) instead of a paid API key, use
+`docker compose --profile local-llm up --build` — see
+[documentation/33-docker-and-local-llm.md](./documentation/33-docker-and-local-llm.md).
+The manual (non-Docker) setup below is equivalent and useful for local
+development without containers.
+
 ### 1. Clone and configure
 
 ```bash
