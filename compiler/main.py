@@ -156,7 +156,9 @@ def step_read_data(llm: LLMClient) -> list:
     return chunks
 
 
-def step_extract(chunks: list, llm: LLMClient, *, force: bool, extra_system_context: str = "") -> dict:
+def step_extract(
+    chunks: list, llm: LLMClient, *, force: bool, extra_system_context: str = "", redact_pii: bool = False
+) -> dict:
     """Step 2: Extract topics, entities, and concepts from each chunk."""
     mode = "LLM"
     changes = scan_raw_file_changes(RAW_DIR, load_state(), force=force)
@@ -186,6 +188,7 @@ def step_extract(chunks: list, llm: LLMClient, *, force: bool, extra_system_cont
             force=force,
             on_progress=on_progress if total else None,
             extra_system_context=extra_system_context,
+            redact_pii=redact_pii,
         )
         if total:
             progress.update(task, completed=total)
@@ -374,7 +377,13 @@ def step_link(
     return written
 
 
-def run_pipeline(*, force: bool = False, apply_critic: bool = False, use_corrections: bool = False) -> int:
+def run_pipeline(
+    *,
+    force: bool = False,
+    apply_critic: bool = False,
+    use_corrections: bool = False,
+    redact_pii: bool = False,
+) -> int:
     """Run the full compiler pipeline sequentially."""
     start = time.perf_counter()
     try:
@@ -408,7 +417,9 @@ def run_pipeline(*, force: bool = False, apply_critic: bool = False, use_correct
         extra_system_context = active_learning.render_fewshot_block(corrections)
         if corrections:
             console.print(f"[cyan]Active learning:[/] applying {len(corrections)} human correction(s) as few-shot context")
-    extractions = step_extract(chunks, llm, force=force, extra_system_context=extra_system_context)
+    extractions = step_extract(
+        chunks, llm, force=force, extra_system_context=extra_system_context, redact_pii=redact_pii
+    )
 
     _step_banner(3, 5, "Synthesis", "Regenerate only topic pages affected by changed files")
     synth_result = step_synthesize(extractions, llm, force=force, apply_critic=apply_critic)
@@ -483,9 +494,25 @@ def main() -> None:
             "Also enabled by setting WIKI_USE_CORRECTIONS=true."
         ),
     )
+    parser.add_argument(
+        "--redact-pii",
+        action="store_true",
+        default=os.getenv("WIKI_REDACT_PII", "").lower() in {"1", "true", "yes"},
+        help=(
+            "Redact SSNs, credit cards, API keys, phone numbers, and IPv4 addresses "
+            "(pii_redaction.py's default policy — NOT email addresses or names, see "
+            "its module docstring) from chunk text before it's sent to the LLM for "
+            "extraction. Also enabled by setting WIKI_REDACT_PII=true."
+        ),
+    )
     args = parser.parse_args()
     raise SystemExit(
-        run_pipeline(force=args.force, apply_critic=args.critic_pass, use_corrections=args.use_corrections)
+        run_pipeline(
+            force=args.force,
+            apply_critic=args.critic_pass,
+            use_corrections=args.use_corrections,
+            redact_pii=args.redact_pii,
+        )
     )
 
 

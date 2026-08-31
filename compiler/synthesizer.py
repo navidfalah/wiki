@@ -12,6 +12,7 @@ from pathlib import Path
 
 import email_ingest
 import media_ingest
+import pii_redaction
 import trust
 from extraction_critic import apply_critic_pass
 from llm_client import LLMClient, require_llm
@@ -396,6 +397,7 @@ def extract_chunk_topics(
     llm: LLMClient | None = None,
     *,
     extra_system_context: str = "",
+    redact_pii: bool = False,
 ) -> ChunkExtraction:
     """Extract topics, entities, and concepts from a single text chunk.
 
@@ -404,6 +406,14 @@ def extract_chunk_topics(
     render_fewshot_block() is the intended source: human corrections from a
     prior compile's review queue, fed back as a few-shot block so the same
     mistake is less likely to repeat.
+
+    redact_pii=True runs pii_redaction.py's default policy over the chunk
+    text sent to the LLM (SSNs, credit cards, API keys, phone numbers, IPv4
+    addresses — see pii_redaction.py's module docstring for why email
+    addresses and names are NOT redacted by default: they matter to entity
+    resolution and the email-knowledge engine). The stored ChunkExtraction
+    still reports the original, unredacted chunk.text — only what actually
+    leaves the machine in the prompt is redacted.
     """
     client = require_llm(llm)
 
@@ -411,11 +421,11 @@ def extract_chunk_topics(
     if extra_system_context:
         system_prompt = f"{system_prompt}\n\n{extra_system_context}"
 
-    prompt = (
-        f"Source file: {chunk.source_path}\n"
-        f"Chunk index: {chunk.chunk_index}\n\n"
-        f"---\n\n{chunk.text[:8000]}"
-    )
+    chunk_text = chunk.text[:8000]
+    if redact_pii:
+        chunk_text = pii_redaction.redact_text(chunk_text).text
+
+    prompt = f"Source file: {chunk.source_path}\nChunk index: {chunk.chunk_index}\n\n---\n\n{chunk_text}"
     raw = client.generate_response(prompt, system_prompt)
     data = _parse_extraction_json(raw)
 
@@ -445,6 +455,7 @@ def extract_topics_from_raw_files(
     force: bool = False,
     on_progress: ProgressCallback | None = None,
     extra_system_context: str = "",
+    redact_pii: bool = False,
 ) -> dict:
     """
     Read text files from data/raw/ and extract topics per chunk.
@@ -475,7 +486,11 @@ def extract_topics_from_raw_files(
         extractions = []
         chunk_count = len(file_chunks)
         for chunk_index, chunk in enumerate(file_chunks, start=1):
-            extractions.append(extract_chunk_topics(chunk, llm, extra_system_context=extra_system_context))
+            extractions.append(
+                extract_chunk_topics(
+                    chunk, llm, extra_system_context=extra_system_context, redact_pii=redact_pii
+                )
+            )
             if on_progress and chunk_count > 1:
                 on_progress(
                     index,
