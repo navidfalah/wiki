@@ -12,7 +12,9 @@ from pathlib import Path
 
 import email_ingest
 import media_ingest
+import pii_redaction
 import trust
+from extraction_critic import apply_critic_pass
 from llm_client import LLMClient, require_llm
 from models import RAW_DIR, STATE_FILE
 from text_chunking import split_text_into_chunks
@@ -393,16 +395,38 @@ def _parse_extraction_json(raw: str) -> dict:
 def extract_chunk_topics(
     chunk: RawChunk,
     llm: LLMClient | None = None,
+    *,
+    extra_system_context: str = "",
+    redact_pii: bool = False,
 ) -> ChunkExtraction:
-    """Extract topics, entities, and concepts from a single text chunk."""
+    """Extract topics, entities, and concepts from a single text chunk.
+
+    extra_system_context, when non-empty, is appended to
+    CHUNK_EXTRACTION_SYSTEM_PROMPT — active_learning.py's
+    render_fewshot_block() is the intended source: human corrections from a
+    prior compile's review queue, fed back as a few-shot block so the same
+    mistake is less likely to repeat.
+
+    redact_pii=True runs pii_redaction.py's default policy over the chunk
+    text sent to the LLM (SSNs, credit cards, API keys, phone numbers, IPv4
+    addresses — see pii_redaction.py's module docstring for why email
+    addresses and names are NOT redacted by default: they matter to entity
+    resolution and the email-knowledge engine). The stored ChunkExtraction
+    still reports the original, unredacted chunk.text — only what actually
+    leaves the machine in the prompt is redacted.
+    """
     client = require_llm(llm)
 
-    prompt = (
-        f"Source file: {chunk.source_path}\n"
-        f"Chunk index: {chunk.chunk_index}\n\n"
-        f"---\n\n{chunk.text[:8000]}"
-    )
-    raw = client.generate_response(prompt, CHUNK_EXTRACTION_SYSTEM_PROMPT)
+    system_prompt = CHUNK_EXTRACTION_SYSTEM_PROMPT
+    if extra_system_context:
+        system_prompt = f"{system_prompt}\n\n{extra_system_context}"
+
+    chunk_text = chunk.text[:8000]
+    if redact_pii:
+        chunk_text = pii_redaction.redact_text(chunk_text).text
+
+    prompt = f"Source file: {chunk.source_path}\nChunk index: {chunk.chunk_index}\n\n---\n\n{chunk_text}"
+    raw = client.generate_response(prompt, system_prompt)
     data = _parse_extraction_json(raw)
 
     return ChunkExtraction(
@@ -430,6 +454,8 @@ def extract_topics_from_raw_files(
     *,
     force: bool = False,
     on_progress: ProgressCallback | None = None,
+    extra_system_context: str = "",
+    redact_pii: bool = False,
 ) -> dict:
     """
     Read text files from data/raw/ and extract topics per chunk.
@@ -460,7 +486,11 @@ def extract_topics_from_raw_files(
         extractions = []
         chunk_count = len(file_chunks)
         for chunk_index, chunk in enumerate(file_chunks, start=1):
-            extractions.append(extract_chunk_topics(chunk, llm))
+            extractions.append(
+                extract_chunk_topics(
+                    chunk, llm, extra_system_context=extra_system_context, redact_pii=redact_pii
+                )
+            )
             if on_progress and chunk_count > 1:
                 on_progress(
                     index,
@@ -621,12 +651,19 @@ def synthesize_topic_wiki_pages(
     *,
     dirty_topics: set[str] | None = None,
     on_progress: ProgressCallback | None = None,
+    apply_critic: bool = False,
 ) -> tuple[list[Path], list[str]]:
     """
     For each unique topic, write a Markdown wiki page synthesizing related chunks.
 
     When dirty_topics is set, only those topics are regenerated; existing drafts
     for unchanged topics are kept to save API calls.
+
+    apply_critic=True runs a second LLM pass (extraction_critic.py) over each
+    draft before it's written, stripping any sentence the critic can't ground
+    in that topic's source chunks. Off by default: it roughly doubles the
+    per-page LLM cost, so it's an explicit opt-in (main.py's --critic-pass /
+    WIKI_CRITIC_PASS), not a silent behavior change for existing users.
     """
     llm = require_llm(llm)
     out_dir = output_dir or TEMP_OUTPUT_DIR
@@ -669,6 +706,18 @@ def synthesize_topic_wiki_pages(
         body = llm.generate_response(prompt, WIKI_PAGE_SYSTEM_PROMPT)
         body = _strip_llm_authored_sources_section(body.strip())
 
+        if apply_critic:
+            source_text = "\n\n---\n\n".join(chunk_blocks)
+            body, critic_report = apply_critic_pass(source_text, body, llm)
+            if critic_report.flagged:
+                removed_count = sum(1 for f in critic_report.flagged if f.removed)
+                console_note = (
+                    f"critic flagged {len(critic_report.flagged)} sentence(s) in '{topic}' "
+                    f"({removed_count} removed)"
+                )
+                if on_progress:
+                    on_progress(index, total, console_note)
+
         references = trust.build_references(entries, trust_config)
         references_md = trust.render_references_markdown(references)
         if references_md:
@@ -691,6 +740,7 @@ def run_topic_synthesis_pipeline(
     *,
     force: bool = False,
     save_extractions_json: bool = True,
+    apply_critic: bool = False,
 ) -> dict:
     """
     End-to-end: extract topics → group by topic → write wiki drafts to temp_output/.
@@ -724,6 +774,7 @@ def run_topic_synthesis_pipeline(
         llm=llm,
         output_dir=out_dir,
         dirty_topics=dirty_topics,
+        apply_critic=apply_critic,
     )
 
     extractions_path: Path | None = None

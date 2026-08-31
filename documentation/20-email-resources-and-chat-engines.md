@@ -63,11 +63,14 @@ pipeline chunks, so every citation is a page a person can click into.
 - `build_corpus(docs_dir=OUTPUT_DIR)` — loads every compiled page and splits
   it into heading-scoped passages (reusing `text_chunking.split_text_into_chunks`
   for size-bounding).
-- `retrieve(query, corpus, top_k=5)` — a small dependency-free TF-IDF-style
-  scorer (stdlib `math` + `re` only, no vector DB, no embeddings API) —
-  ranks passages by query-term overlap.
+- `retrieve(query, corpus, top_k=5)` — BM25 ranking (stdlib only, no vector
+  DB or API needed). `retrieve_hybrid(..., llm=)` additionally fuses in
+  embedding similarity and an LLM reranker when a key is configured,
+  degrading gracefully tier-by-tier otherwise. See
+  [25-hybrid-retrieval.md](./25-hybrid-retrieval.md) for the full design
+  and an evaluation against the original TF-IDF-style scorer this replaced.
 - `answer_question(query, history=, docs_dir=, llm=, top_k=5)` — retrieves
-  passages, then:
+  passages via `retrieve_hybrid()`, then:
   - with `OPENAI_API_KEY` configured, hands the retrieved excerpts to the
     chat model with `CHAT_SYSTEM_PROMPT` (answer only from the excerpts,
     cite them as `[1]`, `[2]`, ...) — `mode: "generated"`;

@@ -36,6 +36,17 @@ cd ../wiki-app && npm install && npm start
 | Multimedia, email, trust & references | [19-multimedia-email-and-trust.md](./documentation/19-multimedia-email-and-trust.md) |
 | Email engine, Resources, Chat (RAG) | [20-email-resources-and-chat-engines.md](./documentation/20-email-resources-and-chat-engines.md) |
 | Trust-propagation eval dataset | [21-trust-eval-dataset.md](./documentation/21-trust-eval-dataset.md) |
+| Trust propagation algorithm | [22-trust-propagation-algorithm.md](./documentation/22-trust-propagation-algorithm.md) |
+| Trust propagation evaluation + ablations | [23-trust-propagation-evaluation.md](./documentation/23-trust-propagation-evaluation.md) |
+| Extraction critic (grounded synthesis) | [24-extraction-critic.md](./documentation/24-extraction-critic.md) |
+| Hybrid retrieval (BM25 + embeddings + reranker) | [25-hybrid-retrieval.md](./documentation/25-hybrid-retrieval.md) |
+| Entity resolution / coreference | [26-entity-resolution.md](./documentation/26-entity-resolution.md) |
+| Temporal / bi-temporal fact modeling | [27-temporal-modeling.md](./documentation/27-temporal-modeling.md) |
+| Faithfulness evaluation for chat answers | [28-faithfulness-evaluation.md](./documentation/28-faithfulness-evaluation.md) |
+| Active-learning review/correction loop | [29-active-learning.md](./documentation/29-active-learning.md) |
+| PII/privacy redaction before LLM calls | [30-pii-redaction.md](./documentation/30-pii-redaction.md) |
+| Vector/graph storage + scalability benchmark | [31-vector-graph-storage-and-scalability.md](./documentation/31-vector-graph-storage-and-scalability.md) |
+| User study protocol (wiki+chat vs. plain search) | [32-user-study-protocol.md](./documentation/32-user-study-protocol.md) |
 
 ## Also see
 

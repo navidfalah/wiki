@@ -11,6 +11,8 @@ wiki-app/build/
 wiki-app/.docusaurus/
 data/state.json
 data/.llm-cache.sqlite
+data/review_corrections.json
+data/user_study_results.json
 data/_archive_non_aurora/
 data/last-compile.log
 compiler/temp_output/*

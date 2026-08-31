@@ -29,6 +29,17 @@ Detailed project documentation, split by topic. Start with [01-overview.md](./01
 | [19-multimedia-email-and-trust.md](./19-multimedia-email-and-trust.md) | Images, file attachments, email ingestion, source trust & references |
 | [20-email-resources-and-chat-engines.md](./20-email-resources-and-chat-engines.md) | Email knowledge engine, Resources explorer, RAG chat engine |
 | [21-trust-eval-dataset.md](./21-trust-eval-dataset.md) | Hand-labeled trust-propagation eval dataset: schema, labeling protocol, limitations |
+| [22-trust-propagation-algorithm.md](./22-trust-propagation-algorithm.md) | The trust propagation algorithm itself: design, config, and preliminary behavior |
+| [23-trust-propagation-evaluation.md](./23-trust-propagation-evaluation.md) | Formal evaluation: precision@1/pairwise accuracy, ablations, alpha sweep, results vs. static baseline |
+| [24-extraction-critic.md](./24-extraction-critic.md) | Grounded, self-verifying synthesis: a second LLM pass that strips ungrounded sentences from drafts |
+| [25-hybrid-retrieval.md](./25-hybrid-retrieval.md) | Hybrid retrieval: BM25 + embeddings (RRF) + LLM reranker, with a real BM25-vs-legacy-TF-IDF comparison |
+| [26-entity-resolution.md](./26-entity-resolution.md) | Entity resolution / coreference: tiered heuristic + embeddings + LLM adjudication, evaluated on real corpus mentions |
+| [27-temporal-modeling.md](./27-temporal-modeling.md) | Bi-temporal fact modeling: valid-time/transaction-time, `as_of()` queries, evaluated against gold trust labels |
+| [28-faithfulness-evaluation.md](./28-faithfulness-evaluation.md) | Faithfulness evaluation for chat answers: extractive mode proven faithful by construction, generated mode via an LLM judge |
+| [29-active-learning.md](./29-active-learning.md) | Active-learning review queue + correction store, fed back into extraction as few-shot examples |
+| [30-pii-redaction.md](./30-pii-redaction.md) | PII/privacy redaction before LLM calls: offline regex detectors, default policy, evaluation (no API key needed) |
+| [31-vector-graph-storage-and-scalability.md](./31-vector-graph-storage-and-scalability.md) | Persistent vector/graph stores + a real BM25-vs-naive-vector-store scalability benchmark (10 -> 10,000 docs) |
+| [32-user-study-protocol.md](./32-user-study-protocol.md) | User study protocol + instrument (wiki+chat vs. plain search) — no study run, honestly stated |
 
 ---
 

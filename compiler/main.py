@@ -4,6 +4,7 @@
 from __future__ import annotations
 
 import argparse
+import os
 import sys
 import time
 from collections.abc import Callable
@@ -24,6 +25,7 @@ from rich.progress import (
 from rich.table import Table
 from rich.text import Text
 
+import active_learning
 from linker import (
     IndexDelta,
     link_and_export_pages,
@@ -154,7 +156,9 @@ def step_read_data(llm: LLMClient) -> list:
     return chunks
 
 
-def step_extract(chunks: list, llm: LLMClient, *, force: bool) -> dict:
+def step_extract(
+    chunks: list, llm: LLMClient, *, force: bool, extra_system_context: str = "", redact_pii: bool = False
+) -> dict:
     """Step 2: Extract topics, entities, and concepts from each chunk."""
     mode = "LLM"
     changes = scan_raw_file_changes(RAW_DIR, load_state(), force=force)
@@ -183,6 +187,8 @@ def step_extract(chunks: list, llm: LLMClient, *, force: bool) -> dict:
             raw_dir=RAW_DIR,
             force=force,
             on_progress=on_progress if total else None,
+            extra_system_context=extra_system_context,
+            redact_pii=redact_pii,
         )
         if total:
             progress.update(task, completed=total)
@@ -202,7 +208,7 @@ def step_extract(chunks: list, llm: LLMClient, *, force: bool) -> dict:
     return extractions
 
 
-def step_synthesize(extractions: dict, llm: LLMClient, *, force: bool) -> dict:
+def step_synthesize(extractions: dict, llm: LLMClient, *, force: bool, apply_critic: bool = False) -> dict:
     """Step 3: Group by topic and write draft wiki pages to temp_output/."""
     grouped = group_chunks_by_topic(extractions)
     TEMP_OUTPUT_DIR.mkdir(parents=True, exist_ok=True)
@@ -257,6 +263,7 @@ def step_synthesize(extractions: dict, llm: LLMClient, *, force: bool) -> dict:
             output_dir=TEMP_OUTPUT_DIR,
             dirty_topics=dirty_topics,
             on_progress=on_progress if regen_count else None,
+            apply_critic=apply_critic,
         )
         if regen_count:
             progress.update(task, completed=regen_count)
@@ -370,7 +377,13 @@ def step_link(
     return written
 
 
-def run_pipeline(*, force: bool = False) -> int:
+def run_pipeline(
+    *,
+    force: bool = False,
+    apply_critic: bool = False,
+    use_corrections: bool = False,
+    redact_pii: bool = False,
+) -> int:
     """Run the full compiler pipeline sequentially."""
     start = time.perf_counter()
     try:
@@ -398,10 +411,18 @@ def run_pipeline(*, force: bool = False) -> int:
         return 1
 
     _step_banner(2, 5, "Extraction", "Extract topics — skip unchanged files via MD5 state")
-    extractions = step_extract(chunks, llm, force=force)
+    extra_system_context = ""
+    if use_corrections:
+        corrections = active_learning.load_corrections()
+        extra_system_context = active_learning.render_fewshot_block(corrections)
+        if corrections:
+            console.print(f"[cyan]Active learning:[/] applying {len(corrections)} human correction(s) as few-shot context")
+    extractions = step_extract(
+        chunks, llm, force=force, extra_system_context=extra_system_context, redact_pii=redact_pii
+    )
 
     _step_banner(3, 5, "Synthesis", "Regenerate only topic pages affected by changed files")
-    synth_result = step_synthesize(extractions, llm, force=force)
+    synth_result = step_synthesize(extractions, llm, force=force, apply_critic=apply_critic)
 
     _step_banner(4, 5, "Indexing", "Incrementally update index.json for changed drafts")
     topic_index, index_delta = step_index(
@@ -453,8 +474,46 @@ def main() -> None:
         action="store_true",
         help="Reprocess all raw files regardless of MD5 hashes in state.json",
     )
+    parser.add_argument(
+        "--critic-pass",
+        action="store_true",
+        default=os.getenv("WIKI_CRITIC_PASS", "").lower() in {"1", "true", "yes"},
+        help=(
+            "Run a second LLM pass (extraction_critic.py) over each synthesized page, "
+            "stripping sentences it can't ground in the source chunks. Roughly doubles "
+            "per-page LLM cost. Also enabled by setting WIKI_CRITIC_PASS=true."
+        ),
+    )
+    parser.add_argument(
+        "--use-corrections",
+        action="store_true",
+        default=os.getenv("WIKI_USE_CORRECTIONS", "").lower() in {"1", "true", "yes"},
+        help=(
+            "Feed human review corrections (data/review_corrections.json, see "
+            "active_learning.py) into the extraction prompt as few-shot examples. "
+            "Also enabled by setting WIKI_USE_CORRECTIONS=true."
+        ),
+    )
+    parser.add_argument(
+        "--redact-pii",
+        action="store_true",
+        default=os.getenv("WIKI_REDACT_PII", "").lower() in {"1", "true", "yes"},
+        help=(
+            "Redact SSNs, credit cards, API keys, phone numbers, and IPv4 addresses "
+            "(pii_redaction.py's default policy — NOT email addresses or names, see "
+            "its module docstring) from chunk text before it's sent to the LLM for "
+            "extraction. Also enabled by setting WIKI_REDACT_PII=true."
+        ),
+    )
     args = parser.parse_args()
-    raise SystemExit(run_pipeline(force=args.force))
+    raise SystemExit(
+        run_pipeline(
+            force=args.force,
+            apply_critic=args.critic_pass,
+            use_corrections=args.use_corrections,
+            redact_pii=args.redact_pii,
+        )
+    )
 
 
 if __name__ == "__main__":
