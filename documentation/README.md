@@ -33,6 +33,7 @@ Detailed project documentation, split by topic. Start with [01-overview.md](./01
 | [23-trust-propagation-evaluation.md](./23-trust-propagation-evaluation.md) | Formal evaluation: precision@1/pairwise accuracy, ablations, alpha sweep, results vs. static baseline |
 | [24-extraction-critic.md](./24-extraction-critic.md) | Grounded, self-verifying synthesis: a second LLM pass that strips ungrounded sentences from drafts |
 | [25-hybrid-retrieval.md](./25-hybrid-retrieval.md) | Hybrid retrieval: BM25 + embeddings (RRF) + LLM reranker, with a real BM25-vs-legacy-TF-IDF comparison |
+| [26-entity-resolution.md](./26-entity-resolution.md) | Entity resolution / coreference: tiered heuristic + embeddings + LLM adjudication, evaluated on real corpus mentions |
 
 ---
 
