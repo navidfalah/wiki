@@ -43,6 +43,14 @@ degradation path is covered by a dedicated test in `test_rag_engine.py`
 (`test_retrieve_hybrid_degrades_gracefully_when_embeddings_fail` /
 `..._when_rerank_fails`).
 
+`retrieve_hybrid(..., vector_store=...)` optionally backs the embedding
+tier with a persistent `vector_store.VectorStore` (task #11) instead of
+re-embedding the whole corpus from scratch every call — see
+[31-vector-graph-storage-and-scalability.md](./31-vector-graph-storage-and-scalability.md#live-pipeline-wiring)
+for the wiring details and the tests proving a second call against an
+unchanged corpus embeds nothing new. Omitting it keeps the original
+from-scratch behavior described above unchanged.
+
 ## Result 1 (no API key needed): BM25 vs. the original TF-IDF scorer
 
 `retrieval_eval.py` keeps the *exact* original scoring formula

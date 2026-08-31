@@ -174,3 +174,25 @@ def propagate_dataset_trust(
     claim id. No cross-group edges yet — see documentation/21-trust-eval-dataset.md."""
     trust_cfg = load_trust_config()
     return {group.id: propagate_group_trust(group, config, trust_cfg) for group in dataset.claim_groups}
+
+
+def propagate_group_trust_from_store(
+    store,
+    group_id: str,
+    config: PropagationConfig = DEFAULT_CONFIG,
+    trust_cfg: dict | None = None,
+) -> dict[str, ClaimTrust] | None:
+    """Same as propagate_group_trust(), but the claim graph comes from a
+    persistent graph_store.GraphStore (task #11) instead of an in-memory
+    ClaimGroup parsed fresh from data/trust_eval_dataset.json every call —
+    the same "insert once, query/compute many times" shift vector_store.py
+    gives rag_engine.py's retrieve_hybrid(). Returns None if group_id isn't
+    in the store (mirrors graph_store.export_claim_group()'s own None
+    return rather than raising).
+    """
+    from graph_store import export_claim_group
+
+    group = export_claim_group(store, group_id)
+    if group is None:
+        return None
+    return propagate_group_trust(group, config, trust_cfg)

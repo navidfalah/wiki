@@ -35,10 +35,14 @@ into once and query many times, surviving process restarts:
   spot-check that `nova_read_interval`'s `supersedes` edge is queryable via
   `store.incoming("nri-1", edge_type="supersedes")`.
 
-Neither is wired into the live pipeline yet (`rag_engine.py` still rebuilds
-its corpus per call, `trust_propagation.py` still operates on in-memory
-`ClaimGroup` objects) — that wiring is a reasonable next step once the
-benchmark below says it's worth it, not assumed here.
+**Update — both are now wired into their live code paths** (see
+"Live pipeline wiring" below): `rag_engine.retrieve_hybrid(...,
+vector_store=...)` backs the embedding tier with a persistent `VectorStore`
+instead of re-embedding the corpus every call, and
+`trust_propagation.propagate_group_trust_from_store()` runs propagation
+directly against a `GraphStore`-backed graph via
+`graph_store.export_claim_group()`. Both remain fully optional — omit the
+argument and behavior is exactly what it was before this wiring existed.
 
 ## The benchmark: BM25 vs. a naive vector store, by corpus size
 
@@ -101,7 +105,46 @@ answer, and it's now half-answered: the infrastructure question (can a
 naive vector store even keep up) turned out to matter as much as the
 quality question originally posed.
 
+## Live pipeline wiring
+
+Both stores are now used by the code they were built for, not just
+demonstrated in isolation:
+
+- **`rag_engine.py`.** `Passage` gained a stable, content-addressed id
+  (`_passage_id` — a SHA-256 hash of `doc_path`/`heading`/`text`, so
+  changed content gets a new id rather than silently reusing a stale
+  embedding). `sync_corpus_to_vector_store(corpus, llm, store)` embeds only
+  the passages a store doesn't already have; a second call against an
+  unchanged corpus embeds nothing new (`test_sync_corpus_to_vector_store_embeds_once_then_skips_unchanged_passages`
+  and `..._does_not_reembed_on_a_second_call` pin this down). Because one
+  `VectorStore` can end up holding entries from more than one corpus over
+  time, `retrieve_hybrid(..., vector_store=...)` filters search hits down
+  to the ids in *this* call's corpus before fusing them with BM25
+  (`test_retrieve_hybrid_with_vector_store_ignores_entries_from_a_different_corpus`),
+  and `prune_stale_vector_store_entries()` is there for a caller that wants
+  to actually clean those out. Omitting `vector_store` keeps `retrieve_hybrid()`'s
+  original from-scratch-every-call behavior exactly as it was.
+- **`trust_propagation.py` / `graph_store.py`.** `import_claim_group()` now
+  captures every `Claim` field (not just enough to render a graph — enough
+  to reconstruct one), plus a `claim_group` node for `domain`/`subject`/
+  `description`. `export_claim_group()` is the inverse, and
+  `trust_propagation.propagate_group_trust_from_store(store, group_id, ...)`
+  runs propagation against a store-backed graph. Verified byte-for-byte
+  against the in-memory path on the real pilot dataset — every claim's
+  `score` and `prior` match exactly between `propagate_group_trust(group)`
+  and `propagate_group_trust_from_store(store, group.id)`
+  (`test_propagate_group_trust_from_store_matches_in_memory_exactly_on_real_dataset`).
+
+Neither store's data is populated by the main compile pipeline itself yet
+— `main.py`'s five steps still write `wiki-app/docs/` and
+`data/trust_eval_dataset.json` directly, and nothing calls
+`sync_corpus_to_vector_store()` or `import_claim_group()` during a normal
+`python main.py` run. What's delivered here is the wiring a caller (the
+FastAPI server, a future CLI flag, or a script) can use today — actually
+invoking it as part of the standard compile is a reasonable next step, not
+assumed done by this work.
+
 ## Next
 
-- [25-hybrid-retrieval.md](./25-hybrid-retrieval.md) — the BM25-vs-TF-IDF-at-small-scale finding this benchmark extends
-- [21-trust-eval-dataset.md](./21-trust-eval-dataset.md) / [26-entity-resolution.md](./26-entity-resolution.md) — the in-memory graph structures `GraphStore`/`import_claim_group()` give a persistent home to
+- [25-hybrid-retrieval.md](./25-hybrid-retrieval.md) — the BM25-vs-TF-IDF-at-small-scale finding this benchmark extends, and what `retrieve_hybrid()` looked like before this wiring
+- [21-trust-eval-dataset.md](./21-trust-eval-dataset.md) / [26-entity-resolution.md](./26-entity-resolution.md) — the in-memory graph structures `GraphStore`/`import_claim_group()` give a persistent, queryable home to

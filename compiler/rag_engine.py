@@ -21,10 +21,23 @@ OPENAI_API_KEY configured, retrieved passages are handed to the chat model
 to write a grounded answer; without one, `answer_question` falls back to an
 extractive answer built directly from the retrieved passages, so the
 feature is never hard-blocked on API access.
+
+Optionally, `retrieve_hybrid(..., vector_store=...)` backs the embedding
+tier with a persistent vector_store.py VectorStore (task #11) instead of
+re-embedding the whole corpus from scratch on every call —
+`sync_corpus_to_vector_store()` embeds only passages the store doesn't
+already have, keyed by a stable content hash (`_passage_id`), so a second
+call against an unchanged corpus does zero new embedding calls. See
+documentation/31-vector-graph-storage-and-scalability.md for why this
+matters (a naive from-scratch embed is the cost `retrieve_hybrid()` paid
+without it) and documentation/25-hybrid-retrieval.md for how it fits the
+rest of the retrieval stack. Without a vector_store, behavior is unchanged
+from before this wiring existed.
 """
 
 from __future__ import annotations
 
+import hashlib
 import re
 from dataclasses import dataclass, field
 from pathlib import Path
@@ -35,6 +48,7 @@ from doc_utils import parse_frontmatter, strip_frontmatter
 from llm_client import LLMClient
 from models import OUTPUT_DIR
 from text_chunking import split_text_into_chunks
+from vector_store import VectorRecord, VectorStore
 
 _WORD_RE = re.compile(r"[a-z0-9]+")
 _HEADING_LINE_RE = re.compile(r"^(#{1,6})\s+(.*)$")
@@ -114,13 +128,52 @@ def build_corpus(docs_dir: Path | None = None) -> list[Passage]:
     return passages
 
 
+def _passage_id(passage: Passage) -> str:
+    """A stable content-hash id — same (doc_path, heading, text) always
+    hashes to the same id, across calls and across process restarts. That's
+    what makes VectorStore persistence meaningful: if a passage's text
+    changes, its id changes too, so a stale embedding is never silently
+    reused for changed content, and sync_corpus_to_vector_store() can tell
+    "already embedded" from "needs embedding" without comparing text.
+    """
+    key = f"{passage.doc_path}\x1f{passage.heading}\x1f{passage.text}"
+    return hashlib.sha256(key.encode("utf-8")).hexdigest()[:16]
+
+
 def _index_corpus(corpus: list[Passage]) -> tuple[list[hybrid_retrieval.Doc], dict[str, Passage]]:
-    """Passages don't carry a stable id (they're rebuilt fresh from disk on
-    every call), so index positions are used as ids for the duration of one
-    retrieval call — never persisted, never compared across calls."""
-    docs = [hybrid_retrieval.Doc(id=str(i), text=p.text, tokens=p.tokens) for i, p in enumerate(corpus)]
-    by_id = {str(i): p for i, p in enumerate(corpus)}
+    docs = [hybrid_retrieval.Doc(id=_passage_id(p), text=p.text, tokens=p.tokens) for p in corpus]
+    by_id = {_passage_id(p): p for p in corpus}
     return docs, by_id
+
+
+def sync_corpus_to_vector_store(corpus: list[Passage], llm: LLMClient, store: VectorStore) -> int:
+    """Embed and upsert every passage not already present in `store`,
+    keyed by _passage_id(). Existing entries are never re-embedded — that's
+    the entire point of a persistent store versus re-embedding the whole
+    corpus on every retrieve_hybrid() call. Returns how many new embeddings
+    were actually computed (0 on a second call against an unchanged corpus).
+    """
+    docs, _ = _index_corpus(corpus)
+    to_embed = [d for d in docs if store.get(d.id) is None]
+    if not to_embed:
+        return 0
+    records = [VectorRecord(id=d.id, text=d.text, embedding=llm.embed_text(d.text)) for d in to_embed]
+    store.upsert_many(records)
+    return len(records)
+
+
+def prune_stale_vector_store_entries(corpus: list[Passage], store: VectorStore) -> int:
+    """Remove store entries that don't correspond to any passage in the
+    current corpus — either the source page was deleted/changed (content-
+    hash ids mean a changed passage gets a new id, orphaning the old one)
+    or the store was built from a different corpus entirely. Returns how
+    many entries were removed."""
+    docs, _ = _index_corpus(corpus)
+    live_ids = {d.id for d in docs}
+    stale_ids = [record.id for record in store.all_records() if record.id not in live_ids]
+    for stale_id in stale_ids:
+        store.delete(stale_id)
+    return len(stale_ids)
 
 
 def retrieve(query: str, corpus: list[Passage], *, top_k: int = 5) -> list[ScoredPassage]:
@@ -139,11 +192,23 @@ def retrieve_hybrid(
     top_k: int = 5,
     llm: LLMClient | None = None,
     rerank: bool = True,
+    vector_store: VectorStore | None = None,
 ) -> list[ScoredPassage]:
     """BM25, optionally fused with embedding similarity (reciprocal rank
     fusion) and reranked by the LLM, when one is configured. Degrades one
     tier at a time — hybrid+rerank -> hybrid -> BM25-only — on any failure,
-    so this is always safe to call regardless of API availability."""
+    so this is always safe to call regardless of API availability.
+
+    vector_store, when given, backs the embedding tier with a persistent
+    VectorStore (task #11) instead of re-embedding the whole corpus from
+    scratch every call: sync_corpus_to_vector_store() embeds only passages
+    the store doesn't already have (by content-hash id), then the query is
+    matched against everything stored. A store can accumulate entries from
+    corpora other than the current one (or from since-deleted/changed
+    passages), so search results are filtered to ids present in *this*
+    call's corpus before fusion — see prune_stale_vector_store_entries() to
+    actually remove those, which this function does not do on its own.
+    """
     docs, by_id = _index_corpus(corpus)
     shortlist_k = max(top_k * 3, top_k)
 
@@ -154,7 +219,22 @@ def retrieve_hybrid(
 
     fused = bm25_top
     try:
-        embedding_top = hybrid_retrieval.embedding_rank(query, docs, client.embed_text, top_k=shortlist_k)
+        if vector_store is not None:
+            sync_corpus_to_vector_store(corpus, client, vector_store)
+            query_embedding = client.embed_text(query)
+            live_ids = {d.id for d in docs}
+            # Search the whole store, not just shortlist_k — a store can
+            # hold entries the brute-force ranking would put outside the
+            # top shortlist_k *before* filtering out ids from other
+            # corpora, which would wrongly shrink this corpus's results.
+            store_hits = [
+                (record_id, score)
+                for record_id, score in vector_store.search(query_embedding, top_k=vector_store.count())
+                if record_id in live_ids
+            ][:shortlist_k]
+            embedding_top = [hybrid_retrieval.RankedDoc(record_id, score) for record_id, score in store_hits]
+        else:
+            embedding_top = hybrid_retrieval.embedding_rank(query, docs, client.embed_text, top_k=shortlist_k)
         fused = hybrid_retrieval.reciprocal_rank_fusion([bm25_top, embedding_top], top_k=shortlist_k)
     except RuntimeError:
         pass  # embeddings unavailable/failed — fall back to BM25-only fusion input

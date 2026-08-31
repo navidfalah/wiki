@@ -1,5 +1,6 @@
 import rag_engine
 from llm_client import LLMClient
+from vector_store import VectorStore
 
 
 def _write_page(docs_dir, name, title, body):
@@ -192,3 +193,97 @@ def test_answer_question_uses_hybrid_retrieval(tmp_path):
     result = rag_engine.answer_question("why do batteries drain fast", docs_dir=docs_dir, llm=fake_llm)
     assert result["mode"] == "generated"
     assert fake_llm.embed_calls  # hybrid retrieval actually ran, not just BM25
+
+
+def test_passage_id_is_stable_across_calls_and_content_addressed():
+    a = rag_engine.Passage("doc.md", "Doc", "Heading", "same text")
+    b = rag_engine.Passage("doc.md", "Doc", "Heading", "same text")
+    c = rag_engine.Passage("doc.md", "Doc", "Heading", "different text")
+    assert rag_engine._passage_id(a) == rag_engine._passage_id(b)
+    assert rag_engine._passage_id(a) != rag_engine._passage_id(c)
+
+
+def test_sync_corpus_to_vector_store_embeds_once_then_skips_unchanged_passages(tmp_path):
+    corpus = _two_passage_corpus(tmp_path)
+    store = VectorStore(tmp_path / "vectors.sqlite")
+    llm = FakeHybridLLM()
+
+    first_run = rag_engine.sync_corpus_to_vector_store(corpus, llm, store)
+    assert first_run == len(corpus)
+    assert store.count() == len(corpus)
+
+    second_run = rag_engine.sync_corpus_to_vector_store(corpus, llm, store)
+    assert second_run == 0  # nothing new to embed
+    assert len(llm.embed_calls) == len(corpus)  # no extra embed_text calls on the second sync
+
+
+def test_sync_corpus_to_vector_store_embeds_only_new_passages_when_corpus_grows(tmp_path):
+    corpus = _two_passage_corpus(tmp_path)
+    store = VectorStore(tmp_path / "vectors.sqlite")
+    llm = FakeHybridLLM()
+    rag_engine.sync_corpus_to_vector_store(corpus, llm, store)
+
+    extra_passage = rag_engine.Passage("meshsync.md", "MeshSync", "New Section", "a brand new passage")
+    grown_corpus = corpus + [extra_passage]
+
+    added = rag_engine.sync_corpus_to_vector_store(grown_corpus, llm, store)
+    assert added == 1
+    assert store.count() == len(corpus) + 1
+
+
+def test_prune_stale_vector_store_entries_removes_ids_not_in_current_corpus(tmp_path):
+    corpus = _two_passage_corpus(tmp_path)
+    store = VectorStore(tmp_path / "vectors.sqlite")
+    llm = FakeHybridLLM()
+    rag_engine.sync_corpus_to_vector_store(corpus, llm, store)
+
+    smaller_corpus = corpus[:1]
+    removed = rag_engine.prune_stale_vector_store_entries(smaller_corpus, store)
+    assert removed == 1
+    assert store.count() == 1
+
+
+def test_retrieve_hybrid_with_vector_store_returns_the_same_top_result_as_without(tmp_path):
+    corpus = _two_passage_corpus(tmp_path)
+    store = VectorStore(tmp_path / "vectors.sqlite")
+
+    with_store = rag_engine.retrieve_hybrid(
+        "battery drain", corpus, top_k=1, llm=FakeHybridLLM(rerank_response="[1]"), vector_store=store
+    )
+    without_store = rag_engine.retrieve_hybrid(
+        "battery drain", corpus, top_k=1, llm=FakeHybridLLM(rerank_response="[1]")
+    )
+    assert with_store[0].passage.heading == without_store[0].passage.heading == "Battery"
+
+
+def test_retrieve_hybrid_with_vector_store_does_not_reembed_on_a_second_call(tmp_path):
+    corpus = _two_passage_corpus(tmp_path)
+    store = VectorStore(tmp_path / "vectors.sqlite")
+    llm = FakeHybridLLM(rerank_response="[1]")
+
+    rag_engine.retrieve_hybrid("battery drain", corpus, top_k=1, llm=llm, vector_store=store)
+    calls_after_first = len(llm.embed_calls)
+
+    rag_engine.retrieve_hybrid("battery drain", corpus, top_k=1, llm=llm, vector_store=store)
+    calls_after_second = len(llm.embed_calls)
+
+    # Only the query itself gets re-embedded on the second call (+1) — the
+    # corpus's passages should already be in the store from the first call.
+    assert calls_after_second == calls_after_first + 1
+
+
+def test_retrieve_hybrid_with_vector_store_ignores_entries_from_a_different_corpus(tmp_path):
+    store = VectorStore(tmp_path / "vectors.sqlite")
+    llm = FakeHybridLLM(rerank_response="[1]")
+
+    unrelated_docs_dir = tmp_path / "unrelated"
+    unrelated_docs_dir.mkdir()
+    _write_page(unrelated_docs_dir, "other.md", "Other", "## Something\n\nCompletely unrelated content.\n")
+    unrelated_corpus = rag_engine.build_corpus(unrelated_docs_dir)
+    rag_engine.sync_corpus_to_vector_store(unrelated_corpus, llm, store)
+
+    corpus = _two_passage_corpus(tmp_path)
+    results = rag_engine.retrieve_hybrid("battery drain", corpus, top_k=5, llm=llm, vector_store=store)
+
+    result_doc_paths = {item.passage.doc_path for item in results}
+    assert "other.md" not in result_doc_paths

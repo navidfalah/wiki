@@ -91,7 +91,11 @@ def test_import_claim_group_loads_the_real_pilot_dataset(tmp_path):
 
     total_claims = sum(len(g.claims) for g in dataset.claim_groups)
     total_relations = sum(len(g.relations) for g in dataset.claim_groups)
-    assert store.node_count() == total_claims
+    # node_count() also includes one "claim_group" node per group (added so
+    # export_claim_group() can round-trip domain/subject/description) —
+    # count claim nodes specifically here rather than every node.
+    assert len(store.all_nodes(node_type="claim")) == total_claims
+    assert len(store.all_nodes(node_type="claim_group")) == len(dataset.claim_groups)
     assert store.edge_count() == total_relations
 
     # Spot check: nova_read_interval's supersedes edge should be queryable.
