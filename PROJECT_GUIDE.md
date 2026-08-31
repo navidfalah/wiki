@@ -45,6 +45,7 @@ cd ../wiki-app && npm install && npm start
 | Faithfulness evaluation for chat answers | [28-faithfulness-evaluation.md](./documentation/28-faithfulness-evaluation.md) |
 | Active-learning review/correction loop | [29-active-learning.md](./documentation/29-active-learning.md) |
 | PII/privacy redaction before LLM calls | [30-pii-redaction.md](./documentation/30-pii-redaction.md) |
+| Vector/graph storage + scalability benchmark | [31-vector-graph-storage-and-scalability.md](./documentation/31-vector-graph-storage-and-scalability.md) |
 
 ## Also see
 

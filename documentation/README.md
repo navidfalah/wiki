@@ -38,6 +38,7 @@ Detailed project documentation, split by topic. Start with [01-overview.md](./01
 | [28-faithfulness-evaluation.md](./28-faithfulness-evaluation.md) | Faithfulness evaluation for chat answers: extractive mode proven faithful by construction, generated mode via an LLM judge |
 | [29-active-learning.md](./29-active-learning.md) | Active-learning review queue + correction store, fed back into extraction as few-shot examples |
 | [30-pii-redaction.md](./30-pii-redaction.md) | PII/privacy redaction before LLM calls: offline regex detectors, default policy, evaluation (no API key needed) |
+| [31-vector-graph-storage-and-scalability.md](./31-vector-graph-storage-and-scalability.md) | Persistent vector/graph stores + a real BM25-vs-naive-vector-store scalability benchmark (10 -> 10,000 docs) |
 
 ---
 
