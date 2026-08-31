@@ -25,6 +25,22 @@ class FakeCriticLLM:
         return self.response
 
 
+class FakeSequenceCriticLLM:
+    """Returns a different canned response on each successive call — for
+    testing self-consistency sampling, where each pass should be an
+    independent (simulated) sample rather than a repeat of the same call."""
+
+    available = True
+
+    def __init__(self, responses: list[str]):
+        self.responses = list(responses)
+        self.calls: list[tuple[str, str, float]] = []
+
+    def generate_response(self, prompt: str, system_prompt: str, temperature: float = 0.0) -> str:
+        self.calls.append((prompt, system_prompt, temperature))
+        return self.responses[len(self.calls) - 1]
+
+
 SOURCE = "Mira reported the read interval is 15 minutes per the current firmware default."
 DRAFT_CLEAN = "# MeshSync\n\nThe default read interval is 15 minutes."
 DRAFT_WITH_HALLUCINATION = (
@@ -130,7 +146,11 @@ class FakeSynthesisAndCriticLLM:
 
     available = True
 
+    def __init__(self):
+        self.calls: list[tuple[str, str]] = []
+
     def generate_response(self, prompt: str, system_prompt: str, temperature: float = 0.2) -> str:
+        self.calls.append((prompt, system_prompt))
         if "fact-checking critic" in system_prompt.lower():
             return (
                 '{"flagged": [{"sentence": "It was fixed in version 9.9.9.", '
@@ -187,3 +207,104 @@ def test_synthesize_topic_wiki_pages_without_critic_keeps_everything(tmp_path):
     )
     body = written[0].read_text(encoding="utf-8")
     assert "version 9.9.9" in body  # critic never ran, nothing was stripped
+
+
+def test_review_draft_for_grounding_appends_extra_system_context():
+    llm = FakeCriticLLM('{"flagged": []}')
+    review_draft_for_grounding(
+        SOURCE, DRAFT_CLEAN, llm, extra_system_context="PRIOR CORRECTION: don't invent version numbers."
+    )
+    _prompt, system_prompt = llm.calls[0]
+    assert "don't invent version numbers" in system_prompt
+
+
+def test_apply_critic_pass_forwards_extra_system_context():
+    llm = FakeCriticLLM('{"flagged": []}')
+    apply_critic_pass(SOURCE, DRAFT_CLEAN, llm, extra_system_context="PRIOR CORRECTION: be careful.")
+    _prompt, system_prompt = llm.calls[0]
+    assert "be careful" in system_prompt
+
+
+def test_synthesize_topic_wiki_pages_forwards_extra_system_context_to_synthesis_and_critic(tmp_path):
+    grouped = {
+        "MeshSync": [
+            {
+                "source": "notes/meshsync.md",
+                "source_type": "text",
+                "chunk_index": 0,
+                "text": "The relay radio drains the battery faster than spec.",
+            }
+        ]
+    }
+    out_dir = tmp_path / "out"
+    llm = FakeSynthesisAndCriticLLM()
+    synthesize_topic_wiki_pages(
+        grouped,
+        llm=llm,
+        output_dir=out_dir,
+        apply_critic=True,
+        extra_system_context="PRIOR CORRECTION: watch for invented version numbers.",
+    )
+    # Every call's system_prompt (synthesis, then critic) should carry the context.
+    assert len(llm.calls) >= 2
+    for _prompt, system_prompt in llm.calls:
+        assert "watch for invented version numbers" in system_prompt
+
+
+FLAGGED_RESPONSE = (
+    '{"flagged": [{"sentence": '
+    '"The fix shipped in firmware version 4.2.0 released on March 3rd.", '
+    '"reason": "no version or date in source"}]}'
+)
+CLEAN_RESPONSE = '{"flagged": []}'
+
+
+def test_self_consistency_default_is_a_single_deterministic_call():
+    llm = FakeSequenceCriticLLM([CLEAN_RESPONSE])
+    review_draft_for_grounding(SOURCE, DRAFT_CLEAN, llm)
+    assert len(llm.calls) == 1
+    assert llm.calls[0][2] == 0.0  # temperature
+
+
+def test_self_consistency_majority_flags_sentence_two_of_three():
+    llm = FakeSequenceCriticLLM([FLAGGED_RESPONSE, FLAGGED_RESPONSE, CLEAN_RESPONSE])
+    report = review_draft_for_grounding(SOURCE, DRAFT_WITH_HALLUCINATION, llm, samples=3)
+    assert len(llm.calls) == 3
+    assert all(temp != 0.0 for *_rest, temp in llm.calls)  # sampling uses a non-zero temperature
+    assert len(report.flagged) == 1
+    assert report.flagged[0].sentence == "The fix shipped in firmware version 4.2.0 released on March 3rd."
+
+
+def test_self_consistency_minority_flag_is_not_reported():
+    llm = FakeSequenceCriticLLM([FLAGGED_RESPONSE, CLEAN_RESPONSE, CLEAN_RESPONSE])
+    report = review_draft_for_grounding(SOURCE, DRAFT_WITH_HALLUCINATION, llm, samples=3)
+    assert report.is_clean
+
+
+def test_self_consistency_custom_sample_temperature_is_used():
+    llm = FakeSequenceCriticLLM([CLEAN_RESPONSE, CLEAN_RESPONSE])
+    review_draft_for_grounding(SOURCE, DRAFT_CLEAN, llm, samples=2, sample_temperature=0.7)
+    assert all(temp == 0.7 for *_rest, temp in llm.calls)
+
+
+def test_self_consistency_tolerates_one_malformed_pass():
+    llm = FakeSequenceCriticLLM(["not json at all", FLAGGED_RESPONSE, FLAGGED_RESPONSE])
+    report = review_draft_for_grounding(SOURCE, DRAFT_WITH_HALLUCINATION, llm, samples=3)
+    # Majority is computed over the 2 successfully-parsed passes, both of
+    # which flagged the sentence — so it should still be flagged.
+    assert len(report.flagged) == 1
+
+
+def test_self_consistency_all_passes_malformed_reports_parse_error():
+    llm = FakeSequenceCriticLLM(["garbage", "also garbage"])
+    report = review_draft_for_grounding(SOURCE, DRAFT_CLEAN, llm, samples=2)
+    assert report.parse_error is not None
+    assert report.flagged == []
+
+
+def test_apply_critic_pass_forwards_samples_to_review():
+    llm = FakeSequenceCriticLLM([FLAGGED_RESPONSE, FLAGGED_RESPONSE])
+    cleaned, report = apply_critic_pass(SOURCE, DRAFT_WITH_HALLUCINATION, llm, samples=2)
+    assert len(llm.calls) == 2
+    assert "released on March 3rd" not in cleaned
+    assert len(report.flagged) == 1

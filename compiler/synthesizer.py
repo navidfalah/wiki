@@ -14,7 +14,7 @@ import email_ingest
 import media_ingest
 import pii_redaction
 import trust
-from extraction_critic import apply_critic_pass
+from extraction_critic import DEFAULT_SAMPLE_TEMPERATURE, apply_critic_pass
 from llm_client import LLMClient, require_llm
 from models import RAW_DIR, STATE_FILE
 from text_chunking import split_text_into_chunks
@@ -426,7 +426,10 @@ def extract_chunk_topics(
         chunk_text = pii_redaction.redact_text(chunk_text).text
 
     prompt = f"Source file: {chunk.source_path}\nChunk index: {chunk.chunk_index}\n\n---\n\n{chunk_text}"
-    raw = client.generate_response(prompt, system_prompt)
+    # temperature=0: this is structured fact extraction (topics/entities/
+    # concepts as JSON), not prose generation — it should return the same
+    # answer for the same input, not sample creatively.
+    raw = client.generate_response(prompt, system_prompt, temperature=0.0)
     data = _parse_extraction_json(raw)
 
     return ChunkExtraction(
@@ -652,6 +655,9 @@ def synthesize_topic_wiki_pages(
     dirty_topics: set[str] | None = None,
     on_progress: ProgressCallback | None = None,
     apply_critic: bool = False,
+    extra_system_context: str = "",
+    critic_samples: int = 1,
+    critic_sample_temperature: float = DEFAULT_SAMPLE_TEMPERATURE,
 ) -> tuple[list[Path], list[str]]:
     """
     For each unique topic, write a Markdown wiki page synthesizing related chunks.
@@ -664,6 +670,18 @@ def synthesize_topic_wiki_pages(
     in that topic's source chunks. Off by default: it roughly doubles the
     per-page LLM cost, so it's an explicit opt-in (main.py's --critic-pass /
     WIKI_CRITIC_PASS), not a silent behavior change for existing users.
+
+    critic_samples>1 (only meaningful with apply_critic=True) runs the critic
+    multiple times per page and only strips a sentence a majority of passes
+    flagged — see extraction_critic.review_draft_for_grounding() for why.
+
+    extra_system_context, when non-empty, is appended to both
+    WIKI_PAGE_SYSTEM_PROMPT and (when apply_critic=True) the critic's system
+    prompt — active_learning.py's render_fewshot_block() is the intended
+    source. Synthesis (freeform page writing) is the stage most prone to
+    adding an unsupported detail, and the critic is what's meant to catch
+    that, so both need the same corrections extract_chunk_topics() already
+    gets, not just extraction.
     """
     llm = require_llm(llm)
     out_dir = output_dir or TEMP_OUTPUT_DIR
@@ -703,12 +721,22 @@ def synthesize_topic_wiki_pages(
             f"Synthesize the following {len(entries)} raw chunk(s) into one wiki page:\n\n"
             + "\n\n---\n\n".join(chunk_blocks)
         )
-        body = llm.generate_response(prompt, WIKI_PAGE_SYSTEM_PROMPT)
+        system_prompt = WIKI_PAGE_SYSTEM_PROMPT
+        if extra_system_context:
+            system_prompt = f"{system_prompt}\n\n{extra_system_context}"
+        body = llm.generate_response(prompt, system_prompt)
         body = _strip_llm_authored_sources_section(body.strip())
 
         if apply_critic:
             source_text = "\n\n---\n\n".join(chunk_blocks)
-            body, critic_report = apply_critic_pass(source_text, body, llm)
+            body, critic_report = apply_critic_pass(
+                source_text,
+                body,
+                llm,
+                extra_system_context=extra_system_context,
+                samples=critic_samples,
+                sample_temperature=critic_sample_temperature,
+            )
             if critic_report.flagged:
                 removed_count = sum(1 for f in critic_report.flagged if f.removed)
                 console_note = (

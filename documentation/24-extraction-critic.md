@@ -89,10 +89,15 @@ environment has no `OPENAI_API_KEY`, so `extraction_critic_eval.py` has
 never been run against a real model. That is explicitly named here rather
 than implied away: the mechanism is validated, the judgment quality is not.
 Running it (and, ideally, growing the fixture corpus past four hand-picked
-examples the same way `data/trust_eval_dataset.json` should grow past 24
-claims) is the natural next step once API access is available — at that
-point the precision/recall numbers belong in this document, replacing this
-paragraph.
+examples the same way `data/trust_eval_dataset.json` grew from 24 to 29
+claims — see [21](./21-trust-eval-dataset.md)) is the natural next step
+once API access is available — at that point the precision/recall numbers
+belong in this document, replacing this paragraph. It's also the natural
+place to try `extraction_critic.review_draft_for_grounding(..., samples=3)`
+(self-consistency majority-vote, added alongside this dataset-growth pass)
+against the same fixtures, to see whether it measurably changes precision/
+recall versus the single-pass default — right now that comparison is only
+possible in principle, not run.
 
 ## Next
 

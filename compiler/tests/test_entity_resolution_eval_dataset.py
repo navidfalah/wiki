@@ -43,6 +43,15 @@ def test_dataset_contains_a_hard_negative_cluster():
     assert gold_ids_by_name["Alex Rivera"] != gold_ids_by_name["Sam Rivera"]
 
 
+def test_dataset_contains_a_co_occurrence_hard_negative():
+    """Aurora Nova Widget and SenseNode SN-400 are two different products
+    discussed side by side in the same document/table — a hard negative
+    that isn't a name-token collision, but a proximity/co-occurrence one."""
+    gold_ids_by_name = {m.name: gold_id for m, gold_id in GOLD_MENTIONS}
+    assert gold_ids_by_name["Aurora Nova Widget"] == gold_ids_by_name["Nova Widget"]
+    assert gold_ids_by_name["SenseNode SN-400"] != gold_ids_by_name["Aurora Nova Widget"]
+
+
 def test_dataset_has_multiple_positive_clusters_with_more_than_one_mention():
     from collections import Counter
 

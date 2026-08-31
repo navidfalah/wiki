@@ -21,8 +21,14 @@ from __future__ import annotations
 
 from dataclasses import dataclass, field
 
-from trust_eval_dataset import Claim, ClaimGroup, TrustEvalDataset, load_trust_eval_dataset
-from trust_propagation import ClaimTrust, DEFAULT_CONFIG, PropagationConfig, propagate_dataset_trust
+from trust_eval_dataset import ClaimGroup, TrustEvalDataset, load_trust_eval_dataset
+from trust_propagation import (
+    DEFAULT_CONFIG,
+    ClaimTrust,
+    PropagationConfig,
+    propagate_dataset_trust,
+    propagate_group_trust,
+)
 
 # A claim's gold label is collapsed to a binary GOOD/BAD split for scoring.
 # The dataset's 5-way taxonomy (see 21-trust-eval-dataset.md) is richer than
@@ -164,6 +170,72 @@ def sweep_prior_weight(
     return results
 
 
+@dataclass(frozen=True)
+class EntityResolutionErrorReport:
+    """Result of simulating one kind of upstream entity-resolution error:
+    a claim that should be in `group_id` gets wrongly isolated into its own
+    singleton group instead — the same effect a false-negative merge (two
+    mentions of the same real-world entity resolved to different clusters)
+    would have once claim groups are derived from entity resolution output,
+    per graph_store.py's export_claim_group()."""
+
+    group_id: str
+    claim_id: str
+    gold_label: str
+    score_when_correctly_grouped: float
+    score_when_wrongly_isolated: float
+
+    @property
+    def score_delta(self) -> float:
+        return self.score_when_wrongly_isolated - self.score_when_correctly_grouped
+
+
+def simulate_isolated_claim(
+    dataset: TrustEvalDataset,
+    group_id: str,
+    claim_id: str,
+    config: PropagationConfig = DEFAULT_CONFIG,
+) -> EntityResolutionErrorReport:
+    """Compare a claim's propagated score in its real group against the
+    score it would get if entity resolution wrongly split it into its own
+    singleton group — dropping every relation that touched it, exactly as
+    export_claim_group()'s cross-group edge dropping already does for any
+    relation whose two endpoints land in different groups.
+
+    Trust propagation and entity resolution are not wired together in this
+    codebase yet (claim groups in trust_eval_dataset.json are hand-labeled,
+    not derived from entity_resolution.py's clustering) — this simulates
+    what *would* happen to a claim's trust score if they were, so the
+    question "does an entity-resolution error upstream compound into a
+    worse trust score" has a concrete, reproducible answer instead of
+    being purely hypothetical.
+    """
+    group = next(g for g in dataset.claim_groups if g.id == group_id)
+    claim = next(c for c in group.claims if c.id == claim_id)
+
+    baseline_scores = propagate_group_trust(group, config)
+    baseline_score = baseline_scores[claim_id].score
+
+    # What we care about is the isolated claim's own score, computed as a
+    # singleton with zero relational evidence — the direct consequence of
+    # being wrongly split off (every relation that touched it gets dropped,
+    # same as export_claim_group()'s cross-group edge dropping), and
+    # structurally the worst case since it has nothing left to corroborate
+    # or contradict against.
+    singleton = ClaimGroup(
+        id=f"{claim_id}-isolated", domain=group.domain, subject="", description="", claims=[claim], relations=[]
+    )
+    isolated_score = propagate_group_trust(singleton, config)[claim_id].score
+
+    return EntityResolutionErrorReport(
+        group_id=group_id,
+        claim_id=claim_id,
+        gold_label=claim.gold_label,
+        score_when_correctly_grouped=baseline_score,
+        score_when_wrongly_isolated=isolated_score,
+    )
+
+
 def _print_report(report: EvalReport) -> None:
     p1 = report.mean_precision_at_1
     pw = report.pooled_pairwise_accuracy
@@ -187,3 +259,17 @@ if __name__ == "__main__":
     default_report = evaluate_config(dataset, DEFAULT_CONFIG, "full_default")
     for label, mean_score in sorted(default_report.mean_score_by_label.items()):
         print(f"  {label:16s} {mean_score:.3f}")
+
+    print("\n=== Simulated entity-resolution error: a bad claim wrongly isolated ===")
+    er_report = simulate_isolated_claim(dataset, "nova_read_interval", "nri-1")
+    print(
+        f"  nri-1 (gold={er_report.gold_label}): "
+        f"correctly grouped={er_report.score_when_correctly_grouped:.3f}  "
+        f"wrongly isolated={er_report.score_when_wrongly_isolated:.3f}  "
+        f"delta={er_report.score_delta:+.3f}"
+    )
+    print(
+        "  Losing its contradicting/superseding evidence (an entity-resolution "
+        "false-negative merge would do exactly this) makes a bad claim look "
+        "meaningfully more trustworthy, not less — the error compounds."
+    )

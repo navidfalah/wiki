@@ -72,10 +72,19 @@ Two honest findings, not smoothed over:
   per-claim deltas in [22](./22-trust-propagation-algorithm.md)), but on
   *this* dataset the GOOD/BAD ranking is already decided by
   contradiction/supersession before corroboration's boost changes any
-  ordering. A dataset with more claim groups whose only signal is
-  corroboration density (agreement without an explicit contradiction) would
-  be needed to see corroboration move these two metrics — a concrete
-  direction for growing the dataset past its current N=24.
+  ordering. Tried the follow-up this section originally called for:
+  `nova_ip_rating`, a sixth claim group added specifically because it's
+  pure corroboration (every source agrees, no contradiction or
+  supersession at all — see [21](./21-trust-eval-dataset.md)). Its
+  `no_corroboration` ablation *still* shows no effect on precision@1 /
+  pairwise_acc, and the reason is structural, not a fluke: every claim in
+  that group shares the same gold label (`correct`), so pairwise_acc — a
+  *ranking* metric — has no wrong ordering to fix within the group; there's
+  nothing for corroboration's score boost to demote or promote past. The
+  "Mean score by gold label" breakdown below is where corroboration's
+  effect actually shows up (it lifts absolute scores), not these two
+  ranking metrics — worth remembering when reading precision@1/pairwise_acc
+  as "the whole story."
 - **Supersession is the single most load-bearing term.** Removing it drops
   precision@1 from 1.00 to 0.75 — it's the term responsible for correctly
   demoting `nova_battery_cell_type`'s explicitly-corrected claim and
@@ -125,13 +134,68 @@ correctly reads as strong relational support — it has no way to know
 "corroborated" and "not actually in conflict" are different things here,
 which is precisely the scope-awareness gap named as a limitation below.
 
+## Does an upstream entity-resolution error compound into a worse trust score?
+
+Trust propagation and entity resolution ([26](./26-entity-resolution.md))
+aren't wired together in this codebase — `trust_eval_dataset.json`'s claim
+groups are hand-labeled, not derived by running `entity_resolution.py`'s
+clustering over the corpus. So this question has no live code path to
+measure yet, but it has a concrete, reproducible *simulated* answer:
+`trust_propagation_eval.simulate_isolated_claim()` takes one real claim,
+computes its propagated score in its correct group, then computes what it
+would score if wrongly split into its own singleton group — dropping every
+relation that touched it, exactly what `graph_store.export_claim_group()`'s
+cross-group edge dropping already does for any relation whose endpoints
+land in different groups. That's precisely what a false-negative entity
+merge (two mentions of the same real-world subject resolved to different
+clusters) would cause once claim groups are derived from resolved entities
+instead of hand-labeled.
+
+Run against `nova_read_interval`'s `nri-1` — a `superseded` (bad) claim
+whose low score depends entirely on the `contradicts`/`supersedes` edges
+pointing at it from later, corrected sources:
+
+```
+nri-1 (gold=superseded): correctly grouped=0.069  wrongly isolated=0.500  delta=+0.431
+```
+
+Losing its contradicting evidence doesn't just make the score "worse" in
+some vague sense — it moves a claim from clearly-flagged-as-wrong (0.069)
+to a middling, easy-to-mistake-for-legitimate score (0.500, exactly its
+static prior with zero relational adjustment). The direction matters: the
+error doesn't add noise symmetrically, it specifically erases the signal
+that would have caught a wrong claim, making it look *more* trustworthy,
+not less. Given that the `no_contradiction` ablation above already shows
+contradiction-edge evidence is the single largest contributor to
+pairwise_acc after supersession, an entity-resolution false negative is
+not a minor, containable failure mode — it silently disables the exact
+mechanism that catches superseded/wrong claims for whichever claim gets
+cut off. `tests/test_trust_propagation_eval.py`'s
+`test_simulate_isolated_claim_*` tests lock this finding in as a
+regression check, and `simulate_isolated_claim()` can be re-run against any
+other claim/group pair to check whether the pattern holds generally (it's
+expected to: any claim whose gold label depends on relational evidence,
+not just its prior, will show the same direction of effect).
+
+This is a named risk for the eventual entity-resolution → trust-propagation
+wiring, not a reason not to build it: the fix is for that integration to
+be conservative about splitting (favor under-merging risk over
+over-merging risk, or escalate ambiguous cases to a human/LLM tier — which
+`entity_resolution.py` already does for exactly this reason, see
+[26](./26-entity-resolution.md)) rather than a reason to keep the two
+systems disconnected.
+
 ## Limitations of this evaluation
 
-- **N=24 claims, 5 groups.** Enough for a first ablation and to catch the
+- **N=29 claims, 6 groups.** Enough for a first ablation and to catch the
   static-baseline tie-breaking failure mode, not enough to claim the
   `prior_weight=0.2` default (or the relative ranking of the other terms)
   generalizes past this pilot. Growing the dataset (task #1's own noted
-  follow-up) is the direct way to firm this up.
+  follow-up, and task #23's growth pass, which added `nova_ip_rating`) is
+  the direct way to firm this up — and the `prior_weight` sweep's cliff
+  shape (flat at 0.94 through 0.2, then dropping sharply) held unchanged
+  after that addition, which is at least one data point that the shape
+  isn't an artifact of the original 5-group dataset specifically.
 - **The binary GOOD/BAD collapse hides real structure.** `scope_dependent`
   and `disputed` are meaningfully different from `incorrect`/`superseded`
   and from each other; a finer ordinal metric (e.g. rank correlation

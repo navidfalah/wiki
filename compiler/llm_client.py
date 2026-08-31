@@ -46,9 +46,15 @@ def _utc_now_iso() -> str:
     return datetime.now(UTC).isoformat()
 
 
-def make_cache_key(system_prompt: str, prompt: str, model: str) -> str:
-    """Stable hash for an exact system_prompt + prompt + model combination."""
-    payload = f"{system_prompt}\0{prompt}\0{model}".encode()
+def make_cache_key(system_prompt: str, prompt: str, model: str, temperature: float = 0.2) -> str:
+    """Stable hash for an exact system_prompt + prompt + model + temperature combination.
+
+    temperature is part of the key because it's part of what determines the
+    response: two call sites sharing a prompt at different temperatures must
+    not serve each other's cached output. Defaults to 0.2 (the historical
+    default) so a cache populated before this parameter existed still hits.
+    """
+    payload = f"{system_prompt}\0{prompt}\0{model}\0{temperature}".encode()
     return hashlib.sha256(payload).hexdigest()
 
 
@@ -62,9 +68,13 @@ IMAGE_MIME_TYPES = {
 }
 
 
-def make_image_cache_key(image_bytes: bytes, system_prompt: str, model: str) -> str:
-    """Stable hash for an exact (image content, prompt, model) combination."""
-    payload = hashlib.sha256(image_bytes).digest() + f"\0{system_prompt}\0{model}".encode()
+def make_image_cache_key(
+    image_bytes: bytes, system_prompt: str, model: str, temperature: float = 0.2
+) -> str:
+    """Stable hash for an exact (image content, prompt, model, temperature) combination."""
+    payload = (
+        hashlib.sha256(image_bytes).digest() + f"\0{system_prompt}\0{model}\0{temperature}".encode()
+    )
     return hashlib.sha256(payload).hexdigest()
 
 
@@ -210,7 +220,7 @@ class LLMClient:
             )
 
         cache_on = self.cache_enabled if use_cache is None else use_cache
-        cache_key = make_cache_key(system_prompt, prompt, self.model)
+        cache_key = make_cache_key(system_prompt, prompt, self.model, temperature)
 
         if cache_on:
             cached = self.cache.get(cache_key)
@@ -308,7 +318,7 @@ class LLMClient:
         image_bytes = image_path.read_bytes()
         mime = IMAGE_MIME_TYPES.get(image_path.suffix.lower(), "application/octet-stream")
         cache_on = self.cache_enabled if use_cache is None else use_cache
-        cache_key = make_image_cache_key(image_bytes, system_prompt, self.model)
+        cache_key = make_image_cache_key(image_bytes, system_prompt, self.model, temperature)
 
         if cache_on:
             cached = self.cache.get(cache_key)

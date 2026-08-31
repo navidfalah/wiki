@@ -208,7 +208,15 @@ def step_extract(
     return extractions
 
 
-def step_synthesize(extractions: dict, llm: LLMClient, *, force: bool, apply_critic: bool = False) -> dict:
+def step_synthesize(
+    extractions: dict,
+    llm: LLMClient,
+    *,
+    force: bool,
+    apply_critic: bool = False,
+    extra_system_context: str = "",
+    critic_samples: int = 1,
+) -> dict:
     """Step 3: Group by topic and write draft wiki pages to temp_output/."""
     grouped = group_chunks_by_topic(extractions)
     TEMP_OUTPUT_DIR.mkdir(parents=True, exist_ok=True)
@@ -264,6 +272,8 @@ def step_synthesize(extractions: dict, llm: LLMClient, *, force: bool, apply_cri
             dirty_topics=dirty_topics,
             on_progress=on_progress if regen_count else None,
             apply_critic=apply_critic,
+            extra_system_context=extra_system_context,
+            critic_samples=critic_samples,
         )
         if regen_count:
             progress.update(task, completed=regen_count)
@@ -381,6 +391,7 @@ def run_pipeline(
     *,
     force: bool = False,
     apply_critic: bool = False,
+    critic_samples: int = 1,
     use_corrections: bool = False,
     redact_pii: bool = False,
 ) -> int:
@@ -422,7 +433,14 @@ def run_pipeline(
     )
 
     _step_banner(3, 5, "Synthesis", "Regenerate only topic pages affected by changed files")
-    synth_result = step_synthesize(extractions, llm, force=force, apply_critic=apply_critic)
+    synth_result = step_synthesize(
+        extractions,
+        llm,
+        force=force,
+        apply_critic=apply_critic,
+        extra_system_context=extra_system_context,
+        critic_samples=critic_samples,
+    )
 
     _step_banner(4, 5, "Indexing", "Incrementally update index.json for changed drafts")
     topic_index, index_delta = step_index(
@@ -485,6 +503,17 @@ def main() -> None:
         ),
     )
     parser.add_argument(
+        "--critic-samples",
+        type=int,
+        default=int(os.getenv("WIKI_CRITIC_SAMPLES", "1")),
+        help=(
+            "Run the critic pass this many times per page and only strip a sentence a "
+            "majority of passes flagged (self-consistency; reduces judge flakiness). "
+            "Only meaningful with --critic-pass. 1 (default) = single deterministic pass, "
+            "matching prior behavior. Also settable via WIKI_CRITIC_SAMPLES."
+        ),
+    )
+    parser.add_argument(
         "--use-corrections",
         action="store_true",
         default=os.getenv("WIKI_USE_CORRECTIONS", "").lower() in {"1", "true", "yes"},
@@ -510,6 +539,7 @@ def main() -> None:
         run_pipeline(
             force=args.force,
             apply_critic=args.critic_pass,
+            critic_samples=args.critic_samples,
             use_corrections=args.use_corrections,
             redact_pii=args.redact_pii,
         )

@@ -70,6 +70,44 @@ FIXTURES: list[Fixture] = [
         "Reach Jonah at jonah.park@auroralabs.example. CC jonah.park@auroralabs.example on the follow-up.",
         frozenset({("email", "jonah.park@auroralabs.example")}),
     ),
+    Fixture(
+        "luhn_invalid_number_not_flagged_as_card",
+        # Same shape as the famous 4111... Visa test number, last digit
+        # changed so the Luhn checksum fails — must NOT be flagged, since
+        # the point of Luhn-gating credit_card is precisely to reject
+        # digit runs that merely look card-shaped.
+        "Reference number on the packing slip was 4111 1111 1111 1112, unrelated to payment.",
+        frozenset(),
+    ),
+    Fixture(
+        "two_distinct_ssns_in_one_note",
+        "Dependent coverage form lists primary SSN 123-45-6789 and spouse SSN 987-65-4321.",
+        frozenset({("ssn", "123-45-6789"), ("ssn", "987-65-4321")}),
+    ),
+    Fixture(
+        "vendor_token_without_sk_prefix",
+        # A GitHub-style personal access token — no sk-/pk-/rk- prefix, so
+        # this only gets caught by the generic 32+ char mixed-alnum branch
+        # of the api_key pattern, not the vendor-prefix branch the other
+        # api_key fixture exercises.
+        "CI failed after the token ghp_9f8e7d6c5b4a3210fedcba9876543210ab expired overnight.",
+        frozenset({("api_key", "ghp_9f8e7d6c5b4a3210fedcba9876543210ab")}),
+    ),
+    Fixture(
+        "ipv4_embedded_in_a_url",
+        "Dashboard is reachable at http://192.168.1.100:8080/status during the incident.",
+        frozenset({("ipv4_address", "192.168.1.100")}),
+    ),
+    Fixture(
+        "obfuscated_email_not_detected",
+        # A documented, known false negative (like order_number_false_positive
+        # documents a known false positive above): the email regex requires
+        # a literal '@' and '.', so "at"/"dot" spelled-out obfuscation slips
+        # through entirely. Stated honestly rather than silently assumed —
+        # see documentation/30-pii-redaction.md.
+        "Reach me at mira dot chen at auroralabs dot example if the ticket needs escalation.",
+        frozenset(),
+    ),
 ]
 
 

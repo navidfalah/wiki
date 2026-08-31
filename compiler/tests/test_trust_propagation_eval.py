@@ -80,3 +80,38 @@ def test_group_result_returns_none_metrics_when_no_bad_claims_present():
     assert dispute_free.precision_at_1 is None
     assert dispute_free.pairwise_accuracy is None
     assert dispute_free not in report.informative_groups
+
+
+def test_simulate_isolated_claim_shows_a_bad_claim_scoring_higher_when_cut_off_from_evidence():
+    """The concrete answer to 'does an entity-resolution error upstream
+    compound into a worse trust score': nri-1 is a superseded (bad) claim
+    whose low score depends entirely on its contradicts/supersedes edges.
+    Wrongly isolating it (what a false-negative entity merge would cause,
+    per export_claim_group()'s cross-group edge dropping) removes that
+    evidence, so it should score noticeably *higher* once isolated -- a
+    bad claim looking more trustworthy after the simulated error, not
+    less, which is the whole point of naming this as a real risk."""
+    dataset = load_trust_eval_dataset()
+    report = te.simulate_isolated_claim(dataset, "nova_read_interval", "nri-1")
+
+    assert report.gold_label == "superseded"
+    assert report.score_when_wrongly_isolated > report.score_when_correctly_grouped
+    assert report.score_delta > 0.1  # not a rounding-noise difference
+
+
+def test_simulate_isolated_claim_isolated_score_is_prior_only():
+    """With zero relations, propagate_group_trust has nothing to blend
+    with the prior -- the isolated score should equal exactly what
+    trust.resolve_trust()'s static prior alone assigns this claim's
+    source (propagate_group_trust never reads gold_label, only
+    source_path/source_type -- see its own docstring)."""
+    from trust import load_trust_config
+    from trust_propagation import _prior_score
+
+    dataset = load_trust_eval_dataset()
+    group = next(g for g in dataset.claim_groups if g.id == "nova_read_interval")
+    claim = next(c for c in group.claims if c.id == "nri-1")
+
+    report = te.simulate_isolated_claim(dataset, "nova_read_interval", "nri-1")
+    expected_prior = _prior_score(claim, load_trust_config())
+    assert report.score_when_wrongly_isolated == expected_prior

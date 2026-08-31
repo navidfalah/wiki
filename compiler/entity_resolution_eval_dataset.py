@@ -7,6 +7,17 @@ Alex Kim, Alex Rivera, and Sam Rivera are three different people who share
 a first or last name, and Nova Widget vs. a bare "Nova" mention should
 still resolve to one product — a small but real test of whether a resolver
 merges on name overlap alone (wrong) or requires stronger evidence (right).
+
+Two more hard cases, both drawn from articles/2026-05-20-competitor-teardown-blog.md
+(which discusses two products side by side, in the same table): "Aurora Nova
+Widget" is a longer surface form of the same product as "Nova Widget"/"Nova"
+(should merge — a positive case that also stresses the multi-word "Aurora
+Nova Widget" vs. "Nova Widget" partial-token overlap), while "SenseNode
+SN-400" is a *competitor's* product mentioned in the same document, in the
+same comparison table — a hard negative that isn't a name-token collision
+like Alex Kim/Alex Rivera, but a proximity/co-occurrence one: two distinct
+products discussed together should not be pulled toward each other by
+whatever the resolver uses for context.
 """
 
 from __future__ import annotations
@@ -29,4 +40,7 @@ GOLD_MENTIONS: list[tuple[Mention, str]] = [
     (Mention("Sam Rivera", "dummy-test/2026-07-01-firmware-changelog.md"), "sam-rivera"),
     (Mention("Nova Widget", "articles/2026-05-15-product-spec-draft.md"), "nova-widget"),
     (Mention("Nova", "notes/2026-05-01-kickoff-notes.md"), "nova-widget"),
+    (Mention("Aurora Nova Widget", "articles/2026-05-20-competitor-teardown-blog.md"), "nova-widget"),
+    (Mention("SenseNode SN-400", "articles/2026-05-20-competitor-teardown-blog.md"), "sensenode-sn-400"),
+    (Mention("Sam", "dummy-test/2026-07-07-power-budget-spreadsheet-notes.txt"), "sam-rivera"),
 ]

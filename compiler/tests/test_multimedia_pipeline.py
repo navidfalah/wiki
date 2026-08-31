@@ -17,7 +17,7 @@ from synthesizer import (
 class FakeLLM:
     available = True
 
-    def generate_response(self, prompt: str, system_prompt: str) -> str:
+    def generate_response(self, prompt: str, system_prompt: str, *, temperature: float = 0.2) -> str:
         if "knowledge extractor" in system_prompt.lower():
             return '{"topics": ["MeshSync"], "entities": [], "concepts": []}'
         # Wiki author: minimal valid page.

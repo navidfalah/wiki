@@ -94,27 +94,59 @@ def _parse_critic_response(raw: str) -> tuple[list[dict], str | None]:
     return flagged, None
 
 
+DEFAULT_SAMPLE_TEMPERATURE = 0.3
+
+
 def review_draft_for_grounding(
     source_text: str,
     draft_body: str,
     llm: LLMClient,
+    *,
+    extra_system_context: str = "",
+    samples: int = 1,
+    sample_temperature: float = DEFAULT_SAMPLE_TEMPERATURE,
 ) -> CriticReport:
     """Ask the critic LLM which sentences in draft_body aren't grounded in
     source_text. Never raises on a malformed model response — a critic pass
     that fails should not take down the whole compile; it degrades to "no
-    flags found" with parse_error set so the caller can log/count it."""
+    flags found" with parse_error set so the caller can log/count it.
+
+    extra_system_context, when non-empty, is appended to CRITIC_SYSTEM_PROMPT
+    — active_learning.py's render_fewshot_block() is the intended source, so
+    a human-reviewed hallucination pattern sharpens the critic's judgment the
+    same way it already sharpens extraction.
+
+    samples=1 (default) makes one call at temperature=0.0 — deterministic,
+    cheapest, matches the historical behavior. samples>1 runs the critic
+    multiple times at sample_temperature (self-consistency: a single flag
+    from one noisy pass is a false positive; a sentence a *majority* of
+    independent passes agree is unsupported is a much stronger signal). This
+    only makes sense above temperature 0 — sampling a deterministic call
+    repeatedly would just return the same answer every time for 3x the cost,
+    so sample_temperature defaults to a small non-zero value rather than 0.0
+    when samples>1.
+    """
     if not draft_body.strip() or not source_text.strip():
         return CriticReport()
 
-    raw = llm.generate_response(
-        _build_critic_prompt(source_text, draft_body),
-        CRITIC_SYSTEM_PROMPT,
-        temperature=0.0,
-    )
-    entries, parse_error = _parse_critic_response(raw)
-    if parse_error:
-        return CriticReport(parse_error=parse_error)
+    system_prompt = CRITIC_SYSTEM_PROMPT
+    if extra_system_context:
+        system_prompt = f"{system_prompt}\n\n{extra_system_context}"
 
+    prompt = _build_critic_prompt(source_text, draft_body)
+
+    if samples <= 1:
+        raw = llm.generate_response(prompt, system_prompt, temperature=0.0)
+        entries, parse_error = _parse_critic_response(raw)
+        if parse_error:
+            return CriticReport(parse_error=parse_error)
+        flagged = _entries_to_flagged(entries, draft_body)
+        return CriticReport(flagged=flagged)
+
+    return _review_with_self_consistency(prompt, system_prompt, draft_body, llm, samples, sample_temperature)
+
+
+def _entries_to_flagged(entries: list[dict], draft_body: str) -> list[FlaggedSentence]:
     flagged: list[FlaggedSentence] = []
     for entry in entries:
         sentence = str(entry.get("sentence", "")).strip()
@@ -122,7 +154,51 @@ def review_draft_for_grounding(
         if not sentence:
             continue
         flagged.append(FlaggedSentence(sentence=sentence, reason=reason, removed=sentence in draft_body))
+    return flagged
 
+
+def _review_with_self_consistency(
+    prompt: str,
+    system_prompt: str,
+    draft_body: str,
+    llm: LLMClient,
+    samples: int,
+    sample_temperature: float,
+) -> CriticReport:
+    votes: dict[str, int] = {}
+    reason_by_sentence: dict[str, str] = {}
+    parse_errors: list[str] = []
+    successful_passes = 0
+
+    for _ in range(samples):
+        raw = llm.generate_response(prompt, system_prompt, temperature=sample_temperature)
+        entries, parse_error = _parse_critic_response(raw)
+        if parse_error:
+            parse_errors.append(parse_error)
+            continue
+        successful_passes += 1
+        seen_this_pass: set[str] = set()
+        for entry in entries:
+            sentence = str(entry.get("sentence", "")).strip()
+            if not sentence or sentence in seen_this_pass:
+                continue
+            seen_this_pass.add(sentence)
+            votes[sentence] = votes.get(sentence, 0) + 1
+            reason_by_sentence.setdefault(sentence, str(entry.get("reason", "")).strip())
+
+    if successful_passes == 0:
+        return CriticReport(parse_error="; ".join(parse_errors) or "all critic samples failed to parse")
+
+    majority_threshold = successful_passes / 2
+    flagged = [
+        FlaggedSentence(
+            sentence=sentence,
+            reason=reason_by_sentence.get(sentence, ""),
+            removed=sentence in draft_body,
+        )
+        for sentence, count in votes.items()
+        if count > majority_threshold
+    ]
     return CriticReport(flagged=flagged)
 
 
@@ -130,12 +206,25 @@ def apply_critic_pass(
     source_text: str,
     draft_body: str,
     llm: LLMClient,
+    *,
+    extra_system_context: str = "",
+    samples: int = 1,
+    sample_temperature: float = DEFAULT_SAMPLE_TEMPERATURE,
 ) -> tuple[str, CriticReport]:
     """Run the critic and strip every sentence it could match verbatim from
     draft_body. A flagged sentence the critic paraphrased instead of quoting
     verbatim is reported (removed=False) but left in place rather than
-    guessed at — a wrong removal is worse than a missed one."""
-    report = review_draft_for_grounding(source_text, draft_body, llm)
+    guessed at — a wrong removal is worse than a missed one.
+
+    samples/sample_temperature: see review_draft_for_grounding()."""
+    report = review_draft_for_grounding(
+        source_text,
+        draft_body,
+        llm,
+        extra_system_context=extra_system_context,
+        samples=samples,
+        sample_temperature=sample_temperature,
+    )
     if not report.flagged:
         return draft_body, report
 

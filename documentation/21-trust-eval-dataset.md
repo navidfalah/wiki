@@ -90,11 +90,19 @@ Gold labels (`compiler/trust_eval_dataset.py:GOLD_LABELS`):
 
 ## Current stats (v1)
 
-5 claim groups, 24 claims, 25 relations, spanning the Aurora Labs and
+6 claim groups, 29 claims, 29 relations, spanning the Aurora Labs and
 TeaBuddy sample domains. Run `trust_eval_dataset.summary_stats()` for the
 live breakdown by gold label / relation type / domain — this is what a
 methodology section's "dataset description" table should be generated from,
 not hand-copied, so it can't drift out of sync with the JSON.
+
+The sixth group, `nova_ip_rating`, was added specifically because the
+original five skew toward disputed/superseded cases (every one of them is
+built around a correction or contradiction) — it's the one group where
+every source genuinely agrees (IP54 for beta, IP65 planned then deferred),
+included to balance the dataset with a real strongly-corroborating case and
+to check that propagation doesn't manufacture disagreement where none
+exists.
 
 ```python
 from trust_eval_dataset import load_trust_eval_dataset, summary_stats

@@ -72,17 +72,17 @@ same convention as `--critic-pass` (task #4) and `--use-corrections`
 
 Every other evaluation in this series has an "at least one tier requires
 OPENAI_API_KEY, not run in this environment" caveat. This one doesn't —
-`pii_redaction_eval.py`'s 8 hand-labeled fixtures (obviously-fake values in
+`pii_redaction_eval.py`'s 13 hand-labeled fixtures (obviously-fake values in
 realistic Aurora Labs-style sentences, never real PII) run entirely offline
 against the actual detectors:
 
 ```
 precision=1.00 recall=1.00
-true_positives=8 false_positives=0 false_negatives=0
+true_positives=12 false_positives=0 false_negatives=0
 ```
 
-One fixture is a deliberate, honestly-labeled hard case rather than an
-avoided one: `order_number_false_positive` contains a 42-character
+Two fixtures are deliberate, honestly-labeled hard cases rather than
+avoided ones. `order_number_false_positive` contains a 42-character
 alphanumeric order number that is *not* a secret, and the generic
 mixed-character `api_key` pattern (32+ characters, at least one letter and
 one digit — needed to catch real hex/base64 secrets that don't use a
@@ -95,6 +95,23 @@ pattern too aggressive can build a `RedactionPolicy` that excludes
 `api_key`, or a future version could tighten it (e.g. requiring the token
 to be prefixed by a `key`/`token`/`secret`-like word nearby) — not done
 here to avoid narrowing the pattern based on one example.
+
+`obfuscated_email_not_detected` documents the mirror-image gap — a false
+*negative* rather than a false positive: `email`'s regex requires a literal
+`@` and `.`, so text spelling those out ("mira dot chen at auroralabs dot
+example") slips through entirely. Not fixed here either, for the same
+reason — this module is regex-only by design (see above), and a heuristic
+that tries to catch spelled-out obfuscation risks false-positiving on
+ordinary prose that happens to contain "at" and "dot" near each other.
+Named honestly as a known blind spot rather than silently missed.
+
+Two more additions worth naming since they changed the measured numbers:
+`luhn_invalid_number_not_flagged_as_card` confirms the Luhn check actually
+gates the `credit_card` pattern (a card-shaped digit run that fails the
+checksum must **not** be flagged), and `vendor_token_without_sk_prefix`
+confirms the generic mixed-alnum branch of `api_key` — not just the
+`sk-`/`pk-`/`rk-` vendor-prefix branch — catches a real secret shape
+(a GitHub-style token) on its own.
 
 ## Next
 

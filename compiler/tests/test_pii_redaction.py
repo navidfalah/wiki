@@ -99,7 +99,7 @@ class FakeExtractionLLM:
     def __init__(self):
         self.calls: list[tuple[str, str]] = []
 
-    def generate_response(self, prompt: str, system_prompt: str) -> str:
+    def generate_response(self, prompt: str, system_prompt: str, *, temperature: float = 0.2) -> str:
         self.calls.append((prompt, system_prompt))
         return '{"topics": ["MeshSync"], "entities": [], "concepts": []}'
 

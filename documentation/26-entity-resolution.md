@@ -56,14 +56,24 @@ token out of two on each side, so it doesn't, and falls through to the weak
 
 ## Evaluation
 
-`entity_resolution_eval_dataset.py` holds 13 real mentions across 6 gold
+`entity_resolution_eval_dataset.py` holds 16 real mentions across 7 gold
 entities (`Mira Chen`, `Jonah Park`, `Alex Kim`, `Alex Rivera`, `Sam
-Rivera`, `Nova Widget`), every one grounded — `test_entity_resolution_eval_dataset.py`
+Rivera`, `Nova Widget`, `SenseNode SN-400`), every one grounded — `test_entity_resolution_eval_dataset.py`
 verifies each `(mention, source_path)` pair actually appears in its cited
 `data/raw/` file (case-insensitively, since a mention is meant to model
 what extraction would *output*, e.g. a normalized `"Mira"` from a
 transcript that literally reads `"MIRA:"` — not a verbatim quote the way
 `trust_eval_dataset.json`'s claims are).
+
+Two of those 16 exercise a second, different kind of hard case beyond the
+Alex Kim/Alex Rivera/Sam Rivera name-token collision above: `"Aurora Nova
+Widget"` (a longer surface form that should still merge into `nova-widget`)
+and `"SenseNode SN-400"` — a *competitor's* product discussed side by side
+with Nova Widget in the same document's comparison table. That's a
+proximity/co-occurrence hard negative rather than a name-token one: nothing
+about "SenseNode SN-400" and "Nova Widget" shares a token, but a resolver
+using document-level context carelessly (rather than name evidence) could
+still be tempted to associate them since they're always mentioned together.
 
 `entity_resolution_eval.py` computes pairwise precision/recall/F1 (for
 every pair of mentions: does "predicted same cluster" agree with "gold
@@ -72,20 +82,21 @@ same cluster") — a standard clustering-evaluation metric.
 **Result, heuristic tier alone, no API key needed:**
 
 ```
-precision=1.00 recall=1.00 f1=1.00  (8/8 predicted pairs correct, 8 gold pairs)
+precision=1.00 recall=1.00 f1=1.00  (11/11 predicted pairs correct, 11 gold pairs)
 ```
 
-Every positive merge (Mira/Jonah's three-way name+email clusters) and every
-hard negative (Alex Kim/Alex Rivera/Sam Rivera staying separate) resolves
-correctly from heuristics alone — the embedding and LLM tiers have nothing
-left to adjudicate on *this* dataset, which is itself the honest limit of
-what a 13-mention pilot set can show: it was built around cases the
-heuristic tier is specifically designed to handle well. A dataset with
-genuinely ambiguous cases (e.g. two different real people who share a full
-name, or a nickname with no textual overlap at all, like "Bob" for
-"Robert") would be needed to actually exercise and evaluate the embedding
-and LLM tiers — a direct, named follow-up rather than something this
-pilot's perfect score should be read as covering.
+Every positive merge (Mira/Jonah's three-way name+email clusters, Nova
+Widget's three surface forms) and every hard negative (Alex Kim/Alex
+Rivera/Sam Rivera staying separate, SenseNode SN-400 staying separate from
+Nova Widget) resolves correctly from heuristics alone — the embedding and
+LLM tiers have nothing left to adjudicate on *this* dataset, which is
+itself the honest limit of what a 16-mention pilot set can show: it was
+built around cases the heuristic tier is specifically designed to handle
+well. A dataset with genuinely ambiguous cases (e.g. two different real
+people who share a full name, or a nickname with no textual overlap at all,
+like "Bob" for "Robert") would be needed to actually exercise and evaluate
+the embedding and LLM tiers — a direct, named follow-up rather than
+something this pilot's perfect score should be read as covering.
 
 ## Next
 

@@ -8,7 +8,11 @@
     "scope_dependent": "Not a contradiction — different values are each valid under different conditions (node count, deployment stage, etc.).",
     "disputed": "Still asserted by some sources, but undermined by a documented dependency on another claim this dataset marks incorrect/superseded."
   },
-  "relation_types": ["corroborates", "contradicts", "supersedes"],
+  "relation_types": [
+    "corroborates",
+    "contradicts",
+    "supersedes"
+  ],
   "claim_groups": [
     {
       "id": "nova_read_interval",
@@ -98,14 +102,46 @@
         }
       ],
       "relations": [
-        {"from": "nri-2", "to": "nri-1", "type": "supersedes"},
-        {"from": "nri-3", "to": "nri-1", "type": "contradicts"},
-        {"from": "nri-4", "to": "nri-2", "type": "corroborates"},
-        {"from": "nri-5", "to": "nri-1", "type": "contradicts"},
-        {"from": "nri-5", "to": "nri-2", "type": "corroborates"},
-        {"from": "nri-6", "to": "nri-2", "type": "corroborates"},
-        {"from": "nri-7", "to": "nri-1", "type": "contradicts"},
-        {"from": "nri-8", "to": "nri-2", "type": "corroborates"}
+        {
+          "from": "nri-2",
+          "to": "nri-1",
+          "type": "supersedes"
+        },
+        {
+          "from": "nri-3",
+          "to": "nri-1",
+          "type": "contradicts"
+        },
+        {
+          "from": "nri-4",
+          "to": "nri-2",
+          "type": "corroborates"
+        },
+        {
+          "from": "nri-5",
+          "to": "nri-1",
+          "type": "contradicts"
+        },
+        {
+          "from": "nri-5",
+          "to": "nri-2",
+          "type": "corroborates"
+        },
+        {
+          "from": "nri-6",
+          "to": "nri-2",
+          "type": "corroborates"
+        },
+        {
+          "from": "nri-7",
+          "to": "nri-1",
+          "type": "contradicts"
+        },
+        {
+          "from": "nri-8",
+          "to": "nri-2",
+          "type": "corroborates"
+        }
       ]
     },
     {
@@ -176,13 +212,41 @@
         }
       ],
       "relations": [
-        {"from": "nbc-2", "to": "nbc-1", "type": "corroborates"},
-        {"from": "nbc-3", "to": "nbc-2", "type": "contradicts"},
-        {"from": "nbc-4", "to": "nbc-3", "type": "contradicts"},
-        {"from": "nbc-4", "to": "nbc-2", "type": "corroborates"},
-        {"from": "nbc-5", "to": "nbc-2", "type": "corroborates"},
-        {"from": "nbc-6", "to": "nbc-2", "type": "corroborates"},
-        {"from": "nbc-6", "to": "nbc-3", "type": "contradicts"}
+        {
+          "from": "nbc-2",
+          "to": "nbc-1",
+          "type": "corroborates"
+        },
+        {
+          "from": "nbc-3",
+          "to": "nbc-2",
+          "type": "contradicts"
+        },
+        {
+          "from": "nbc-4",
+          "to": "nbc-3",
+          "type": "contradicts"
+        },
+        {
+          "from": "nbc-4",
+          "to": "nbc-2",
+          "type": "corroborates"
+        },
+        {
+          "from": "nbc-5",
+          "to": "nbc-2",
+          "type": "corroborates"
+        },
+        {
+          "from": "nbc-6",
+          "to": "nbc-2",
+          "type": "corroborates"
+        },
+        {
+          "from": "nbc-6",
+          "to": "nbc-3",
+          "type": "contradicts"
+        }
       ]
     },
     {
@@ -243,12 +307,36 @@
         }
       ],
       "relations": [
-        {"from": "nbl-2", "to": "nbl-1", "type": "contradicts"},
-        {"from": "nbl-3", "to": "nbl-1", "type": "corroborates"},
-        {"from": "nbl-3", "to": "nbl-2", "type": "corroborates"},
-        {"from": "nbl-4", "to": "nbl-2", "type": "corroborates"},
-        {"from": "nbl-5", "to": "nbl-4", "type": "contradicts"},
-        {"from": "nbl-5", "to": "nbl-1", "type": "corroborates"}
+        {
+          "from": "nbl-2",
+          "to": "nbl-1",
+          "type": "contradicts"
+        },
+        {
+          "from": "nbl-3",
+          "to": "nbl-1",
+          "type": "corroborates"
+        },
+        {
+          "from": "nbl-3",
+          "to": "nbl-2",
+          "type": "corroborates"
+        },
+        {
+          "from": "nbl-4",
+          "to": "nbl-2",
+          "type": "corroborates"
+        },
+        {
+          "from": "nbl-5",
+          "to": "nbl-4",
+          "type": "contradicts"
+        },
+        {
+          "from": "nbl-5",
+          "to": "nbl-1",
+          "type": "corroborates"
+        }
       ]
     },
     {
@@ -279,7 +367,11 @@
         }
       ],
       "relations": [
-        {"from": "thp-2", "to": "thp-1", "type": "supersedes"}
+        {
+          "from": "thp-2",
+          "to": "thp-1",
+          "type": "supersedes"
+        }
       ]
     },
     {
@@ -320,9 +412,101 @@
         }
       ],
       "relations": [
-        {"from": "mrd-2", "to": "mrd-1", "type": "corroborates"},
-        {"from": "mrd-3", "to": "mrd-2", "type": "corroborates"},
-        {"from": "mrd-3", "to": "mrd-1", "type": "corroborates"}
+        {
+          "from": "mrd-2",
+          "to": "mrd-1",
+          "type": "corroborates"
+        },
+        {
+          "from": "mrd-3",
+          "to": "mrd-2",
+          "type": "corroborates"
+        },
+        {
+          "from": "mrd-3",
+          "to": "mrd-1",
+          "type": "corroborates"
+        }
+      ]
+    },
+    {
+      "id": "nova_ip_rating",
+      "domain": "aurora",
+      "subject": "Nova Widget enclosure IP rating (beta vs. GA)",
+      "description": "Every source agrees on the same status: IP54 for beta units, with an IP65 tooled variant planned but blocked on a ~$8k gasket tooling cost, later confirmed deferred. Included as a strongly-corroborating (non-contradictory) claim group to balance the dataset, which otherwise skews toward disputed/superseded cases — this tests that propagation does not manufacture disagreement where sources actually agree, and gives the graph more genuine corroborates edges to propagate over.",
+      "claims": [
+        {
+          "id": "nip-1",
+          "source_path": "articles/2026-05-15-product-spec-draft.md",
+          "source_type": "text",
+          "date": "2026-05-15",
+          "value": "IP54 beta; IP65 planned for GA (~$8k gasket tooling)",
+          "quote": "IP54 for beta units. IP65 planned for GA if gasket tooling budget allows (~$8k).",
+          "gold_label": "correct",
+          "note": "Earliest source; establishes the baseline status other sources corroborate."
+        },
+        {
+          "id": "nip-2",
+          "source_path": "transcripts/2026-05-28-weekly-sync.md",
+          "source_type": "text",
+          "date": "2026-05-28",
+          "value": "IP54 beta; IP65 pending the $8k tool",
+          "quote": "IP54 is fine for beta; IP65 needs the $8k tool Mira mentioned in the spec.",
+          "gold_label": "correct",
+          "note": "Jonah corroborates the spec draft two weeks later."
+        },
+        {
+          "id": "nip-3",
+          "source_path": "notes/2026-06-01-standup-scribbles.txt",
+          "source_type": "text",
+          "date": "2026-06-01",
+          "value": "IP54 ok; IP65 blocked on the $8k tool",
+          "quote": "IP54 ok. IP65 = $8k tool rip",
+          "gold_label": "correct",
+          "note": "Informal standup note, same status as nip-1/nip-2."
+        },
+        {
+          "id": "nip-4",
+          "source_path": "samples/specs/[SAMPLE]-2026-07-03-nova-widget-hardware-rev-C.md",
+          "source_type": "text",
+          "date": "2026-07-03",
+          "value": "IP54 splash; IP65 deferred ($7,850 quote)",
+          "quote": "IP65 tooled variant deferred ($7,850 quote)",
+          "gold_label": "correct",
+          "note": "A more precise tooling quote ($7,850) refining the earlier ~$8k estimate, not a conflicting figure — corroborates rather than contradicts."
+        },
+        {
+          "id": "nip-5",
+          "source_path": "dummy-test/2026-07-04-investor-update-draft.txt",
+          "source_type": "text",
+          "date": "2026-07-04",
+          "value": "IP54 beta shipping; IP65 tooling ($8k) deferred",
+          "quote": "IP65 tooling $8k deferred; shipping IP54 beta with clear splash-resistance language",
+          "gold_label": "correct",
+          "note": "Latest source; confirms the deferred status as of the investor update."
+        }
+      ],
+      "relations": [
+        {
+          "from": "nip-2",
+          "to": "nip-1",
+          "type": "corroborates"
+        },
+        {
+          "from": "nip-3",
+          "to": "nip-1",
+          "type": "corroborates"
+        },
+        {
+          "from": "nip-4",
+          "to": "nip-1",
+          "type": "corroborates"
+        },
+        {
+          "from": "nip-5",
+          "to": "nip-1",
+          "type": "corroborates"
+        }
       ]
     }
   ]
