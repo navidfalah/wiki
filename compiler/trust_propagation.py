@@ -61,15 +61,17 @@ class PropagationConfig:
     contradict_weight: float = 1.0
     supersede_weight: float = 1.5
     supersede_decay: float = 0.4  # multiplicative penalty per supersedes edge targeting a claim
-    # alpha: static prior vs. relational evidence. 0.3 is a qualitative
-    # starting point (chosen by inspecting behavior on the pilot dataset —
-    # at 0.5 the static config's samples/**/dummy-test/** "unverified" rule
-    # could outweigh strong corroboration and rank a superseded claim above
-    # correct ones from those directories). Formally tuning this via the
-    # labeled dataset's ranking accuracy is task #3's ablation, not this
-    # module's job — this default is a reasonable starting point, not a
-    # validated optimum.
-    prior_weight: float = 0.3
+    # alpha: static prior vs. relational evidence. 0.2 is an evidence-based
+    # choice, not a guess: trust_propagation_eval.py's prior_weight sweep
+    # (see documentation/23-trust-propagation-evaluation.md) shows pairwise
+    # ranking accuracy on the labeled dataset is flat at its maximum (0.94)
+    # across prior_weight in [0.0, 0.25] and drops sharply from 0.3 onward,
+    # so 0.2 sits in the middle of that plateau — low enough to avoid the
+    # static config's samples/**/dummy-test/** "unverified" rule outweighing
+    # strong corroboration, but not 0.0, since a claim with *no* relational
+    # evidence at all (a real possibility outside this pilot dataset) should
+    # still fall back to its static prior rather than a fixed neutral value.
+    prior_weight: float = 0.2
     sigmoid_k: float = 1.0
     iterations: int = 6
 

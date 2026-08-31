@@ -120,22 +120,19 @@ def test_gold_label_never_affects_the_propagated_score():
             assert mutated[group_id][claim_id].score == claim_trust.score
 
 
-def test_ranking_within_group_prefers_correct_over_superseded_claims_on_average():
-    """A coarse ranking check on the real dataset's default config: within
-    each group that has both labels, the average 'correct'-labeled score
-    should beat the average 'superseded'-labeled score.
-
-    This is intentionally a *mean* comparison, not "every correct claim
-    outranks every superseded one" — nova_battery_cell_type's weakest
-    'correct' claims (nbc-4/nbc-6) sit in samples/** and dummy-test/**,
-    which data/source_trust.json marks unverified (prior 0), so with the
-    shipped default weights they can end up scoring just below nbc-3
-    (superseded, prior 0.5 since it isn't under one of those directories).
-    That's a real, documented tension between the static prior and
-    relational evidence — see PropagationConfig.prior_weight's docstring
-    and documentation/21-trust-eval-dataset.md — not something to paper
-    over with a stricter assertion here. Formal ranking-accuracy metrics
-    and an alpha ablation belong to task #3."""
+def test_ranking_within_group_prefers_correct_over_superseded_claims():
+    """A ranking check on the real dataset's shipped default config
+    (prior_weight=0.2, chosen via trust_propagation_eval.py's alpha sweep —
+    see documentation/23-trust-propagation-evaluation.md): within every
+    group that has both labels, even the *weakest* 'correct' claim should
+    outscore the *strongest* 'superseded' claim. This is the same property
+    an earlier, higher prior_weight (0.3) failed on for
+    nova_battery_cell_type (its samples/**/dummy-test/** 'correct' claims,
+    prior 0, could rank below a 'superseded' claim sourced elsewhere, prior
+    0.5) — the eval-driven default resolves it. Finer-grained precision and
+    per-term ablations live in trust_propagation_eval.py / task #3, not
+    here; this is a smoke test that the shipped defaults behave correctly
+    on the pilot dataset."""
     dataset = load_trust_eval_dataset()
     result = tp.propagate_dataset_trust(dataset)
 
@@ -145,9 +142,7 @@ def test_ranking_within_group_prefers_correct_over_superseded_claims_on_average(
             by_label.setdefault(claim.gold_label, []).append(result[group.id][claim.id].score)
 
         if "correct" in by_label and "superseded" in by_label:
-            mean_correct = sum(by_label["correct"]) / len(by_label["correct"])
-            mean_superseded = sum(by_label["superseded"]) / len(by_label["superseded"])
-            assert mean_correct > mean_superseded, group.id
+            assert min(by_label["correct"]) > max(by_label["superseded"]), group.id
 
 
 def test_ablation_zeroing_corroborate_weight_removes_the_boost():

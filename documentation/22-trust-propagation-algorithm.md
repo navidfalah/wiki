@@ -64,14 +64,18 @@ the computed scores don't move by a single bit.
 
 ## Design choices, made explicit
 
-- **`prior_weight = 0.3` (not 0.5).** Chosen by inspecting behavior on the
-  pilot dataset, not by a formal search. At `0.5`, `data/source_trust.json`'s
-  `samples/**`/`dummy-test/**` → `unverified` rule (prior `0`) could let a
-  higher-prior `superseded` claim from outside those directories outrank a
-  well-corroborated `correct` claim inside them. Lowering `prior_weight` to
-  `0.3` fixes this on the pilot set; whether `0.3` generalizes is exactly
-  what task #3's alpha ablation should determine, not something this module
-  claims to have settled.
+- **`prior_weight = 0.2` (not 0.5).** This is now an evidence-based choice,
+  not a guess — see [23-trust-propagation-evaluation.md](./23-trust-propagation-evaluation.md)
+  for the actual sweep. Pairwise ranking accuracy on the pilot dataset is
+  flat at its maximum across `prior_weight` in `[0.0, 0.25]` and drops
+  sharply from `0.3` onward, because `data/source_trust.json`'s
+  `samples/**`/`dummy-test/**` → `unverified` rule (prior `0`) starts to let
+  a higher-prior `superseded` claim outrank well-corroborated `correct`
+  claims sourced from those directories once the prior counts for enough of
+  the blend. `0.2` sits in the middle of the flat, high-accuracy region
+  rather than at its edge (`0.0`), so a claim with no relational evidence at
+  all still falls back to something informed by its static prior instead of
+  a fixed neutral score.
 - **`PropagationConfig.with_overrides()`** exists specifically so an
   ablation script can hold everything constant and zero out one term at a
   time (`corroborate_weight=0`, `supersede_weight=0`, `prior_weight=0` for
@@ -83,25 +87,23 @@ the computed scores don't move by a single bit.
   (labeled `disputed` because it depends on a *different* group's gold
   labels) can't be resolved by this algorithm alone yet.
 
-## Preliminary observations (not a formal result)
+## Observations at the evidence-based default (`prior_weight=0.2`)
 
 Running the default config against the real pilot dataset
-(`propagate_dataset_trust(load_trust_eval_dataset())`):
+(`propagate_dataset_trust(load_trust_eval_dataset())`) — see
+[23-trust-propagation-evaluation.md](./23-trust-propagation-evaluation.md)
+for the formal metrics this summarizes:
 
-- In every group that contains both `correct` and `superseded` claims, the
-  **mean** propagated score for `correct` claims beats the mean for
-  `superseded` claims (`nova_read_interval`: 0.42 vs. 0.09;
-  `nova_battery_cell_type`: 0.43 vs. 0.31; `teabuddy_herbal_preset_timing`:
-  0.35 vs. 0.10).
-- `nova_battery_cell_type` also shows the known tension above: its weakest
-  `correct` claims (sourced from `samples/**`/`dummy-test/**`, prior `0`)
-  land slightly *below* its one `superseded` claim (sourced outside those
-  directories, prior `0.5`). Reported here rather than hidden — it's the
-  clearest evidence that prior and relational evidence can pull in opposite
-  directions, and it's a genuine open question for the ablation to
-  characterize rather than tune away by eye.
+- In every group that contains both `correct` and `superseded` claims, every
+  `correct` claim's score now beats every `superseded` claim's score, not
+  just on average — `nova_read_interval`'s lowest `correct` score (0.39)
+  still clears its `superseded` claim (0.07); `nova_battery_cell_type`'s
+  lowest `correct` score (0.35) clears its `superseded` claim (0.26); same
+  for `teabuddy_herbal_preset_timing` (0.40 vs. 0.11). At the earlier
+  `prior_weight=0.3` this didn't fully hold (see 23's ablation) — the lower,
+  evidence-based default resolves it.
 - `nova_battery_cell_type/nbc-1` and `nova_read_interval/nri-1` (same file,
-  same prior) diverge sharply once propagated (0.60 vs. 0.09) — the
+  same prior) diverge sharply once propagated (0.63 vs. 0.07) — the
   targeted "per-claim, not per-source" property the dataset was built to
   test.
 - `meshsync_relay_battery_drain_root_cause` (the deliberately dispute-free
@@ -112,5 +114,5 @@ Running the default config against the real pilot dataset
 ## Next
 
 - [21-trust-eval-dataset.md](./21-trust-eval-dataset.md) — the claim graph schema and labeled ground truth this operates on
-- `compiler/trust.py` — the static prior this module extends, still the source of truth for the live References & Trust table until task #3 validates the propagated scores are worth integrating
-- Task #3 (still open): formal precision/ranking evaluation and per-term ablations
+- [23-trust-propagation-evaluation.md](./23-trust-propagation-evaluation.md) — the formal precision/ranking evaluation and per-term ablations that justify prior_weight=0.2 and the other defaults
+- `compiler/trust.py` — the static prior this module extends, still the source of truth for the live References & Trust table until the evaluation's results are judged strong enough to integrate

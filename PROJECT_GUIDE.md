@@ -37,6 +37,7 @@ cd ../wiki-app && npm install && npm start
 | Email engine, Resources, Chat (RAG) | [20-email-resources-and-chat-engines.md](./documentation/20-email-resources-and-chat-engines.md) |
 | Trust-propagation eval dataset | [21-trust-eval-dataset.md](./documentation/21-trust-eval-dataset.md) |
 | Trust propagation algorithm | [22-trust-propagation-algorithm.md](./documentation/22-trust-propagation-algorithm.md) |
+| Trust propagation evaluation + ablations | [23-trust-propagation-evaluation.md](./documentation/23-trust-propagation-evaluation.md) |
 
 ## Also see
 
