@@ -25,6 +25,7 @@ from rich.progress import (
 from rich.table import Table
 from rich.text import Text
 
+import active_learning
 from linker import (
     IndexDelta,
     link_and_export_pages,
@@ -155,7 +156,7 @@ def step_read_data(llm: LLMClient) -> list:
     return chunks
 
 
-def step_extract(chunks: list, llm: LLMClient, *, force: bool) -> dict:
+def step_extract(chunks: list, llm: LLMClient, *, force: bool, extra_system_context: str = "") -> dict:
     """Step 2: Extract topics, entities, and concepts from each chunk."""
     mode = "LLM"
     changes = scan_raw_file_changes(RAW_DIR, load_state(), force=force)
@@ -184,6 +185,7 @@ def step_extract(chunks: list, llm: LLMClient, *, force: bool) -> dict:
             raw_dir=RAW_DIR,
             force=force,
             on_progress=on_progress if total else None,
+            extra_system_context=extra_system_context,
         )
         if total:
             progress.update(task, completed=total)
@@ -372,7 +374,7 @@ def step_link(
     return written
 
 
-def run_pipeline(*, force: bool = False, apply_critic: bool = False) -> int:
+def run_pipeline(*, force: bool = False, apply_critic: bool = False, use_corrections: bool = False) -> int:
     """Run the full compiler pipeline sequentially."""
     start = time.perf_counter()
     try:
@@ -400,7 +402,13 @@ def run_pipeline(*, force: bool = False, apply_critic: bool = False) -> int:
         return 1
 
     _step_banner(2, 5, "Extraction", "Extract topics — skip unchanged files via MD5 state")
-    extractions = step_extract(chunks, llm, force=force)
+    extra_system_context = ""
+    if use_corrections:
+        corrections = active_learning.load_corrections()
+        extra_system_context = active_learning.render_fewshot_block(corrections)
+        if corrections:
+            console.print(f"[cyan]Active learning:[/] applying {len(corrections)} human correction(s) as few-shot context")
+    extractions = step_extract(chunks, llm, force=force, extra_system_context=extra_system_context)
 
     _step_banner(3, 5, "Synthesis", "Regenerate only topic pages affected by changed files")
     synth_result = step_synthesize(extractions, llm, force=force, apply_critic=apply_critic)
@@ -465,8 +473,20 @@ def main() -> None:
             "per-page LLM cost. Also enabled by setting WIKI_CRITIC_PASS=true."
         ),
     )
+    parser.add_argument(
+        "--use-corrections",
+        action="store_true",
+        default=os.getenv("WIKI_USE_CORRECTIONS", "").lower() in {"1", "true", "yes"},
+        help=(
+            "Feed human review corrections (data/review_corrections.json, see "
+            "active_learning.py) into the extraction prompt as few-shot examples. "
+            "Also enabled by setting WIKI_USE_CORRECTIONS=true."
+        ),
+    )
     args = parser.parse_args()
-    raise SystemExit(run_pipeline(force=args.force, apply_critic=args.critic_pass))
+    raise SystemExit(
+        run_pipeline(force=args.force, apply_critic=args.critic_pass, use_corrections=args.use_corrections)
+    )
 
 
 if __name__ == "__main__":

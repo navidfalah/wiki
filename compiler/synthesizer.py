@@ -394,16 +394,29 @@ def _parse_extraction_json(raw: str) -> dict:
 def extract_chunk_topics(
     chunk: RawChunk,
     llm: LLMClient | None = None,
+    *,
+    extra_system_context: str = "",
 ) -> ChunkExtraction:
-    """Extract topics, entities, and concepts from a single text chunk."""
+    """Extract topics, entities, and concepts from a single text chunk.
+
+    extra_system_context, when non-empty, is appended to
+    CHUNK_EXTRACTION_SYSTEM_PROMPT — active_learning.py's
+    render_fewshot_block() is the intended source: human corrections from a
+    prior compile's review queue, fed back as a few-shot block so the same
+    mistake is less likely to repeat.
+    """
     client = require_llm(llm)
+
+    system_prompt = CHUNK_EXTRACTION_SYSTEM_PROMPT
+    if extra_system_context:
+        system_prompt = f"{system_prompt}\n\n{extra_system_context}"
 
     prompt = (
         f"Source file: {chunk.source_path}\n"
         f"Chunk index: {chunk.chunk_index}\n\n"
         f"---\n\n{chunk.text[:8000]}"
     )
-    raw = client.generate_response(prompt, CHUNK_EXTRACTION_SYSTEM_PROMPT)
+    raw = client.generate_response(prompt, system_prompt)
     data = _parse_extraction_json(raw)
 
     return ChunkExtraction(
@@ -431,6 +444,7 @@ def extract_topics_from_raw_files(
     *,
     force: bool = False,
     on_progress: ProgressCallback | None = None,
+    extra_system_context: str = "",
 ) -> dict:
     """
     Read text files from data/raw/ and extract topics per chunk.
@@ -461,7 +475,7 @@ def extract_topics_from_raw_files(
         extractions = []
         chunk_count = len(file_chunks)
         for chunk_index, chunk in enumerate(file_chunks, start=1):
-            extractions.append(extract_chunk_topics(chunk, llm))
+            extractions.append(extract_chunk_topics(chunk, llm, extra_system_context=extra_system_context))
             if on_progress and chunk_count > 1:
                 on_progress(
                     index,

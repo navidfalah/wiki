@@ -43,6 +43,7 @@ cd ../wiki-app && npm install && npm start
 | Entity resolution / coreference | [26-entity-resolution.md](./documentation/26-entity-resolution.md) |
 | Temporal / bi-temporal fact modeling | [27-temporal-modeling.md](./documentation/27-temporal-modeling.md) |
 | Faithfulness evaluation for chat answers | [28-faithfulness-evaluation.md](./documentation/28-faithfulness-evaluation.md) |
+| Active-learning review/correction loop | [29-active-learning.md](./documentation/29-active-learning.md) |
 
 ## Also see
 
