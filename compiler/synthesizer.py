@@ -13,6 +13,7 @@ from pathlib import Path
 import email_ingest
 import media_ingest
 import trust
+from extraction_critic import apply_critic_pass
 from llm_client import LLMClient, require_llm
 from models import RAW_DIR, STATE_FILE
 from text_chunking import split_text_into_chunks
@@ -621,12 +622,19 @@ def synthesize_topic_wiki_pages(
     *,
     dirty_topics: set[str] | None = None,
     on_progress: ProgressCallback | None = None,
+    apply_critic: bool = False,
 ) -> tuple[list[Path], list[str]]:
     """
     For each unique topic, write a Markdown wiki page synthesizing related chunks.
 
     When dirty_topics is set, only those topics are regenerated; existing drafts
     for unchanged topics are kept to save API calls.
+
+    apply_critic=True runs a second LLM pass (extraction_critic.py) over each
+    draft before it's written, stripping any sentence the critic can't ground
+    in that topic's source chunks. Off by default: it roughly doubles the
+    per-page LLM cost, so it's an explicit opt-in (main.py's --critic-pass /
+    WIKI_CRITIC_PASS), not a silent behavior change for existing users.
     """
     llm = require_llm(llm)
     out_dir = output_dir or TEMP_OUTPUT_DIR
@@ -669,6 +677,18 @@ def synthesize_topic_wiki_pages(
         body = llm.generate_response(prompt, WIKI_PAGE_SYSTEM_PROMPT)
         body = _strip_llm_authored_sources_section(body.strip())
 
+        if apply_critic:
+            source_text = "\n\n---\n\n".join(chunk_blocks)
+            body, critic_report = apply_critic_pass(source_text, body, llm)
+            if critic_report.flagged:
+                removed_count = sum(1 for f in critic_report.flagged if f.removed)
+                console_note = (
+                    f"critic flagged {len(critic_report.flagged)} sentence(s) in '{topic}' "
+                    f"({removed_count} removed)"
+                )
+                if on_progress:
+                    on_progress(index, total, console_note)
+
         references = trust.build_references(entries, trust_config)
         references_md = trust.render_references_markdown(references)
         if references_md:
@@ -691,6 +711,7 @@ def run_topic_synthesis_pipeline(
     *,
     force: bool = False,
     save_extractions_json: bool = True,
+    apply_critic: bool = False,
 ) -> dict:
     """
     End-to-end: extract topics → group by topic → write wiki drafts to temp_output/.
@@ -724,6 +745,7 @@ def run_topic_synthesis_pipeline(
         llm=llm,
         output_dir=out_dir,
         dirty_topics=dirty_topics,
+        apply_critic=apply_critic,
     )
 
     extractions_path: Path | None = None

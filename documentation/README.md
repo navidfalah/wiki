@@ -31,6 +31,7 @@ Detailed project documentation, split by topic. Start with [01-overview.md](./01
 | [21-trust-eval-dataset.md](./21-trust-eval-dataset.md) | Hand-labeled trust-propagation eval dataset: schema, labeling protocol, limitations |
 | [22-trust-propagation-algorithm.md](./22-trust-propagation-algorithm.md) | The trust propagation algorithm itself: design, config, and preliminary behavior |
 | [23-trust-propagation-evaluation.md](./23-trust-propagation-evaluation.md) | Formal evaluation: precision@1/pairwise accuracy, ablations, alpha sweep, results vs. static baseline |
+| [24-extraction-critic.md](./24-extraction-critic.md) | Grounded, self-verifying synthesis: a second LLM pass that strips ungrounded sentences from drafts |
 
 ---
 

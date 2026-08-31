@@ -4,6 +4,7 @@
 from __future__ import annotations
 
 import argparse
+import os
 import sys
 import time
 from collections.abc import Callable
@@ -202,7 +203,7 @@ def step_extract(chunks: list, llm: LLMClient, *, force: bool) -> dict:
     return extractions
 
 
-def step_synthesize(extractions: dict, llm: LLMClient, *, force: bool) -> dict:
+def step_synthesize(extractions: dict, llm: LLMClient, *, force: bool, apply_critic: bool = False) -> dict:
     """Step 3: Group by topic and write draft wiki pages to temp_output/."""
     grouped = group_chunks_by_topic(extractions)
     TEMP_OUTPUT_DIR.mkdir(parents=True, exist_ok=True)
@@ -257,6 +258,7 @@ def step_synthesize(extractions: dict, llm: LLMClient, *, force: bool) -> dict:
             output_dir=TEMP_OUTPUT_DIR,
             dirty_topics=dirty_topics,
             on_progress=on_progress if regen_count else None,
+            apply_critic=apply_critic,
         )
         if regen_count:
             progress.update(task, completed=regen_count)
@@ -370,7 +372,7 @@ def step_link(
     return written
 
 
-def run_pipeline(*, force: bool = False) -> int:
+def run_pipeline(*, force: bool = False, apply_critic: bool = False) -> int:
     """Run the full compiler pipeline sequentially."""
     start = time.perf_counter()
     try:
@@ -401,7 +403,7 @@ def run_pipeline(*, force: bool = False) -> int:
     extractions = step_extract(chunks, llm, force=force)
 
     _step_banner(3, 5, "Synthesis", "Regenerate only topic pages affected by changed files")
-    synth_result = step_synthesize(extractions, llm, force=force)
+    synth_result = step_synthesize(extractions, llm, force=force, apply_critic=apply_critic)
 
     _step_banner(4, 5, "Indexing", "Incrementally update index.json for changed drafts")
     topic_index, index_delta = step_index(
@@ -453,8 +455,18 @@ def main() -> None:
         action="store_true",
         help="Reprocess all raw files regardless of MD5 hashes in state.json",
     )
+    parser.add_argument(
+        "--critic-pass",
+        action="store_true",
+        default=os.getenv("WIKI_CRITIC_PASS", "").lower() in {"1", "true", "yes"},
+        help=(
+            "Run a second LLM pass (extraction_critic.py) over each synthesized page, "
+            "stripping sentences it can't ground in the source chunks. Roughly doubles "
+            "per-page LLM cost. Also enabled by setting WIKI_CRITIC_PASS=true."
+        ),
+    )
     args = parser.parse_args()
-    raise SystemExit(run_pipeline(force=args.force))
+    raise SystemExit(run_pipeline(force=args.force, apply_critic=args.critic_pass))
 
 
 if __name__ == "__main__":
