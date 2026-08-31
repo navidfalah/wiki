@@ -29,6 +29,7 @@ Detailed project documentation, split by topic. Start with [01-overview.md](./01
 | [19-multimedia-email-and-trust.md](./19-multimedia-email-and-trust.md) | Images, file attachments, email ingestion, source trust & references |
 | [20-email-resources-and-chat-engines.md](./20-email-resources-and-chat-engines.md) | Email knowledge engine, Resources explorer, RAG chat engine |
 | [21-trust-eval-dataset.md](./21-trust-eval-dataset.md) | Hand-labeled trust-propagation eval dataset: schema, labeling protocol, limitations |
+| [22-trust-propagation-algorithm.md](./22-trust-propagation-algorithm.md) | The trust propagation algorithm itself: design, config, and preliminary behavior |
 
 ---
 
