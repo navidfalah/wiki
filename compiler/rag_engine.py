@@ -8,24 +8,29 @@ the corpus to search, rather than the raw pipeline chunks — so the chat
 answers with the wiki's own synthesized, cross-linked knowledge, and every
 citation is a page a person can click into.
 
-Retrieval is a small dependency-free TF-IDF-style scorer (stdlib only, no
-vector DB, no embeddings API) — good enough for a personal wiki's corpus
-size, and it means the chat still works with zero setup beyond a compile.
-Answer generation is optional on top of that: with an OPENAI_API_KEY
-configured, retrieved passages are handed to the chat model to write a
-grounded answer; without one, `answer_question` falls back to an extractive
-answer built directly from the retrieved passages, so the feature is never
-hard-blocked on API access.
+Retrieval is now hybrid_retrieval.py's three-tier stack (see
+documentation/25-hybrid-retrieval.md for the design and a real BM25-vs-the-
+original-TF-IDF comparison): BM25 always runs (stdlib only, no API key
+needed — this is what `retrieve()` below uses, and what the chat still
+works on with zero setup beyond a compile); when an LLM is configured,
+`retrieve_hybrid()` additionally fuses in embedding similarity via
+reciprocal rank fusion and reranks the fused shortlist with the chat model,
+falling back one tier at a time (hybrid -> BM25-only) if embeddings or the
+reranker call fails. Answer generation is separately optional: with an
+OPENAI_API_KEY configured, retrieved passages are handed to the chat model
+to write a grounded answer; without one, `answer_question` falls back to an
+extractive answer built directly from the retrieved passages, so the
+feature is never hard-blocked on API access.
 """
 
 from __future__ import annotations
 
-import math
 import re
 from dataclasses import dataclass, field
 from pathlib import Path
 from typing import Any
 
+import hybrid_retrieval
 from doc_utils import parse_frontmatter, strip_frontmatter
 from llm_client import LLMClient
 from models import OUTPUT_DIR
@@ -109,44 +114,61 @@ def build_corpus(docs_dir: Path | None = None) -> list[Passage]:
     return passages
 
 
-def _document_frequencies(corpus: list[Passage]) -> dict[str, int]:
-    df: dict[str, int] = {}
-    for passage in corpus:
-        for token in set(passage.tokens):
-            df[token] = df.get(token, 0) + 1
-    return df
+def _index_corpus(corpus: list[Passage]) -> tuple[list[hybrid_retrieval.Doc], dict[str, Passage]]:
+    """Passages don't carry a stable id (they're rebuilt fresh from disk on
+    every call), so index positions are used as ids for the duration of one
+    retrieval call — never persisted, never compared across calls."""
+    docs = [hybrid_retrieval.Doc(id=str(i), text=p.text, tokens=p.tokens) for i, p in enumerate(corpus)]
+    by_id = {str(i): p for i, p in enumerate(corpus)}
+    return docs, by_id
 
 
 def retrieve(query: str, corpus: list[Passage], *, top_k: int = 5) -> list[ScoredPassage]:
-    """Rank passages by a TF-IDF-style overlap score against the query."""
-    query_terms = set(_tokenize(query))
-    if not query_terms or not corpus:
-        return []
+    """BM25 ranking over the corpus — always available, no API key needed.
+    See documentation/25-hybrid-retrieval.md for how this compares to the
+    original ad hoc TF-IDF-style scorer it replaced."""
+    docs, by_id = _index_corpus(corpus)
+    ranked = hybrid_retrieval.bm25_rank(query, docs, top_k=top_k)
+    return [ScoredPassage(by_id[r.doc_id], r.score) for r in ranked]
 
-    df = _document_frequencies(corpus)
-    n_docs = len(corpus)
 
-    scored: list[ScoredPassage] = []
-    for passage in corpus:
-        if not passage.tokens:
-            continue
-        term_counts: dict[str, int] = {}
-        for token in passage.tokens:
-            term_counts[token] = term_counts.get(token, 0) + 1
+def retrieve_hybrid(
+    query: str,
+    corpus: list[Passage],
+    *,
+    top_k: int = 5,
+    llm: LLMClient | None = None,
+    rerank: bool = True,
+) -> list[ScoredPassage]:
+    """BM25, optionally fused with embedding similarity (reciprocal rank
+    fusion) and reranked by the LLM, when one is configured. Degrades one
+    tier at a time — hybrid+rerank -> hybrid -> BM25-only — on any failure,
+    so this is always safe to call regardless of API availability."""
+    docs, by_id = _index_corpus(corpus)
+    shortlist_k = max(top_k * 3, top_k)
 
-        score = 0.0
-        for term in query_terms:
-            tf = term_counts.get(term, 0)
-            if tf == 0:
-                continue
-            idf = math.log((n_docs + 1) / (df.get(term, 0) + 1)) + 1
-            score += (tf / len(passage.tokens)) * idf
+    bm25_top = hybrid_retrieval.bm25_rank(query, docs, top_k=shortlist_k)
+    client = llm or LLMClient()
+    if not client.available:
+        return [ScoredPassage(by_id[r.doc_id], r.score) for r in bm25_top[:top_k]]
 
-        if score > 0:
-            scored.append(ScoredPassage(passage, score))
+    fused = bm25_top
+    try:
+        embedding_top = hybrid_retrieval.embedding_rank(query, docs, client.embed_text, top_k=shortlist_k)
+        fused = hybrid_retrieval.reciprocal_rank_fusion([bm25_top, embedding_top], top_k=shortlist_k)
+    except RuntimeError:
+        pass  # embeddings unavailable/failed — fall back to BM25-only fusion input
 
-    scored.sort(key=lambda item: item.score, reverse=True)
-    return scored[:top_k]
+    if rerank and fused:
+        docs_by_id = {d.id: d for d in docs}
+        candidates = [docs_by_id[r.doc_id] for r in fused[: max(top_k * 2, top_k)] if r.doc_id in docs_by_id]
+        try:
+            reranked = hybrid_retrieval.llm_rerank(query, candidates, client, top_n=top_k)
+            return [ScoredPassage(by_id[r.doc_id], r.score) for r in reranked]
+        except RuntimeError:
+            pass  # reranker unavailable/failed — fall back to the fused ranking
+
+    return [ScoredPassage(by_id[r.doc_id], r.score) for r in fused[:top_k]]
 
 
 def _format_context(scored: list[ScoredPassage]) -> str:
@@ -210,7 +232,8 @@ def answer_question(
             "mode": "empty",
         }
 
-    scored = retrieve(query, corpus, top_k=top_k)
+    client = llm or LLMClient()
+    scored = retrieve_hybrid(query, corpus, top_k=top_k, llm=client)
     if not scored:
         return {
             "answer": (
@@ -222,7 +245,6 @@ def answer_question(
         }
 
     sources = _deduped_sources(scored)
-    client = llm or LLMClient()
 
     if client.available:
         context = _format_context(scored)

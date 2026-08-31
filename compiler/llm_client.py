@@ -144,6 +144,7 @@ class LLMClient:
             "OPENAI_BASE_URL", "https://api.openai.com/v1"
         )
         self.model = model or os.getenv("OPENAI_MODEL", "gpt-4o-mini")
+        self.embedding_model = os.getenv("OPENAI_EMBEDDING_MODEL", "text-embedding-3-small")
         self.cache = cache or ResponseCache()
         self.cache_enabled = cache_enabled
         self.max_retries = max(1, max_retries)
@@ -232,6 +233,55 @@ class LLMClient:
                 response=content,
             )
         return content
+
+    def embed_text(self, text: str, *, use_cache: bool | None = None) -> list[float]:
+        """Embed text via an OpenAI-compatible embeddings endpoint.
+
+        Cached in the same SQLite cache generate_response() uses, keyed by
+        (a fixed "<embedding>" tag, text, embedding_model) — reusing
+        ResponseCache as-is (its schema is just a string keyed by a hash of
+        three strings) rather than standing up a second cache table for
+        what is, mechanically, the same lookup. The vector is stored as a
+        JSON-encoded string.
+        """
+        if not self.available:
+            raise RuntimeError(
+                "No OPENAI_API_KEY set. Add a key to .env or pass api_key= to LLMClient."
+            )
+
+        cache_on = self.cache_enabled if use_cache is None else use_cache
+        cache_key = make_cache_key("<embedding>", text, self.embedding_model)
+
+        if cache_on:
+            cached = self.cache.get(cache_key)
+            if cached is not None:
+                return json.loads(cached)
+
+        last_error: Exception | None = None
+        for attempt in range(1, self.max_retries + 1):
+            try:
+                response = self._get_client().embeddings.create(model=self.embedding_model, input=text)
+                vector = list(response.data[0].embedding)
+                break
+            except RETRYABLE_EXCEPTIONS as exc:
+                last_error = exc
+                if attempt >= self.max_retries:
+                    raise RuntimeError(
+                        f"Embeddings API call failed after {self.max_retries} attempt(s): {last_error}"
+                    ) from last_error
+                time.sleep(self.retry_base_delay * (2 ** (attempt - 1)))
+            except Exception as exc:
+                raise RuntimeError(f"Embeddings API call failed (non-retryable): {exc}") from exc
+
+        if cache_on:
+            self.cache.set(
+                cache_key,
+                system_prompt="<embedding>",
+                prompt=text,
+                model=self.embedding_model,
+                response=json.dumps(vector),
+            )
+        return vector
 
     def describe_image(
         self,

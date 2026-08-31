@@ -39,6 +39,7 @@ cd ../wiki-app && npm install && npm start
 | Trust propagation algorithm | [22-trust-propagation-algorithm.md](./documentation/22-trust-propagation-algorithm.md) |
 | Trust propagation evaluation + ablations | [23-trust-propagation-evaluation.md](./documentation/23-trust-propagation-evaluation.md) |
 | Extraction critic (grounded synthesis) | [24-extraction-critic.md](./documentation/24-extraction-critic.md) |
+| Hybrid retrieval (BM25 + embeddings + reranker) | [25-hybrid-retrieval.md](./documentation/25-hybrid-retrieval.md) |
 
 ## Also see
 
