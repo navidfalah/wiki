@@ -35,6 +35,7 @@ Detailed project documentation, split by topic. Start with [01-overview.md](./01
 | [25-hybrid-retrieval.md](./25-hybrid-retrieval.md) | Hybrid retrieval: BM25 + embeddings (RRF) + LLM reranker, with a real BM25-vs-legacy-TF-IDF comparison |
 | [26-entity-resolution.md](./26-entity-resolution.md) | Entity resolution / coreference: tiered heuristic + embeddings + LLM adjudication, evaluated on real corpus mentions |
 | [27-temporal-modeling.md](./27-temporal-modeling.md) | Bi-temporal fact modeling: valid-time/transaction-time, `as_of()` queries, evaluated against gold trust labels |
+| [28-faithfulness-evaluation.md](./28-faithfulness-evaluation.md) | Faithfulness evaluation for chat answers: extractive mode proven faithful by construction, generated mode via an LLM judge |
 
 ---
 

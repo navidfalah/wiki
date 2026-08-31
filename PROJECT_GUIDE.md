@@ -42,6 +42,7 @@ cd ../wiki-app && npm install && npm start
 | Hybrid retrieval (BM25 + embeddings + reranker) | [25-hybrid-retrieval.md](./documentation/25-hybrid-retrieval.md) |
 | Entity resolution / coreference | [26-entity-resolution.md](./documentation/26-entity-resolution.md) |
 | Temporal / bi-temporal fact modeling | [27-temporal-modeling.md](./documentation/27-temporal-modeling.md) |
+| Faithfulness evaluation for chat answers | [28-faithfulness-evaluation.md](./documentation/28-faithfulness-evaluation.md) |
 
 ## Also see
 
