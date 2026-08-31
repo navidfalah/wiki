@@ -1,23 +1,28 @@
-# 33 — Docker Deployment and a Local LLM (Ollama)
+# 33 — Docker Deployment and a Self-Contained Local LLM (Gemma)
 
 Three services, each in its own container: the compiler/API, the
-Docusaurus frontend, and an optional local LLM (Ollama) as a drop-in
-replacement for the OpenAI API — no code changes needed for the last part,
-because `llm_client.py` was already built against an OpenAI-*compatible*
-endpoint (it already supports Gemini this way, per `.env.example`).
+Docusaurus frontend, and an optional local LLM as a drop-in replacement
+for the OpenAI API — no code changes needed for the last part, because
+`llm_client.py` was already built against an OpenAI-*compatible* endpoint
+(it already supports Gemini this way, per `.env.example`).
+
+The local LLM runs **in its own container, with no separate model-
+management daemon** — no Ollama. `docker/local-llm/` builds
+`llama-cpp-python`'s own OpenAI-compatible server directly, loading a GGUF
+build of Gemma at container startup.
 
 | | |
 |---|---|
 | Orchestration | `docker-compose.yml` (repo root) |
 | Compiler/API image | `compiler/Dockerfile` |
 | Frontend image | `wiki-app/Dockerfile` |
-| Local LLM entrypoint | `docker/ollama-entrypoint.sh` |
+| Local LLM image + entrypoint | `docker/local-llm/Dockerfile`, `docker/local-llm/entrypoint.sh` |
 | Build context exclusions | `.dockerignore` |
 
 ## Quick start
 
 ```bash
-cp .env.example .env        # fill in an API key, or skip if using Ollama
+cp .env.example .env        # fill in an API key, or skip if using the local LLM
 docker compose up --build   # compiler-api :8000, wiki-app :3000
 ```
 
@@ -27,9 +32,9 @@ For the local LLM instead of a paid API:
 docker compose --profile local-llm up --build
 ```
 
-The `ollama` service only starts with `--profile local-llm` — a plain
-`docker compose up` never pulls or runs it, so it costs nothing (no image
-pull, no container) unless explicitly asked for.
+The `local-llm` service only starts with `--profile local-llm` — a plain
+`docker compose up` never builds or runs it, so it costs nothing (no
+multi-GB model download, no container) unless explicitly asked for.
 
 ## Why three services, and why `compiler-api`'s build context is the repo root
 
@@ -54,79 +59,141 @@ and mounts `./compiler` itself as a live volume, so editing Python during
 development doesn't require a rebuild (`server.py`'s own
 `uvicorn.run(..., reload=True)` picks up the change).
 
-## Switching to the local LLM
+## Why not Ollama
 
-Same environment variables `.env.example` already documents for
-Gemini — Ollama's `/v1` endpoint speaks the same OpenAI-compatible wire
-format the `openai` Python SDK (and therefore `llm_client.py`) already
-targets:
+Ollama is a fine choice generally, but it's a *second* server process
+managing its own model store and its own API surface on top of
+llama.cpp — a layer this project doesn't need. `docker/local-llm/`
+installs `llama-cpp-python[server]` (llama.cpp's own Python bindings,
+which include an OpenAI-compatible FastAPI server) and runs it directly:
+one container, one process, one thing to reason about. The tradeoff is
+that model management (the download, the volume, the "don't re-download
+on every restart" logic) is this project's own responsibility instead of
+an external tool's — that's what `docker/local-llm/entrypoint.sh` does.
+
+## How it works
+
+`docker/local-llm/entrypoint.sh` checks whether the configured model file
+already exists in the `local-llm-models` named volume; if not, it runs
+`huggingface-cli download` to fetch it, then execs
+`python -m llama_cpp.server` with that model loaded, serving an
+OpenAI-compatible API on port 8080 (`--chat_format gemma` selects
+llama.cpp's built-in Gemma chat template). Because the model lives in a
+named volume rather than the image, rebuilding the image (e.g. after a
+pip dependency bump) doesn't force a multi-GB re-download, and swapping
+models is a `.env` change, not a Dockerfile edit:
 
 ```env
-OPENAI_API_KEY=ollama                    # any non-empty string; Ollama ignores it
-OPENAI_BASE_URL=http://ollama:11434/v1   # container-to-container DNS name
-OPENAI_MODEL=llama3.2
-OPENAI_EMBEDDING_MODEL=nomic-embed-text  # needed for hybrid_retrieval.py, task #5
+LOCAL_LLM_MODEL_REPO=<huggingface-org>/<repo>
+LOCAL_LLM_MODEL_FILE=<exact-gguf-filename>
+LOCAL_LLM_MODEL_ALIAS=gemma-4
 ```
 
-`OPENAI_EMBEDDING_MODEL` matters specifically because of task #5's hybrid
-retrieval work ([25](./25-hybrid-retrieval.md)) and task #11's vector-store
-wiring ([31](./31-vector-graph-storage-and-scalability.md#live-pipeline-wiring)):
-`LLMClient.embed_text()` calls whatever model this is set to, so it has to
-name an actual embedding-capable model the `ollama` container has pulled —
-a chat-only model like `llama3.2` can't serve `/v1/embeddings`.
+Then point the compiler at it, same pattern as the Gemini block in
+`.env.example`:
 
-`docker/ollama-entrypoint.sh` handles the pull automatically: the stock
-`ollama/ollama` image ships the server binary with no models installed, so
-the entrypoint starts `ollama serve` in the background, waits for it to
-respond, then runs `ollama pull` for both `OLLAMA_CHAT_MODEL` (default
-`llama3.2`) and `OLLAMA_EMBED_MODEL` (default `nomic-embed-text`) before
-handing control to the server process. First startup will be slow (model
-downloads, several GB); `ollama-data` is a named volume specifically so
-that cost is paid once, not on every container restart.
+```env
+OPENAI_API_KEY=local                  # any non-empty string; llama.cpp's server doesn't check it
+OPENAI_BASE_URL=http://local-llm:8080/v1
+OPENAI_MODEL=gemma-4                  # must match LOCAL_LLM_MODEL_ALIAS
+```
+
+**Embeddings are not served by this container.** `llama-cpp-python`'s
+server can technically produce embeddings from a causal LM, but a single
+GGUF checkpoint tuned for chat generally isn't a good embedding model, and
+the request that shaped this design was specifically about *extraction*
+(chat completions), not retrieval. `hybrid_retrieval.py`'s embedding tier
+(task #5) and the vector-store wiring (task #11) still need
+`OPENAI_EMBEDDING_MODEL` pointed at a real embeddings endpoint (OpenAI or
+Gemini) even when `local-llm` is handling chat — `retrieve_hybrid()`
+degrades to BM25-only automatically if that call fails, so nothing breaks,
+but it's worth knowing this container doesn't cover that tier. A follow-up
+that wants fully-local retrieval too would add a small second server (or a
+`--embedding true` llama.cpp instance loading an actual embedding model)
+rather than reusing this one.
+
+## An important, stated-plainly gap: the exact Gemma model name
+
+`LOCAL_LLM_MODEL_REPO`/`LOCAL_LLM_MODEL_FILE` default to
+`google/gemma-4-it-GGUF` / `gemma-4-it-Q4_K_M.gguf` — **this is a
+placeholder naming pattern, not a Hugging Face repo this was checked
+against.** "Gemma 4" is the name given for this task, but this assistant's
+knowledge cutoff predates whatever release that refers to, so the exact
+repo owner, file name, and quantization suffix couldn't be verified against
+a real Hugging Face listing. Before running `--profile local-llm`:
+
+1. Find the actual GGUF repo for the Gemma build you want (Hugging Face
+   search, or the official `google/gemma-*` repos if you're using an
+   official quantization — those are gated and need `HF_TOKEN` set to an
+   access token that has accepted the license).
+2. Set `LOCAL_LLM_MODEL_REPO` and `LOCAL_LLM_MODEL_FILE` in `.env` to match
+   exactly (the filename has to be byte-exact — GGUF repos usually offer
+   several quantization levels as separate files).
+3. `LOCAL_LLM_CHAT_FORMAT=gemma` should work for any Gemma-family
+   instruction-tuned model; if llama.cpp's built-in `gemma` template
+   doesn't match the specific model's expected format, chat output quality
+   will suffer even though the server runs without error — worth a manual
+   sanity check against the first extraction it produces.
+
+Getting this wrong fails loudly and early: `huggingface-cli download` in
+the entrypoint errors out on a nonexistent repo/file rather than the
+container silently starting with the wrong model.
 
 ## GPU acceleration (optional, not configured by default)
 
-The `ollama` service runs CPU-only as written — correct for a laptop
-without a dedicated GPU, but slow for anything beyond a small model. If
-the host has an NVIDIA GPU and the
+`docker/local-llm/Dockerfile` builds `llama-cpp-python` CPU-only by
+default — correct for a laptop without a dedicated GPU, but slow for
+anything beyond a small quantization. For a CUDA build on a host with an
+NVIDIA GPU and the
 [NVIDIA Container Toolkit](https://docs.nvidia.com/datacenter/cloud-native/container-toolkit/latest/install-guide.html)
-installed, add to the `ollama` service in `docker-compose.yml`:
+installed:
 
-```yaml
-    deploy:
-      resources:
-        reservations:
-          devices:
-            - driver: nvidia
-              count: all
-              capabilities: [gpu]
-```
+1. Build with `CMAKE_ARGS=-DGGML_CUDA=on` (a build arg the Dockerfile
+   already accepts): add `args: {CMAKE_ARGS: "-DGGML_CUDA=on"}` under the
+   `local-llm` service's `build:` key in `docker-compose.yml`, and switch
+   the base image to one with the CUDA toolkit (`nvidia/cuda:...-devel`
+   instead of `python:3.12-slim`) so `nvcc` is available at build time.
+2. Add to the `local-llm` service:
+   ```yaml
+       deploy:
+         resources:
+           reservations:
+             devices:
+               - driver: nvidia
+                 count: all
+                 capabilities: [gpu]
+   ```
 
-Not included by default because it silently fails (or requires driver
-setup this repo can't verify) on a host without that toolkit — opt-in only.
+Not included by default because it requires a base-image swap this repo
+can't verify builds correctly without a working Docker daemon to test
+against (see below) — opt-in only, and worth testing on the target host
+before relying on it.
 
 ## What's verified here vs. what isn't
 
 **Verified, in this environment:** `docker compose config` (and
 `docker compose --profile local-llm config`) resolve the compose file
-cleanly with no daemon required — both shown above with real output, not
-just claimed. `docker/ollama-entrypoint.sh` passes `sh -n` syntax
-checking. The Dockerfiles were written against the exact same commands
-the non-Docker docs already document (`python server.py`,
-`npm start -- --host 0.0.0.0`), not invented from scratch.
+cleanly with no daemon required. `docker/local-llm/entrypoint.sh` passes
+`sh -n` syntax checking. `compiler/Dockerfile` and `wiki-app/Dockerfile`
+were written against the exact same commands the non-Docker docs already
+document (`python server.py`, `npm start -- --host 0.0.0.0`), not invented
+from scratch.
 
 **Not verified here, and stated plainly rather than implied:** this
 sandbox has the `docker` CLI installed but no running daemon
 (`docker ps` / `docker build` both fail with "failed to connect to the
 docker API... dial unix /var/run/docker.sock: ... no such file or
 directory") — so `docker compose up --build` has not actually been run,
-no image has actually been built, and no container has actually served a
-request in this session. Same posture as tasks #4/#5/#8's live-model
-gaps: the mechanism is real and inspectable, the live run is the
-reader's/user's to do, on a machine with Docker actually running.
+no image has actually been built, `llama-cpp-python`'s build (which
+compiles C++ — the part most likely to hit an environment-specific issue)
+has not been exercised, and the placeholder Gemma model name above has not
+been confirmed to exist. Same posture as tasks #4/#5/#8's live-model gaps:
+the mechanism is real and inspectable, the live run — and confirming the
+real model name — is the reader's/user's to do, on a machine with Docker
+actually running.
 
 ## Next
 
-- [25-hybrid-retrieval.md](./25-hybrid-retrieval.md) / [31-vector-graph-storage-and-scalability.md](./31-vector-graph-storage-and-scalability.md) — why `OPENAI_EMBEDDING_MODEL` has to name a real embedding model, not just any model
+- [25-hybrid-retrieval.md](./25-hybrid-retrieval.md) / [31-vector-graph-storage-and-scalability.md](./31-vector-graph-storage-and-scalability.md) — why `OPENAI_EMBEDDING_MODEL` still needs a real embeddings endpoint even with `local-llm` handling chat
 - [12-api-server.md](./12-api-server.md) — what `compiler-api`'s container actually runs (`server.py`), containerized as-is
-- `.env.example` — the OpenAI / Gemini / Ollama variable blocks, side by side
+- `.env.example` — the OpenAI / Gemini / local-llm variable blocks, side by side

@@ -200,7 +200,7 @@ docker compose up --build
 ```
 
 Compiler/API at http://localhost:8000, wiki-app at http://localhost:3000.
-For a local LLM (Ollama) instead of a paid API key, use
+For a local LLM (Gemma, run in-process by llama.cpp — no Ollama) instead of a paid API key, use
 `docker compose --profile local-llm up --build` — see
 [documentation/33-docker-and-local-llm.md](./documentation/33-docker-and-local-llm.md).
 The manual (non-Docker) setup below is equivalent and useful for local

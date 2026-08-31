@@ -11,9 +11,9 @@ services:
         required: false
     environment:
       # Defaults point at OpenAI; override in .env (or here) to use Gemini,
-      # a local Ollama container (see the `ollama` service below and
-      # documentation/33-docker-and-local-llm.md), or any other
-      # OpenAI-compatible endpoint.
+      # the self-contained local-llm container below (Gemma running
+      # in-process via llama.cpp — no Ollama), or any other
+      # OpenAI-compatible endpoint. See documentation/33-docker-and-local-llm.md.
       OPENAI_BASE_URL: ${OPENAI_BASE_URL:-https://api.openai.com/v1}
       OPENAI_MODEL: ${OPENAI_MODEL:-gpt-4o-mini}
       OPENAI_EMBEDDING_MODEL: ${OPENAI_EMBEDDING_MODEL:-text-embedding-3-small}
@@ -51,25 +51,39 @@ services:
       - compiler-api
     restart: unless-stopped
 
-  # Optional local LLM, for OPENAI_BASE_URL=http://ollama:11434/v1 instead
-  # of a paid API — not started by a plain `docker compose up`; run
+  # Optional local LLM — Gemma served in-process by llama.cpp, running
+  # *inside this container*, not via a separate Ollama daemon/image. Not
+  # started by a plain `docker compose up`; run
   # `docker compose --profile local-llm up` to include it. See
-  # documentation/33-docker-and-local-llm.md for the full switch-over.
-  ollama:
-    image: ollama/ollama:latest
-    container_name: llm-wiki-ollama
+  # documentation/33-docker-and-local-llm.md for the full switch-over, and
+  # docker/local-llm/ for the Dockerfile + entrypoint.
+  local-llm:
+    build:
+      context: .
+      dockerfile: docker/local-llm/Dockerfile
+    container_name: llm-wiki-local-llm
     profiles: ["local-llm"]
-    volumes:
-      - ollama-data:/root/.ollama
-      - ./docker/ollama-entrypoint.sh:/ollama-entrypoint.sh:ro
-    entrypoint: ["/bin/sh", "/ollama-entrypoint.sh"]
     environment:
-      OLLAMA_CHAT_MODEL: ${OLLAMA_CHAT_MODEL:-llama3.2}
-      OLLAMA_EMBED_MODEL: ${OLLAMA_EMBED_MODEL:-nomic-embed-text}
+      # MODEL_REPO/MODEL_FILE must name an actual GGUF file on Hugging
+      # Face — the defaults below are a placeholder naming pattern, not a
+      # verified repo (see documentation/33-docker-and-local-llm.md's
+      # honesty note on this). Override in .env once you've confirmed the
+      # real repo/filename for the Gemma build you want.
+      MODEL_REPO: ${LOCAL_LLM_MODEL_REPO:-google/gemma-4-it-GGUF}
+      MODEL_FILE: ${LOCAL_LLM_MODEL_FILE:-gemma-4-it-Q4_K_M.gguf}
+      MODEL_ALIAS: ${LOCAL_LLM_MODEL_ALIAS:-gemma-4}
+      HF_TOKEN: ${HF_TOKEN:-}
+      LOCAL_LLM_CONTEXT: ${LOCAL_LLM_CONTEXT:-4096}
+      LOCAL_LLM_CHAT_FORMAT: ${LOCAL_LLM_CHAT_FORMAT:-gemma}
+    volumes:
+      # Named volume so the (multi-GB) model download survives container
+      # restarts and image rebuilds — only re-downloaded if MODEL_FILE
+      # changes to something not already present.
+      - local-llm-models:/models
     ports:
-      - "11434:11434"
+      - "8080:8080"
     restart: unless-stopped
 
 volumes:
   wiki-app-node-modules:
-  ollama-data:
+  local-llm-models:
