@@ -1,0 +1,329 @@
+{
+  "version": 1,
+  "description": "Hand-labeled pilot set for evaluating trust propagation over the compiler's own corpus. Every claim is a real, verbatim quote from a file under data/raw/ (source_path is relative to data/raw/) — nothing here is synthetic text invented for the dataset, though the underlying corpus itself is the repo's fictional Aurora Labs / TeaBuddy sample domain. See documentation/21-trust-eval-dataset.md for labeling protocol and known limitations.",
+  "gold_labels": {
+    "correct": "Current, authoritative value for this claim group.",
+    "incorrect": "Actively wrong; not just outdated, factually false when it was written.",
+    "superseded": "Was true/asserted at the time, later corrected or replaced by a newer source.",
+    "scope_dependent": "Not a contradiction — different values are each valid under different conditions (node count, deployment stage, etc.).",
+    "disputed": "Still asserted by some sources, but undermined by a documented dependency on another claim this dataset marks incorrect/superseded."
+  },
+  "relation_types": ["corroborates", "contradicts", "supersedes"],
+  "claim_groups": [
+    {
+      "id": "nova_read_interval",
+      "domain": "aurora",
+      "subject": "Nova Widget default sensor read interval",
+      "description": "How often a Nova Widget takes a reading by default. Kickoff notes said hourly; every source from the May 15 spec onward says 15 minutes and explicitly calls the hourly figure a mistake.",
+      "claims": [
+        {
+          "id": "nri-1",
+          "source_path": "notes/2026-05-01-kickoff-notes.md",
+          "source_type": "text",
+          "date": "2026-05-01",
+          "value": "hourly",
+          "quote": "Power target | 2 years on CR2032 with hourly readings",
+          "gold_label": "superseded",
+          "note": "Earliest source; superseded two weeks later by the spec."
+        },
+        {
+          "id": "nri-2",
+          "source_path": "articles/2026-05-15-product-spec-draft.md",
+          "source_type": "text",
+          "date": "2026-05-15",
+          "value": "15 minutes",
+          "quote": "Default: every 15 minutes when mesh is active. [...] Note: kickoff notes mentioned hourly default; this spec changes to 15 min for beta feedback.",
+          "gold_label": "correct",
+          "note": "First source to state 15 min and explicitly flag the kickoff figure as changed."
+        },
+        {
+          "id": "nri-3",
+          "source_path": "samples/emails/[SAMPLE]-2026-07-01-beta-invite-batch.txt",
+          "source_type": "text",
+          "date": "2026-07-01",
+          "value": "15 minutes",
+          "quote": "Default read interval: 15 minutes (ignore old PDF saying hourly).",
+          "gold_label": "correct",
+          "note": "Corroborates nri-2; explicitly disclaims the old (hourly) figure."
+        },
+        {
+          "id": "nri-4",
+          "source_path": "samples/support/[SAMPLE]-2026-07-01-ticket-2201-battery-docs.txt",
+          "source_type": "text",
+          "date": "2026-07-01",
+          "value": "15 minutes",
+          "quote": "Depends on node count and read interval (15 min default).",
+          "gold_label": "correct",
+          "note": "Corroborates nri-2."
+        },
+        {
+          "id": "nri-5",
+          "source_path": "dummy-test/2026-07-02-aurora-meshsync-release-notes.md",
+          "source_type": "text",
+          "date": "2026-07-02",
+          "value": "15 minutes",
+          "quote": "Default read interval remains 15 minutes (NOT hourly — kickoff slides were wrong)",
+          "gold_label": "correct",
+          "note": "Explicitly contradicts nri-1 by name (\"kickoff slides\")."
+        },
+        {
+          "id": "nri-6",
+          "source_path": "dummy-test/2026-07-07-power-budget-spreadsheet-notes.txt",
+          "source_type": "text",
+          "date": "2026-07-07",
+          "value": "15 minutes",
+          "quote": "Read interval: 15 min (spec authoritative)",
+          "gold_label": "correct",
+          "note": "Corroborates nri-2, cites the spec as the authority."
+        },
+        {
+          "id": "nri-7",
+          "source_path": "dummy-test/2026-07-08-customer-onboarding-faq.md",
+          "source_type": "text",
+          "date": "2026-07-08",
+          "value": "15 minutes",
+          "quote": "15 minutes. Some older docs say hourly — that was a kickoff mistake.",
+          "gold_label": "correct",
+          "note": "Corroborates nri-2; names the kickoff notes as the origin of the error."
+        },
+        {
+          "id": "nri-8",
+          "source_path": "emails/2026-06-02-meshsync-battery-report.eml",
+          "source_type": "email",
+          "date": "2026-06-02",
+          "value": "15 minutes",
+          "quote": "Read interval is set to 15 minutes per the current firmware default (0.3.8), so this isn't an interval misconfiguration.",
+          "gold_label": "correct",
+          "note": "Corroborates nri-2 from an independent (email) channel."
+        }
+      ],
+      "relations": [
+        {"from": "nri-2", "to": "nri-1", "type": "supersedes"},
+        {"from": "nri-3", "to": "nri-1", "type": "contradicts"},
+        {"from": "nri-4", "to": "nri-2", "type": "corroborates"},
+        {"from": "nri-5", "to": "nri-1", "type": "contradicts"},
+        {"from": "nri-5", "to": "nri-2", "type": "corroborates"},
+        {"from": "nri-6", "to": "nri-2", "type": "corroborates"},
+        {"from": "nri-7", "to": "nri-1", "type": "contradicts"},
+        {"from": "nri-8", "to": "nri-2", "type": "corroborates"}
+      ]
+    },
+    {
+      "id": "nova_battery_cell_type",
+      "domain": "aurora",
+      "subject": "Nova Widget battery cell type",
+      "description": "CR2032 is the correct cell. An early version of a competitor's teardown blog said CR2450; the blog post itself was later corrected in place, and the error is independently reported in a team transcript and the customer FAQ.",
+      "claims": [
+        {
+          "id": "nbc-1",
+          "source_path": "notes/2026-05-01-kickoff-notes.md",
+          "source_type": "text",
+          "date": "2026-05-01",
+          "value": "CR2032",
+          "quote": "Power target | 2 years on CR2032 with hourly readings",
+          "gold_label": "correct",
+          "note": "Correct on cell type even though this same source is wrong on read interval (see nova_read_interval) — a reminder that trust should be scored per-claim, not per-source."
+        },
+        {
+          "id": "nbc-2",
+          "source_path": "articles/2026-05-15-product-spec-draft.md",
+          "source_type": "text",
+          "date": "2026-05-15",
+          "value": "CR2032",
+          "quote": "Battery: CR2032 primary cell",
+          "gold_label": "correct",
+          "note": "Corroborates nbc-1."
+        },
+        {
+          "id": "nbc-3",
+          "source_path": "articles/2026-05-20-competitor-teardown-blog.md",
+          "source_type": "text",
+          "date": "2026-05-21",
+          "value": "CR2450 (prior version); corrected to CR2032",
+          "quote": "An earlier version of this post said Nova used a CR2450 battery. That was wrong — the beta unit uses CR2032. Apologies to Aurora Labs.",
+          "gold_label": "superseded",
+          "note": "Self-correcting source: the file's current text documents its own prior error inline, dated one day after the original post."
+        },
+        {
+          "id": "nbc-4",
+          "source_path": "samples/transcripts/[SAMPLE]-2026-06-19-mira-jonah-battery-debate.txt",
+          "source_type": "text",
+          "date": "2026-06-19",
+          "value": "CR2450 was wrong; CR2032 is correct",
+          "quote": "Alex's blog had the wrong battery. CR2450. We use two-oh-three-two.",
+          "gold_label": "correct",
+          "note": "Independent (spoken/transcript) confirmation that CR2450 was an error and CR2032 is correct."
+        },
+        {
+          "id": "nbc-5",
+          "source_path": "dummy-test/2026-07-07-power-budget-spreadsheet-notes.txt",
+          "source_type": "text",
+          "date": "2026-07-07",
+          "value": "CR2032",
+          "quote": "CR2032 nominal 220mAh (not 240 — datasheet variance)",
+          "gold_label": "correct",
+          "note": "Corroborates nbc-1/nbc-2."
+        },
+        {
+          "id": "nbc-6",
+          "source_path": "dummy-test/2026-07-08-customer-onboarding-faq.md",
+          "source_type": "text",
+          "date": "2026-07-08",
+          "value": "CR2032; CR2450 explicitly flagged as wrong",
+          "quote": "CR2032. Some blog posts incorrectly said CR2450 — corrected in wiki.",
+          "gold_label": "correct",
+          "note": "Corroborates nbc-1/nbc-2 and explicitly names the CR2450 error (matches nbc-3)."
+        }
+      ],
+      "relations": [
+        {"from": "nbc-2", "to": "nbc-1", "type": "corroborates"},
+        {"from": "nbc-3", "to": "nbc-2", "type": "contradicts"},
+        {"from": "nbc-4", "to": "nbc-3", "type": "contradicts"},
+        {"from": "nbc-4", "to": "nbc-2", "type": "corroborates"},
+        {"from": "nbc-5", "to": "nbc-2", "type": "corroborates"},
+        {"from": "nbc-6", "to": "nbc-2", "type": "corroborates"},
+        {"from": "nbc-6", "to": "nbc-3", "type": "contradicts"}
+      ]
+    },
+    {
+      "id": "nova_battery_life_claim",
+      "domain": "aurora",
+      "subject": "Nova Widget battery life claim (marketing vs. engineering)",
+      "description": "Not a simple true/false pair: marketing's 24-month figure and engineering's 18-month figure describe different deployment sizes. But the power-budget notes reveal the marketing figure additionally rests on the debunked hourly read interval, which moves it from merely scope-dependent to disputed.",
+      "claims": [
+        {
+          "id": "nbl-1",
+          "source_path": "articles/2026-05-15-product-spec-draft.md",
+          "source_type": "text",
+          "date": "2026-05-15",
+          "value": "24 months (marketing, moderate mesh ≤ 5 nodes)",
+          "quote": "Marketing target: 24 months at 15-minute intervals in moderate mesh (≤ 5 nodes).",
+          "gold_label": "scope_dependent",
+          "note": "As stated here, scoped to <=5 nodes at 15-min intervals — internally consistent."
+        },
+        {
+          "id": "nbl-2",
+          "source_path": "articles/2026-05-15-product-spec-draft.md",
+          "source_type": "text",
+          "date": "2026-05-15",
+          "value": "18 months minimum (engineering, 10 nodes)",
+          "quote": "Internal engineering target: 18 months minimum at 10 nodes — do not publish externally.",
+          "gold_label": "correct",
+          "note": "Stress-case internal figure; treated as the authoritative number for the worst-case deployment."
+        },
+        {
+          "id": "nbl-3",
+          "source_path": "dummy-test/2026-07-02-aurora-meshsync-release-notes.md",
+          "source_type": "text",
+          "date": "2026-07-02",
+          "value": "engineering 18mo @ 10 nodes; marketing may still say 2yr",
+          "quote": "Battery life: engineering 18mo @ 10 nodes; marketing may still say 2yr",
+          "gold_label": "correct",
+          "note": "Corroborates nbl-1/nbl-2 and flags the marketing/engineering divergence as still unresolved as of this release."
+        },
+        {
+          "id": "nbl-4",
+          "source_path": "dummy-test/2026-07-07-power-budget-spreadsheet-notes.txt",
+          "source_type": "text",
+          "date": "2026-07-07",
+          "value": "~18 months (engineering, from measured mAh/day)",
+          "quote": "Total ~0.19 mAh/day → ~18 months (engineering claim)",
+          "gold_label": "correct",
+          "note": "Corroborates nbl-2 with a bottom-up power calculation."
+        },
+        {
+          "id": "nbl-5",
+          "source_path": "dummy-test/2026-07-07-power-budget-spreadsheet-notes.txt",
+          "source_type": "text",
+          "date": "2026-07-07",
+          "value": "2 years (marketing, relies on wrong read interval)",
+          "quote": "Marketing slide \"2 years\" assumes 6 nodes + optimistic cell + hourly reads (WRONG interval)",
+          "gold_label": "disputed",
+          "note": "Downgraded from scope_dependent to disputed: this source shows the marketing figure's inputs include the hourly read interval, which nova_read_interval's gold labels mark superseded/incorrect. A propagation algorithm that only looks within this claim group cannot see that dependency — flagged as a known limitation in the methodology doc."
+        }
+      ],
+      "relations": [
+        {"from": "nbl-2", "to": "nbl-1", "type": "contradicts"},
+        {"from": "nbl-3", "to": "nbl-1", "type": "corroborates"},
+        {"from": "nbl-3", "to": "nbl-2", "type": "corroborates"},
+        {"from": "nbl-4", "to": "nbl-2", "type": "corroborates"},
+        {"from": "nbl-5", "to": "nbl-4", "type": "contradicts"},
+        {"from": "nbl-5", "to": "nbl-1", "type": "corroborates"}
+      ]
+    },
+    {
+      "id": "teabuddy_herbal_preset_timing",
+      "domain": "teabuddy",
+      "subject": "TeaBuddy herbal steep preset timing constant",
+      "description": "A single changelog entry documents its own contradiction: the firmware constant (7:00) was aligned to fix a mismatch with marketing copy (5:00). Only one raw source currently documents this, so both claims share it — a candidate for follow-up ingestion (e.g. the marketing copy itself) in a future dataset version.",
+      "claims": [
+        {
+          "id": "thp-1",
+          "source_path": "dummy-test/2026-07-01-firmware-changelog.md",
+          "source_type": "text",
+          "date": "2026-06-XX (marketing copy, undated; referenced retroactively)",
+          "value": "5:00",
+          "quote": "Herbal preset constant aligned to 7:00 (was 5:00 in marketing copy — CONTRADICTION fixed in firmware only)",
+          "gold_label": "superseded",
+          "note": "The 5:00 value as it existed in marketing copy prior to this fix; not independently sourced yet."
+        },
+        {
+          "id": "thp-2",
+          "source_path": "dummy-test/2026-07-01-firmware-changelog.md",
+          "source_type": "text",
+          "date": "2026-07-01",
+          "value": "7:00",
+          "quote": "Herbal preset constant aligned to 7:00 (was 5:00 in marketing copy — CONTRADICTION fixed in firmware only)",
+          "gold_label": "correct",
+          "note": "Current firmware value as of the v0.9.4 changelog entry; the source itself notes the fix has not propagated back to marketing copy."
+        }
+      ],
+      "relations": [
+        {"from": "thp-2", "to": "thp-1", "type": "supersedes"}
+      ]
+    },
+    {
+      "id": "meshsync_relay_battery_drain_root_cause",
+      "domain": "aurora",
+      "subject": "MeshSync relay-mode battery drain root cause (MESH-118)",
+      "description": "A clean, undisputed corroboration chain across three emails: a field report, an engineering confirmation with root cause, and a beta announcement of the fix. Included as a contrast case with no contradictions, so a propagation algorithm is checked against over-penalizing agreement as much as it is checked against under-penalizing disputes.",
+      "claims": [
+        {
+          "id": "mrd-1",
+          "source_path": "emails/2026-06-02-meshsync-battery-report.eml",
+          "source_type": "email",
+          "date": "2026-06-02",
+          "value": "Relay mode drains battery ~30% faster than spec; suspected cause: relay radio not sleeping between hops",
+          "quote": "Batch 4 field units are reporting battery drain roughly 30% faster than spec once MeshSync relay mode is enabled. [...] Suspect the relay radio is staying awake between hops instead of sleeping. Filed as MESH-118.",
+          "gold_label": "correct",
+          "note": "Initial field report; hypothesis, later confirmed."
+        },
+        {
+          "id": "mrd-2",
+          "source_path": "emails/2026-06-03-meshsync-battery-reply.eml",
+          "source_type": "email",
+          "date": "2026-06-03",
+          "value": "Confirmed: sleep timer resets on every received packet; fix reduces radio wake time 400ms -> 80ms per hop",
+          "quote": "Confirmed on the bench. The relay radio's sleep timer resets on every received packet, so a busy mesh never lets it sleep. Draft fix in MESH-118 drops radio wake time from 400ms to 80ms per hop.",
+          "gold_label": "correct",
+          "note": "Independent engineering confirmation of mrd-1's hypothesis with root cause and a concrete fix."
+        },
+        {
+          "id": "mrd-3",
+          "source_path": "emails/2026-06-10-nova-widget-beta-invite.eml",
+          "source_type": "email",
+          "date": "2026-06-10",
+          "value": "0.3.9 candidate ships the MESH-118 fix",
+          "quote": "0.3.9 is up for the batch 4 retest — this build addresses the MeshSync relay battery drain reported earlier this week (MESH-118).",
+          "gold_label": "correct",
+          "note": "Corroborates mrd-1/mrd-2 by referencing the same ticket and rolling the fix into a beta build."
+        }
+      ],
+      "relations": [
+        {"from": "mrd-2", "to": "mrd-1", "type": "corroborates"},
+        {"from": "mrd-3", "to": "mrd-2", "type": "corroborates"},
+        {"from": "mrd-3", "to": "mrd-1", "type": "corroborates"}
+      ]
+    }
+  ]
+}
