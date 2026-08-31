@@ -463,7 +463,7 @@ def link_and_export_pages(
     ]
     total = len(to_link)
 
-    for index, draft_path in enumerate(to_link, start=1):
+    for position, draft_path in enumerate(to_link, start=1):
         filename = draft_path.name
 
         content = draft_path.read_text(encoding="utf-8")
@@ -498,7 +498,7 @@ def link_and_export_pages(
         target.write_text(final_md, encoding="utf-8")
         written.append(target)
         if on_progress:
-            on_progress(index, total, filename)
+            on_progress(position, total, filename)
 
     for draft_path in discover_draft_pages(root):
         if draft_path.name not in relink_targets:
