@@ -59,13 +59,28 @@ directory with no way to add another folder). Features:
 - **Source folders** (`SourceFolders`, new) — Explorer-style grid of registered source
   directories; add a folder by path, toggle it on/off, or remove it, without restarting
   anything. See "Source folder registry" below for how this reaches the compiler.
-- Raw file list with processed / unprocessed filters, search, and a per-file source badge
-- Side-by-side **source** (amber) vs **generated wiki** (indigo) preview when you open a file
-  — the two are colour-coded consistently across the dashboard so it's always visually
-  clear which side is untouched input and which side the compiler produced
+- **File explorer** (`DataWorkspace`, rewritten) — `data/raw/` browsed as an icon grid,
+  like a desktop file manager, not a text list: folders and files as tiles, a breadcrumb
+  bar to navigate, "New folder" to organize files into subfolders, and a per-file "…" menu
+  with **Move to…** (any non-managed folder) and **Preview**. Raw content is never shown
+  inline — a file's source text and the wiki page it produced only appear if you explicitly
+  click **Preview**, which opens a modal (source in amber, generated wiki page in indigo);
+  closing it returns you to the grid. Folders belonging to a registered source (see below)
+  are visually marked and have no delete/move actions, since `sync_symlinks()` would just
+  regenerate them on the next sync.
 - Settings gear (top-right of every dashboard page, `PageHeader` → `SettingsPanel`) —
   override the compiler API URL from the browser (persisted to `localStorage`), see the
   raw data directory path
+
+**Folder API:** `compiler/raw_folders.py`, backing `POST /api/raw-files/folders`
+(create), `DELETE /api/raw-files/folders/{path}` (delete, only if empty), and
+`POST /api/raw-files/move`. Every operand is checked for symlink-ness and
+containment *before* being resolved, not after — resolving first and
+checking second would follow a symlink to whatever it points at and
+silently operate on that instead (caught directly: an early version did
+exactly this and a "move" of a mirrored source file actually relocated
+the real external file). Any path whose top segment is a registered
+source's `link_name` is refused outright.
 
 ## Source folder registry
 
@@ -137,7 +152,7 @@ for primary actions and "everything's fine" status.
 | `Icons` | `components/ui/Icons.js` | Small hand-rolled line-icon set (no icon library dependency) |
 | `SourceFolders` | `components/SourceFolders/` | Explorer-style folder grid — add/enable/disable/remove source directories |
 | `SettingsPanel` | `components/SettingsPanel/` | Slide-over: API URL override, data directory info |
-| `DataWorkspace` | `components/DataWorkspace/` | Raw file list (with per-file source badge) and source vs generated-wiki preview |
+| `DataWorkspace` | `components/DataWorkspace/` | Icon-grid file explorer for `data/raw/` — folders, breadcrumbs, move/create-folder, preview-on-demand modal |
 | `LiveBuild` | `components/LiveBuild/` | Compile controls + status badge + terminal (`BuildTerminal.js`) |
 | `WikiGraph` | `components/WikiGraph/` | Topic force graph |
 | `AnalyticsAudit` | `components/AnalyticsAudit/` | Metrics, dead links, tags |

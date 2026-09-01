@@ -40,6 +40,7 @@ from link_overrides import (
 )
 from linker import INDEX_JSON, load_topic_index
 from models import OUTPUT_DIR, RAW_DIR, STATE_FILE
+from raw_folders import FolderError, create_folder, delete_folder, discover_raw_folders, move_file
 from sources_registry import add_source, list_sources, remove_source, set_enabled, sync_symlinks
 from synthesizer import compute_file_md5, discover_raw_source_files, load_state
 
@@ -144,9 +145,13 @@ def _source_label_for(rel_path: str, sources: list[dict[str, Any]]) -> str | Non
     return None
 
 
+def _managed_source_names() -> set[str]:
+    return {entry["link_name"] for entry in list_sources()}
+
+
 @app.get("/api/raw-files")
 def list_raw_files() -> dict[str, Any]:
-    """List files under data/raw/ with Processed or Unprocessed status."""
+    """List files and folders under data/raw/ with Processed or Unprocessed status."""
     state = load_state()
     sources = list_sources()
     files: list[dict[str, Any]] = []
@@ -169,13 +174,56 @@ def list_raw_files() -> dict[str, Any]:
         )
 
     processed = sum(1 for item in files if item["status"] == "Processed")
+    managed_names = {entry["link_name"] for entry in sources}
     return {
         "directory": str(RAW_DIR),
         "total": len(files),
         "processed": processed,
         "unprocessed": len(files) - processed,
         "files": files,
+        "folders": discover_raw_folders(RAW_DIR),
+        "managed_folders": sorted(managed_names),
     }
+
+
+@app.post("/api/raw-files/folders")
+def post_raw_folder(payload: dict[str, Any] = Body(...)) -> dict[str, Any]:
+    """Create a new subfolder under data/raw/ (or nested inside one)."""
+    try:
+        rel_path = create_folder(
+            RAW_DIR,
+            payload.get("parent", ""),
+            payload.get("name", ""),
+            _managed_source_names(),
+        )
+    except FolderError as exc:
+        raise HTTPException(status_code=400, detail=str(exc)) from exc
+    return {"path": rel_path}
+
+
+@app.delete("/api/raw-files/folders/{folder_path:path}")
+def delete_raw_folder(folder_path: str) -> dict[str, Any]:
+    """Delete an empty subfolder under data/raw/."""
+    try:
+        delete_folder(RAW_DIR, folder_path, _managed_source_names())
+    except FolderError as exc:
+        raise HTTPException(status_code=400, detail=str(exc)) from exc
+    return {"removed": True, "path": folder_path}
+
+
+@app.post("/api/raw-files/move")
+def post_move_raw_file(payload: dict[str, Any] = Body(...)) -> dict[str, Any]:
+    """Move a raw file into a different folder under data/raw/."""
+    try:
+        new_path = move_file(
+            RAW_DIR,
+            payload.get("path", ""),
+            payload.get("destination", ""),
+            _managed_source_names(),
+        )
+    except FolderError as exc:
+        raise HTTPException(status_code=400, detail=str(exc)) from exc
+    return {"path": new_path}
 
 
 @app.get("/api/raw-files/{file_path:path}")

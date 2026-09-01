@@ -54,6 +54,47 @@ export async function setSourceEnabled(sourceId, enabled, apiBase = DEFAULT_WIKI
   return response.json();
 }
 
+export async function createRawFolder(parent, name, apiBase = DEFAULT_WIKI_API_URL) {
+  const response = await fetch(`${apiBase}/api/raw-files/folders`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ parent, name }),
+  });
+  if (!response.ok) {
+    const message = await response.text();
+    throw new Error(message || `Create folder failed (${response.status})`);
+  }
+  return response.json();
+}
+
+export async function deleteRawFolder(folderPath, apiBase = DEFAULT_WIKI_API_URL) {
+  const encoded = folderPath
+    .split('/')
+    .map((segment) => encodeURIComponent(segment))
+    .join('/');
+  const response = await fetch(`${apiBase}/api/raw-files/folders/${encoded}`, {
+    method: 'DELETE',
+  });
+  if (!response.ok) {
+    const message = await response.text();
+    throw new Error(message || `Delete folder failed (${response.status})`);
+  }
+  return response.json();
+}
+
+export async function moveRawFile(path, destination, apiBase = DEFAULT_WIKI_API_URL) {
+  const response = await fetch(`${apiBase}/api/raw-files/move`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ path, destination }),
+  });
+  if (!response.ok) {
+    const message = await response.text();
+    throw new Error(message || `Move failed (${response.status})`);
+  }
+  return response.json();
+}
+
 export function fetchRawFileDetail(filePath, apiBase = DEFAULT_WIKI_API_URL) {
   const encoded = filePath
     .split('/')

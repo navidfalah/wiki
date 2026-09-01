@@ -117,3 +117,40 @@ export function SearchIcon(props) {
     </Icon>
   );
 }
+
+export function FileIcon(props) {
+  return (
+    <Icon {...props}>
+      <path d="M7 3.5h7l4 4V19a1.5 1.5 0 0 1-1.5 1.5h-9A1.5 1.5 0 0 1 6 19V5A1.5 1.5 0 0 1 7 3.5Z" />
+      <path d="M14 3.5V8h4" />
+    </Icon>
+  );
+}
+
+export function MoreIcon(props) {
+  return (
+    <Icon {...props}>
+      <circle cx="12" cy="5.5" r="1.1" fill="currentColor" stroke="none" />
+      <circle cx="12" cy="12" r="1.1" fill="currentColor" stroke="none" />
+      <circle cx="12" cy="18.5" r="1.1" fill="currentColor" stroke="none" />
+    </Icon>
+  );
+}
+
+export function EyeIcon(props) {
+  return (
+    <Icon {...props}>
+      <path d="M2.5 12S6 5.5 12 5.5 21.5 12 21.5 12 18 18.5 12 18.5 2.5 12 2.5 12Z" />
+      <circle cx="12" cy="12" r="2.6" />
+    </Icon>
+  );
+}
+
+export function HomeIcon(props) {
+  return (
+    <Icon {...props}>
+      <path d="M4 11.5 12 4l8 7.5" />
+      <path d="M6 10v8.5a1 1 0 0 0 1 1h10a1 1 0 0 0 1-1V10" />
+    </Icon>
+  );
+}
