@@ -111,8 +111,22 @@ def load_topic_index() -> dict[str, str]:
 
 
 def _normalize_topic(title: str) -> str:
-    """Align index.json titles with topic tags stored in state.json."""
-    return re.sub(r'\\(["\'])', r"\1", title).strip()
+    """Align index.json titles (the LLM's own written page title/H1) with
+    topic tags stored in state.json (the independent, earlier extraction
+    step's topic string for the same subject).
+
+    The synthesis prompt instructs the model to make these identical
+    ("title: exact topic title"), but that's an instruction a model can
+    drift from (different capitalization, a trailing "Overview", extra/
+    collapsed whitespace) — not a structural guarantee. Case-folding and
+    whitespace-collapsing here, applied to both sides of the
+    grouped.get(_normalize_topic(topic), []) lookup in run_review(), is a
+    strictly safer key match than the byte-exact one this used to be: it
+    can only turn a previously-missed match (a page wrongly reported as
+    "no source chunks mapped") into a found one, never the reverse.
+    """
+    unescaped = re.sub(r'\\(["\'])', r"\1", title).strip()
+    return re.sub(r"\s+", " ", unescaped).casefold()
 
 
 def build_grouped_from_state(state: dict) -> dict[str, list[dict]]:
