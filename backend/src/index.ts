@@ -13,6 +13,19 @@ app.use(
 );
 app.use(express.json());
 
+// This is an API-only server -- there's no page here. "Cannot GET /" from
+// Express's default 404 reads like a broken deployment; this makes it
+// obvious that :8000 is working as intended and points at the actual site.
+app.get('/', (_req, res) => {
+  res.json({
+    service: 'wiki-backend',
+    status: 'ok',
+    message: 'This is the API server, not the site. Open the frontend instead.',
+    frontend: 'http://localhost:3000',
+    health: '/api/health',
+  });
+});
+
 registerRoutes(app);
 
 // eslint-disable-next-line @typescript-eslint/no-unused-vars

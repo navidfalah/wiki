@@ -46,7 +46,10 @@ services:
       # image to pick up backend/ changes.
       - ./compiler:/app/compiler
     ports:
-      - "8000:8000"
+      # Host-side port is overridable (BACKEND_PORT=8001 docker compose up)
+      # for when something else on the host is already using 8000 --
+      # the container itself always listens on 8000 internally.
+      - "${BACKEND_PORT:-8000}:8000"
     restart: unless-stopped
 
   frontend:
@@ -67,7 +70,11 @@ services:
       BACKEND_API_URL: http://backend:8000
       PUBLIC_API_URL: ${PUBLIC_API_URL:-}
     ports:
-      - "3000:3000"
+      # Same override pattern as backend's BACKEND_PORT above -- if your
+      # host already has something on 3000 (a different project's dev
+      # server, say), run e.g. `FRONTEND_PORT=3001 docker compose up`
+      # instead of fighting over the port.
+      - "${FRONTEND_PORT:-3000}:3000"
     depends_on:
       - backend
     restart: unless-stopped
