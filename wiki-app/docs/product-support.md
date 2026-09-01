@@ -54,7 +54,7 @@ Product support tickets often highlight recurring technical challenges, known bu
 ## Related Concepts
 
 *   **[MeshSync](./meshsync.md)**: A mesh networking technology used by Aurora Nova Widget v2 beta, designed to operate without a Cloud Subscription but with potential Scalability and Complexity.
-*   **[MQTT (Message Queuing Telemetry Transport)](./mqtt.md)**: A lightweight messaging protocol used for IoT devices, enabling data export to platforms like [Home Assistant](./home-assistant.data).
+*   **[MQTT (Message Queuing Telemetry Transport)](./mqtt.md)**: A lightweight messaging protocol used for IoT devices, enabling data export to platforms like Home Assistant.
 *   **Firmware Upgrade**: Essential for resolving known bugs and enabling new features, such as the fix for [MeshSync](./meshsync.md) rejoin loops and compatibility with [MQTT](./mqtt.md) schema v2.
 *   **Scalability and Complexity**: The inherent trade-off between managing a large number of devices in a mesh network versus simpler, potentially Cloud Subscription-based, topologies.
 *   **Cloud Subscription**: An alternative model for device management and data reporting, often associated with simpler device topologies.

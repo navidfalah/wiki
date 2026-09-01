@@ -1,7 +1,7 @@
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
+import useApiBase from '@site/src/utils/useApiBase';
 import clsx from 'clsx';
-import useDocusaurusContext from '@docusaurus/useDocusaurusContext';
-import { DEFAULT_WIKI_API_URL, fetchResources } from '@site/src/utils/wikiApi';
+import { fetchResources } from '@site/src/utils/wikiApi';
 
 const TYPE_FILTERS = ['all', 'text', 'email', 'image', 'file'];
 
@@ -71,8 +71,7 @@ function ResourceDetail({ resource, onClose }) {
 }
 
 export default function ResourcesExplorer() {
-  const { siteConfig } = useDocusaurusContext();
-  const apiBase = siteConfig.customFields?.wikiApiUrl ?? DEFAULT_WIKI_API_URL;
+  const [apiBase] = useApiBase();
 
   const [resources, setResources] = useState([]);
   const [loading, setLoading] = useState(true);

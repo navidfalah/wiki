@@ -29,7 +29,7 @@ Corrosion is a natural process that degrades materials, typically metals, throug
     *   **Gold-Flashed PCBs**: The Aurora beta probe incorporates a gold-flashed Printed Circuit Board (PCB) as a potential corrosion-resistant measure. The long-term effectiveness of this specific approach is currently untested.
 *   **Documentation and Cost Considerations**:
     *   The issue of soil probe corrosion and its impact on device lifespan should be thoroughly documented, particularly in hardware-related pages.
-    *   When comparing different sensor solutions, the [Total Cost of Ownership (TCO)](./Total%20Cost%20of%20Ownership%20(TCO).md) should account for probe durability and potential replacement costs due to corrosion. This is a key factor for long-term deployments.
+    *   When comparing different sensor solutions, the Total Cost of Ownership (TCO) should account for probe durability and potential replacement costs due to corrosion. This is a key factor for long-term deployments.
 
 ## Related Entities
 

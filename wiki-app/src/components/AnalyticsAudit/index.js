@@ -1,10 +1,9 @@
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
+import useApiBase from '@site/src/utils/useApiBase';
 import clsx from 'clsx';
-import useDocusaurusContext from '@docusaurus/useDocusaurusContext';
 import Link from '@docusaurus/Link';
 import { SecondaryButton } from '@site/src/components/ui/Button';
 import {
-  DEFAULT_WIKI_API_URL,
   fetchAnalytics,
   fetchDocDetail,
   fetchDocsList,
@@ -156,8 +155,7 @@ function PagePreview({ detail, loading, error, highlightLine, onClose }) {
 }
 
 export default function AnalyticsAudit() {
-  const { siteConfig } = useDocusaurusContext();
-  const apiBase = siteConfig.customFields?.wikiApiUrl ?? DEFAULT_WIKI_API_URL;
+  const [apiBase] = useApiBase();
 
   const [data, setData] = useState(null);
   const [loading, setLoading] = useState(true);

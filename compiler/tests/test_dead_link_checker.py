@@ -137,6 +137,31 @@ def test_find_broken_links_skips_frontmatter_content(tmp_path: Path):
     assert find_broken_links(tmp_path) == []
 
 
+def test_find_broken_links_handles_parens_inside_the_url(tmp_path: Path):
+    # A naive "stop at the first )" regex mis-parses a URL that itself
+    # contains parentheses (e.g. from a title like "MQTT (...)"), truncating
+    # the href and silently failing to detect the link as broken.
+    (tmp_path / "a.md").write_text(
+        "[MQTT (Message Queuing Telemetry Transport)]"
+        "(./MQTT%20(Message%20Queuing%20Telemetry%20Transport).md)\n",
+        encoding="utf-8",
+    )
+    broken = find_broken_links(tmp_path)
+    assert len(broken) == 1
+    _, _, _, href, resolved = broken[0]
+    assert href == "./MQTT%20(Message%20Queuing%20Telemetry%20Transport).md"
+    assert resolved == tmp_path / "MQTT%20(Message%20Queuing%20Telemetry%20Transport).md"
+
+
+def test_find_broken_links_with_parens_ignores_valid_target(tmp_path: Path):
+    (tmp_path / "IP Rating (Ingress Protection).md").write_text("# IP\n", encoding="utf-8")
+    (tmp_path / "a.md").write_text(
+        "[IP Rating (Ingress Protection)](./IP Rating (Ingress Protection).md)\n",
+        encoding="utf-8",
+    )
+    assert find_broken_links(tmp_path) == []
+
+
 def test_find_broken_links_multiple_files(tmp_path: Path):
     (tmp_path / "a.md").write_text("[X](./missing1.md)\n", encoding="utf-8")
     (tmp_path / "b.md").write_text("[Y](./missing2.md)\n", encoding="utf-8")

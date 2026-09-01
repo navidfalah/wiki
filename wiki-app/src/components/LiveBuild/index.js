@@ -1,8 +1,16 @@
 import React, { useCallback, useRef, useState } from 'react';
-import useDocusaurusContext from '@docusaurus/useDocusaurusContext';
-import { buildStreamUrl, DEFAULT_WIKI_API_URL, fetchBuildStatus } from '@site/src/utils/wikiApi';
-import { PrimaryButton, SecondaryButton } from '@site/src/components/ui/Button';
+import useApiBase from '@site/src/utils/useApiBase';
+import { buildStreamUrl, fetchBuildStatus } from '@site/src/utils/wikiApi';
+import { PrimaryButton, SecondaryButton, Badge } from '@site/src/components/ui/Button';
+import { PlayIcon } from '@site/src/components/ui/Icons';
 import BuildTerminal from './BuildTerminal';
+
+const STATUS_TONE = {
+  idle: 'gray',
+  running: 'amber',
+  success: 'green',
+  error: 'red',
+};
 
 const STATUS_LABEL = {
   idle: 'Ready',
@@ -12,8 +20,7 @@ const STATUS_LABEL = {
 };
 
 export default function LiveBuild({ onComplete }) {
-  const { siteConfig } = useDocusaurusContext();
-  const apiBase = siteConfig.customFields?.wikiApiUrl ?? DEFAULT_WIKI_API_URL;
+  const [apiBase] = useApiBase();
 
   const [lines, setLines] = useState([]);
   const [status, setStatus] = useState('idle');
@@ -98,11 +105,11 @@ export default function LiveBuild({ onComplete }) {
   const isRunning = status === 'running';
 
   return (
-    <section className="rounded-lg border border-gray-200 bg-white">
-      <div className="flex flex-wrap items-center justify-between gap-3 border-b border-gray-200 px-4 py-3">
-        <div>
-          <h2 className="text-base font-semibold text-gray-900">Compile</h2>
-          <p className="text-xs text-gray-500">Status: {STATUS_LABEL[status]}</p>
+    <section className="rounded-xl border border-gray-200 bg-white shadow-card">
+      <div className="flex flex-wrap items-center justify-between gap-3 border-b border-gray-100 px-5 py-4">
+        <div className="flex items-center gap-3">
+          <h2 className="text-base font-semibold text-gray-900">Run compiler</h2>
+          <Badge tone={STATUS_TONE[status]}>{STATUS_LABEL[status]}</Badge>
         </div>
         <div className="flex flex-wrap items-center gap-3">
           <label className="flex items-center gap-2 text-sm text-gray-600">
@@ -111,14 +118,15 @@ export default function LiveBuild({ onComplete }) {
               checked={force}
               disabled={isRunning}
               onChange={(event) => setForce(event.target.checked)}
-              className="rounded border-gray-300"
+              className="rounded border-gray-300 text-accent focus:ring-accent/30"
             />
             Rebuild all files
           </label>
           <SecondaryButton onClick={() => setLines([])} disabled={isRunning}>
-            Clear
+            Clear log
           </SecondaryButton>
           <PrimaryButton onClick={runCompiler} disabled={isRunning}>
+            <PlayIcon size={15} />
             {isRunning ? 'Running…' : 'Run compiler'}
           </PrimaryButton>
         </div>
@@ -126,7 +134,7 @@ export default function LiveBuild({ onComplete }) {
 
       <div className="p-4">
         {error && (
-          <p className="mb-3 rounded-md border border-red-200 bg-red-50 px-3 py-2 text-sm text-red-800">
+          <p className="mb-3 rounded-lg border border-red-200 bg-red-50 px-3 py-2 text-sm text-red-800">
             {error}
           </p>
         )}

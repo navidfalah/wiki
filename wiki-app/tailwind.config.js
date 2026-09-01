@@ -12,6 +12,18 @@ module.exports = {
           light: '#10b981',
           dark: '#047857',
         },
+        source: {
+          DEFAULT: '#b45309',
+          light: '#d97706',
+          bg: '#fffbeb',
+          border: '#fde68a',
+        },
+        generated: {
+          DEFAULT: '#4338ca',
+          light: '#4f46e5',
+          bg: '#eef2ff',
+          border: '#c7d2fe',
+        },
       },
       fontFamily: {
         mono: [

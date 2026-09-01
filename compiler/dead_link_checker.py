@@ -10,7 +10,7 @@ from urllib.parse import unquote
 
 from models import OUTPUT_DIR
 
-LINK_RE = re.compile(r"\[([^\]]+)\]\(([^)]+)\)")
+LINK_RE = re.compile(r"\[([^\]]+)\]\(((?:[^()]|\([^()]*\))+)\)")
 
 SKIP_PREFIXES = ("http://", "https://", "mailto:", "tel:", "data:")
 SKIP_EXACT = ("", "#")

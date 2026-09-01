@@ -54,7 +54,7 @@ Beta testers are permitted to discuss certain aspects publicly, with clear stipu
 *   Firmware
 *   Data Telemetry
 *   Intellectual Property
-*   [MQTT (Message Queuing Telemetry Transport)](./MQTT%20(Message%20Queuing%20Telemetry%20Transport).md)
+*   MQTT (Message Queuing Telemetry Transport)
 *   IP54 Rating
 
 ## Contradictions

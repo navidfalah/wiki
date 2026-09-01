@@ -39,7 +39,7 @@ A representative support ticket (#2099, dummy) illustrates a common customer inq
 
 ## Related Concepts
 
-*   **[IP Rating (Ingress Protection)](./IP Rating (Ingress Protection).md)**: A standard indicating the degree of protection provided by electrical enclosures against intrusion from solid objects (like dust) and water.
+*   **IP Rating (Ingress Protection)**: A standard indicating the degree of protection provided by electrical enclosures against intrusion from solid objects (like dust) and water.
     *   **IP67**: Indicates complete protection against dust ingress and protection against immersion in water up to 1 meter for 30 minutes.
     *   **IP54**: Indicates protection against dust ingress (limited ingress permitted) and protection against water splashes from any direction.
 *   **Cloud Fee**: A recurring charge associated with using cloud-based services or platforms.

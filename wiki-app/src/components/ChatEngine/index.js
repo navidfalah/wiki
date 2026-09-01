@@ -1,9 +1,8 @@
 import React, { useEffect, useRef, useState } from 'react';
+import useApiBase from '@site/src/utils/useApiBase';
 import clsx from 'clsx';
-import useDocusaurusContext from '@docusaurus/useDocusaurusContext';
 import { PrimaryButton } from '@site/src/components/ui/Button';
 import {
-  DEFAULT_WIKI_API_URL,
   fetchChatStatus,
   sendChatMessage,
 } from '@site/src/utils/wikiApi';
@@ -55,8 +54,7 @@ function Message({ message }) {
 }
 
 export default function ChatEngine() {
-  const { siteConfig } = useDocusaurusContext();
-  const apiBase = siteConfig.customFields?.wikiApiUrl ?? DEFAULT_WIKI_API_URL;
+  const [apiBase] = useApiBase();
 
   const [status, setStatus] = useState(null);
   const [messages, setMessages] = useState([]);

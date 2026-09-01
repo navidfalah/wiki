@@ -10,6 +10,7 @@ node_modules/
 wiki-app/build/
 wiki-app/.docusaurus/
 data/state.json
+data/sources.json
 data/.llm-cache.sqlite
 data/review_corrections.json
 data/user_study_results.json

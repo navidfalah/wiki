@@ -1,8 +1,7 @@
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
+import useApiBase from '@site/src/utils/useApiBase';
 import clsx from 'clsx';
-import useDocusaurusContext from '@docusaurus/useDocusaurusContext';
 import {
-  DEFAULT_WIKI_API_URL,
   fetchEmailDetail,
   fetchEmails,
 } from '@site/src/utils/wikiApi';
@@ -123,8 +122,7 @@ function EmailDetail({ detail, onClose }) {
 }
 
 export default function EmailEngine({ refreshToken = 0 }) {
-  const { siteConfig } = useDocusaurusContext();
-  const apiBase = siteConfig.customFields?.wikiApiUrl ?? DEFAULT_WIKI_API_URL;
+  const [apiBase] = useApiBase();
 
   const [emails, setEmails] = useState([]);
   const [selectedPath, setSelectedPath] = useState(null);

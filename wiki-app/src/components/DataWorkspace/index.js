@@ -1,12 +1,13 @@
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
+import useApiBase from '@site/src/utils/useApiBase';
 import clsx from 'clsx';
-import useDocusaurusContext from '@docusaurus/useDocusaurusContext';
 import {
-  DEFAULT_WIKI_API_URL,
   fetchRawFileDetail,
   fetchRawFiles,
 } from '@site/src/utils/wikiApi';
 import HighlightedMarkdown from './HighlightedMarkdown';
+import { Badge } from '@site/src/components/ui/Button';
+import { FolderIcon, DocumentIcon } from '@site/src/components/ui/Icons';
 
 const FILTERS = [
   { id: 'all', label: 'All' },
@@ -53,18 +54,20 @@ function DetailView({ detail, activePageIndex, onPageChange, onClose }) {
       )}
 
       <div className="grid gap-4 lg:grid-cols-2">
-        <div className="rounded-md border border-gray-200">
-          <div className="border-b border-gray-200 bg-gray-50 px-3 py-2 text-sm font-medium text-gray-700">
-            Raw source
+        <div className="overflow-hidden rounded-xl border border-source-border">
+          <div className="flex items-center gap-2 border-b border-source-border bg-source-bg px-3 py-2 text-sm font-medium text-source">
+            <FolderIcon size={15} />
+            Source (raw, unedited)
           </div>
           <pre className="max-h-96 overflow-auto p-3 font-mono text-xs text-gray-800 whitespace-pre-wrap">
             {detail.content}
           </pre>
         </div>
 
-        <div className="rounded-md border border-gray-200">
-          <div className="border-b border-gray-200 bg-gray-50 px-3 py-2 text-sm font-medium text-gray-700">
-            {activePage ? activePage.title : 'Wiki output'}
+        <div className="overflow-hidden rounded-xl border border-generated-border">
+          <div className="flex items-center gap-2 border-b border-generated-border bg-generated-bg px-3 py-2 text-sm font-medium text-generated">
+            <DocumentIcon size={15} />
+            {activePage ? activePage.title : 'Generated wiki page'}
           </div>
           {activePage ? (
             <div className="max-h-96 overflow-auto p-3 text-sm">
@@ -85,8 +88,7 @@ function DetailView({ detail, activePageIndex, onPageChange, onClose }) {
 }
 
 export default function DataWorkspace({ refreshToken = 0 }) {
-  const { siteConfig } = useDocusaurusContext();
-  const apiBase = siteConfig.customFields?.wikiApiUrl ?? DEFAULT_WIKI_API_URL;
+  const [apiBase] = useApiBase();
 
   const [files, setFiles] = useState([]);
   const [summary, setSummary] = useState({ total: 0, processed: 0, unprocessed: 0 });
@@ -180,13 +182,21 @@ export default function DataWorkspace({ refreshToken = 0 }) {
   }
 
   return (
-    <section className="rounded-lg border border-gray-200 bg-white">
-      <div className="border-b border-gray-200 px-4 py-3">
-        <h2 className="text-base font-semibold text-gray-900">Raw files</h2>
-        <p className="text-sm text-gray-500">Sources in data/raw/ and their wiki pages.</p>
+    <section className="rounded-xl border border-gray-200 bg-white shadow-card">
+      <div className="border-b border-gray-100 px-5 py-4">
+        <h2 className="flex items-center gap-2 text-base font-semibold text-gray-900">
+          <FolderIcon size={18} className="text-source" />
+          Sources
+          <span className="text-gray-300">→</span>
+          <DocumentIcon size={18} className="text-generated" />
+          Generated wiki
+        </h2>
+        <p className="mt-0.5 text-sm text-gray-500">
+          Click a file to see its raw source next to the wiki page(s) it produced.
+        </p>
       </div>
 
-      <div className="border-b border-gray-200 px-4 py-3">
+      <div className="border-b border-gray-100 px-5 py-4">
         {selectedPath && detail && !loadingDetail ? (
           <DetailView
             detail={detail}
@@ -197,17 +207,17 @@ export default function DataWorkspace({ refreshToken = 0 }) {
         ) : (
           <>
             <div className="mb-3 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-              <div className="flex gap-2">
+              <div className="flex gap-1 rounded-full border border-gray-200 bg-gray-50 p-1">
                 {FILTERS.map((tab) => (
                   <button
                     key={tab.id}
                     type="button"
                     onClick={() => setStatusFilter(tab.id)}
                     className={clsx(
-                      'rounded-md px-3 py-1 text-sm',
+                      'rounded-full px-3 py-1 text-sm font-medium transition-colors',
                       statusFilter === tab.id
-                        ? 'bg-gray-900 text-white'
-                        : 'text-gray-600 hover:bg-gray-100',
+                        ? 'bg-white text-gray-900 shadow-sm'
+                        : 'text-gray-500 hover:text-gray-800',
                     )}>
                     {tab.label}
                     <span className="ml-1 text-xs opacity-70">
@@ -225,7 +235,7 @@ export default function DataWorkspace({ refreshToken = 0 }) {
                 placeholder="Search paths…"
                 value={search}
                 onChange={(event) => setSearch(event.target.value)}
-                className="w-full rounded-md border border-gray-300 px-3 py-1.5 text-sm sm:max-w-xs"
+                className="w-full rounded-lg border border-gray-300 px-3 py-1.5 text-sm focus:border-accent focus:outline-none focus:ring-2 focus:ring-accent/20 sm:max-w-xs"
               />
             </div>
 
@@ -234,21 +244,25 @@ export default function DataWorkspace({ refreshToken = 0 }) {
             ) : filteredFiles.length === 0 ? (
               <p className="py-8 text-center text-sm text-gray-500">No files match.</p>
             ) : (
-              <ul className="max-h-[420px] divide-y divide-gray-100 overflow-auto rounded-md border border-gray-200">
+              <ul className="max-h-[420px] divide-y divide-gray-100 overflow-auto rounded-lg border border-gray-200">
                 {filteredFiles.map((file) => (
                   <li key={file.path}>
                     <button
                       type="button"
                       onClick={() => setSelectedPath(file.path)}
                       className="flex w-full items-center justify-between gap-3 px-3 py-2 text-left text-sm hover:bg-gray-50">
-                      <code className="break-all text-gray-800">{file.path}</code>
-                      <span
-                        className={clsx(
-                          'shrink-0 text-xs',
-                          file.status === 'Processed' ? 'text-green-700' : 'text-amber-700',
-                        )}>
-                        {file.status}
+                      <span className="flex min-w-0 items-center gap-2">
+                        <FolderIcon size={14} className="shrink-0 text-source" />
+                        <code className="truncate text-gray-800">{file.path}</code>
+                        {file.source && (
+                          <Badge tone="source" className="shrink-0">
+                            {file.source}
+                          </Badge>
+                        )}
                       </span>
+                      <Badge tone={file.status === 'Processed' ? 'green' : 'amber'} className="shrink-0">
+                        {file.status}
+                      </Badge>
                     </button>
                   </li>
                 ))}

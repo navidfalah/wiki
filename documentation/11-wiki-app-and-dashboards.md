@@ -48,15 +48,60 @@ Env vars for CI: `GITHUB_PAGES=true`, `GITHUB_ORG`, `GITHUB_REPO`.
 
 ### `/workspace` — `src/pages/workspace.js`
 
-**Components:** `DataWorkspace`, `LiveBuild`, `PageShell`, `PageHeader`
+**Components:** `LiveBuild`, `SourceFolders`, `DataWorkspace`, `PageShell`, `PageHeader`
 
-Features:
+Redesigned (previously a flat gray/white layout with no visual distinction
+between raw input and compiled output, and a single hardcoded `data/raw/`
+directory with no way to add another folder). Features:
 
-- One-line metrics summary (raw files, wiki pages, dead links) via `fetchAnalytics`
-- Shared tab nav (Dashboard | Graph | Analytics) in `PageHeader`
-- Raw file list with processed / unprocessed filters and search
-- Side-by-side raw content vs synthesized page preview when you open a file
-- **Live compile** — SSE stream from `/api/build/stream` with optional “Rebuild all files”
+- Stat-card row (raw files processed, wiki pages, cross-links, dead links) via `fetchAnalytics`
+- **Run compiler** bar (`LiveBuild`) — status badge, SSE stream from `/api/build/stream`, "Rebuild all files"
+- **Source folders** (`SourceFolders`, new) — Explorer-style grid of registered source
+  directories; add a folder by path, toggle it on/off, or remove it, without restarting
+  anything. See "Source folder registry" below for how this reaches the compiler.
+- Raw file list with processed / unprocessed filters, search, and a per-file source badge
+- Side-by-side **source** (amber) vs **generated wiki** (indigo) preview when you open a file
+  — the two are colour-coded consistently across the dashboard so it's always visually
+  clear which side is untouched input and which side the compiler produced
+- Settings gear (top-right of every dashboard page, `PageHeader` → `SettingsPanel`) —
+  override the compiler API URL from the browser (persisted to `localStorage`), see the
+  raw data directory path
+
+## Source folder registry
+
+**Module:** `compiler/sources_registry.py` · **Registry file:** `data/sources.json` (gitignored, like `data/state.json`)
+
+The compiler pipeline only ever reads from one hardcoded directory,
+`RAW_DIR` (`data/raw/`) — that didn't change, and nothing in
+`extraction.py`/`synthesizer.py`/etc. was touched. What's new is a way to
+pull files in from *other* directories on disk without moving or copying
+them: register a folder, and it's mirrored into `data/raw/<slug>/` as a
+tree of **per-file symlinks**, one per real file, matching the external
+folder's own structure.
+
+**Why per-file symlinks and not one symlink to the folder:** the first
+version did exactly that — one symlink at `data/raw/<slug>` pointing
+straight at the external directory — and it silently didn't work.
+`discover_raw_source_files()` (`synthesizer.py`) walks `RAW_DIR` with
+`Path.rglob("*")`, and confirmed directly against the real filesystem: `rglob` does not
+descend into a symlinked *directory*, so every file inside would have been
+invisible to the compiler while still showing up fine in `ls`. Mirroring
+one symlink per file sidesteps that — each file is its own top-level match
+for `rglob`, so no change to `discover_raw_source_files()` was needed at
+all.
+
+`sync_symlinks()` re-derives `data/raw/`'s managed folders from
+`data/sources.json` on every add, remove, enable/disable toggle, and
+server startup — new files that appeared in a registered folder since the
+last sync get a new symlink, files that vanished lose theirs. It only
+ever touches names it manages (tracked by `link_name` in the registry);
+a real file or folder placed directly under `data/raw/` by hand is never
+touched.
+
+**Endpoints:** `GET/POST /api/sources`, `PUT` / `DELETE /api/sources/{id}`.
+**Caveat for Docker:** the path you register must be visible to the
+`compiler-api` container's filesystem (e.g. an extra bind mount), not just
+your host machine.
 
 ### `/graph` — `src/pages/graph.js`
 
@@ -77,19 +122,34 @@ Features:
 
 ## Shared UI components
 
-The dashboard uses a flat layout: gray background, white bordered panels, simple text nav — no stat-card grids or heavy shadows.
+Light theme, rounded-xl cards with a soft shadow (`shadow-card`/`shadow-card-hover`
+in `tailwind.config.js`), a pill-style tab nav, and a consistent colour language:
+**amber = source / raw / untouched** (`source` in `tailwind.config.js`),
+**indigo = generated / compiled wiki output** (`generated`), emerald `accent`
+for primary actions and "everything's fine" status.
 
 | Component | Path | Role |
 |-----------|------|------|
-| `PageShell` | `components/PageShell/` | Gray page background, max-width container |
-| `PageHeader` | `components/PageHeader/` | Tab nav + title + short description |
-| `DashboardNav` | `components/ui/DashboardNav.js` | Dashboard / Graph / Analytics links |
-| `Button` | `components/ui/Button.js` | Flat primary and secondary buttons |
-| `DataWorkspace` | `components/DataWorkspace/` | Raw file list and source vs wiki preview |
-| `LiveBuild` | `components/LiveBuild/` | Compile controls + terminal (`BuildTerminal.js`) |
+| `PageShell` | `components/PageShell/` | Page background (subtle gradient), max-width container |
+| `PageHeader` | `components/PageHeader/` | Pill tab nav + title + description + Settings gear |
+| `DashboardNav` | `components/ui/DashboardNav.js` | Dashboard / Chat / Emails / Resources / Graph / Analytics links |
+| `Button` | `components/ui/Button.js` | `PrimaryButton`, `SecondaryButton`, `DangerGhostButton`, `IconButton`, `Switch`, `Badge` |
+| `Icons` | `components/ui/Icons.js` | Small hand-rolled line-icon set (no icon library dependency) |
+| `SourceFolders` | `components/SourceFolders/` | Explorer-style folder grid — add/enable/disable/remove source directories |
+| `SettingsPanel` | `components/SettingsPanel/` | Slide-over: API URL override, data directory info |
+| `DataWorkspace` | `components/DataWorkspace/` | Raw file list (with per-file source badge) and source vs generated-wiki preview |
+| `LiveBuild` | `components/LiveBuild/` | Compile controls + status badge + terminal (`BuildTerminal.js`) |
 | `WikiGraph` | `components/WikiGraph/` | Topic force graph |
 | `AnalyticsAudit` | `components/AnalyticsAudit/` | Metrics, dead links, tags |
 | `Backlinks` | `components/Backlinks/` | Backlinks on doc pages |
+
+`useApiBase()` (`utils/useApiBase.js`) is the one hook every data-fetching
+component now calls for the compiler API base URL — it reads a
+`localStorage` override written by `SettingsPanel`, falling back to
+`docusaurus.config.js`'s `customFields.wikiApiUrl` (the `WIKI_API_URL` env
+var) when there isn't one. Previously every component computed this
+inline from `useDocusaurusContext()`, with no way to change it without
+rebuilding.
 
 ## API client
 

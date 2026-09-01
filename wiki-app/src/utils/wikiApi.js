@@ -13,6 +13,47 @@ export function fetchRawFiles(apiBase = DEFAULT_WIKI_API_URL) {
   return apiFetch('/api/raw-files', apiBase);
 }
 
+export function fetchSources(apiBase = DEFAULT_WIKI_API_URL) {
+  return apiFetch('/api/sources', apiBase);
+}
+
+export async function addSource(path, label, apiBase = DEFAULT_WIKI_API_URL) {
+  const response = await fetch(`${apiBase}/api/sources`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ path, label }),
+  });
+  if (!response.ok) {
+    const message = await response.text();
+    throw new Error(message || `Add source failed (${response.status})`);
+  }
+  return response.json();
+}
+
+export async function removeSource(sourceId, apiBase = DEFAULT_WIKI_API_URL) {
+  const response = await fetch(`${apiBase}/api/sources/${encodeURIComponent(sourceId)}`, {
+    method: 'DELETE',
+  });
+  if (!response.ok) {
+    const message = await response.text();
+    throw new Error(message || `Remove source failed (${response.status})`);
+  }
+  return response.json();
+}
+
+export async function setSourceEnabled(sourceId, enabled, apiBase = DEFAULT_WIKI_API_URL) {
+  const response = await fetch(`${apiBase}/api/sources/${encodeURIComponent(sourceId)}`, {
+    method: 'PUT',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ enabled }),
+  });
+  if (!response.ok) {
+    const message = await response.text();
+    throw new Error(message || `Update source failed (${response.status})`);
+  }
+  return response.json();
+}
+
 export function fetchRawFileDetail(filePath, apiBase = DEFAULT_WIKI_API_URL) {
   const encoded = filePath
     .split('/')

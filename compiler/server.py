@@ -40,6 +40,7 @@ from link_overrides import (
 )
 from linker import INDEX_JSON, load_topic_index
 from models import OUTPUT_DIR, RAW_DIR, STATE_FILE
+from sources_registry import add_source, list_sources, remove_source, set_enabled, sync_symlinks
 from synthesizer import compute_file_md5, discover_raw_source_files, load_state
 
 COMPILER_DIR = Path(__file__).resolve().parent
@@ -61,7 +62,7 @@ app.add_middleware(
         "http://127.0.0.1:5173",
     ],
     allow_credentials=True,
-    allow_methods=["GET", "PUT", "POST"],
+    allow_methods=["GET", "PUT", "POST", "DELETE"],
     allow_headers=["*"],
 )
 
@@ -84,15 +85,70 @@ def _safe_doc_path(rel_path: str) -> Path:
     return candidate
 
 
+@app.on_event("startup")
+def _sync_source_symlinks_on_startup() -> None:
+    sync_symlinks()
+
+
 @app.get("/api/health")
 def health() -> dict[str, str]:
     return {"status": "ok"}
+
+
+# --- Source folder registry ------------------------------------------------
+
+
+@app.get("/api/sources")
+def get_sources() -> dict[str, Any]:
+    """Registered external source folders symlinked into data/raw/."""
+    return {"raw_dir": str(RAW_DIR), "sources": list_sources()}
+
+
+@app.post("/api/sources")
+def post_source(payload: dict[str, Any] = Body(...)) -> dict[str, Any]:
+    """Register a new external folder as a source (creates a symlink in data/raw/)."""
+    path = payload.get("path", "")
+    label = payload.get("label") or None
+    try:
+        entry = add_source(path, label=label)
+    except ValueError as exc:
+        raise HTTPException(status_code=400, detail=str(exc)) from exc
+    return entry
+
+
+@app.delete("/api/sources/{source_id}")
+def delete_source(source_id: str) -> dict[str, Any]:
+    """Unregister a source folder and remove its symlink from data/raw/."""
+    removed = remove_source(source_id)
+    if not removed:
+        raise HTTPException(status_code=404, detail=f"Source not found: {source_id}")
+    return {"removed": True, "id": source_id}
+
+
+@app.put("/api/sources/{source_id}")
+def put_source(source_id: str, payload: dict[str, Any] = Body(...)) -> dict[str, Any]:
+    """Enable or disable a source folder without unregistering it."""
+    if "enabled" not in payload:
+        raise HTTPException(status_code=400, detail="'enabled' is required")
+    entry = set_enabled(source_id, bool(payload["enabled"]))
+    if entry is None:
+        raise HTTPException(status_code=404, detail=f"Source not found: {source_id}")
+    return entry
+
+
+def _source_label_for(rel_path: str, sources: list[dict[str, Any]]) -> str | None:
+    top = rel_path.split("/", 1)[0]
+    for entry in sources:
+        if entry["link_name"] == top:
+            return entry["label"]
+    return None
 
 
 @app.get("/api/raw-files")
 def list_raw_files() -> dict[str, Any]:
     """List files under data/raw/ with Processed or Unprocessed status."""
     state = load_state()
+    sources = list_sources()
     files: list[dict[str, Any]] = []
 
     for path in discover_raw_source_files(RAW_DIR):
@@ -108,6 +164,7 @@ def list_raw_files() -> dict[str, Any]:
                 "md5": md5,
                 "processed_at": entry.get("processed_at"),
                 "chunk_count": len(entry.get("chunks", [])),
+                "source": _source_label_for(rel, sources),
             }
         )
 

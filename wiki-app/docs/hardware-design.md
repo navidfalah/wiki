@@ -56,7 +56,7 @@ Hardware design encompasses the process of creating physical electronic systems,
 *   **Mesh Networking**: A network topology where devices connect directly, often used for robust local communication.
 *   **MQTT**: A lightweight messaging protocol often used for IoT devices, enabling optional cloud or local server integration.
 *   **Duty Cycle**: The proportion of time a device or system is active, critical for battery-powered hardware to maximize lifespan.
-*   **[IP Rating (Ingress Protection)](./IP Rating (Ingress Protection).md)**: A standard defining the sealing effectiveness of electrical enclosures against intrusion from foreign bodies (dust, water, etc.).
+*   **IP Rating (Ingress Protection)**: A standard defining the sealing effectiveness of electrical enclosures against intrusion from foreign bodies (dust, water, etc.).
 *   **Battery Math**: The calculation and estimation of battery life based on component power consumption, duty cycle, and battery capacity.
 *   **LAN-first Design**: A design philosophy prioritizing local area network communication over wide area network (e.g., cloud) communication.
 
