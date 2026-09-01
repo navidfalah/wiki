@@ -1,6 +1,6 @@
 ---
 id: ios-development
-title: "iOS Development: CoreBluetooth Pairing & Background Tasks"
+title: iOS Development
 tags:
   - apple
   - ble-pairing
@@ -10,38 +10,31 @@ tags:
   - sam-rivera
   - teabuddy
   - uibackgroundtask
-last_updated: "2026-09-01T19:19:26.049392+00:00"
-sidebar_label: "iOS Development: CoreBluetooth Pairing & Background Tasks"
+last_updated: "2026-09-01T21:23:33.955793+00:00"
+sidebar_label: iOS Development
 slug: /ios-development
 ---
 
 <!-- AUTO-GENERATED — compiled by the LLM Wiki compiler from data/raw/ sources into compiler/temp_output/, then linked here. Edits to this file are overwritten on the next compile: edit sources under data/raw/, or manual cross-links in data/link_overrides.json, instead. -->
 
-# iOS Development: CoreBluetooth Pairing & Background Tasks
+# iOS Development
 
 ## Overview
-This wiki page documents critical findings and research regarding iOS 18 CoreBluetooth pairing changes, permission flows, and background execution requirements impacting applications like [TeaBuddy](./teabuddy.md), based on findings by Sam Rivera.
+iOS development encompasses building applications for Apple's mobile operating system, involving specific considerations for platform updates, background tasks, and [hardware](./hardware.md) connectivity [protocols](./protocols.md) like [Bluetooth Low Energy](./bluetooth-low-energy.md) ([BLE](./ble.md)). Recent research on iOS 18 highlights important permission and lifecycle management requirements for connected hardware products such as [TeaBuddy](./teabuddy.md).
 
 ## Key Details
-- **iOS 18 Permission Prompt Changes:** Changes to the permission prompt order in iOS 18 betas directly led to TeaBuddy ticket #2156. 
-- **CoreBluetooth Authorization:** `CBManagerAuthorization` must be fully resolved *before* a QR deep link is allowed to trigger a Generic Attribute Profile (GATT) connection.
-- **Background Execution:** The background steep timer requires proper `UIBackgroundTask` renewal to prevent the `TB-background-kill` bug.
-- **Action Items:** 
-  - Ship version 0.9.3 fix for TeaBuddy.
-  - Document the permission ordering requirement in the Android kickoff to avoid repeating the same architectural mistake cross-platform.
+- **iOS 18 CoreBluetooth Changes:** Beta releases for iOS 18 altered the permission prompt order, resulting in connectivity issues (noted as TeaBuddy ticket #2156). 
+- **Authorization Requirements:** `CBManagerAuthorization` must now completely resolve before a QR deep link can successfully trigger a GATT connection.
+- **Background Processes:** Background steep timers require proper `UIBackgroundTask` renewal to prevent unexpected process termination (associated with the TB-background-kill bug).
 
 ## Related Entities
-- **TeaBuddy:** Consumer application affected by the iOS 18 CoreBluetooth pairing permission changes (Ticket #2156, bug `TB-background-kill`).
-- **[Nova Widget](./nova-widget.md):** Internal project utilizing UART provisioning rather than consumer QR flows, resulting in minimal relevance to the iOS 18 QR pairing bug.
-- **Sam Rivera:** Author of the research notes and contributor from TeaBuddy.
+- **Sam Rivera:** Author of the TeaBuddy iOS 18 BLE pairing research notes.
+- **TeaBuddy:** A hardware product/project affected by the iOS 18 permission prompt changes (Ticket #2156).
+- **[Nova Widget](./nova-widget.md):** A separate project utilizing UART provisioning rather than a consumer QR flow, exhibiting minimal relevance to the iOS 18 QR pairing issue.
 
 ## Related Concepts
-- **CoreBluetooth (`CBManagerAuthorization`):** The iOS framework and authorization state mechanism required for managing [Bluetooth Low Energy](./bluetooth-low-energy.md) peripherals.
-- **Background Tasks (`UIBackgroundTask`):** iOS background task management systems used to keep operations like steep timers alive during app state transitions.
-- **GATT Connect / QR Deep Linking:** Consumer onboarding flows where scanning a QR code immediately triggers a Bluetooth connection attempt.
-
-## Contradictions
-*(No contradictions present in the current source materials.)*
+- **BLE Pairing:** Bluetooth Low Energy connection workflows, heavily dependent on precise prompt timing and authorization states in modern iOS versions.
+- **Background Tasks:** Managing app lifecycles via `UIBackgroundTask` to keep timers and processes alive while running in the background.
 
 ## References & Trust
 

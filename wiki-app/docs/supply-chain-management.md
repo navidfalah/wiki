@@ -10,7 +10,7 @@ tags:
   - order-delay-resolution
   - powercell-supply
   - powercell-supply-co
-last_updated: "2026-09-01T19:21:43.232480+00:00"
+last_updated: "2026-09-01T21:25:48.509112+00:00"
 sidebar_label: Supply Chain Management
 slug: /supply-chain-management
 ---
@@ -20,25 +20,30 @@ slug: /supply-chain-management
 # Supply Chain Management
 
 ## Overview
-Supply Chain Management encompasses the coordination, procurement, and logistics involved in maintaining production timelines and component inventories. A prominent example involves component restocks for [Aurora Labs](./aurora-labs.md)' MeshSync batch 5 production, managed alongside vendor PowerCell Supply Co. to navigate unexpected shipping disruptions without incurring additional costs.
+Supply chain management involves coordinating logistics, [vendor communications](./vendor-communications.md), and inventory delivery schedules to ensure manufacturing and testing timelines remain uninterrupted. A notable supply chain incident occurred in June 2026 regarding order `#PC-88213` between [Aurora Labs](./aurora-labs.md) and PowerCell Supply Co., involving CR2477 cells needed for the [MeshSync](./meshsync.md) batch 5 production.
 
 ## Key Details
-- **Order Details:** Order #PC-88213 involves 2,400 CR2477 cells designated for MeshSync batch 5.
-- **Supply Disruption:** A cathode supplier experienced a customs hold in Shenzhen, creating a 9-business-day delay that pushed the revised full ship date from June 9th to June 18th, 2026.
-- **Resolution Strategy:** To prevent [Firmware](./firmware.md) retest delays, a split shipment was chosen: 600 cells were scheduled to air-ship by June 8th from the Ontario warehouse to cover field and bench testing units (~40 needed for the field group, with buffer for bench testing), while the remaining 1,800 cells would follow by truck.
-- **Cost and [Documentation](./documentation.md):** PowerCell Supply Co. absorbed the cost of the split shipment with no price change. [Mira Chen](./aurora-labs.md) requested that Grace Liu confirm the air freight surcharge waiver is properly documented for the audit trail.
+* **Vendor & Order:** PowerCell Supply Co. (Account Manager: Rosa Delgado) managed order `#PC-88213` for 2,400 CR2477 cells destined for Aurora Labs' MeshSync batch 5.
+* **Disruption:** A customs hold in Shenzhen affecting PowerCell's cathode supplier caused a 9-business-day delay, pushing the original June 9th ship date back to June 18th.
+* **Resolution Strategy:** To prevent [firmware](./firmware.md) retest delays, Aurora Labs ([Mira Chen](./nova-widget.md)) opted for a split shipment proposed by PowerCell:
+  * 600 cells shipped via air freight from the Ontario warehouse by June 8th (providing sufficient buffer for the 0.3.9 retest on batch 5 units and bench testing).
+  * The remaining 1,800 cells to follow via truck on the delayed schedule.
+* **Cost & [Documentation](./documentation.md):** The split air freight incurred no cost change to Aurora Labs ("this one is on us"). Mira Chen requested that Grace Liu ensure the air freight surcharge waiver is properly documented for the audit trail.
 
 ## Related Entities
-- **Aurora Labs:** The recipient organization managing product firmware and testing.
-- **PowerCell Supply Co.:** The vendor supplying the CR2477 cells.
-- **Mira Chen:** Team member at Aurora Labs who evaluated options and authorized the split shipment.
-- **Grace Liu:** Team member at Aurora Labs (cc'd) tasked with confirming the audit trail for the air freight surcharge waiver.
-- **Rosa Delgado:** Account Manager at PowerCell Supply Co. who communicated the delay and proposed the resolution options.
+* **Aurora Labs:** The recipient organization relying on the cell restock for firmware testing and field units.
+* **PowerCell Supply Co.:** The vendor supplying the CR2477 cells.
+* **Mira Chen:** Senior representative at Aurora Labs managing the order response and testing buffers.
+* **Rosa Delgado:** Account Manager at PowerCell Supply Co. who communicated the delay and proposed solutions.
+* **Grace Liu:** Aurora Labs staff member tasked with confirming paper trail documentation for the freight surcharge waiver.
 
 ## Related Concepts
-- **Order Delay Resolution:** Mitigating production bottlenecks through alternative shipping methods (e.g., split air and ground shipments).
-- **Audit Trail Documentation:** Ensuring administrative compliance and paper trails for vendor waivers, surcharges, and shipping adjustments.
-- **Customs Hold:** Regulatory or inspection delays at international borders (such as Shenzhen) that impact upstream manufacturing components.
+* **Audit Trail Documentation:** The practice of recording administrative decisions, such as freight surcharge waivers, for compliance and review.
+* **Customs Hold:** A regulatory border stoppage (in this case, in Shenzhen) affecting raw component suppliers.
+* **Order Delay Resolution:** Mitigating strategies like split shipments to balance vendor constraints with strict production or testing windows.
+
+## Contradictions
+*(No contradictions present in the provided source material.)*
 
 ## References & Trust
 

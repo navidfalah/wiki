@@ -10,7 +10,7 @@ tags:
   - meshsync
   - mira
   - sprint-retrospective
-last_updated: "2026-09-01T19:21:39.417739+00:00"
+last_updated: "2026-09-01T21:25:44.200696+00:00"
 sidebar_label: Sprint Retrospective
 slug: /sprint-retrospective
 ---
@@ -20,40 +20,39 @@ slug: /sprint-retrospective
 # Sprint Retrospective
 
 ## Overview
-This wiki page documents the outcomes, successes, challenges, action items, and parking lot items from the [Aurora Labs](./aurora-labs.md) Sprint 14 Retrospective, reflecting on team performance, project milestones, and administrative hurdles.
+This wiki page documents the Sprint 14 retrospective for [Aurora Labs](./aurora-labs.md). It captures team successes, recurring roadblocks, action items, special shoutouts, and items discussed in the parking lot.
 
 ## Key Details
-- **Sprint Identifier:** Sprint 14 (Aurora Labs)
+- **Sprint Identifier:** Aurora Labs, Sprint 14
 - **What Went Well:**
-  - Mesh network stability achieved a solid 6 nodes in the lab environment.
-  - The [wiki compiler](./wiki-compiler.md) [heuristic mode](./heuristic-mode.md) is successfully operational without requiring an API key.
-  - The [Nova Widget](./aurora-nova-widget.md) enclosure pebble shape design was approved (following Jonah's preference).
-  - [Mira](./aurora-labs.md) successfully resolved a sleep regression in just two hours.
+  - Mesh network remained stable at 6 nodes in the lab.
+  - The [wiki compiler](./wiki-compiler.md) [heuristic mode](./heuristic-mode.md) functions properly without requiring an API key.
+  - The [Nova widget](./nova-widget.md) enclosure pebble shape was officially approved (Jonah won the discussion).
 - **What Didn't Go Well:**
-  - [Documentation](./documentation.md) discrepancies persist: docs still state an hourly default, whereas the specification mandates 15 minutes (recurring issue).
+  - [Documentation](./documentation.md) repeatedly states an hourly default, whereas the specification dictates 15 minutes.
   - Support ticket #1042 remains open.
   - The `index.md` file was not updated prior to the demo.
 - **Action Items:**
-  - Implement a contradiction linter for battery claims.
-  - Publish the [power budget](./power-budget.md) spreadsheet.
-  - Invite three additional beta testers from the homelab forum.
+  1. Build a contradiction linter for battery claims.
+  2. Publish the [power budget](./power-budget.md) spreadsheet.
+  3. Invite 3 additional [beta testing](./beta-testing.md) testers from the homelab forum.
+- **Team Shoutouts:**
+  - [Mira](./nova-widget.md) successfully fixed the sleep regression bug in just 2 hours.
 - **Parking Lot:**
-  - **[TeaBuddy](./teabuddy.md) Partnership:** "Smart garden tea" proposal was rejected unanimously.
-  - **MeshSync Renaming:** Proposal to rename `MeshSync` to `MeshSink` was rejected for the fourth time.
+  - [TeaBuddy](./teabuddy.md) partnership ("smart garden tea"): Unanimously rejected.
+  - Rename `MeshSync` to `MeshSink`: Rejected for the 4th consecutive time.
 
 ## Related Entities
-- **Aurora Labs**
-- **Jonah**
-- **Mira**
+- Aurora Labs
+- Jonah
+- Mira
 
 ## Related Concepts
-- **Mesh-Network Stability**
-- **Documentation Maintenance**
-- **Contradiction Linter**
-- **MeshSync**
-
-## Contradictions
-*(No contradictions were noted within this sprint retrospective source text.)*
+- Mesh network stability
+- Wiki compiler heuristic mode
+- Documentation maintenance
+- Contradiction linter
+- Beta testing
 
 ## References & Trust
 

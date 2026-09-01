@@ -10,7 +10,7 @@ tags:
   - mira-chen
   - mosquitto
   - nova-widget
-last_updated: "2026-09-01T19:19:19.795130+00:00"
+last_updated: "2026-09-01T21:23:27.873935+00:00"
 sidebar_label: Home Assistant
 slug: /home-assistant
 ---
@@ -21,19 +21,24 @@ slug: /home-assistant
 
 ## Overview
 
-Home Assistant integrations for [Aurora Labs](./aurora-labs.md) [hardware](./hardware.md) (specifically the [Nova Widget](./nova-widget.md)) leverage an optional local [MQTT export](./mqtt-export.md) feature. This setup allows hobbyist users to run local automations and telemetry tracking without requiring a cloud connection or cloud broker hosting by Aurora Labs.
+Home Assistant integrations for [Aurora Labs](./aurora-labs.md) [hardware](./hardware.md), specifically the [Nova Widget](./nova-widget.md), rely on local [MQTT](./mqtt.md) exports without requiring cloud connectivity. This allows hobbyists to integrate telemetry and device data directly into their local [home-automation](./home-automation.md) setups.
 
 ## Key Details
 
-- **Prerequisites:** MeshSync version 0.3.8 or higher, a local MQTT broker (such as Mosquitto), and the Aurora MQTT schema v2.
-- **Quick Start:** 
-  1. Enable MQTT export in the device settings (or use the UART command `mqtt on` until official app support is available).
-  2. Subscribe to the topic wildcard `aurora/+/telemetry`.
-  3. Map the soil moisture payload to a percentage entity in Home Assistant.
+- **Prerequisites:** 
+  - [MeshSync](./meshsync.md) version 0.3.8 or higher.
+  - A local MQTT broker such as Mosquitto.
+  - Aurora MQTT schema v2.
+- **Quick Start Steps:**
+  1. Enable [MQTT export](./mqtt-export.md) in device settings (use the UART command `mqtt on` until official app support is available).
+  2. Subscribe to the telemetry topic: `aurora/+/telemetry`.
+  3. Map soil moisture values to percentage (`%`) entities within Home Assistant.
 - **Topic Structure:**
-  - `aurora/{device_id}/telemetry`
-  - `aurora/{device_id}/battery`
-  - `aurora/{device_id}/mesh/neighbors`
+  ```
+  aurora/{device_id}/telemetry
+  aurora/{device_id}/battery
+  aurora/{device_id}/mesh/neighbors
+  ```
 - **Payload Example:**
   ```json
   {
@@ -44,25 +49,25 @@ Home Assistant integrations for [Aurora Labs](./aurora-labs.md) [hardware](./har
     "mesh_hops": 2
   }
   ```
-- **Known Quirks & Maintenance:**
-  - Rejoin events can flood logs when scaling to 8 nodes; users should filter the `mesh/neighbors` topic to keep logs clean.
-  - [TeaBuddy](./teabuddy.md) steep events and integrations are considered out of scope or community jokes (e.g., a community hack involving a microphone listening for a buzz).
+- **Known Quirks & Non-goals:**
+  - Rejoin events can flood logs when running around 8 nodes; it is recommended to filter the `mesh/neighbors` topic.
+  - [TeaBuddy](./teabuddy.md) steep events and integrations are out of scope (an unofficial community joke post suggested using a microphone to listen for buzzes, but this is not part of the specification). Aurora Labs does not provide cloud broker hosting.
 
 ## Related Entities
 
-- **Nova Widget:** The primary device utilizing the local MQTT export schema.
-- **Aurora Labs:** The manufacturer/entity responsible for the Nova Widget hardware and telemetry schema (Draft v2 owned by [Mira Chen](./aurora-labs.md)).
-- **Mosquitto:** A local MQTT broker commonly utilized in these homelab setups.
+- **Nova Widget:** The hardware device generating telemetry, battery, and mesh neighbor data.
+- **[Mira Chen](./nova-widget.md):** Owner of the Draft v2 MQTT export schema.
+- **Mosquitto:** A local MQTT broker commonly used to ingest telemetry.
 
 ## Related Concepts
 
-- **MeshSync:** A [networking](./networking.md)/sync layer (v0.3.8+) required for proper integration and neighborhood mesh data handling.
-- **Aurora MQTT Schema v2:** The specification defining telemetry topics and payload JSON structures.
-- **Local Telemetry Export:** The capability to broadcast device metrics locally without third-party cloud dependency.
+- **MeshSync:** Required middleware (v0.3.8+) for managing mesh connectivity and data synchronization.
+- **Aurora MQTT Schema v2:** The specification defining topic paths and JSON payload structures for local telemetry export.
+- **Local MQTT Export:** A privacy-focused, cloud-free data pipeline compatible with hobbyist setups.
 
 ## Contradictions
 
-&gt; **Contradiction:** Kickoff slides originally showed hourly export batching for the telemetry data, whereas the Draft v2 specification and community guide mandate a 15-minute interval per reading cycle. Additionally, users are warned not to rely on hourly automation templates from older blog posts.
+&gt; **Contradiction:** Early kickoff slides indicated hourly export batching, whereas the Draft v2 specification and community guides establish a 15-minute reading cycle interval. Additionally, old blog posts mentioning hourly automation templates should be ignored in favor of the 15-minute default interval.
 
 ## References & Trust
 

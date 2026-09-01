@@ -5,16 +5,30 @@
   Ask a question and get an answer grounded in, and cited to, the compiled wiki pages it came from.
 </p>
 
-<div class="mt-6 flex flex-col gap-4">
-  <div class="flex items-center justify-between gap-2">
+<div class="mt-6 flex flex-col gap-4 md:flex-row">
+  <aside class="flex shrink-0 flex-col gap-2 md:w-56">
+    <button id="chat-new-session" type="button" class="rounded-lg bg-accent px-3 py-2 text-sm font-medium text-white hover:bg-accent-dark">+ New chat</button>
+    <div id="chat-session-list" class="flex flex-col gap-1 overflow-y-auto rounded-xl border border-gray-200 bg-white p-2 shadow-card md:max-h-[520px]"></div>
+  </aside>
+
+  <div class="flex min-w-0 flex-1 flex-col gap-3">
+    <div class="flex flex-wrap items-center justify-between gap-2 rounded-xl border border-gray-200 bg-white px-3 py-2 shadow-card">
+      <input id="chat-title-input" type="text" class="min-w-0 flex-1 rounded-md border border-transparent px-1.5 py-1 text-sm font-medium text-gray-900 hover:border-gray-200 focus:border-accent focus:outline-none focus:ring-2 focus:ring-accent/20" />
+      <div class="flex items-center gap-2">
+        <div class="relative">
+          <button id="chat-resources-toggle" type="button" class="rounded-lg border border-gray-300 bg-white px-2.5 py-1 text-xs font-medium text-gray-600 hover:bg-gray-50">Resources: All</button>
+          <div id="chat-resources-panel" class="hidden absolute right-0 z-10 mt-1 max-h-72 w-72 overflow-y-auto rounded-lg border border-gray-200 bg-white p-2 shadow-lg"></div>
+        </div>
+        <button id="chat-delete-session" type="button" class="rounded-lg border border-gray-300 bg-white px-2.5 py-1 text-xs font-medium text-red-600 hover:bg-red-50">Delete</button>
+      </div>
+    </div>
     <div id="chat-status" class="text-xs text-gray-500"></div>
-    <button id="chat-clear" type="button" class="shrink-0 rounded-lg border border-gray-300 bg-white px-2.5 py-1 text-xs font-medium text-gray-600 hover:bg-gray-50">Clear history</button>
+    <div id="chat-messages" class="flex min-h-[300px] flex-col gap-3 rounded-xl border border-gray-200 bg-white p-4 shadow-card"></div>
+    <form id="chat-form" class="flex gap-2">
+      <input id="chat-input" type="text" placeholder="Ask a question about the wiki…" class="flex-1 rounded-lg border border-gray-300 px-3 py-2 text-sm focus:border-accent focus:outline-none focus:ring-2 focus:ring-accent/20" />
+      <button type="submit" class="rounded-lg bg-accent px-4 py-2 text-sm font-medium text-white hover:bg-accent-dark">Ask</button>
+    </form>
   </div>
-  <div id="chat-messages" class="flex min-h-[300px] flex-col gap-3 rounded-xl border border-gray-200 bg-white p-4 shadow-card"></div>
-  <form id="chat-form" class="flex gap-2">
-    <input id="chat-input" type="text" placeholder="Ask a question about the wiki…" class="flex-1 rounded-lg border border-gray-300 px-3 py-2 text-sm focus:border-accent focus:outline-none focus:ring-2 focus:ring-accent/20" />
-    <button type="submit" class="rounded-lg bg-accent px-4 py-2 text-sm font-medium text-white hover:bg-accent-dark">Ask</button>
-  </form>
 </div>
 
 <%- include('partials/foot', { clientScript }) %>

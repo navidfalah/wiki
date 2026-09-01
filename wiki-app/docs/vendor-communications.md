@@ -10,7 +10,7 @@ tags:
   - powercell-supply-co
   - rosa-delgado
   - vendor-communications
-last_updated: "2026-09-01T19:21:52.172097+00:00"
+last_updated: "2026-09-01T21:25:58.517572+00:00"
 sidebar_label: Vendor Communications
 slug: /vendor-communications
 ---
@@ -20,31 +20,29 @@ slug: /vendor-communications
 # Vendor Communications
 
 ## Overview
-Vendor communications regarding supply chain disruptions, component restocks, and order delay resolutions for [Aurora Labs](./aurora-labs.md). This page tracks official correspondence with suppliers impacting production batches and manufacturing timelines.
+Vendor communications encompass correspondence between [Aurora Labs](./aurora-labs.md) and its component suppliers regarding order statuses, supply chain disruptions, and fulfillment resolutions. A primary example involves order `#PC-88213` for CR2477 cells destined for Aurora Labs' [MeshSync](./meshsync.md) batch 5 production.
 
 ## Key Details
-- **Order Affected:** #PC-88213 (2,400 CR2477 cells for MeshSync batch 5)
-- **Primary Issue:** A customs hold at the Shenzhen facility experienced by the cathode supplier, resulting in a 9-business-day delay.
-- **Revised Schedule:** Revised ship date moved from June 9th to June 18th, 2026.
-- **Proposed Solutions from Vendor:**
-  1. Wait for the complete order to ship on June 18th.
-  2. Air-ship an initial batch of 600 cells from the Ontario warehouse by June 8th to cover immediate field units, followed by the remaining 1,800 cells via truck on the delayed schedule.
-- **Cost Impact:** No additional cost change (absorbed by the vendor).
+* **Order Reference:** `#PC-88213`
+* **Affected Product:** 2,400 CR2477 cells for MeshSync batch 5
+* **Issue:** A customs hold at the Shenzhen facility of PowerCell Supply Co.'s cathode supplier caused a 9-business-day delay.
+* **Revised Schedule:** Original ship date of June 9, 2026, moved to June 18, 2026.
+* **Proposed Resolution Options:**
+  1. Wait for the complete order to ship on June 18, 2026.
+  2. Receive an immediate air-shipment of 600 cells from the Ontario warehouse by June 8, 2026, to cover field units, with the remaining 1,800 cells following via truck on the delayed schedule.
+* **Cost Impact:** No cost change; accommodations are covered by the vendor.
 
 ## Related Entities
-- **PowerCell Supply Co.** – Vendor and supplier of the CR2477 cells.
-- **Rosa Delgado** – Account Manager at PowerCell Supply Co. (sender of the correspondence).
-- **Aurora Labs** – Receiving organization.
-- **[Mira Chen](./aurora-labs.md)** – Recipient at Aurora Labs.
-- **Grace Liu** – CC'd recipient at Aurora Labs.
+* **PowerCell Supply Co.** – Component vendor supplying battery cells.
+* **Aurora Labs** – Recipient organization managing [Firmware](./firmware.md) retests and manufacturing batches.
+* **Rosa Delgado** – Account Manager at PowerCell Supply Co.
+* **[Mira Chen](./nova-widget.md)** – Contact at Aurora Labs receiving the vendor update.
+* **Grace Liu** – CC'd stakeholder at Aurora Labs.
 
 ## Related Concepts
-- **Customs Hold** – Regulatory inspection delay occurring at ports of entry (e.g., Shenzhen).
-- **Order Delay Resolution** – Mitigation strategies involving partial split shipments (air-shipping vs. waiting for full truck shipments).
-- **[Supply Chain Management](./supply-chain-management.md)** – Managing component lead times and [firmware](./firmware.md) retest windows.
-
-## Contradictions
-*(No contradictions reported in current vendor communications)*
+* **Supply Chain Disruptions** – External factors such as international customs holds impacting component delivery.
+* **Order Fulfillment Strategies** – Split-shipment and expedited air-freight options used to mitigate project schedule impacts.
+* **Production Milestones** – Manufacturing constraints tied to tight firmware retest windows for MeshSync batch 5.
 
 ## References & Trust
 

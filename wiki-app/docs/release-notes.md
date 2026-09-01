@@ -10,7 +10,7 @@ tags:
   - rejoin-storm-mitigation
   - release-notes
   - sam-rivera
-last_updated: "2026-09-01T19:21:17.996605+00:00"
+last_updated: "2026-09-01T21:25:23.596858+00:00"
 sidebar_label: Release Notes
 slug: /release-notes
 ---
@@ -20,35 +20,33 @@ slug: /release-notes
 # Release Notes
 
 ## Overview
-This wiki page documents the release notes for the MeshSync [firmware](./firmware.md) version 0.3.8 by [Aurora Labs](./aurora-labs.md), detailing highlights, breaking changes, known issues, and team mentions from the 2026-07-02 release.
+This wiki page documents the release notes for the [MeshSync](./meshsync.md) [firmware](./firmware.md) version 0.3.8 by [Aurora Labs](./aurora-labs.md), detailing firmware highlights, breaking changes, known issues, and project side notes.
 
 ## Key Details
-- **Release Date:** July 2, 2026
-- **Highlights:**
-  - Rejoin storm mitigation implemented for meshes exceeding 6 nodes (addressing a known issue since beta).
-  - Parent election logging introduced, exporting RSSI and hop count via debug UART.
-  - Power spike on rejoin reduced from 340µA to 180µA (though this remains above the 110µA target).
-- **Breaking Changes & Configurations:**
-  - Default read interval is set to **15 minutes** (clarifying that kickoff slides incorrectly stated it was hourly).
-  - Introduction of [MQTT export](./mqtt-export.md) schema v2 (optional, restricted to local broker only).
-- **Known Issues:**
-  - Networks with 8+ nodes remain unstable in field reports (tracked under ticket #2099).
-  - [Battery life](./battery-life.md) expectations differ: engineering estimates 18 months at 10 nodes, while marketing may still promote a 2-year lifespan.
+- **Release Date:** 2026-07-02
+- **Firmware Version:** 0.3.8
+- **Rejoin Storm Mitigation:** Implemented to address issues when the mesh exceeds 6 nodes (a known issue since the [beta testing](./beta-testing.md) phase).
+- **Parent Election Logging:** RSSI and hop count are now exported via debug UART.
+- **Power Optimization:** Power spike on rejoin was reduced from 340µA to 180µA, though this remains above the 110µA target.
+- **Read Interval:** The default read interval remains **15 minutes** (clarified that kickoff slides incorrectly stated it was hourly).
+- **[MQTT Export](./mqtt-export.md):** Introduces MQTT export schema v2 as an optional feature restricted to the local broker only.
 
 ## Related Entities
-- **Aurora Labs:** The organization behind the MeshSync firmware and Aurora v1.
-- **[Mira Chen](./aurora-labs.md):** Firmware owner.
-- **Jonah Park:** QA sign-off owner.
-- **Sam Rivera:** Inquired about syncing tea timers.
+- **Aurora Labs**
+- **[Mira Chen](./nova-widget.md)** (Firmware Owner)
+- **Jonah Park** (QA Sign-off)
+- **Sam Rivera** (Inquired about [TeaBuddy](./teabuddy.md) integration)
 
 ## Related Concepts
-- **MeshSync Firmware 0.3.8:** The specific firmware version covered in these release notes.
-- **Rejoin Storm Mitigation:** Mechanism to handle mesh reconnections when node counts exceed 6.
-- **Parent Election Logging:** Debug feature exporting RSSI and hop count via UART.
-- **MQTT Export Schema v2:** Optional schema for local broker data export.
+- MeshSync firmware
+- [Nova Widget](./nova-widget.md)
+- Rejoin storm mitigation
+- Parent election logging
+- Power spike reduction
+- MQTT export schema v2
 
 ## Contradictions
-*(No explicit contradictions found within the provided source data, though discrepancies between engineering estimates and marketing claims regarding battery life are noted.)*
+&gt; **Contradiction:** There is a discrepancy regarding [battery life](./battery-life.md) expectations. Engineering estimates a battery life of 18 months at 10 nodes, while marketing may still promote a 2-year lifespan.
 
 ## References & Trust
 

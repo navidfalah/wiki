@@ -10,7 +10,7 @@ tags:
   - parent-swap
   - rejoin-storm
   - teabuddy
-last_updated: "2026-09-01T19:18:25.791815+00:00"
+last_updated: "2026-09-01T21:22:34.816966+00:00"
 sidebar_label: Debugging
 slug: /debugging
 ---
@@ -20,34 +20,28 @@ slug: /debugging
 # Debugging
 
 ## Overview
-This wiki page documents [troubleshooting](./troubleshooting.md) efforts, observations, and action items from the MeshSync debug sessions conducted by Mira and Jonah on June 12.
+This page documents the debugging efforts, technical notes, and collaborative [troubleshooting](./troubleshooting.md) sessions conducted by the engineering team (notably [Mira](./nova-widget.md) and Jonah) regarding mesh network synchronization, [power consumption](./power-consumption.md) anomalies, and [hardware](./hardware.md) revisions.
 
 ## Key Details
-- **Rejoin Storms:** A rejoin storm at an 8-node scale continues to reliably reproduce.
-- **[Power Consumption](./power-consumption.md):** A current spike from 110 µA to 340 µA occurs during a parent swap.
-- **Team Perspectives:**
-  - **Mira:** Considers the current behavior "fine for beta." Rejected a request from the [TeaBuddy](./teabuddy.md) team to sync tea timers across the house for v1 ("absolutely not v1").
-  - **Jonah:** Recommends logging every rejoin alongside RSSI and hop count data.
-- **Whiteboard Notes:** Included an exasperated philosophical query regarding topology decisions: *"PARENT? CHILD? WHO DECIDES???"*
+- **Rejoin Storms:** Testing with an 8-node mesh network continues to reproduce rejoin storms, specifically noting a current spike from 110 µA to 340 µA during a parent swap.
+- **Team Stances:** 
+  - Mira considers the current behavior "fine for beta" and ruled out expanding the mesh for use cases like syncing tea timers across a house for the "[Teabuddy](./teabuddy.md)" team ("absolutely not v1").
+  - Jonah requested logging improvements, specifically to log every rejoin event along with its RSSI and hop count.
+- **Whiteboard Notes:** A whiteboard capture from the session highlights core architectural questions regarding network hierarchy: *"PARENT? CHILD? WHO DECIDES???"*
 - **Action Items:**
   - Capture a 24-hour trace on the staging mesh.
-  - Compare the nRF52840 and nRF5340 microcontrollers for the next [hardware](./hardware.md) revision.
+  - Compare the nRF52840 and nRF5340 microcontrollers for the next hardware revision.
   - Create a wiki page titled "known mesh quirks v0.3".
 
 ## Related Entities
-- **Mira**
-- **Jonah**
-- **Teabuddy team**
+- **Mira:** Engineering team member who views current mesh performance as acceptable for beta and dismisses out-of-scope feature requests.
+- **Jonah:** Engineering team member focused on detailed logging and diagnostics (RSSI and hop counts during rejoins).
+- **Teabuddy Team:** Internal team that inquired about syncing tea timers across a house using the mesh network.
 
 ## Related Concepts
-- **MeshSync**
-- **Parent-swap**
-- **Rejoin storm**
-- **nRF52840**
-- **nRF5340**
-
-## Contradictions
-*(No contradictions present in the current source material.)*
+- **[MeshSync](./meshsync.md):** The underlying mesh synchronization system being debugged.
+- **Parent Swap & Rejoin Storms:** Network dynamics involving node re-attachments, causing measurable power consumption spikes (110 µA to 340 µA).
+- **[Hardware Evaluation](./hardware-evaluation.md):** Comparing nRF52840 and nRF5340 chipsets for future hardware revisions.
 
 ## References & Trust
 

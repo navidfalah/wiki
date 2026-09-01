@@ -49,6 +49,10 @@ const selectionChipsEl = document.getElementById('graph-selection-chips')!;
 const selectionClearBtn = document.getElementById('graph-selection-clear')!;
 const selectionExportBtn = document.getElementById('graph-selection-export') as HTMLButtonElement;
 const selectionExportLabel = document.getElementById('graph-selection-export-label')!;
+const networkExportDetails = document.getElementById('graph-network-export') as HTMLDetailsElement;
+const exportAllFilesBtn = document.getElementById('graph-export-all-files') as HTMLButtonElement;
+const exportJsonBtn = document.getElementById('graph-export-json') as HTMLButtonElement;
+const exportImageBtn = document.getElementById('graph-export-image') as HTMLButtonElement;
 
 let graph: ReturnType<typeof ForceGraph<GraphNode, GraphLink>> | null = null;
 let allNodes: GraphNode[] = [];
@@ -160,36 +164,118 @@ function delay(ms: number) {
   return new Promise((resolve) => setTimeout(resolve, ms));
 }
 
+function downloadBlob(filename: string, blob: Blob) {
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = filename;
+  document.body.appendChild(a);
+  a.click();
+  a.remove();
+  URL.revokeObjectURL(url);
+}
+
+// Individual downloads work fine for a handful of files, but triggering
+// dozens at once gets throttled/blocked by the browser -- past this many,
+// bundle everything into one text file instead.
+const INDIVIDUAL_DOWNLOAD_LIMIT = 8;
+
+async function exportNodesAsFiles(nodes: GraphNode[], onProgress: (label: string) => void): Promise<number> {
+  const docs: { node: GraphNode; body: string }[] = [];
+  for (let i = 0; i < nodes.length; i++) {
+    const node = nodes[i];
+    onProgress(`Fetching ${i + 1}/${nodes.length}…`);
+    const res = await fetch(`${apiBase}/api/docs/${node.filename}`);
+    if (!res.ok) continue;
+    const doc = await res.json();
+    docs.push({ node, body: doc.body ?? '' });
+  }
+
+  if (docs.length <= INDIVIDUAL_DOWNLOAD_LIMIT) {
+    for (let i = 0; i < docs.length; i++) {
+      const { node, body } = docs[i];
+      downloadBlob(`${node.filename.replace(/\.md$/, '')}.txt`, new Blob([body], { type: 'text/plain;charset=utf-8' }));
+      if (i < docs.length - 1) await delay(180);
+    }
+  } else {
+    const toc = docs.map((d, i) => `${i + 1}. ${d.node.name}`).join('\n');
+    const sections = docs
+      .map((d) => `\n\n${'='.repeat(72)}\n${d.node.name}\n${'='.repeat(72)}\n\n${d.body}`)
+      .join('');
+    const header = `Topic graph export — ${docs.length} pages\nGenerated ${new Date().toISOString()}\n\n${toc}`;
+    downloadBlob(
+      `topic-graph-export-${docs.length}-pages.txt`,
+      new Blob([header + sections], { type: 'text/plain;charset=utf-8' }),
+    );
+  }
+  return docs.length;
+}
+
 async function exportSelected() {
   const nodes = allNodes.filter((n) => selectedIds.has(n.id));
   if (!nodes.length) return;
   selectionExportBtn.disabled = true;
   const originalLabel = selectionExportLabel.textContent;
   try {
-    for (let i = 0; i < nodes.length; i++) {
-      const node = nodes[i];
-      selectionExportLabel.textContent = `Exporting ${i + 1}/${nodes.length}…`;
-      const res = await fetch(`${apiBase}/api/docs/${node.filename}`);
-      if (!res.ok) continue;
-      const doc = await res.json();
-      const blob = new Blob([doc.body ?? ''], { type: 'text/plain;charset=utf-8' });
-      const url = URL.createObjectURL(blob);
-      const a = document.createElement('a');
-      a.href = url;
-      a.download = `${node.filename.replace(/\.md$/, '')}.txt`;
-      document.body.appendChild(a);
-      a.click();
-      a.remove();
-      URL.revokeObjectURL(url);
-      if (i < nodes.length - 1) await delay(180);
-    }
-    window.showToast?.(`Exported ${nodes.length} file${nodes.length === 1 ? '' : 's'}`, 'success');
+    const count = await exportNodesAsFiles(nodes, (label) => {
+      selectionExportLabel.textContent = label;
+    });
+    window.showToast?.(`Exported ${count} file${count === 1 ? '' : 's'}`, 'success');
   } catch (err) {
     window.showToast?.('Export failed.', 'error');
   } finally {
     selectionExportBtn.disabled = false;
     selectionExportLabel.textContent = originalLabel;
   }
+}
+
+async function exportAllFiles(button: HTMLButtonElement) {
+  if (!allNodes.length) return;
+  const original = button.innerHTML;
+  button.disabled = true;
+  try {
+    const count = await exportNodesAsFiles(allNodes, (label) => {
+      button.querySelector('.block')!.textContent = label;
+    });
+    window.showToast?.(`Exported the whole network — ${count} pages`, 'success');
+  } catch (err) {
+    window.showToast?.('Export failed.', 'error');
+  } finally {
+    button.disabled = false;
+    button.innerHTML = original;
+  }
+}
+
+function exportGraphJSON() {
+  if (!allNodes.length) return;
+  const payload = {
+    generated_at: new Date().toISOString(),
+    node_count: allNodes.length,
+    link_count: allLinks.length,
+    nodes: allNodes.map((n) => ({ id: n.id, title: n.name, filename: n.filename, degree: n.degree })),
+    links: allLinks.map((l) => {
+      const [source, target] = linkEndpointIds(l);
+      return { source, target, origin: l.origin };
+    }),
+  };
+  downloadBlob('topic-graph.json', new Blob([JSON.stringify(payload, null, 2)], { type: 'application/json' }));
+  window.showToast?.('Exported graph structure', 'success');
+}
+
+function exportGraphImage() {
+  const canvas = container.querySelector('canvas');
+  if (!canvas) {
+    window.showToast?.('Graph is not ready yet.', 'error');
+    return;
+  }
+  canvas.toBlob((blob) => {
+    if (!blob) {
+      window.showToast?.('Could not capture the graph image.', 'error');
+      return;
+    }
+    downloadBlob('topic-graph.png', blob);
+    window.showToast?.('Exported current view as an image', 'success');
+  }, 'image/png');
 }
 
 function linkEndpointIds(link: any): [string, string] {
@@ -484,4 +570,23 @@ selectMatchesButton.addEventListener('click', () => {
 });
 selectionClearBtn.addEventListener('click', clearSelection);
 selectionExportBtn.addEventListener('click', exportSelected);
+
+exportAllFilesBtn.addEventListener('click', () => {
+  networkExportDetails.open = false;
+  exportAllFiles(exportAllFilesBtn);
+});
+exportJsonBtn.addEventListener('click', () => {
+  networkExportDetails.open = false;
+  exportGraphJSON();
+});
+exportImageBtn.addEventListener('click', () => {
+  networkExportDetails.open = false;
+  exportGraphImage();
+});
+document.addEventListener('click', (event) => {
+  if (networkExportDetails.open && !networkExportDetails.contains(event.target as Node)) {
+    networkExportDetails.open = false;
+  }
+});
+
 load();

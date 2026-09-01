@@ -10,7 +10,7 @@ tags:
   - power-budget
   - power-management
   - sensenode-sn-400
-last_updated: "2026-09-01T19:20:37.038006+00:00"
+last_updated: "2026-09-01T21:24:41.169227+00:00"
 sidebar_label: Power Management
 slug: /power-management
 ---
@@ -20,27 +20,32 @@ slug: /power-management
 # Power Management
 
 ## Overview
-Power management for the [Aurora Nova Widget v2 beta](./aurora-labs.md) unit governs its [power consumption](./power-consumption.md) across different operating states, balancing power efficiency with its MeshSync local mesh functionality and sampling intervals. The product is co-owned by [Mira Chen](./aurora-labs.md) ([firmware](./firmware.md)) and Jonah Park ([hardware](./hardware.md)).
+Power management for the [Aurora Nova Widget v2 beta](./nova-widget.md) unit governs energy consumption across sleep, sampling, transmission, and network rejoin states. The device operates as an open-source soil moisture and temperature sensor utilizing [MeshSync](./meshsync.md) local mesh communication without mandatory cloud dependency.
 
 ## Key Details
-* **[Power Budget](./power-budget.md) (Draft):**
-  * **Sleep Mode:** Target current of 4.2 µA.
-  * **Sample + TX Mode:** 12 mA peak current draw, executing at 15-minute intervals.
-  * **Rejoin Spike:** Known issue resulting in a current spike of **110–340 µA**.
-* **[Battery Specifications](./battery-specifications.md):**
-  * Uses dual CR2032 batteries (CR2032 × 2).
-  * Marketing projections claim a 2-year [battery life](./battery-life.md), whereas engineering estimates an 18-month lifespan at a 10-node scale.
+The current [power budget](./power-budget.md) for the [Aurora Nova Widget v2](./aurora-nova-widget-v2.md) is outlined as follows:
+
+| Mode | Current | Notes |
+|------|---------|-------|
+| Sleep | 4.2 µA | Target |
+| Sample + TX | 12 mA peak | 15-minute interval |
+| Rejoin spike | **110–340 µA** | Known issue |
+
+- **Battery Configuration:** Dual CR2032 batteries ($\text&#123;CR2032&#125; \times 2$).
+- **[Battery Life](./battery-life.md) Expectations:** Marketing materials claim a 2-year lifespan, whereas engineering projections estimate 18 months at a density of 10 nodes.
 
 ## Related Entities
-* **Aurora Nova Widget v2 beta unit:** The open-source soil moisture and temperature sensor governed by these power specifications.
-* **Mira Chen:** Firmware owner.
-* **Jonah Park:** Hardware owner.
-* **[SenseNode SN-400](./sensenode-sn-400.md):** Competitor product referenced in cross-links.
-* **[TeaBuddy](./teabuddy.md):** Unrelated product mentioned during [project kickoff](./project-kickoff.md).
+- **Aurora Nova Widget v2:** The open-source soil moisture and temperature sensor beta unit utilizing this power budget.
+- **[Mira Chen](./nova-widget.md):** [Firmware](./firmware.md) owner for the device.
+- **Jonah Park:** [Hardware](./hardware.md) owner for the device.
+- **[SenseNode SN-400](./sensenode-sn-400.md):** Competitor product referenced for comparison.
 
 ## Related Concepts
-* **MeshSync:** Local [mesh networking](./mesh-networking.md) protocol utilized by the widget (supports a theoretical maximum of 32 nodes, though [beta testing](./beta-testing.md) up to 8 nodes has been unstable).
-* **Parent Election:** Node hierarchy mechanism whose implementation details are currently unresolved ("??? (see whiteboard)").
+- **MeshSync:** Local [mesh networking](./mesh-networking.md) protocol used by the widget (supports a theoretical maximum of 32 nodes, though [beta testing](./beta-testing.md) has proven unstable at 8 nodes).
+- **Parent Election:** Network routing mechanism currently pending formal specification (noted as "???" on the project whiteboard).
+
+## Contradictions
+*(No direct contradictions present in the current source material, though a discrepancy exists between marketing and engineering regarding battery lifespan projections.)*
 
 ## References & Trust
 

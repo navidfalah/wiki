@@ -23,6 +23,37 @@
     <button id="graph-fit" type="button"
       class="inline-flex items-center justify-center gap-1.5 rounded-lg border border-gray-300 bg-white px-3 py-1.5 text-sm font-medium text-gray-700 hover:bg-gray-50">⤢ Fit view</button>
 
+    <details id="graph-network-export" class="relative">
+      <summary class="inline-flex list-none items-center justify-center gap-1.5 rounded-lg border border-gray-300 bg-white px-3 py-1.5 text-sm font-medium text-gray-700 hover:bg-gray-50 [&::-webkit-details-marker]:hidden">
+        <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="7 10 12 15 17 10"></polyline><line x1="12" y1="15" x2="12" y2="3"></line></svg>
+        Export network
+        <svg viewBox="0 0 24 24" width="12" height="12" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"></polyline></svg>
+      </summary>
+      <div class="absolute right-0 z-10 mt-1.5 w-64 rounded-lg border border-gray-200 bg-white p-1.5 text-sm shadow-panel">
+        <button id="graph-export-all-files" type="button" class="flex w-full items-start gap-2 rounded-md px-2.5 py-2 text-left hover:bg-gray-50">
+          <span class="mt-0.5">📄</span>
+          <span>
+            <span class="block font-medium text-gray-800">All pages (.txt)</span>
+            <span class="block text-xs text-gray-500">Every topic in the graph, bundled into one file</span>
+          </span>
+        </button>
+        <button id="graph-export-json" type="button" class="flex w-full items-start gap-2 rounded-md px-2.5 py-2 text-left hover:bg-gray-50">
+          <span class="mt-0.5">🕸️</span>
+          <span>
+            <span class="block font-medium text-gray-800">Graph structure (.json)</span>
+            <span class="block text-xs text-gray-500">Nodes + links, for use elsewhere</span>
+          </span>
+        </button>
+        <button id="graph-export-image" type="button" class="flex w-full items-start gap-2 rounded-md px-2.5 py-2 text-left hover:bg-gray-50">
+          <span class="mt-0.5">🖼️</span>
+          <span>
+            <span class="block font-medium text-gray-800">Current view (.png)</span>
+            <span class="block text-xs text-gray-500">Snapshot of the canvas as it looks now</span>
+          </span>
+        </button>
+      </div>
+    </details>
+
     <div class="ml-auto flex flex-wrap items-center gap-3 text-xs text-gray-500">
       <span class="flex items-center gap-1.5"><span class="inline-block h-2.5 w-2.5 rounded-full bg-generated-border"></span>Few links</span>
       <span class="flex items-center gap-1.5"><span class="inline-block h-3 w-3 rounded-full bg-generated"></span>Well connected</span>

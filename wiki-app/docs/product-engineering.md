@@ -10,7 +10,7 @@ tags:
   - mira
   - product-engineering
   - wiki
-last_updated: "2026-09-01T19:20:43.208803+00:00"
+last_updated: "2026-09-01T21:24:47.428276+00:00"
 sidebar_label: Product Engineering
 slug: /product-engineering
 ---
@@ -20,28 +20,29 @@ slug: /product-engineering
 # Product Engineering
 
 ## Overview
-Product Engineering encompasses the cross-functional efforts required to design, test, and iterate on [hardware](./hardware.md) and [firmware](./firmware.md) systems—balancing performance, power constraints, hardware enclosures, and network scaling. Recent [engineering standup](./engineering-standup.md) notes highlight ongoing work regarding mesh network scaling, enclosure prototyping, [power management](./power-management.md) questions, and core product philosophy.
+Product engineering encompasses the design, [hardware](./hardware.md) selection, and network architecture of connected devices. Recent [standup notes](./standup-notes.md) highlight ongoing development challenges regarding mesh network scaling, hardware enclosure tooling costs, [power management](./power-management.md) (including CR2032 batteries and solar charging), and maintaining core product ethos around data ownership ("open [sensors](./sensors.md) for people who own their data").
 
 ## Key Details
-* **Mesh Network Scaling:** [Mira](./aurora-labs.md) reports that the mesh network exhibits strange behavior at 8 nodes, noting a current spike of 110 µA upon rejoin. This behavior has been deemed "fine for beta."
-* **Enclosure Prototyping:** Jonah evaluated gasket samples, concluding that while an IP54 rating is acceptable, achieving an IP65 rating would require a costly $8,000 tool rip.
-* **Power & Components:** 
-  * A team debate exists regarding solar trickle charging: Jonah supports it, while Mira opposes it.
-  * A hardware store pricing discrepancy was noted regarding CR2032 coin cell batteries compared to online vendors.
-* **Core Philosophy:** The guiding product vision remains anchored in the principle: *"open [sensors](./sensors.md) for people who own their data"*.
-* **Pending Tasks:** Maintenance items include fixing the staging cron job, resolving the solar trickle debate, and updating the project wiki.
+- **Mesh Network Scaling ([Mira](./nova-widget.md)):** [Mesh networking](./mesh-networking.md) behavior becomes irregular at 8 nodes, exhibiting a current spike of 110µA upon rejoin, which is currently deemed "fine for beta."
+- **Enclosures and Hardware (Jonah):** Gasket samples have tested unsatisfactorily ("meh"). While an IP54 rating is acceptable, upgrading to an IP65 rating would require an expensive $8,000 tool rip.
+- **Power & Components:** 
+  - [Power consumption](./power-consumption.md) optimization remains a focal point, including handling rejoins and evaluating solar trickle charging feasibility.
+  - CR2032 coin cell batteries exhibit price discrepancies between hardware stores and online vendors.
+- **Product Vision:** The core guiding mantra continues to be "open sensors for people who own their data."
+- **Testing & Maintenance:** Routine engineering tasks include touch testing, incremental testing, and addressing staging environment infrastructure (such as cron jobs).
 
 ## Related Entities
-* **Mira:** Team member handling mesh network evaluation and opposing solar trickle integration.
-* **Jonah:** Team member handling enclosure/gasket samples and supporting solar trickle integration.
+- **Mira:** Team member or engineering lead managing mesh network behavior and node scaling.
+- **Jonah:** Team member managing mechanical aspects, including gasket samples, IP ratings, and tooling decisions.
+- **CR2032:** Coin cell battery type evaluated for hardware power requirements.
 
 ## Related Concepts
-* **Mesh Network Scaling:** Evaluating network reliability and current consumption (e.g., rejoin spikes) as node counts increase.
-* **IP Enclosure Rating:** Designing protective enclosures for environmental resistance, balancing sealing levels (IP54 vs. IP65) against tooling costs.
-* **Data Sovereignty:** Designing open sensor architectures centered around user data ownership.
+- **Mesh Network Scaling:** The operational stability and power profile of device-to-device communication as node counts increase.
+- **IP Enclosure Ratings:** Standards for environmental protection against dust and moisture (specifically evaluating IP54 vs. IP65 trade-offs).
+- **Data Sovereignty:** The principle of users retaining complete ownership of their sensor data ("open sensors for people who own their data").
 
 ## Contradictions
-&gt; **Contradiction:** There is an internal disagreement between Jonah and Mira regarding the inclusion of solar trickle functionality, with Jonah in favor and Mira against.
+&gt; **Contradiction:** There is an internal team disagreement regarding solar trickle charging. Jonah is in favor ("jonah yes"), while Mira opposes or has reservations ("mira no").
 
 ## References & Trust
 

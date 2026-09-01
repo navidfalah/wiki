@@ -8,7 +8,7 @@ tags:
   - meshsync
   - nova-widget
   - wiki
-last_updated: "2026-09-01T19:19:49.676967+00:00"
+last_updated: "2026-09-01T21:23:58.657350+00:00"
 sidebar_label: Mechanical Design
 slug: /mechanical-design
 ---
@@ -18,23 +18,25 @@ slug: /mechanical-design
 # Mechanical Design
 
 ## Overview
-Mechanical design specifications for [hardware](./hardware.md) revision C of the [Nova Widget](./nova-widget.md) outline the physical enclosure, sealing mechanisms, and structural considerations for production. The design emphasizes splash resistance and addresses previous hardware feedback such as battery rattle.
+The mechanical design specifications outline the structural and physical enclosure requirements for the [Nova Widget](./nova-widget.md) [hardware](./hardware.md) revision C. The design focuses on a pebble-shaped housing built with rapid prototyping materials and weather-sealing considerations.
 
 ## Key Details
-- **Enclosure:** Constructed from PETG beta material featuring a pebble shape, designed by Jonah.
-- **Gasket:** Utilizes a silicone 50A gasket providing IP54 splash resistance.
-- **Variants:** An IP65 tooled variant was evaluated but ultimately deferred following a $7,850 cost quote.
-- **Battery Compartment:** The CR2032 battery holder (revision C) specifically incorporates fixes to eliminate battery rattle observed in previous iterations.
-- **Labels:** Strict instructions dictate that "CR2450" must NOT be printed, preventing a recurrence of the misprint that triggered ticket #2201.
+- **Enclosure:** Constructed from PETG beta material, featuring a pebble shape designed by Jonah.
+- **Gasketing & Sealing:** Utilizes a silicone 50A gasket, providing IP54 splash resistance.
+- **Tooled Variants:** A fully tooled IP65 variant was considered but ultimately deferred due to a $7,850 cost quote.
+- **Battery Compartment Integration:** Incorporates a CR2032 battery holder (revision C) specifically engineered to fix battery rattle issues. *(Note: Previous misprints referencing the CR2450 led to ticket #2201, and printing instructions explicitly forbid it).*
 
 ## Related Entities
-- **Jonah:** The designer responsible for the pebble-shaped PETG beta enclosure.
-- **Nova Widget:** The primary hardware device utilizing these mechanical and electrical specifications (hardware revision C).
+- **Jonah:** The designer responsible for the pebble-shaped enclosure.
+- **Nova Widget:** The hardware device (Revision C) implementing these mechanical specifications.
 
 ## Related Concepts
 - **IP54 Splash Resistance:** The ingress protection rating achieved via the silicone 50A gasket.
-- **MeshSync:** The [firmware](./firmware.md) baseline running version 0.3.8 with a 15-minute default interval.
-- **Capacitive Soil Probe:** A 30mm electrical component integrated alongside the hardware assembly.
+- **[MeshSync](./meshsync.md):** The [firmware](./firmware.md) baseline running on the device (version 0.3.8 with a 15-minute default interval).
+- **Capacitive Soil Probe:** The 30mm internal/external sensor probe integrated into the device hardware.
+
+## Contradictions
+*(No contradictions present in the current specification baseline.)*
 
 ## References & Trust
 

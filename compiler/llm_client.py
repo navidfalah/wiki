@@ -11,7 +11,7 @@ import sqlite3
 import time
 from datetime import UTC, datetime
 from pathlib import Path
-from typing import Any
+from typing import Any, Iterator
 
 from dotenv import load_dotenv
 
@@ -324,6 +324,77 @@ class LLMClient:
                 response=content,
             )
         return content
+
+    def stream_response(
+        self,
+        prompt: str,
+        system_prompt: str,
+        *,
+        temperature: float = 0.2,
+        use_cache: bool | None = None,
+    ) -> Iterator[str]:
+        """Like generate_response(), but yields text deltas as they arrive
+        instead of returning the full string. A cache hit yields the whole
+        cached response as a single chunk. On a real API call, the full
+        streamed text is written to the same cache generate_response() uses
+        once the stream finishes, so a repeated question is still a cache
+        hit next time (streamed or not).
+        """
+        if not self.available:
+            raise RuntimeError(
+                "No OPENAI_API_KEY set. Add a key to .env or pass api_key= to LLMClient."
+            )
+
+        cache_on = self.cache_enabled if use_cache is None else use_cache
+        cache_key = make_cache_key(system_prompt, prompt, self.model, temperature)
+
+        if cache_on:
+            cached = self.cache.get(cache_key)
+            if cached is not None:
+                self._record_usage(model=self.model, cached=True)
+                yield cached
+                return
+
+        messages = [
+            {"role": "system", "content": system_prompt},
+            {"role": "user", "content": prompt},
+        ]
+        last_error: Exception | None = None
+        for attempt in range(1, self.max_retries + 1):
+            try:
+                stream = self._get_client().chat.completions.create(
+                    model=self.model,
+                    temperature=temperature,
+                    messages=messages,
+                    stream=True,
+                )
+                full_text = ""
+                for chunk in stream:
+                    delta = chunk.choices[0].delta.content if chunk.choices else None
+                    if delta:
+                        full_text += delta
+                        yield delta
+                self._record_usage(model=self.model)
+                if cache_on:
+                    self.cache.set(
+                        cache_key,
+                        system_prompt=system_prompt,
+                        prompt=prompt,
+                        model=self.model,
+                        response=full_text,
+                    )
+                return
+            except RETRYABLE_EXCEPTIONS as exc:
+                last_error = exc
+                if attempt >= self.max_retries:
+                    break
+                time.sleep(self.retry_base_delay * (2 ** (attempt - 1)))
+            except Exception as exc:
+                raise RuntimeError(f"LLM API call failed (non-retryable): {exc}") from exc
+
+        raise RuntimeError(
+            f"LLM API call failed after {self.max_retries} attempt(s): {last_error}"
+        ) from last_error
 
     def embed_text(self, text: str, *, use_cache: bool | None = None) -> list[float]:
         """Embed text via an OpenAI-compatible embeddings endpoint.

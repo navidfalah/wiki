@@ -4,12 +4,13 @@ title: Wiki Maintenance
 tags:
   - wiki
   - docusaurus
+  - documentation-pipeline
   - wiki-linter
   - explicit-contradiction-documentation
-  - documentation-pipeline
-  - battery-state-indicator
   - meshsync
-last_updated: "2026-09-01T19:22:03.288380+00:00"
+  - meshsink
+  - battery-state-indicator
+last_updated: "2026-09-01T21:26:09.033599+00:00"
 sidebar_label: Wiki Maintenance
 slug: /wiki-maintenance
 ---
@@ -19,25 +20,24 @@ slug: /wiki-maintenance
 # Wiki Maintenance
 
 ## Overview
-Wiki maintenance encompasses the tools, pipelines, and best practices required to keep project [documentation](./documentation.md) organized, up to date, and free of orphaned pages. It bridges raw text notes with publishing platforms like Docusaurus while addressing recurring documentation pain points such as outdated index files and unresolved project terminology.
+Wiki maintenance encompasses the processes, tools, and backlog items related to keeping [Documentation](./documentation.md) organized, up to date, and structurally sound. This includes managing pipelines for compiling raw text notes into Docusaurus-compatible markdown files, addressing structural issues like orphan pages, and documenting conflicting facts explicitly within wiki pages.
 
 ## Key Details
-- **Wiki Linter:** A proposed utility designed to detect and flag orphan pages within the wiki, enforcing structural integrity since orphan pages are considered undesirable.
-- **Documentation Pipeline:** A half-baked workflow aimed at automatically compiling raw text files (`.txt`) into Markdown (`.md`) and subsequently into a Docusaurus-compatible publishing pipeline.
-- **Index Maintenance:** Addresses the persistent issue of why `index.md` files consistently fall out of date across software and documentation projects.
-- **Explicit Contradictions:** A documentation standard requiring conflicting facts, debates, or disputed naming choices to be documented directly and explicitly within wiki pages rather than being silently overwritten.
+* **Documentation Pipeline:** A half-baked automation pipeline exists to compile raw text (`.txt`) notes into markdown (`.md`) files formatted for Docusaurus.
+* **Orphan Detection:** Orphan pages are considered detrimental to the wiki's structure, and a wiki linter is proposed to automatically identify them.
+* **Explicit Contradictions:** Best practices for the wiki dictate that contradictions should be documented explicitly rather than glossed over or overwritten.
+* **Index Maintenance:** A persistent operational issue across projects is that `index.md` files consistently fall out of date.
 
 ## Related Entities
-- **Docusaurus:** The target static site generator for the raw text-to-markdown documentation pipeline.
-- **MeshSync / MeshSink:** A disputed project naming decision where renaming `MeshSync` to `MeshSink` has been explicitly rejected three times.
+* **Docusaurus:** The static site generator used for rendering the wiki documentation.
+* **[MeshSync](./meshsync.md) / MeshSink:** A naming debate involving the component `MeshSync`. A proposed rename to `MeshSink` has been explicitly rejected three times.
 
 ## Related Concepts
-- **Documentation Pipelines:** Automated workflows transforming unstructured notes into structured web documentation.
-- **Orphan Pages:** Disconnected wiki pages that lack inbound links from other sections of the site.
-- **Explicit Contradiction Documentation:** The practice of recording conflicting ideas or rejected changes transparently within knowledge bases.
+* **Wiki Linter:** A proposed automated tool to scan the documentation repository for structural issues, specifically targeting orphan pages.
+* **Explicit Contradiction Documentation:** A practice of explicitly capturing and maintaining known opposing facts or conflicting viewpoints directly inside wiki pages.
 
 ## Contradictions
-&gt; **Contradiction:** There is an ongoing internal debate regarding project nomenclature. While one faction or past note has repeatedly attempted to rename "MeshSync" to "MeshSink", the proposal has been explicitly rejected three times, yet it continues to resurface in backlogs.
+* **MeshSync Naming:** There is a historical tension surrounding the identifier `MeshSync`. While a suggestion was made to rename it to `MeshSink`, this proposal has been rejected three separate times, cementing the `MeshSync` name.
 
 ## References & Trust
 

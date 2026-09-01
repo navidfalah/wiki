@@ -2,12 +2,15 @@
 id: hardware-development
 title: Hardware Development
 tags:
+  - alex
   - alex-kim
+  - aurora
   - aurora-labs
+  - auroralabs
   - battery-state-indicator
   - ble-vs-mesh-tradeoffs
   - bridge-financing
-last_updated: "2026-09-01T19:18:57.426451+00:00"
+last_updated: "2026-09-01T21:23:05.012712+00:00"
 sidebar_label: Hardware Development
 slug: /hardware-development
 ---
@@ -18,46 +21,37 @@ slug: /hardware-development
 
 ## Overview
 
-[Hardware](./hardware.md) development at [Aurora Labs](./aurora-labs.md) centers on the **[Nova Widget](./nova-widget.md)**, an open-source [IoT](./iot.md) sensor designed for home gardeners and small-acreage farmers who want to own their data without relying on mandatory cloud accounts or subscription dashboards. Founded by [Mira Chen](./aurora-labs.md) and Jonah Park in Portland, Oregon, the project emphasizes local-first data access (via [MQTT export](./mqtt-export.md) or CSV), rugged outdoor usability, and long-term battery efficiency.
+[Hardware](./hardware.md) development at [Aurora Labs](./aurora-labs.md) focuses on creating open, local-first [IoT sensors](./iot-sensors.md) for home gardeners and small-acreage farmers under the mission statement: *"Open sensors for people who own their data."* The flagship product, currently named **[Nova Widget](./nova-widget.md)** (designed to feel like garden equipment rather than surveillance gear), utilizes an nRF52840 MCU, capacitive soil moisture sensors, ambient light photodiodes, and air temperature tracking. 
+
+The project emphasizes local data ownership, avoiding subscription-based cloud dashboards in favor of optional CSV exports or [MQTT](./mqtt.md) integration.
 
 ## Key Details
 
-### Product Specifications & Hardware Choices
-- **Working Name:** Nova Widget
-- **Target Audience:** Home gardeners and small-acreage farmers.
-- **Core [Sensors](./sensors.md):** Capacitive soil moisture, air temperature, and ambient light (simple photodiode).
-- **MCU & Connectivity:** Built on the nRF52840 microcontroller, featuring [Bluetooth Low Energy](./bluetooth-low-energy.md) ([BLE](./ble.md)) for phone setup and a custom mesh protocol called **MeshSync** for range extension.
-- **Enclosure & Weatherproofing:** Initial beta units use 3D-printed PETG (with plans for injection molding if bridge financing is secured). Due to an $8,000 tooling cost for IP65 injection molding, beta units are shipping with IP54 water-resistance and clear splash-resistance disclaimers. 
-- **Power & Battery:** Designed to run on a CR2032 coin cell battery. Devices feature a color-coded LED battery state indicator to signal low power status.
+### Prototyping and Enclosures
+- **Enclosures:** The beta units use 3D-printed PETG (recommended by Jonah Park for beta injection molding if bridge financing is secured). 
+- **[Waterproofing](./waterproofing.md):** IP65 tooling has been deferred due to an $8k tool rip cost, resulting in beta units shipping with an **IP54 rating** and clear splash-resistance language. (Competitor [SenseNode SN-400](./sensenode-sn-400.md) maintains an outdoor waterproof advantage with IP67).
+- **Power and Battery:** Powered by a CR2032 coin cell battery (resolving earlier blog and teardown typos referencing CR2450). The device features a color-coded LED battery state indicator to show when the device is running low ("I'm dying" battery state).
 
-### Software & Mesh Networking
-- **[MeshSync Protocol](./meshsync-protocol.md):** Custom [mesh networking](./mesh-networking.md) protocol developed by Mira Chen. Version 0.3.8 introduced rejoin fixes, successfully unblocking 8-node deployments (though recommended for 6 nodes during [beta testing](./beta-testing.md)). Rejoin spikes of 110 µA have been observed.
-- **Data Export:** Optional CSV export and MQTT dashboard support; cloud dashboards are intentionally non-mandatory.
-
-### Business & Financials
-- **Current Traction:** 47 beta Nova Widget units deployed in the field.
-- **Funding Ask:** Seeking $500,000 in bridge financing to cover injection molding tools and add 2 full-time equivalent (FTE) [firmware](./firmware.md) engineers.
+### Firmware and Connectivity
+- **Communication:** [Bluetooth Low Energy](./bluetooth-low-energy.md) ([BLE](./ble.md)) is utilized for phone setup, while a custom multi-node mesh protocol codenamed **[MeshSync](./meshsync.md)** handles range extension. MeshSync version 0.3.8 introduced rejoin fixes supporting deployments up to 8 nodes (though 6 nodes are recommended for stability during beta).
+- **Readings & Sync:** Nodes experience a 110 µA spike upon rejoining the mesh, which is considered acceptable for the beta phase.
 
 ## Related Entities
 
-- **Aurora Labs:** The parent organization/company founded by Mira and Jonah.
-- **Mira Chen:** Co-founder responsible for firmware, the MeshSync protocol, and power profiling.
-- **Jonah Park:** Co-founder responsible for PCBs, sensors, and [mechanical design](./mechanical-design.md).
-- **Alex Kim:** Founder of [TeaBuddy](./teabuddy.md), guest speaker at local-first IoT lunch-and-learns, and collaborator on maker community co-marketing.
-- **[SenseNode](./sensenode-sn-400.md) (SN-400):** Competitor product known for an outdoor waterproof narrative featuring an IP67 rating.
+- **[Mira Chen](./nova-widget.md):** Co-founder handling [firmware](./firmware.md), the [MeshSync protocol](./meshsync-protocol.md), and power profiling.
+- **Jonah Park:** Co-founder handling PCBs, sensors, and [mechanical design](./mechanical-design.md).
+- **Aurora Labs:** The parent company and project name ("something that sounds like dawn, new beginning").
+- **Alex Kim:** Founder of [TeaBuddy](./teabuddy.md), who visited for a lunch-and-learn to discuss local-first IoT, BLE vs. mesh tradeoffs, and zero cloud accounts.
 
 ## Related Concepts
 
-- **MeshSync:** The custom nRF52840 mesh networking protocol used to chain multiple Nova Widget nodes together.
-- **Local-First IoT:** The design philosophy of retaining user data locally via CSV or MQTT rather than forcing mandatory cloud storage accounts.
-- **BLE vs. Mesh Tradeoffs:** The architectural decision to use BLE for direct phone configuration and mesh routing for broader outdoor range.
-- **Power Budgeting:** Managing sleep cycles and active radio usage on an nRF52840 to achieve multi-year longevity from a CR2032 coin cell.
+- **Local-First IoT:** Devices operating without mandatory cloud infrastructure, supporting [MQTT export](./mqtt-export.md) and optional CSV logging instead.
+- **[Mesh Networking](./mesh-networking.md) (MeshSync):** Custom protocol enabling node-to-node communication for extended range in agricultural and garden settings.
+- **Bridge Financing:** A targeted $500k raise proposed to fund upcoming injection mold tooling and 2 full-time firmware engineers.
 
 ## Contradictions
 
-&gt; **Contradiction:** [Documentation](./documentation.md) and team notes contain conflicting [battery life](./battery-life.md) claims, stating both 2 years and 18 months, which requires publishing an official [power budget](./power-budget.md) spreadsheet.
-
-&gt; **Contradiction:** Team records conflict regarding reading intervals, noting both hourly and 15-minute defaults for beta testers.
+&gt; **Contradiction:** [Battery life](./battery-life.md) and reading intervals feature conflicting [documentation](./documentation.md) across project records. Initial kickoff notes targeted a 2-year lifespan on a CR2032 battery with **hourly** readings, while later specs and team discussions pointed toward a **15-minute** default interval. A [power budget](./power-budget.md) spreadsheet is planned to resolve these metrics.
 
 ## References & Trust
 

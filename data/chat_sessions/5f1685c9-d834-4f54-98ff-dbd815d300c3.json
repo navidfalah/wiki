@@ -1,0 +1,86 @@
+{
+  "id": "5f1685c9-d834-4f54-98ff-dbd815d300c3",
+  "title": "Imported chat",
+  "created_at": "2026-09-01T21:03:22.869Z",
+  "updated_at": "2026-09-01T21:30:21.373Z",
+  "resource_scope": null,
+  "messages": [
+    {
+      "role": "user",
+      "content": "what is this company about",
+      "at": "2026-09-01T20:51:19.060Z"
+    },
+    {
+      "role": "assistant",
+      "content": "Based on the provided wiki excerpts, Aurora Labs is a company whose focus includes:\n\n* **Core technology and products:** Mesh data retention on local area networks (LAN), manufacturing the Aurora Nova Widget (a local mesh soil sensor developed in a LAN-first architecture), and developing the MeshSync firmware and Aurora v1 [2, 3, 4, 5]. \n* **Business needs:** Actively pursuing capital and fundraising to support its hardware production and software scaling needs [1]. \n* **Leadership:** Headed by CEO and firmware owner Mira Chen [1, 4].",
+      "sources": [
+        {
+          "doc_path": "fundraising.md",
+          "title": "Fundraising",
+          "heading": "Overview",
+          "score": 5,
+          "slug": ""
+        },
+        {
+          "doc_path": "podcast-planning.md",
+          "title": "Podcast Planning",
+          "heading": "Related Entities",
+          "score": 4,
+          "slug": ""
+        },
+        {
+          "doc_path": "aurora-nova-widget.md",
+          "title": "Aurora Nova Widget",
+          "heading": "Related Entities",
+          "score": 3,
+          "slug": ""
+        },
+        {
+          "doc_path": "release-notes.md",
+          "title": "Release Notes",
+          "heading": "Related Entities",
+          "score": 2,
+          "slug": ""
+        },
+        {
+          "doc_path": "show-hn.md",
+          "title": "Show HN",
+          "heading": "Overview",
+          "score": 1,
+          "slug": ""
+        }
+      ],
+      "at": "2026-09-01T20:51:19.060Z"
+    },
+    {
+      "role": "user",
+      "content": "What is MeshSync?",
+      "at": "2026-09-01T21:04:56.907Z"
+    },
+    {
+      "role": "assistant",
+      "content": "Based on the provided wiki excerpts, MeshSync is:\n\n* A local mesh communication protocol designed to operate without mandatory cloud dependency [1].\n* Firmware/networking technology used by devices like the Nova Widget to organize into a self-healing mesh with a maximum hop count of 4, allowing a USB-powered gateway node to bridge the mesh network to MQTT [3]. \n* Currently stable at 8 nodes (with a power spike to 110 µA when a node rejoins), operating on versions such as MeshSync 0.3.8+ which resolves duplicate messages from rejoin storms [4, 5].",
+      "sources": [],
+      "at": "2026-09-01T21:04:56.907Z"
+    },
+    {
+      "role": "user",
+      "content": "what else",
+      "at": "2026-09-01T21:30:21.373Z"
+    },
+    {
+      "role": "assistant",
+      "content": "Based on the provided wiki excerpts, regarding \"MeshSync\":\n\n* There was a proposal to rename `MeshSync` to `MeshSink`, which was rejected for the 4th consecutive time [1].",
+      "sources": [
+        {
+          "doc_path": "sprint-retrospective.md",
+          "title": "Sprint Retrospective",
+          "heading": "Key Details",
+          "score": 1,
+          "slug": "sprint-retrospective"
+        }
+      ],
+      "at": "2026-09-01T21:30:21.373Z"
+    }
+  ]
+}

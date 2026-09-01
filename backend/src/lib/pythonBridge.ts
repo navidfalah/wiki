@@ -119,6 +119,93 @@ export function streamCompilerBuild(res: Response, options: CompilerBuildOptions
   });
 }
 
+export interface ChatStreamInput {
+  message: string;
+  history: { role: string; content: string }[];
+  docScope: string[] | null;
+}
+
+export interface ChatStreamResult {
+  answer: string;
+  sources: Array<{ doc_path: string; title: string; heading?: string; score?: number }>;
+  mode: string;
+}
+
+/** Streams `cli.py chat-stream`'s NDJSON events out as SSE (same shape as
+ * streamCompilerBuild's stdout buffering), and resolves with the final
+ * "done" event's payload once the process closes -- the caller persists
+ * that as the chat session's new turn. */
+export function streamChat(res: Response, input: ChatStreamInput): Promise<ChatStreamResult> {
+  res.writeHead(200, {
+    'Content-Type': 'text/event-stream',
+    'Cache-Control': 'no-cache',
+    Connection: 'keep-alive',
+    'X-Accel-Buffering': 'no',
+  });
+
+  return new Promise((resolve, reject) => {
+    const child = spawn(PYTHON_BIN, ['cli.py', 'chat-stream'], {
+      cwd: COMPILER_DIR,
+      env: { ...process.env, ...envOverridesForSpawn() },
+    });
+
+    let settled = false;
+    let buffer = '';
+    let stderr = '';
+    let latestSources: ChatStreamResult['sources'] = [];
+
+    const handleLine = (line: string) => {
+      if (!line.trim()) return;
+      let event: any;
+      try {
+        event = JSON.parse(line);
+      } catch {
+        return; // ignore non-JSON stray output
+      }
+      sseEvent(res, event.type, event);
+      if (event.type === 'sources') {
+        latestSources = event.sources ?? [];
+      } else if (event.type === 'done') {
+        settled = true;
+        resolve({ answer: event.answer ?? '', sources: latestSources, mode: event.mode });
+      } else if (event.type === 'error') {
+        settled = true;
+        reject(new PythonCliError(event.message || 'Chat stream failed'));
+      }
+    };
+
+    child.stdout.on('data', (chunk: Buffer) => {
+      buffer += chunk.toString('utf-8');
+      const lines = buffer.split('\n');
+      buffer = lines.pop() ?? '';
+      for (const line of lines) handleLine(line);
+    });
+    child.stderr.on('data', (chunk: Buffer) => {
+      stderr += chunk.toString('utf-8');
+    });
+
+    child.on('close', () => {
+      if (buffer.trim()) handleLine(buffer);
+      if (!settled) {
+        const message = stderr || 'Chat stream produced no result';
+        sseEvent(res, 'error', { message });
+        reject(new PythonCliError(message));
+      }
+      res.end();
+    });
+    child.on('error', (err) => {
+      if (!settled) {
+        sseEvent(res, 'error', { message: err.message });
+        reject(new PythonCliError(err.message));
+      }
+      res.end();
+    });
+
+    child.stdin.write(JSON.stringify(input));
+    child.stdin.end();
+  });
+}
+
 export class PythonCliError extends Error {
   errorType?: string;
 }

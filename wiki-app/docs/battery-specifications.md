@@ -8,9 +8,9 @@ tags:
   - battery-specifications
   - mira
   - power-budget
-  - teabuddy
+  - teabudzie
   - wiki
-last_updated: "2026-09-01T19:17:57.258693+00:00"
+last_updated: "2026-09-01T21:22:07.360117+00:00"
 sidebar_label: Battery Specifications
 slug: /battery-specifications
 ---
@@ -20,26 +20,27 @@ slug: /battery-specifications
 # Battery Specifications
 
 ## Overview
-This page outlines the battery specifications and longevity details for the [Aurora Nova Widget](./aurora-nova-widget.md), based on support [documentation](./documentation.md) and customer inquiries regarding conflicting public data.
+This wiki page covers the battery specifications for the [Aurora Nova Widget](./aurora-nova-widget.md), addressing discrepancies found in early [documentation](./documentation.md), teardown blogs, and marketing materials regarding battery types and longevity.
 
 ## Key Details
-- **Correct Battery Type:** The official battery type for the Aurora Nova Widget is the **CR2032**. 
-- **[Battery Life](./battery-life.md):** Battery longevity varies based on node count and the read interval (which defaults to 15 minutes). 
-- **Documentation Status:** 
-  - Alex's teardown blog initially listed the incorrect battery size (CR2450), but the blog was corrected on June 20, 2026, and the wiki page has since been updated.
-  - A comprehensive [power budget](./power-budget.md) document is slated for publication soon to provide further clarity on longevity metrics.
+- **Correct Battery Type:** CR2032 (confirmed by support agent Mira, replacing an erroneous CR2450 mention).
+- **Documentation Updates:** 
+  - Alex's teardown blog was corrected on June 20, 2026.
+  - The official wiki page has been updated to reflect the CR2032 specification.
+- **[Battery Life](./battery-life.md) Factors:** Battery longevity depends heavily on node count and the read interval (which defaults to 15 minutes). A formal [power budget](./power-budget.md) document is scheduled to be published soon.
 
 ## Related Entities
-- **Aurora Nova Widget:** The primary product covered by these specifications.
-- **Alex:** Author of the teardown blog that previously listed conflicting battery information.
-- **[Mira](./aurora-labs.md):** Support agent who clarified the correct specifications via support ticket #2201.
-- **[TeaBuddy](./teabuddy.md):** An unrelated product and company that does not share the application ecosystem with the Aurora Nova Widget.
+- **Aurora Nova Widget:** The product associated with these battery specifications.
+- **Alex:** Author of the teardown blog that initially listed an incorrect battery type.
+- **Mira:** Support agent who clarified the correct specifications and documentation updates.
+- **[TeaBuddy](./teabuddy.md):** An unrelated product from a different company that does not share the application.
 
 ## Related Concepts
-- **Power Budget:** The relationship between node count, read intervals (15-minute default), and overall battery longevity.
+- **Power Budget:** The analytical breakdown of energy consumption based on node count and read intervals.
+- **Battery Life Expectancy:** The estimated operational lifespan of the device's battery.
 
 ## Contradictions
-&gt; **Contradiction:** Discrepancies exist regarding expected battery lifespan. Marketing materials state a 2-year battery life, whereas community forum discussions suggest an 18-month duration.
+&gt; **Contradiction:** Marketing materials state that the battery lasts for 2 years, whereas community forum discussions claim an 18-month lifespan.
 
 ## References & Trust
 

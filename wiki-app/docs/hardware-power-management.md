@@ -10,7 +10,7 @@ tags:
   - radio-wake-time
   - relay-radio-sleep-timer
   - wiki
-last_updated: "2026-09-01T19:19:00.431812+00:00"
+last_updated: "2026-09-01T21:23:08.356748+00:00"
 sidebar_label: Hardware Power Management
 slug: /hardware-power-management
 ---
@@ -20,22 +20,25 @@ slug: /hardware-power-management
 # Hardware Power Management
 
 ## Overview
-[Hardware](./hardware.md) [power management](./power-management.md) focuses on optimizing energy consumption and resolving [battery drain](./battery-drain.md) issues across [networking](./networking.md) and mesh hardware components. Recent field reports and bench tests have identified specific inefficiencies in relay radio sleep cycles, prompting targeted [firmware](./firmware.md) adjustments to improve overall device [battery life](./battery-life.md).
+[Hardware](./hardware.md) [Power Management](./power-management.md) at [Aurora Labs](./aurora-labs.md) encompasses the optimization and [troubleshooting](./troubleshooting.md) of [power consumption](./power-consumption.md) across [networking](./networking.md) hardware, specifically addressing [battery drain](./battery-drain.md) issues in field units. Investigations focus on radio sleep timers, packet reception behaviors, and hop timing parameters to maximize operational lifespan.
 
 ## Key Details
-* **Bench Confirmation:** Bench tests confirmed that the relay radio's sleep timer incorrectly resets on every incoming packet. Consequently, in a busy mesh network, continuous packet traffic prevents the radio from ever entering a sleep state, resulting in accelerated battery drain.
-* **Draft Fix ([MESH-118](./mesh-118.md)):** To address the sleep-timer issue, ticket MESH-118 proposes reducing the radio wake time from 400ms to 80ms per hop.
-* **Release Schedule:** A [Release 0.3.9](./release-039.md) candidate build incorporating this fix is scheduled for release by Friday to allow for retesting on batch 4 field units.
+* **Relay Radio Sleep Timer Issue:** Bench testing confirmed that the relay radio's sleep timer incorrectly resets upon every received packet. Consequently, a busy mesh network prevents the radio from entering sleep mode, causing severe battery drain.
+* **Proposed Fix (`MESH-118`):** A draft fix under ticket [`MESH-118`](./mesh-118.md) reduces the radio wake time from 400ms down to 80ms per hop to mitigate excessive power consumption.
+* **Release Schedule:** A 0.3.9 candidate build incorporating this fix is scheduled for Friday, intended for retesting on batch 4 units.
 
 ## Related Entities
-* **Jonah Park:** [Aurora Labs](./aurora-labs.md) engineer who confirmed the bench test results and drafted the MESH-118 fix.
-* **Mira Chen:** Aurora Labs team member responsible for retesting the 0.3.9 candidate build on batch 4 units.
-* **Aurora Labs:** Organization overseeing the engineering and field testing of the hardware.
+* [Jonah Park](jonah-park) — Aurora Labs engineer who confirmed the bench test results and drafted the `MESH-118` fix.
+* [Mira Chen](mira-chen) — Aurora Labs team member responsible for retesting the 0.3.9 candidate build on batch 4 units.
+* [`MESH-118`](./mesh-118.md) — Engineering ticket tracking the radio wake time reduction.
 
 ## Related Concepts
-* **Relay Radio Sleep Timer:** The mechanism responsible for putting relay radios into a low-power sleep state, which was found to be perpetually reset by incoming packet traffic.
-* **Radio Wake Time:** The duration the radio remains active per network hop, targeted for reduction to conserve battery.
-* **Mesh Networks:** Distributed communication topology affected by high packet volume and corresponding wake-state [power consumption](./power-consumption.md).
+* **Radio Wake Time:** The duration a radio remains active per hop during transmission and reception; optimized from 400ms to 80ms to save power.
+* **Relay Radio Sleep Timer:** The automated timer responsible for putting the relay radio into a low-power sleep state, which was found to be perpetually resetting in busy mesh environments.
+* **Mesh Networks:** Distributed wireless network topologies that experienced high battery drain due to constant packet reception resetting sleep cycles.
+
+## Contradictions
+*(No contradictions noted in the current source material.)*
 
 ## References & Trust
 

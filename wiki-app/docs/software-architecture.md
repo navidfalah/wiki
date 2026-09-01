@@ -10,7 +10,7 @@ tags:
   - software-architecture
   - widget-design-philosophy
   - wiki
-last_updated: "2026-09-01T19:21:32.476153+00:00"
+last_updated: "2026-09-01T21:25:37.316180+00:00"
 sidebar_label: Software Architecture
 slug: /software-architecture
 ---
@@ -20,25 +20,24 @@ slug: /software-architecture
 # Software Architecture
 
 ## Overview
-This wiki page captures architectural and design considerations for an ongoing project, synthesized from voice memo transcriptions. It outlines design philosophy, [hardware](./hardware.md) considerations, [networking](./networking.md) nomenclature, data synchronization parameters, and user-facing export requirements.
+This wiki page captures architectural and design decisions based on recent voice memo transcriptions regarding [Hardware](./hardware.md)-software integration, data synchronization, and user interface philosophy.
 
 ## Key Details
-* **Widget Design Philosophy:** The physical and software interface for the widget should evoke the feeling of "garden equipment" rather than "surveillance."
-* **Hardware & Production:** Jonah noted that PETG material should be used for the beta phase, transitioning to injection molding later if [fundraising](./fundraising.md) goals are met.
-* **Networking & Naming:** The underlying synchronization protocol and project feature has been officially named **Mesh Sync** (with explicit instructions to keep the name and avoid renaming it further).
-* **Export & Dashboard Requirements:** According to Mira, the system must support [MQTT export](./mqtt-export.md) and optional CSV exports. Furthermore, the dashboard must remain strictly optional and never mandatory for users.
+- **Widget Design Philosophy:** The widget interface should evoke a sense of physical garden equipment rather than corporate or surveillance tools.
+- **Manufacturing & Materials:** Jonah noted that PETG material should be used for the beta phase, transitioning to injection molding later if additional funding is raised.
+- **Core Technology & Naming:** The underlying synchronization protocol is officially named "Mesh Sync" (referred to repeatedly as "mesh sync mesh sync mesh sync"), and the name is finalized and locked against further renaming.
+- **Export & Dashboard Requirements:** [Nova Widget](./nova-widget.md) requested [MQTT Export](./mqtt-export.md) capabilities along with optional CSV export. The dashboard must remain strictly optional and never mandatory for users.
 
 ## Related Entities
-* **Jonah:** Team member focused on [hardware specifications](./hardware-specifications.md), material selection (PETG), and manufacturing pathways (injection molding).
-* **Mira:** Stakeholder who specified requirements regarding MQTT export, optional CSV functionality, and non-mandatory dashboard usage.
+- **Jonah:** Team member responsible for manufacturing and material specifications (PETG and injection molding).
+- **Mira:** Team member who specified requirements regarding MQTT/CSV data exports and optional dashboard usage.
 
 ## Related Concepts
-* **Mesh Sync:** The core synchronization mechanism designated for the architecture.
-* **Hardware Prototyping:** The use of beta-phase PETG before scaling to mass-market injection molding.
-* **User-Centric Design:** Blending physical aesthetics (garden equipment feel) with flexible data management (optional dashboards and standard exports).
+- **Mesh Sync:** The core synchronization protocol and framework for the platform.
+- **Widget Design:** Tactile, garden-equipment-inspired user interface and hardware styling.
 
 ## Contradictions
-&gt; **Contradiction:** There is an unresolved conflict regarding data synchronization frequency—specifically whether updates should occur hourly versus every fifteen minutes—which must be resolved prior to releasing the software to beta testers.
+&gt; **Contradiction:** There is an unresolved discrepancy regarding the data synchronization frequency (hourly versus fifteen-minute intervals), which must be resolved before releasing to beta testers.
 
 ## References & Trust
 

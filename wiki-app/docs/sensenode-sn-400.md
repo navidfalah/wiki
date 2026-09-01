@@ -10,7 +10,7 @@ tags:
   - ip67-enclosure
   - jonah
   - lorawan
-last_updated: "2026-09-01T19:21:21.758228+00:00"
+last_updated: "2026-09-01T21:25:27.253284+00:00"
 sidebar_label: SenseNode SN-400
 slug: /sensenode-sn-400
 ---
@@ -20,29 +20,30 @@ slug: /sensenode-sn-400
 # SenseNode SN-400
 
 ## Overview
-The **[SenseNode](./sensenode-sn-400.md) SN-400** is a popular garden and environmental sensor priced at $49. Known for its robust weather sealing and reliable [hardware architecture](./hardware-architecture.md), it is frequently compared against indie alternatives and pre-release hardware like [Aurora Labs](./aurora-labs.md)' [Nova Widget v2](./nova-widget-v2.md).
+The [SenseNode](./sensenode-sn-400.md) SN-400 is a popular commercial garden sensor priced at $49, known for its rugged weather-sealing and [LoRaWAN](./lorawan.md) connectivity. It features a solid IP67 enclosure, making it a strong contender for serious outdoor agricultural and gardening deployments compared to indie competitors like the pre-release [Aurora Nova Widget v2](./aurora-nova-widget-v2.md).
 
 ## Key Details
-- **Pricing:** Retails at $49 per unit.
-- **Weather Sealing:** Features a solid **IP67** enclosure, noted as providing the best sealing in its class for serious outdoor deployments.
-- **Connectivity & Hardware:** Built around an STM32WL module utilizing **[LoRaWAN](./lorawan.md)** (non-mesh network architecture).
-- **[Battery Life](./battery-life.md):** The manufacturer claims a 3-year battery life; however, independent [hardware reviews](./hardware-reviews.md) estimate real-world longevity at **~22 months** under default 30-minute reporting intervals.
-- **Soil Probe & Maintenance:** Employs a coated capacitive soil probe designed to withstand acidic soil environments better than cheap alternatives. Replacement probes are available for $12.
-- **Software & Ecosystem:** Requires a cloud dashboard for alerts, with a limited free tier (introducing cloud lock-in).
+- **Price:** $49
+- **Enclosure & Weather Sealing:** Solid IP67 enclosure, considered the best-in-class sealing among comparable garden [sensors](./sensors.md).
+- **Connectivity:** STM32WL module utilizing LoRaWAN (non-mesh).
+- **[Battery Life](./battery-life.md):** Manufacturer claims a 3-year battery life, though independent testing and power profiling estimate **~22 months** under default 30-minute interval settings.
+- **Software & Ecosystem:** Relies on a cloud dashboard for alerts, with a limited free tier (cloud lock-in).
+- **Soil Probe Design:** Uses a coated capacitive soil probe designed to resist acidic soil corrosion better than cheap alternatives; replacement probes cost $12.
 
 ## Related Entities
-- **Hardware Habit:** The tech blog and hardware teardown publication authored by Alex Rivera.
-- **Alex Rivera:** Author of the Hardware Habit teardown who evaluated the SN-400 against competing pre-release hardware.
-- **Aurora Labs:** Creator of competing hardware like the Nova Widget v2.
-- **Jonah & [Mira](./aurora-labs.md):** Researchers/team members who noted capacitive soil probe corrosion data for total cost of ownership [documentation](./documentation.md).
+- **[Hardware](./hardware.md) Habit:** The tech and hardware blog where the device was reviewed and torn down by author Alex Rivera.
+- **Alex Rivera:** Author of the Hardware Habit blog and hardware reviewer who conducted the competitor teardown.
+- **[Aurora Labs](./aurora-labs.md):** Creator of the competing pre-release Nova Widget v2 beta unit.
+- **Jonah:** Researcher/team member who noted that soil probe longevity and replacement costs should be factored into total cost of ownership comparisons.
+- **[Mira](./nova-widget.md):** Team member who flagged the soil probe corrosion findings for [documentation](./documentation.md) on hardware pages.
 
 ## Related Concepts
-- **LoRaWAN:** The long-range wide-area network protocol used by the SN-400 to transmit data via gateways rather than local device-to-device mesh.
-- **Capacitive Soil Probe Corrosion:** The degradation of soil [sensors](./sensors.md) over time, particularly in acidic soils, which the SN-400 addresses using a coated probe design.
-- **IP67 Enclosure:** Ingress Protection rating ensuring dust-tight construction and protection against water immersion up to 1 meter.
+- **LoRaWAN:** The long-range wide-area network protocol used by the SN-400 for communication, which requires a gateway.
+- **Capacitive Soil Probe Corrosion:** The degradation of soil sensors over time, particularly in acidic soils. The SN-400 attempts to mitigate this with a coated probe design.
+- **Cloud Lock-in:** Dependence on a proprietary vendor cloud dashboard and ecosystem to access device alerts and data features.
 
 ## Contradictions
-&gt; **Contradiction:** Manufacturer specifications claim a 3-year battery life for the SenseNode SN-400, whereas independent power profiling and teardown estimates place realistic battery performance closer to ~22 months at default 30-minute intervals.
+*There are no direct internal contradictions regarding the specifications of the SenseNode SN-400 across the provided sources.*
 
 ## References & Trust
 

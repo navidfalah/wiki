@@ -10,7 +10,7 @@ tags:
   - potato99
   - rejoin-storm
   - sensenode
-last_updated: "2026-09-01T19:18:10.046985+00:00"
+last_updated: "2026-09-01T21:22:19.711250+00:00"
 sidebar_label: Bug Reports
 slug: /bug-reports
 ---
@@ -20,29 +20,32 @@ slug: /bug-reports
 # Bug Reports
 
 ## Overview
-This page documents software bug reports and issues affecting distributed [mesh networking](./mesh-networking.md) components, specifically focusing on GitHub issue tracking for the `aurora-labs/meshsync` repository under version 0.3.x releases.
+This page documents software and [hardware](./hardware.md) bug reports associated with the `aurora-labs/meshsync` repository, specifically tracking network stability issues under version 0.3.8.
 
 ## Key Details
-- **Issue Reference:** `aurora-labs/meshsync #442`
-- **Title:** Rejoin storm persists at 8 nodes on 0.3.8
+- **Issue:** Rejoin storm persists at 8 nodes on version 0.3.8 (`aurora-labs/meshsync #442`)
 - **State:** Open
-- **Labels:** `bug`, `power`, `beta`
-- **Core Symptom:** Multi-hour silence observed after adding an 8th node to a network running version 0.3.8 (flashed across all units).
-- **Workaround:** Cap the network at 6 nodes while investigations continue.
-- **[Troubleshooting](./troubleshooting.md) Requirements:** RSSI logs requested by maintainers to be sent to support.
-- **Future Roadmap:** [Release 0.3.9](./release-039.md) milestone moved up to address the underlying issue through a complete rewrite of the parent election mechanism.
+- **Labels:** bug, power, beta
+- **Reported Behavior:** Users experience multi-hour silence after adding an 8th node to the network, despite units being flashed with version 0.3.8.
+- **Workaround:** Cap the network at a maximum of 6 nodes.
+- **[Troubleshooting](./troubleshooting.md) Requirements:** [Mira Chen](./nova-widget.md) requested that RSSI logs be sent to support.
+- **Resolution Roadmap:** The 0.3.9 milestone has been moved up to include a complete parent election rewrite to address the issue.
 
 ## Related Entities
-- **@potato99:** Issue reporter who experienced the multi-hour silence and rejoin storm on 0.3.8.
-- **@[mira-chen](./aurora-labs.md):** Maintainer/developer responding to the issue, requesting logs, providing the 6-node workaround, and announcing the 0.3.9 parent election rewrite.
-- **@meshfan:** Community contributor noting slight improvements in 0.3.8 while confirming the bug persists.
-- **@teaguy:** User posting off-topic commentary regarding the repository.
-- **[SenseNode SN-400](./sensenode-sn-400.md):** External platform/node ecosystem referenced in community discussions regarding mesh complexity.
+- `aurora-labs/meshsync` (GitHub Repository)
+- `@potato99` (Issue reporter)
+- `@mira-chen` (Maintainer / Project contributor)
+- `@meshfan` (Community participant)
+- `@teaguy` (Community participant)
 
 ## Related Concepts
-- **Rejoin Storm:** A network phenomenon where multiple nodes repeatedly attempt to reconnect or synchronize simultaneously, leading to cascading failures or prolonged silence.
-- **Parent Election:** The algorithm and protocol used by mesh nodes to determine hierarchical routing and upstream connections; scheduled for a rewrite in version 0.3.9.
-- **RSSI Logs:** Received Signal Strength Indication logs used for diagnosing wireless link quality and connection stability issues.
+- Rejoin storm
+- Parent election
+- Network topology scaling
+- RSSI logging
+
+## Contradictions
+*(No contradictions present in the current data sources.)*
 
 ## References & Trust
 

@@ -10,7 +10,7 @@ tags:
   - jonah
   - karpathy
   - llm-faq-summarization
-last_updated: "2026-09-01T19:20:44.990418+00:00"
+last_updated: "2026-09-01T21:24:49.460259+00:00"
 sidebar_label: Product Ideas
 slug: /product-ideas
 ---
@@ -20,34 +20,37 @@ slug: /product-ideas
 # Product Ideas
 
 ## Overview
-This wiki page compiles [wiki automation](./wiki-automation.md) ideas, cross-product initiatives, and rejected proposals from a July 4 braindump. The proposals focus on enhancing [documentation](./documentation.md) workflows, automated content generation, and system integrations, drawing inspiration from patterns like the Karpathy LLM wiki pattern and docusaurus graph plugins.
+This [Wiki Automation](./wiki-automation.md) ideas dump, recorded on July 4, outlines various proposed features, cross-product initiatives, rejected concepts, and foundational references for improving wiki workflows and cross-product synergy.
 
 ## Key Details
-- **Wiki Automation Initiatives:**
-  - Implement a pre-commit hook that greps raw files for the `CONTRADICTION` marker.
-  - Set up auto-ingestion of Slack exports from the `dummy-test/` folder.
-  - Create a graph diff tool between compiles to highlight newly added entities.
-  - Utilize LLMs to automatically summarize support tickets into FAQ pages.
-  - Address orphan pages using a linter (already tracked on backlog item #1).
-- **Cross-Product Initiatives:**
-  - Establish a shared glossary covering terms such as `CR2032`, [BLE](./ble.md), MeshSync, and `steep preset`.
-  - Draft a unified "local-first manifesto" page incorporating quotes from [Aurora Labs](./aurora-labs.md) and [TeaBuddy](./teabuddy.md).
-- **Rejected Proposals:**
-  - Building a single app for both products (vetoed by the CEOs).
-  - Developing a mesh tea timer (explicitly rejected by Jonah with "absolutely not").
-- **References:** 
-  - Karpathy LLM wiki pattern
-  - Docusaurus graph plugin
+The proposed wiki automation ideas and associated project directions include:
+
+- **Pre-commit hook:** Grep raw files specifically for CONTRADICTION markers.
+- **Auto-ingest:** Import Slack exports automatically from the `dummy-test/` folder.
+- **Graph diff:** Compare graphs between compiles to highlight newly added entities.
+- **LLM support ticket summarization:** Automatically summarize support tickets into dynamic FAQ pages.
+- **Orphan page linter:** An item already tracked on the backlog as #1.
+
+### Cross-Product Initiatives
+- **Shared glossary:** Standardizing definitions for technical terms and components such as CR2032, [BLE](./ble.md), [MeshSync](./meshsync.md), and steep preset.
+- **Unified local-first manifesto page:** Combining quotes from [Aurora Widget](./aurora-nova-widget.md) and [TeaBuddy](./teabuddy.md).
+
+### Rejected Concepts
+- **Single app for both products:** Explicitly vetoed by the CEOs.
+- **Mesh tea timer:** Rejected outright by Jonah ("absolutely not").
 
 ## Related Entities
-- **Aurora** (Product associated with the local-first manifesto)
-- **TeaBuddy** (Product associated with the local-first manifesto and tea timer idea)
-- **Jonah** (Decision maker who rejected the mesh tea timer)
+- **Aurora**
+- **TeaBuddy**
+- **Jonah**
 
 ## Related Concepts
-- **Wiki Automation** (Pre-commit hooks, auto-ingestion, graph diffs, and orphan linters)
-- **LLM Integration** (Support ticket summarization into FAQ pages)
-- **[Local-First Software](./local-first-software.md)** (Unified local-first manifesto concept)
+- **CR2032**
+- **BLE**
+- **MeshSync**
+- **Karpathy LLM wiki pattern**
+- **Docusaurus graph plugin**
+- **Local-first manifesto**
 
 ## References & Trust
 

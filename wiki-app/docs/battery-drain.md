@@ -10,7 +10,7 @@ tags:
   - mira-chen
   - read-interval
   - wiki
-last_updated: "2026-09-01T19:17:52.501926+00:00"
+last_updated: "2026-09-01T21:22:02.446310+00:00"
 sidebar_label: Battery Drain
 slug: /battery-drain
 ---
@@ -20,29 +20,28 @@ slug: /battery-drain
 # Battery Drain
 
 ## Overview
-
-Batch 4 field units have been experiencing significant battery drain issues. According to field reports, units are consuming battery approximately 30% faster than specifications once MeshSync relay mode is enabled. 
+Field reports for [Aurora Labs](./aurora-labs.md) Batch 4 units indicate significant battery drain issues occurring when [MeshSync](./meshsync.md) relay mode is enabled. Devices are depleting their batteries approximately 30% faster than specification.
 
 ## Key Details
-
-- **Severity:** Field units draining ~30% faster than spec.
-- **Trigger:** Enabled MeshSync relay mode.
-- **[Firmware](./firmware.md) Version:** 0.3.8 (current default).
-- **Read Interval:** Configured to 15 minutes, confirming that the issue is not caused by an interval misconfiguration.
-- **Root Cause Suspect:** The relay radio is suspected to remain awake between hops instead of entering a sleep state.
-- **Tracking ID:** Filed under [[MESH-118](./mesh-118.md)].
+- **Impact:** Batch 4 field units experience 30% faster battery drain than specified limits.
+- **Trigger:** Issue manifests specifically when MeshSync relay mode is enabled.
+- **Configuration:** Read interval is confirmed at 15 minutes, matching the [firmware](./firmware.md) default (0.3.8), ruling out any interval misconfigurations.
+- **Root Cause Hypothesis:** The relay radio is suspected to stay awake between hops instead of entering a sleep state.
+- **Tracking:** Filed under ticket **[MESH-118](./mesh-118.md)**.
 
 ## Related Entities
-
-- [Mira Chen](mira.chen@auroralabs.example) (Sender of the field report)
-- [Jonah Park](jonah.park@auroralabs.example) (CC'd on the engineering report)
-- [Aurora Labs](https://auroralabs.example) (Organization)
+- **[Mira Chen](./nova-widget.md):** Author of the field report (mira.chen@[auroralabs](./nova-widget.md).example).
+- **Jonah Park:** Copied on the field report (jonah.park@auroralabs.example).
+- **Aurora Labs:** Organization managing the [hardware](./hardware.md) and firmware deployment.
+- **Batch 4 Units:** The specific hardware batch impacted by the issue.
 
 ## Related Concepts
+- **MeshSync Relay Mode:** Operating mode that appears to prevent the radio from sleeping properly between transmission hops.
+- **Read Interval:** Configured telemetry/polling interval (defaulted to 15 minutes in firmware version 0.3.8).
+- **Firmware 0.3.8:** The current firmware version running on the affected units.
 
-- MeshSync Relay Mode
-- Firmware 0.3.8
-- [Power Management](./power-management.md) / Radio Sleep Cycles
+## Contradictions
+*No contradictions reported in the current sources.*
 
 ## References & Trust
 

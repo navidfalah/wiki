@@ -10,7 +10,7 @@ tags:
   - meshsync
   - sensenode
   - teabuddy
-last_updated: "2026-09-01T19:19:06.641821+00:00"
+last_updated: "2026-09-01T21:23:14.347142+00:00"
 sidebar_label: Hardware Safety
 slug: /hardware-safety
 ---
@@ -20,24 +20,22 @@ slug: /hardware-safety
 # Hardware Safety
 
 ## Overview
-This wiki page details the [hardware](./hardware.md) safety guidelines, ratings, and operational constraints for [Beta Testing](./beta-testing.md) devices such as the [Aurora Nova Widget](./aurora-nova-widget.md), based on standard beta tester agreement [Documentation](./documentation.md).
+[Hardware](./hardware.md) safety guidelines dictate the proper operational limits, environmental resistance, and handling procedures for [beta-testing](./beta-testing.md) hardware such as the [Aurora Nova Widget](./aurora-nova-widget.md). These [protocols](./protocols.md) ensure user safety and prevent device damage during testing phases.
 
 ## Key Details
-* **Ingress Protection Rating:** The device holds an IP54 splash-resistant rating.
-* **Submersion Warning:** The device must not be submerged in liquids.
-* **Outdoor Installation Limits:** Outdoor burial methods, similar to those used for [SenseNode SN-400](./sensenode-sn-400.md) devices, are explicitly not supported.
-* **[Confidentiality](./confidentiality.md) Scope:** Beta [Firmware](./firmware.md), partial MeshSync source code, and [Power Budget](./power-budget.md) spreadsheets associated with the device are strictly confidential.
-* **Data Handling:** Telemetry data remains local by default, with optional [MQTT Export](./mqtt-export.md) available via user configuration.
+* **Ingress Protection (IP) Rating:** The device features an IP54 splash-resistant rating only.
+* **Submersion Warning:** The device must **not** be submerged in water under any circumstances.
+* **Outdoor Installation Limits:** Outdoor burial methods, such as those used for [SenseNode SN-400](./sensenode-sn-400.md) devices, are strictly unsupported.
 
 ## Related Entities
-* **Aurora Nova Widget:** The primary beta hardware device subject to these safety and confidentiality guidelines.
-* **SenseNode:** Referenced as an example of outdoor burial installation that is incompatible with the Nova Widget's design.
-* **[TeaBuddy](./teabuddy.md):** A related product that beta testers are permitted to mention under specific endorsement guidelines.
+* **Aurora Nova Widget:** The primary hardware device covered under the beta tester safety and [confidentiality](./confidentiality.md) agreements.
+* **SenseNode:** Referenced as an incompatible deployment style (outdoor burial) not supported by the widget.
+* **[TeaBuddy](./teabuddy.md):** A related product that beta testers are permitted to mention under endorsement guidelines.
 
 ## Related Concepts
-* **Hardware Safety Rating:** The specific IP54 classification governing the device's environmental resilience against splashes.
-* **Beta Tester Confidentiality:** Legal and operational restrictions protecting proprietary firmware, source code, and [Power Management](./power-management.md) spreadsheets during the testing phase.
-* **Endorsement Restrictions:** Rules governing public statements by beta testers, ensuring no implied official partnership with Aurora.
+* **Beta Tester Confidentiality:** Non-disclosure rules governing beta [firmware](./firmware.md), [MeshSync](./meshsync.md) source partials, and [Power Budget](./power-budget.md) spreadsheets.
+* **Endorsement Restrictions:** Rules permitting beta testers to mention products like TeaBuddy without implying an official Aurora partnership.
+* **Data Management:** Local telemetry storage with optional, user-configured [MQTT Export](./mqtt-export.md).
 
 ## References & Trust
 

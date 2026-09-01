@@ -30,7 +30,28 @@ def cmd_chat() -> dict:
     if not message:
         raise ValueError("'message' is required")
     history = payload.get("history")
-    return rag_engine.answer_question(message, history=history)
+    doc_scope = payload.get("doc_scope")
+    return rag_engine.answer_question(message, history=history, doc_scope=doc_scope)
+
+
+def cmd_chat_stream() -> None:
+    """Unlike every other command, this writes one JSON object per line to
+    stdout as rag_engine.answer_question_stream() yields, flushing after
+    each -- the Node bridge reads this as a live stream, not one parse. An
+    exception mid-stream is reported as a final {"type": "error"} line
+    instead of the module's usual nonzero-exit-with-error-blob convention.
+    """
+    payload = _read_stdin_json()
+    message = str(payload.get("message", "")).strip()
+    history = payload.get("history")
+    doc_scope = payload.get("doc_scope")
+    try:
+        if not message:
+            raise ValueError("'message' is required")
+        for event in rag_engine.answer_question_stream(message, history=history, doc_scope=doc_scope):
+            print(json.dumps(event, ensure_ascii=False), flush=True)
+    except Exception as exc:  # noqa: BLE001 -- surface any failure as a stream event
+        print(json.dumps({"type": "error", "message": str(exc)}), flush=True)
 
 
 def cmd_chat_status() -> dict:
@@ -55,17 +76,23 @@ def cmd_email_detail() -> dict:
 COMMANDS = {
     "chat": cmd_chat,
     "chat-status": cmd_chat_status,
+    "chat-stream": cmd_chat_stream,
     "emails-list": cmd_emails_list,
     "email-detail": cmd_email_detail,
 }
+
+# Commands that write their own stdout (NDJSON events) instead of returning
+# a single result dict for main() to print as one JSON blob.
+STREAMING_COMMANDS = {"chat-stream"}
 
 
 def main() -> int:
     if len(sys.argv) != 2 or sys.argv[1] not in COMMANDS:
         print(json.dumps({"error": f"Usage: cli.py <{'|'.join(COMMANDS)}>"}))
         return 1
+    command = sys.argv[1]
     try:
-        result = COMMANDS[sys.argv[1]]()
+        result = COMMANDS[command]()
     except email_engine.NotAnEmailError as exc:
         print(json.dumps({"error": str(exc), "error_type": "not_an_email"}))
         return 1
@@ -75,7 +102,8 @@ def main() -> int:
     except Exception as exc:  # noqa: BLE001 -- surface any failure as JSON, not a traceback
         print(json.dumps({"error": str(exc)}))
         return 1
-    print(json.dumps(result, ensure_ascii=False))
+    if command not in STREAMING_COMMANDS:
+        print(json.dumps(result, ensure_ascii=False))
     return 0
 
 

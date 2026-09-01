@@ -73,6 +73,20 @@ export function listResources(
   return { total: items.length, resources: items };
 }
 
+/** Resolve a chat session's resource_scope (a list of resource `source`
+ * paths, as shown on /resources) to the wiki page doc_paths that cite
+ * them -- rag_engine retrieves over compiled pages, not raw resources
+ * directly, so this is the bridge between the two. */
+export function resolveDocPaths(resourceSources: string[], docsDir: string = OUTPUT_DIR): string[] {
+  const wanted = new Set(resourceSources);
+  const docPaths = new Set<string>();
+  for (const item of listResources(docsDir).resources) {
+    if (!wanted.has(item.source)) continue;
+    for (const page of item.citing_pages) docPaths.add(page.doc_path);
+  }
+  return [...docPaths];
+}
+
 export function getResourceDetail(sourcePath: string, docsDir: string = OUTPUT_DIR, rawDir: string = RAW_DIR) {
   const match = listResources(docsDir).resources.find((item) => item.source === sourcePath);
   if (!match) return null;

@@ -9,7 +9,7 @@ tags:
   - nova-widget
   - teabuddy
   - wiki
-last_updated: "2026-09-01T19:19:17.250517+00:00"
+last_updated: "2026-09-01T21:23:25.809082+00:00"
 sidebar_label: Heuristic Mode
 slug: /heuristic-mode
 ---
@@ -19,37 +19,35 @@ slug: /heuristic-mode
 # Heuristic Mode
 
 ## Overview
-Heuristic Mode is a compilation feature within the LLM Wiki pipeline designed to process raw text files without requiring an LLM API key. It scans directories for `.txt` and `.md` files, extracts topics, builds cross-links based on entity mentions, and generates Docusaurus-compatible [documentation](./documentation.md) pages.
+
+Heuristic Mode is a feature of the [wiki compiler](./wiki-compiler.md) designed to process raw files and generate structured [documentation](./documentation.md) without requiring an LLM API key. Developed as part of the LLM Wiki pipeline testing (utilizing the Karpathy pattern), its primary objective is to transform 40+ raw files into a rich, interconnected knowledge graph that explicitly surfaces contradictions such as [battery life](./battery-life.md), herbal presets, and read intervals.
 
 ## Key Details
-- **File Ingestion:** Reads all `.txt` and `.md` files located under the `data/raw/` directory.
-- **API-Free Extraction:** Extracts topics and builds the wiki structure locally without invoking external LLM APIs.
-- **Cross-Linking:** Automatically establishes cross-links by identifying entity mentions such as [Nova Widget](./nova-widget.md), [TeaBuddy](./teabuddy.md), and MeshSync.
-- **Output Generation:** Outputs structured Docusaurus pages directly into `wiki-app/docs/`.
-- **Primary Goal:** Transform over 40 raw source files into a rich graph that surfaces contradictions across domains like battery performance, herbal presets, and read intervals.
 
-## Test Data Layout
-The pipeline utilizes specific testing layouts and data categories:
-- `data/raw/samples/`: Contains files prefixed with `[SAMPLE]`.
-- `data/raw/dummy-test/`: Contains files labeled with `[DUMMY TEST DATA]`.
-- Utilizes original junk data generated via `generate_junk_data.py`.
-
-## Known Ingest Quirks
-During the ingestion and compilation process, several parsing challenges and quirks are accounted for:
-- **Broken Markdown Exports:** Used to test and evaluate parser resilience against malformed syntax.
-- **Forum HTML Scrapes:** Ingested content from forum scrapes often results in the loss of nested content structures.
-- **Email Threads:** Ingested email threads may occasionally incorporate wrong-thread noise.
+- **Data Processing:** Reads all `.txt` and `.md` files located under `data/raw/` to extract topics autonomously.
+- **Output Generation:** Automatically generates Docusaurus-compatible pages under `wiki-app/docs/`.
+- **Cross-Linking:** Builds automated cross-links based on entity mentions throughout the text (including references to [Nova Widget](./nova-widget.md), [TeaBuddy](./teabuddy.md), [MeshSync](./meshsync.md), and others).
+- **Test Data Layout:** 
+  - `data/raw/samples/` contains `[SAMPLE]` prefixed files.
+  - `data/raw/dummy-test/` contains `[DUMMY TEST DATA]` labeled files.
+  - Incorporates original junk data generated via `generate_junk_data.py`.
+- **Known Ingest Quirks:**
+  - Broken markdown exports test parser resilience.
+  - Forum HTML scrapes tend to lose nested content.
+  - Email threads often include wrong-thread noise.
 
 ## Related Entities
+
 - [Nova Widget](./nova-widget.md)
 - [TeaBuddy](./teabuddy.md)
-- MeshSync
+- [MeshSync](./meshsync.md)
 
 ## Related Concepts
-- [Wiki Compiler](./wiki-compiler.md)
+
+- LLM Wiki Pipeline
 - Karpathy Pattern
-- Cross-Linking
-- Data Ingestion Quirks
+- Knowledge Graph Compilation
+- Automated Cross-Linking
 
 ## References & Trust
 

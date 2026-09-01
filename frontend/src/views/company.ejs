@@ -1,0 +1,70 @@
+<%- include('partials/head', { title, apiBase, active }) %>
+
+<h1 class="text-2xl font-semibold tracking-tight text-gray-900">Company Profile</h1>
+<p class="mt-1 max-w-2xl text-sm text-gray-600">
+  General information about your company. This context is kept alongside the wiki for reference.
+</p>
+
+<div class="mt-6 max-w-3xl">
+  <section class="rounded-xl border border-gray-200 bg-white shadow-card">
+    <div class="border-b border-gray-100 px-5 py-4">
+      <h2 class="text-base font-semibold text-gray-900">General settings</h2>
+      <p class="mt-0.5 text-xs text-gray-500">Fill in what's relevant -- everything here is optional.</p>
+    </div>
+
+    <div id="company-form" class="flex flex-col gap-4 p-5">
+      <div class="grid gap-4 sm:grid-cols-2">
+        <label class="flex flex-col gap-1">
+          <span class="text-xs font-medium text-gray-600">Company name</span>
+          <input data-field="company_name" type="text" placeholder="Aurora Labs" class="rounded-lg border border-gray-300 px-2.5 py-1.5 text-sm focus:border-accent focus:outline-none focus:ring-2 focus:ring-accent/20" />
+        </label>
+        <label class="flex flex-col gap-1">
+          <span class="text-xs font-medium text-gray-600">Industry</span>
+          <input data-field="industry" type="text" placeholder="e.g. SaaS, Manufacturing, Healthcare" class="rounded-lg border border-gray-300 px-2.5 py-1.5 text-sm focus:border-accent focus:outline-none focus:ring-2 focus:ring-accent/20" />
+        </label>
+        <label class="flex flex-col gap-1">
+          <span class="text-xs font-medium text-gray-600">Website</span>
+          <input data-field="website" type="text" placeholder="https://example.com" class="rounded-lg border border-gray-300 px-2.5 py-1.5 text-sm focus:border-accent focus:outline-none focus:ring-2 focus:ring-accent/20" />
+        </label>
+        <label class="flex flex-col gap-1">
+          <span class="text-xs font-medium text-gray-600">Company size</span>
+          <input data-field="size" type="text" placeholder="e.g. 11-50 employees" class="rounded-lg border border-gray-300 px-2.5 py-1.5 text-sm focus:border-accent focus:outline-none focus:ring-2 focus:ring-accent/20" />
+        </label>
+        <label class="flex flex-col gap-1 sm:col-span-2">
+          <span class="text-xs font-medium text-gray-600">Location / HQ</span>
+          <input data-field="location" type="text" placeholder="City, Country" class="rounded-lg border border-gray-300 px-2.5 py-1.5 text-sm focus:border-accent focus:outline-none focus:ring-2 focus:ring-accent/20" />
+        </label>
+      </div>
+
+      <label class="flex flex-col gap-1">
+        <span class="text-xs font-medium text-gray-600">About / description</span>
+        <textarea data-field="description" rows="4" placeholder="What does the company do? Who does it serve?" class="rounded-lg border border-gray-300 px-2.5 py-1.5 text-sm focus:border-accent focus:outline-none focus:ring-2 focus:ring-accent/20"></textarea>
+      </label>
+
+      <div class="grid gap-4 sm:grid-cols-2">
+        <label class="flex flex-col gap-1">
+          <span class="text-xs font-medium text-gray-600">Tone of voice</span>
+          <input data-field="tone_of_voice" type="text" placeholder="e.g. Friendly and direct, no jargon" class="rounded-lg border border-gray-300 px-2.5 py-1.5 text-sm focus:border-accent focus:outline-none focus:ring-2 focus:ring-accent/20" />
+        </label>
+        <label class="flex flex-col gap-1">
+          <span class="text-xs font-medium text-gray-600">Target audience</span>
+          <input data-field="target_audience" type="text" placeholder="Who reads this wiki?" class="rounded-lg border border-gray-300 px-2.5 py-1.5 text-sm focus:border-accent focus:outline-none focus:ring-2 focus:ring-accent/20" />
+        </label>
+      </div>
+
+      <label class="flex flex-col gap-1">
+        <span class="text-xs font-medium text-gray-600">Additional notes</span>
+        <textarea data-field="additional_notes" rows="3" placeholder="Anything else worth keeping in mind" class="rounded-lg border border-gray-300 px-2.5 py-1.5 text-sm focus:border-accent focus:outline-none focus:ring-2 focus:ring-accent/20"></textarea>
+      </label>
+    </div>
+
+    <div class="flex items-center justify-between border-t border-gray-100 px-5 py-4">
+      <p id="company-saved-hint" class="text-xs text-gray-400"></p>
+      <button id="save-company-btn" type="button" class="rounded-lg bg-generated px-4 py-2 text-sm font-medium text-white hover:opacity-90">
+        Save
+      </button>
+    </div>
+  </section>
+</div>
+
+<%- include('partials/foot', { clientScript }) %>

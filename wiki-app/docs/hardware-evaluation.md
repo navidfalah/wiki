@@ -10,7 +10,7 @@ tags:
   - parent-swap
   - rejoin-storm
   - teabuddy
-last_updated: "2026-09-01T19:18:58.836684+00:00"
+last_updated: "2026-09-01T21:23:06.696480+00:00"
 sidebar_label: Hardware Evaluation
 slug: /hardware-evaluation
 ---
@@ -20,23 +20,26 @@ slug: /hardware-evaluation
 # Hardware Evaluation
 
 ## Overview
-During a MeshSync debug session on June 12 by [Mira](./aurora-labs.md) and Jonah, [hardware](./hardware.md) evaluation tasks were discussed alongside ongoing mesh stability investigations. A central action item emerged to compare microcontroller options for the next hardware revision, specifically evaluating the nRF52840 against the nRF5340.
+This page captures [hardware](./hardware.md) evaluation notes and insights stemming from [MeshSync](./meshsync.md) debug sessions and team discussions involving [Nova Widget](./nova-widget.md) and Jonah. A primary focus is assessing microcontrollers like the nRF52840 and nRF5340 for future hardware revisions in light of ongoing network performance observations such as rejoin storms and parent-swap current spikes.
 
 ## Key Details
-- **Next-Rev Comparison:** The team highlighted the need to compare the `nRF52840` vs `nRF5340` microcontrollers for the next hardware iteration.
-- **Power and Performance Context:** Current mesh [debugging](./debugging.md) noted a rejoin storm at 8 nodes, which causes a current spike from 110µA to 340µA during a parent swap. While Mira deemed this behavior "fine for beta," power profiling and hardware capabilities remain critical considerations for future revisions.
+- **Microcontroller Comparison:** The team has proposed comparing the `nRF52840` versus the `nRF5340` to determine suitability for the next hardware revision.
+- **Rejoin Storms & Power Spikes:** Rejoin storms continue to reproduce consistently at 8 nodes. Specifically, a parent swap triggers a current spike from 110 µA up to 340 µA.
+- **[Debugging](./debugging.md) & Telemetry:** Jonah suggested logging every rejoin event along with RSSI and hop count metrics, while Mira considers the current behavior acceptable ("fine for beta").
+- **Whiteboard Notes:** A whiteboard capture from the session noted the open design question: *"PARENT? CHILD? WHO DECIDES???"*
 
 ## Related Entities
-- **Mira:** Engineering team member who considers current beta performance acceptable and oversees feature scope (e.g., rejecting the [TeaBuddy](./teabuddy.md) integration for v1).
-- **Jonah:** Engineering team member who requested detailed logging of every rejoin with RSSI and hop count.
-- **Teabuddy Team:** Internal group that inquired about syncing tea timers across a house using the mesh network.
+- **Jonah:** Engineering team member advocating for detailed telemetry (logging rejoins with RSSI and hop count) and hardware evaluation.
+- **Mira:** Engineering team member who considers current beta performance acceptable and ruled out external feature requests like tea timer synchronization for v1.
+- **[TeaBuddy](./teabuddy.md) Team:** Internal or adjacent group that inquired about synchronizing tea timers across a house using the mesh network.
 
 ## Related Concepts
-- **Rejoin Storm:** A network event occurring at 8 nodes that triggers significant current spikes (110µA to 340µA) during parent swaps.
-- **MeshSync:** The underlying mesh synchronization protocol being debugged.
+- **Rejoin Storm:** A network phenomenon occurring at 8 nodes where devices repeatedly attempt to rejoin the mesh.
+- **Parent Swap:** The transition of a node from one parent router to another, observed to cause a power draw spike from 110 µA to 340 µA.
+- **MeshSync:** The underlying mesh synchronization protocol and debugging focus.
 
 ## Contradictions
-*No contradictions were identified in the source material for this topic.*
+*There are no direct contradictions present in the current evaluation notes.*
 
 ## References & Trust
 

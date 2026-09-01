@@ -10,7 +10,7 @@ tags:
   - lorawan
   - meshsync
   - nova-widget-v2
-last_updated: "2026-09-01T19:19:14.048478+00:00"
+last_updated: "2026-09-01T21:23:22.493573+00:00"
 sidebar_label: Hardware Teardowns
 slug: /hardware-teardowns
 ---
@@ -20,32 +20,32 @@ slug: /hardware-teardowns
 # Hardware Teardowns
 
 ## Overview
-[Hardware](./hardware.md) teardowns provide a granular analysis of commercial and pre-release electronic devices, revealing their internal components, build quality, [power consumption](./power-consumption.md) profiles, and real-world performance metrics. A notable analysis by author Alex Rivera on the *Hardware Habit* blog compares popular garden [sensors](./sensors.md), focusing specifically on the commercially available **[SenseNode SN-400](./sensenode-sn-400.md)** and the pre-release beta unit **[Nova Widget v2](./nova-widget-v2.md)** by **[Aurora Labs](./aurora-labs.md)**.
+[Hardware](./hardware.md) teardowns provide critical insights into the internal engineering, component selection, real-world [power consumption](./power-consumption.md), and build quality of competing devices. A notable comparative teardown by Alex Rivera on the *Hardware Habit* blog evaluated three popular garden [sensors](./sensors.md), focusing specifically on the commercially available **[SenseNode SN-400](./sensenode-sn-400.md)** and the pre-release [beta testing](./beta-testing.md) unit **[Nova Widget v2](./nova-widget-v2.md)** from **[Aurora Labs](./aurora-labs.md)**.
 
 ## Key Details
-- **SenseNode SN-400 ($49)**:
-  - Features an exceptional IP67 enclosure, providing top-tier weather sealing ideal for outdoor deployments.
-  - Built with an STM32WL module utilizing [LoRaWAN](./lorawan.md) connectivity, requiring a cloud dashboard for alerts (with a limited free tier).
-  - Manufacturer claims a 3-year [battery life](./battery-life.md), though estimated real-world performance is roughly 22 months at a default 30-minute reporting interval.
-- **[Aurora Nova Widget v2](./aurora-nova-widget-v2.md) (Beta Unit)**:
-  - Utilizes an IP54 plastic enclosure, offering moderate weather sealing that is visibly less rugged than the SenseNode.
-  - Powered by an nRF52840 chip running a custom **MeshSync** mesh protocol, bypassing LoRaWAN subscription fees and supporting open [MQTT export](./mqtt-export.md) without requiring an account.
-  - Uses a CR2032 coin cell battery (corrected from an initial misidentification of a CR2450 cell).
-  - Power profiling over a 48-hour sample indicates an average draw of ~92 µA with a 3-node mesh setup, which is slightly higher than the manufacturer's 85 µA target. Real-world battery life is estimated around 20 months.
+- **SenseNode SN-400 ($49):**
+  - Features a solid **IP67** enclosure, providing the best weather sealing in its class.
+  - Utilizes an STM32WL module supporting [LoRaWAN](./lorawan.md) connectivity (non-mesh).
+  - Requires a cloud dashboard for alerts, which includes a limited free tier.
+  - [Battery life](./battery-life.md) is claimed to be 3 years, though real-world estimates place it closer to **~22 months** at a default 30-minute interval.
+- **[Aurora Nova Widget v2](./aurora-nova-widget-v2.md) (Beta Unit):**
+  - Uses an **IP54** plastic enclosure, offering visibly less weather sealing than the SenseNode.
+  - Equipped with an nRF52840 chip and a custom **[MeshSync](./meshsync.md)** mesh protocol, bypassing LoRaWAN subscription fees and offering open [MQTT export](./mqtt-export.md) without requiring an account.
+  - Power profiling over a 48-hour sample showed an average draw of **~92 µA** with a 3-node mesh, slightly exceeding Aurora's 85 µA target.
+  - Real-world estimated battery life is **~20 months**.
 
 ## Related Entities
-- **Alex Rivera**: Author and hardware reviewer for the *Hardware Habit* blog.
-- **Aurora Labs**: Developer of the pre-release Nova Widget v2.
-- **SenseNode**: Manufacturer of the SN-400 garden sensor.
-- **Hardware Habit**: Publication platform for the hardware teardown blog post.
+- **Alex Rivera:** Author of the *Hardware Habit* teardown article and hardware analyst.
+- **Aurora Labs:** Developer of the pre-release Nova Widget v2 beta unit.
+- **SenseNode SN-400:** Manufactured garden sensor utilizing an STM32WL module and IP67 enclosure.
 
 ## Related Concepts
-- **IP67 Enclosure & IP54 Plastic**: Ingress Protection ratings determining dust and water resistance for electronic enclosures.
-- **LoRaWAN & MeshSync**: Wireless communication [protocols](./protocols.md); LoRaWAN relies on gateway subscriptions/cloud networks, whereas MeshSync enables direct [mesh networking](./mesh-networking.md) without subscription fees.
-- **Power Profiling**: Measuring current draw and estimating longevity for battery-powered [IoT](./iot.md) hardware.
+- **IP67 Enclosure & IP54 Plastic:** Standards used to classify the degrees of protection provided against dust, accidental contact, and water.
+- **LoRaWAN vs. MeshSync:** Comparison between long-range wide-area network architecture and localized [mesh networking](./mesh-networking.md) for [IoT](./iot.md) telemetry.
+- **Power Profiling:** The practice of measuring current draw over time to evaluate battery longevity against manufacturer claims.
 
 ## Contradictions
-&gt; **Contradiction:** Aurora Labs claims a 2-year battery life for the Nova Widget v2 at 15-minute readings, based on an 85 µA target. However, Alex Rivera's 48-hour power profiling measured an average draw of ~92 µA with a 3-node mesh, resulting in a revised estimated battery life of approximately 20 months. Additionally, the manufacturer's claimed battery life for the SenseNode SN-400 is 3 years, while estimated real-world longevity sits at around 22 months.
+&gt; **Contradiction:** An initial version of the *Hardware Habit* blog post reported that the Aurora Nova Widget v2 used a **CR2450** battery. A correction issued on May 21, 2026, clarified that the beta unit actually uses a **CR2032** cell. Additionally, while Aurora Labs claims a 2-year battery life at 15-minute readings based on an 85 µA target, 48-hour power profiling recorded an average of 92 µA, leading to an adjusted independent estimate of ~20 months.
 
 ## References & Trust
 

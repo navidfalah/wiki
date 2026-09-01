@@ -10,7 +10,7 @@ tags:
   - mesh-118
   - nova-59
   - nova-widget
-last_updated: "2026-09-01T19:21:57.860540+00:00"
+last_updated: "2026-09-01T21:26:04.122162+00:00"
 sidebar_label: Wi-Fi Connectivity
 slug: /wi-fi-connectivity
 ---
@@ -20,27 +20,24 @@ slug: /wi-fi-connectivity
 # Wi-Fi Connectivity
 
 ## Overview
-Wi-Fi connectivity issues on the [Nova Widget](./nova-widget.md) have been identified, particularly concerning how the device handles connection restoration after unexpected power losses or network disruptions. [Beta Testing](./beta-testing.md) feedback from users has highlighted vulnerabilities in how Wi-Fi credentials and connection states are preserved on [firmware](./firmware.md) version 0.3.8.
+Wi-Fi connectivity issues on the [Nova Widget](./nova-widget.md) (Batch 4 beta devices running [firmware](./firmware.md) version 0.3.8) can occur following power outages or router updates. Specifically, devices may fail to automatically rejoin home networks, becoming stuck in a blinking blue state. 
 
 ## Key Details
-- **The Issue (NOVA-59):** Wi-Fi credentials and connection states fail to survive unclean power losses on firmware version 0.3.8, leaving the device stuck blinking blue and unable to rejoin the network automatically.
-- **Precedent:** Similar connection failures have been triggered by events such as router [firmware updates](./firmware-updates.md).
-- **Data Loss Risk:** Performing a full factory reset to resolve connection drops erases accumulated local data, such as weeks of sensor history.
-- **Workarounds and Mitigations:**
-  - **Soft Reset:** Instead of a full factory reset, users can hold the side button for 3 seconds to execute a soft Wi-Fi-only reset, which preserves sensor history.
-  - **Static DHCP Reservation:** Assigning a static DHCP reservation for the widget's MAC address in the router settings can mitigate reconnect issues, as some reports correlate failures with changed IP addresses after a reconnect attempt.
-- **[Debugging](./debugging.md):** Support has requested router logs—specifically DHCP lease renewal timestamps around outage events—to aid in diagnosing the root cause.
+- **Symptom:** Nova Widget fails to reconnect to Wi-Fi after an unexpected power loss or router firmware update, remaining stuck with a blinking blue indicator light.
+- **Data Loss Risk:** Performing a full factory reset to resolve the connection failure erases stored device data (such as weeks of accumulated sensor history).
+- **Workarounds & Mitigation:**
+  - **Soft Reset:** Instead of a full factory reset, holding the device's side button for 3 seconds performs a soft Wi-Fi-only reset that preserves sensor history.
+  - **Static DHCP:** Setting a static DHCP reservation for the widget's MAC address on the home router can reduce occurrences, as some reports correlate issues with changing IP addresses upon reconnection.
+- **[Troubleshooting](./troubleshooting.md):** [Aurora Labs Support](./nova-widget.md) recommends providing router logs—specifically DHCP lease renewal timestamps around the time of the outage—to aid in [debugging](./debugging.md).
 
 ## Related Entities
-- **Nova Widget:** The [hardware](./hardware.md) device experiencing the Wi-Fi reconnection issues.
-- **Kevin Ostrander:** Beta tester (batch 4) who reported the connectivity failure and data loss.
-- **[Aurora Labs](./aurora-labs.md) Support:** Support team handling the bug triage.
-- **Sam Okafor:** Support team member involved in tracking the issue.
-- **Jonah Park:** Firmware engineer looped in to investigate the bug.
+- **Kevin Ostrander:** Beta tester (Batch 4) who reported the Wi-Fi reconnection issue.
+- **Aurora Labs Support:** Support team handling the investigation (including Sam Okafor and Jonah Park).
+- **Nova Widget (NOVA-59):** The [hardware](./hardware.md) product experiencing the state-corruption bug.
 
 ## Related Concepts
-- **NOVA-59:** The specific issue tracking Wi-Fi credentials and state failure during unclean power loss on firmware 0.3.8.
-- **[MESH-118](./mesh-118.md):** A related state-corruption class bug involving relay radio subsystems, suggesting a broader pattern of state-handling issues across firmware features.
+- **NOVA-59:** The tracking designation for the bug where Wi-Fi credentials and state do not survive an unclean power loss on firmware 0.3.8.
+- **[MESH-118](./mesh-118.md):** A related bug class involving state-corruption on a different subsystem (relay radio), indicating a broader architectural pattern being investigated by the firmware team led by Jonah Park.
 
 ## References & Trust
 

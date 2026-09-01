@@ -10,7 +10,7 @@ tags:
   - lorawan
   - meshsync
   - nova-widget-v2
-last_updated: "2026-09-01T19:17:45.581262+00:00"
+last_updated: "2026-09-01T21:21:56.089094+00:00"
 sidebar_label: Aurora Nova Widget v2
 slug: /aurora-nova-widget-v2
 ---
@@ -20,29 +20,26 @@ slug: /aurora-nova-widget-v2
 # Aurora Nova Widget v2
 
 ## Overview
-The **[Aurora Nova Widget](./aurora-nova-widget.md) v2** is a pre-release beta garden sensor developed by **[Aurora Labs](./aurora-labs.md)** intended as an open, subscription-free alternative to cloud-locked commercial [sensors](./sensors.md). Evaluated during [hardware teardowns](./hardware-teardowns.md) and power profiling assessments, the device features local connectivity options and a modular mesh design, though it compromises on weatherproofing compared to industrial counterparts like the [SenseNode SN-400](./sensenode-sn-400.md).
+The **[Aurora Nova Widget](./aurora-nova-widget.md) v2** is a pre-release beta garden sensor developed by **[Aurora Labs](./aurora-labs.md)** intended for open, subscription-free data collection. Evaluated in a [hardware](./hardware.md) teardown by Alex Rivera for *Hardware Habit*, the device utilizes a custom local mesh protocol rather than traditional cellular or gateway-locked networks.
 
 ## Key Details
-- **Hardware & Enclosure:** Built using an **IP54** plastic enclosure, offering moderate weather protection that is visibly less sealed than IP67-rated alternatives.
-- **Connectivity:** Utilizes an nRF52840 chip combined with a custom **MeshSync** mesh network protocol, avoiding [LoRaWAN](./lorawan.md) fees and cloud subscription locks.
-- **Data Export:** Supports open [MQTT export](./mqtt-export.md), allowing local data access without requiring a user account.
-- **Power & Battery:** 
-  - Uses a **CR2032** coin cell battery *(Note: Initial reports incorrectly stated it used a CR2450)*.
-  - Aurora Labs claims a 2-year [battery life](./battery-life.md) at 15-minute reading intervals (targeting an 85 µA baseline).
-  - Independent power profiling over a 48-hour sample measured an average draw of **~92 µA** with a 3-node mesh active, yielding an independent estimated battery lifespan of **~20 months**.
+- **Connectivity:** Powered by an nRF52840 module utilizing custom **[MeshSync](./meshsync.md)** mesh technology ([BLE](./ble.md)-based), offering mesh flexibility without [LoRaWAN](./lorawan.md) gateway fees or cloud lock-in.
+- **Data Export:** Features open [MQTT export](./mqtt-export.md), allowing users to operate the sensor without requiring an account or cloud dashboard.
+- **Enclosure:** Built with an **IP54** plastic enclosure, providing moderate weather sealing suitable for casual or protected outdoor environments.
+- **Power & Battery:** Uses a **CR2032** coin cell battery (corrected from an initial misidentification as a CR2450). Aurora Labs claims a 2-year [battery life](./battery-life.md) at 15-minute readings, while independent 48-hour power profiling recorded an average draw of ~92 µA with a 3-node mesh (slightly above the 85 µA target), translating to an estimated ~20-month battery life.
 
 ## Related Entities
-- **Aurora Labs:** The manufacturer and designer of the [Nova Widget v2](./nova-widget-v2.md).
-- **Alex Rivera:** Hardware reviewer and author for *Hardware Habit* who conducted the teardown and power analysis.
-- **SenseNode SN-400:** A competing $49 commercial garden sensor featuring an IP67 enclosure and LoRaWAN connectivity, used as a benchmark in the hardware comparison.
+- **Aurora Labs:** The manufacturer of the [Nova Widget v2](./nova-widget-v2.md) beta unit.
+- **Alex Rivera:** Author of the *Hardware Habit* blog who performed the hardware teardown and power profiling.
+- **[SenseNode SN-400](./sensenode-sn-400.md):** A competing $49 garden sensor featured in the same hardware comparison, known for its robust IP67 sealing and LoRaWAN connectivity.
 
 ## Related Concepts
-- **MeshSync:** A custom mesh protocol implemented by Aurora Labs that facilitates communication between nodes without relying on traditional gateway subscriptions.
-- **IP54 Enclosure:** A dust-protected and splash-proof rating characteristic of the Nova Widget v2's beta plastic casing.
-- **Open MQTT Export:** A protocol support feature allowing local data integration directly from the device.
+- **MeshSync:** A custom mesh protocol implemented on the nRF52840 chip that allows multi-node communication without subscription fees.
+- **MQTT Export:** An open protocol implementation enabling direct local data integration without mandatory cloud services.
+- **Power Profiling:** Measurement of electrical current draw over a set sample period to estimate real-world battery longevity.
 
 ## Contradictions
-&gt; **Contradiction:** Discrepancies exist regarding the [battery specifications](./battery-specifications.md) and estimated longevity of the Nova Widget v2. Aurora Labs targets an 85 µA draw to achieve a 2-year battery life, whereas independent 48-hour power profiling measured an average draw of ~92 µA, resulting in an adjusted estimate of ~20 months. Additionally, early published specifications incorrectly listed the battery type as a CR2450 before being corrected to a CR2032.
+&gt; **Contradiction:** There is a discrepancy regarding the battery type used in the beta unit. While an earlier version of the blog post stated that the Nova Widget v2 used a CR2450 battery, a subsequent correction issued on May 21, 2026, confirmed that the beta unit actually uses a smaller CR2032 cell. Additionally, there is a minor variance in expected battery longevity: Aurora Labs claims a 2-year lifespan, whereas independent power profiling estimates it closer to 20 months under tested conditions.
 
 ## References & Trust
 

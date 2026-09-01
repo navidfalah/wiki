@@ -10,7 +10,7 @@ tags:
   - p0-prioritization
   - plant-whisperer
   - quick-wins
-last_updated: "2026-09-01T19:21:44.887402+00:00"
+last_updated: "2026-09-01T21:25:50.334002+00:00"
 sidebar_label: Task Prioritization
 slug: /task-prioritization
 ---
@@ -20,41 +20,41 @@ slug: /task-prioritization
 # Task Prioritization
 
 ## Overview
-Task prioritization is the process of evaluating, ordering, and managing items in a [project backlog](./project-backlog.md) to ensure teams focus on the most impactful work first. Based on [backlog grooming](./backlog-grooming.md) activities across mixed products, tasks are categorized into immediate priorities (P0), shared backlogs (Icebox), immediate low-effort opportunities (Quick Wins), and rejected items (Stale).
+Task prioritization is the process of organizing, evaluating, and ranking items in a product backlog to determine the most critical work to execute first. The [backlog grooming](./backlog-grooming.md) data from July 10 outlines active P0 priorities across multiple products ([Aurora](./nova-widget.md) and [TeaBuddy](./teabuddy.md)), shared icebox items, quick wins, and explicitly rejected stale concepts.
 
 ## Key Details
-The backlog grooming session categorizes items across multiple product streams and operational initiatives:
-
-- **[Aurora Labs](./aurora-labs.md) P0 (Critical Priorities):**
-  - Publish [power budget](./power-budget.md) spreadsheet
-  - 0.3.9 rejoin hardening
-  - Comparison page for [SenseNode SN-400](./sensenode-sn-400.md)
-- **[TeaBuddy](./teabuddy.md) P0 (Critical Priorities):**
-  - Android v1.1 beta
-  - TB-142 cancel bug verification
-  - Box copy audit for all presets
-- **Shared Icebox (Deferred / Future Items):**
-  - Plant Whisperer app (Issue #47)
-  - Contradiction linter
-  - Wiki index auto-refresh
-- **Quick Wins (Low-Effort, High-Value):**
-  - Add 40 extended dummy raw files for compiler stress test
-  - Forum scrape fix for thread #9102
-- **Stale (Rejected Items):**
-  - Rename MeshSync to MeshSink (rejected again)
-  - KarpathyGarden product name (rejected again)
+* **Aurora P0 Priorities:**
+  * Publish the [power budget](./power-budget.md) spreadsheet.
+  * Complete 0.3.9 rejoin hardening.
+  * Build the comparison page for the [SenseNode SN-400](./sensenode-sn-400.md).
+* **TeaBuddy P0 Priorities:**
+  * Deliver Android v1.1 beta.
+  * Verify the TB-142 cancel bug.
+  * Conduct a box copy audit across all presets.
+* **Shared Icebox:**
+  * Plant Whisperer app (Issue #47)
+  * Contradiction linter
+  * Wiki index auto-refresh
+* **Quick Wins:**
+  * Add 40 extended dummy raw files for compiler stress testing.
+  * Fix the forum scrape thread #9102.
+* **Stale / Rejected Items:**
+  * Rename [MeshSync](./meshsync.md) to MeshSink (rejected again).
+  * KarpathyGarden product name (rejected again).
 
 ## Related Entities
-- **Aurora**
-- **TeaBuddy**
-- **SenseNode SN-400**
-- **Plant Whisperer app**
+* **Aurora** (Product line with power budget, rejoin hardening, and [hardware](./hardware.md) comparison initiatives)
+* **TeaBuddy** (Product line with mobile app, bug verification, and packaging audits)
+* **SenseNode SN-400** (Hardware device featured in Aurora's comparison page initiative)
 
 ## Related Concepts
-- **Backlog Grooming**
-- **P0 Prioritization**
-- **Icebox Management**
-- **Quick Wins**
+* **Backlog Grooming:** The regular review and refinement of the [project backlog](./project-backlog.md) to ensure items are up-to-date and prioritized correctly.
+* **P0 Prioritization:** The highest urgency tier assigned to critical tasks that must be resolved immediately.
+* **Icebox:** A holding area for lower-priority or future ideas that are not actively being worked on.
+* **Quick Wins:** Low-effort tasks that yield high or immediate value.
+
+## Contradictions
+*(No direct contradictions found in the current backlog grooming dataset.)*
 
 ## References & Trust
 

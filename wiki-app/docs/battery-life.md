@@ -10,7 +10,7 @@ tags:
   - power-number-revalidation
   - teabuddy
   - wiki
-last_updated: "2026-09-01T19:17:54.194645+00:00"
+last_updated: "2026-09-01T21:22:04.146953+00:00"
 sidebar_label: Battery Life
 slug: /battery-life
 ---
@@ -20,27 +20,28 @@ slug: /battery-life
 # Battery Life
 
 ## Overview
-Battery life considerations, specifications, and internal team debates regarding power requirements, battery models, and [documentation](./documentation.md) corrections.
+Battery life considerations, specifications, and internal team discussions regarding power requirements, [hardware](./hardware.md) components, and cross-project sharing.
 
 ## Key Details
-- **Specification vs. Marketing:** The kickoff slides stated an hourly default, whereas the official specification dictates a 15-minute default. Marketing targets two years, while engineering specifies an 18-month minimum at 10 nodes.
-- **Battery Model Correction:** Alex's blog incorrectly referenced a CR2450 battery; the actual specification uses the CR2032 model. A correction was noted to be ingested into the wiki.
-- **Power Calculations & Revalidation:** An active action item is in place to revalidate power numbers following a recent rejoin fix.
-- **External Collaboration:** The [TeaBuddy](./teabuddy.md) team requested permission to share our battery calculator spreadsheet (conditioned on proper attribution), though their chemistry differs as their puck draws more power on haptics.
+- **Specifications & Timeline Discrepancies:** The kickoff slides stated an hourly default, whereas the specification document lists a fifteen-minute default. Engineering targets an eighteen-month minimum lifespan at ten nodes, while marketing specifications may vary.
+- **Battery Components:** Alex's blog previously referenced an incorrect battery model (CR2450); the correct specification utilizes the CR2032 (two-oh-three-two) battery type.
+- **Power Draw & Chemistry:** The [TeaBuddy](./teabuddy.md) team requested access to the internal [battery calculator spreadsheet](./power-budget.md), which can be shared provided proper credit is given. However, the chemistry differs as the puck draws more power on haptics.
+- **Action Items:** Power numbers require revalidation following a rejoin fix, and the battery correction from Alex's blog needs to be ingested into the [wiki](./wiki-management.md) prior to the next forum scrape.
 
 ## Related Entities
-- **Mira Chen:** Team member highlighting specification discrepancies, blog errors, and external inquiries.
-- **Jonah Park:** Team member discussing engineering minimums, marketing claims, and wiki ingestions.
-- **Alex:** Author of a blog post containing an incorrect battery model reference.
-- **TeaBuddy Team:** External group requesting access to the battery calculator spreadsheet.
+- **[Mira Chen](./nova-widget.md):** Team member who noted specification discrepancies, corrected the battery model, and managed the TeaBuddy spreadsheet request.
+- **Jonah Park:** Team member who discussed engineering targets, marketing claims, and wiki ingestion.
+- **Alex:** Author of a blog post that referenced the incorrect battery model.
+- **TeaBuddy Team:** External project team that requested the battery calculator spreadsheet.
 
 ## Related Concepts
-- Battery Specification
-- Power Number Revalidation
-- Battery Chemistry & Haptic Draw
+- [Battery Specification](./battery-specifications.md)
+- [Power Management](./power-management.md)
+- Haptic Power Draw
+- [Documentation](./documentation.md) Revalidation
 
 ## Contradictions
-&gt; **Contradiction:** There is a discrepancy regarding the default operating interval: kickoff slides reference an hourly default, whereas the official specification mandates a 15-minute default.
+&gt; **Contradiction:** There is a discrepancy regarding default timing intervals between the kickoff slides, which specified hourly intervals, and the official spec document, which lists a fifteen-minute default.
 
 ## References & Trust
 

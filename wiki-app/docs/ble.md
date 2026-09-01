@@ -10,7 +10,7 @@ tags:
   - herbal-preset
   - sam-rivera
   - teabuddy
-last_updated: "2026-09-01T19:18:01.547751+00:00"
+last_updated: "2026-09-01T21:22:12.166107+00:00"
 sidebar_label: BLE
 slug: /ble
 ---
@@ -20,27 +20,30 @@ slug: /ble
 # BLE
 
 ## Overview
-This wiki page compiles information regarding BLE ([Bluetooth Low Energy](./bluetooth-low-energy.md)) integrations, [firmware updates](./firmware-updates.md), and related engineering changes for the [TeaBuddy](./teabuddy.md) product line based on the v0.9.x [firmware changelog](./firmware-changelog.md) series.
+This wiki page covers BLE ([Bluetooth Low Energy](./bluetooth-low-energy.md)) developments and related [firmware updates](./firmware-updates.md), tracking configuration adjustments, peripheral management, and cross-platform integrations associated with the [TeaBuddy](./teabuddy.md) ecosystem (v0.9.x series).
 
 ## Key Details
-- **BLE Pairing Timeout:** Increased to 45 seconds specifically to accommodate iOS 18 beta builds (v0.9.4).
-- **CoreBluetooth:** Addressed permission prompt ordering in ticket #2156 (v0.9.3).
-- **Pairing Paths:** Utilizes a box QR pairing path introduced in TestFlight builds (v0.9.2).
-- **Power Efficiency:** CR2032 sleep draw was optimized, reducing [power consumption](./power-consumption.md) from 12µA to 9µA (v0.9.2).
+- **BLE Pairing Timeout:** Increased to 45 seconds in firmware version v0.9.4 to accommodate iOS 18 beta requirements.
+- **CoreBluetooth:** Addressed permission prompt ordering under ticket #2156 in version v0.9.3.
+- **Pairing Paths:** Utilizes the box QR pairing path introduced in version v0.9.2.
+- **[Power Management](./power-management.md):** CR2032 sleep draw was reduced from 12µA to 9µA in v0.9.2.
+- **Haptic Feedback:** Haptic motor duty cycle capped at 70% following an Alex Kim UX review (v0.9.3).
+- **Preset Constants:** Herbal preset constant was aligned to 7:00 in firmware v0.9.4.
+- **App Fixes:** Fixed timer continuation issues after cancellation in the app (TB-142, handled by Sam Rivera).
 
 ## Related Entities
-- **TeaBuddy:** The primary [hardware](./hardware.md)/software product undergoing the v0.9.x firmware iterations.
-- **Sam Rivera:** Developer or engineer credited with fixing ticket TB-142 regarding the app timer.
-- **Alex Kim:** UX reviewer responsible for requesting the haptic motor duty cycle cap.
-- **[Aurora Nova Widget](./aurora-nova-widget.md):** Uses MeshSync technology, though it does not share a codebase with TeaBuddy.
+- **TeaBuddy:** The primary product line for the v0.9.x [firmware changelog](./firmware-changelog.md) series.
+- **Sam Rivera:** Developer credited with fixing the app timer issue (TB-142).
+- **Alex Kim:** UX reviewer who requested the haptic motor duty cycle cap.
+- **[Aurora Nova Widget](./aurora-nova-widget.md):** Uses [MeshSync](./meshsync.md) but does not share a codebase with TeaBuddy.
 
 ## Related Concepts
-- **Firmware Changelog:** Documenting iterative fixes such as timer bugs, permission prompts, and timeout adjustments.
-- **Haptic Motor Duty Cycle:** Capped at a maximum of 70% following UX review (v0.9.3).
-- **Herbal Preset:** Standardized in firmware to 7:00.
+- **CoreBluetooth:** Apple framework for interacting with BLE peripherals, tied to permission prompt ordering fixes.
+- **MeshSync:** Synchronization protocol utilized by the Aurora Nova Widget.
+- **Haptic Motor Duty Cycle:** Power/vibration regulation capped at 70% for UX optimization.
 
 ## Contradictions
-&gt; **Contradiction:** The Herbal preset constant was aligned to 7:00 in the firmware, whereas it was previously listed as 5:00 in marketing copy (fixed in firmware only during v0.9.4).
+&gt; **Contradiction:** The herbal preset constant was aligned to 7:00 in firmware v0.9.4, whereas it was previously listed as 5:00 in marketing copy. This discrepancy was resolved solely within the firmware.
 
 ## References & Trust
 

@@ -10,7 +10,7 @@ tags:
   - meshsync
   - mira-chen
   - nova-widget
-last_updated: "2026-09-01T19:21:00.012067+00:00"
+last_updated: "2026-09-01T21:25:05.522315+00:00"
 sidebar_label: Product Traction
 slug: /product-traction
 ---
@@ -20,34 +20,30 @@ slug: /product-traction
 # Product Traction
 
 ## Overview
-This wiki page compiles information regarding the product traction, milestones, current challenges, and strategic asks for [Aurora Labs](./aurora-labs.md), as outlined in the draft investor update from July 2026.
+This wiki page synthesizes the product traction, development milestones, current challenges, and strategic asks for [Aurora Labs](./aurora-labs.md), as outlined in the draft investor update from July 2026.
 
 ## Key Details
-- **[Nova Widget](./nova-widget.md) Deployment**: There are currently 47 beta Nova Widget units active in the field.
-- **Software Updates**: MeshSync version 0.3.8 has been shipped; its rejoin fix successfully unblocks 8-node deployments.
-- **Demos & Presentations**: A [Wiki Compiler](./wiki-compiler.md) demo successfully impressed a seed investor, featuring a mention of the "karpathy pattern".
-- **Tooling & [Hardware](./hardware.md) Adjustments**: The $8k IP65 tooling expense has been deferred. As a mitigation, the company is shipping an IP54 beta version accompanied by clear splash-resistance language.
-- **Competitive Landscape**: The [SenseNode SN-400](./sensenode-sn-400.md) continues to win the outdoor waterproof narrative due to its IP67 rating.
-- **[TeaBuddy](./teabuddy.md) Interaction**: Alex Kim reached out regarding co-marketing at Maker Faire, which has been deferred until the Aurora beta ships. There was no [Firmware](./firmware.md) merge; interactions were limited to a shared joke regarding the CR2032 supply chain.
-- **Financing Ask**: Seeking a $500k bridge financing round dedicated to injection molds and 2 FTE firmware engineers.
+- **[Nova Widget](./nova-widget.md) Units:** 47 beta units are currently deployed in the field.
+- **[MeshSync](./meshsync.md) Releases:** Version 0.3.8 of MeshSync has shipped, featuring a rejoin fix that successfully unblocks 8-node deployments.
+- **Demos:** A [wiki compiler](./wiki-compiler.md) demo recently impressed a seed investor, noting a "karpathy pattern" mention.
+- **Manufacturing & Tooling:** IP65 tooling costs ($8k) have been deferred; the company is shipping an IP54 beta accompanied by clear splash-resistance language.
+- **Market Positioning:** Competitor [SenseNode SN-400](./sensenode-sn-400.md) continues to win the outdoor waterproof narrative with its IP67 rating.
+- **Financing Ask:** Seeking a $500k bridge financing round dedicated to injection molds and 2 FTE [firmware](./firmware.md) engineers.
 
 ## Related Entities
-- [Aurora Labs](./aurora-labs)
-- [Mira Chen](./mira-chen)
-- [Nova Widget](./nova-widget)
-- [MeshSync](./meshsync)
-- [SenseNode SN-400](./sensenode-sn-400)
-- [Alex Kim](./alex-kim)
-- [TeaBuddy](./teabuddy)
+- **Aurora Labs:** The company developing the Nova Widget and MeshSync.
+- **[Mira Chen](./nova-widget.md):** CEO of Aurora Labs and author of the investor update draft.
+- **Alex Kim:** Reached out regarding potential co-marketing at Maker Faire (deferred).
+- **SenseNode SN-400:** A competing product holding an IP67 waterproof rating.
+- **[TeaBuddy](./teabuddy.md):** A separate project/entity associated with Alex Kim, sharing a CR2032 supply chain joke.
 
 ## Related Concepts
-- [Bridge Financing](./bridge-financing)
-- [IP54 vs IP65 Tooling Mitigation](./ip54-vs-ip65-tooling-mitigation)
-- [Documentation Reconciliation](./documentation-reconciliation)
-- [Co-Marketing](./co-marketing)
+- **IP54 vs. IP65 Tooling Mitigation:** Deferring high-cost IP65 tooling in favor of shipping an IP54-rated beta unit with updated splash-resistance [documentation](./documentation.md).
+- **Bridge Financing:** Raising $500k to cover immediate manufacturing and engineering requirements.
+- **Documentation Reconciliation:** Resolving internal inconsistencies regarding device specifications.
 
 ## Contradictions
-&gt; **Contradiction:** There is an internal documentation contradiction regarding [Battery Life](./battery-life.md) claims for the product, which are alternatively stated as 2 years versus 18 months. Aurora Labs plans to resolve this by publishing a [Power Budget](./power-budget.md) spreadsheet in Q3.
+&gt; **Contradiction:** There is an internal documentation discrepancy regarding the Nova Widget [battery life](./battery-life.md), with conflicting claims of a 2-year lifespan versus an 18-month lifespan. Aurora Labs plans to publish a definitive [power budget](./power-budget.md) spreadsheet in Q3 to reconcile this contradiction.
 
 ## References & Trust
 

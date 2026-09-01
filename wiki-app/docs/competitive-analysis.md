@@ -10,7 +10,7 @@ tags:
   - competitive-analysis
   - competitive-battlecards
   - garden-and-soil-sensors
-last_updated: "2026-09-01T19:18:14.135442+00:00"
+last_updated: "2026-09-01T21:22:24.148907+00:00"
 sidebar_label: Competitive Analysis
 slug: /competitive-analysis
 ---
@@ -21,47 +21,55 @@ slug: /competitive-analysis
 
 ## Overview
 
-This competitive analysis outlines [Aurora Labs](./aurora-labs.md)' market landscape for Q3 2026, comparing core product offerings such as the [Nova Widget](./nova-widget.md) against key competitors in the garden/soil [sensors](./sensors.md) and kitchen/lifestyle categories. It highlights strategic moats, battlecard updates, and ongoing discrepancies in technical [documentation](./documentation.md) and marketing materials.
+This competitive analysis outlines the market landscape for [Aurora Labs](./aurora-labs.md) in Q3 2026, focusing primarily on garden and soil [sensors](./sensors.md) while also touching upon adjacent kitchen and lifestyle products. The evaluation highlights key vendor specifications, strategic battlecards, and internal notes regarding [product specifications](./product-specifications.md) and [partnerships](./partnerships.md).
 
 ## Key Details
 
-- **Garden / Soil Sensors Comparison:**
-  - **Aurora Labs (Nova Widget):** Uses [MeshSync Protocol](./meshsync-protocol.md), optional cloud connectivity, IP54 waterproof rating (with plans for IP65 once tooling is funded), and a CR2032 battery.
-  - **[SenseNode SN-400](./sensenode-sn-400.md) (SN-400):** Utilizes [LoRaWAN](./lorawan.md), requires cloud connectivity, holds an IP67 waterproof rating, and runs on a CR2450 battery.
-  - **CheapoCo (SoilStick):** Operates on WiFi, requires cloud connectivity, has no waterproof rating, and uses USB power.
-- **Kitchen / Lifestyle (Adjacent):**
-  - **[TeaBuddy](./teabuddy.md) (Puck):** [BLE](./ble.md) protocol, local-only tea timer.
-  - **TimerCap:** Mechanical device that failed its Kickstarter in 2024; not a [smart device](./smart-devices.md).
-- **Competitive Moats & Features:**
-  - Local mesh network without required subscriptions.
-  - Partial open [firmware](./firmware.md) and community integrations.
-- **[Battery Life](./battery-life.md) Claims & Engineering Specs:**
-  - Engineering specification: 18 months at 10 nodes with 15-minute read intervals.
-  - Marketing rounds this figure to two years, backed by a published spreadsheet.
-- **Technical Mitigations:**
-  - Previous eight-node mesh issues were mitigated in version `0.3.8`. Beta customers are recommended to use a six-node setup.
+### Garden / Soil Sensors Comparison
+
+| Vendor | Product | Mesh | Cloud | Waterproof | Battery |
+|--------|---------|------|-------|------------|---------|
+| Aurora Labs | [Nova Widget](./nova-widget.md) | [MeshSync](./meshsync.md) | optional | IP54 | CR2032 |
+| [SenseNode](./sensenode-sn-400.md) | SN-400 | [LoRaWAN](./lorawan.md) | required | IP67 | CR2450 |
+| CheapoCo | SoilStick | WiFi | required | none | USB |
+
+* **Aurora Labs (Nova Widget):** Features MeshSync, optional cloud connectivity, IP54 [waterproofing](./waterproofing.md) (with plans to upgrade to IP65 when tooling is funded), and uses a CR2032 battery. 
+* **SenseNode (SN-400):** Utilizes [LoRaWAN](./lorawan.md), requires a cloud connection, features IP67 waterproofing, and runs on a CR2450 battery.
+* **CheapoCo (SoilStick):** Relies on WiFi, requires a cloud connection, lacks waterproofing, and uses USB power.
+
+### Kitchen / Lifestyle (Adjacent)
+
+| Vendor | Product | Protocol | Notes |
+|--------|---------|----------|-------|
+| [TeaBuddy](./teabuddy.md) | Puck | [BLE](./ble.md) | local-only tea timer |
+| TimerCap | KS failed 2024 | mechanical | not smart |
+
+### Competitive Moats and Strategy
+* **SenseNode Battlecard:** The primary strategy against SenseNode is to emphasize their long-term subscription costs over a three-year period. Aurora Labs differentiates itself through a local mesh network that operates without a subscription, partial open [firmware](./firmware.md), and strong community integrations.
+* **[Battery Life](./battery-life.md) Claims:** Engineering models estimate an 18-month battery life at 10 nodes with 15-minute read intervals. Marketing rounds this figure up to two years, backed by published spreadsheets.
+* **Technical Mitigations:** The previously identified eight-node mesh issue was successfully mitigated in firmware version 0.3.8, though [beta testing](./beta-testing.md) customers are currently recommended to use six nodes.
 
 ## Related Entities
 
-- **Aurora Labs:** Company developing the Nova Widget.
-- **SenseNode:** Primary competitor with the SN-400 sensor.
-- **CheapoCo:** Competitor offering the SoilStick sensor.
-- **TeaBuddy:** Adjacent lifestyle brand (Puck tea timer).
-- **TimerCap:** Defunct mechanical timer brand.
-- **Jonah Park:** Internal author and contributor to competitive research.
-- **Mira Chen:** Executive/spokesperson discussing moats and investor metrics.
-- **Alex:** Individual connected through friendship, relevant to the TeaBuddy partnership.
+* **Aurora Labs:** Creator of the Nova Widget and primary subject of this internal analysis.
+* **SenseNode:** Primary competitor in the soil sensor market with their SN-400 product.
+* **CheapoCo:** Competitor offering the WiFi-based, USB-powered SoilStick.
+* **TeaBuddy:** Adjacent lifestyle vendor (Puck BLE tea timer) managed via a co-marketing partnership.
+* **TimerCap:** Failed 2024 Kickstarter mechanical timer product noted for context.
+* **Jonah Park:** Author of the Q3 2026 internal competitive landscape notes and participant in investor discussions.
+* **Mira Chen:** Executive/spokesperson detailing engineering specs and strategic moats to investors.
+* **Alex:** Personal connection to the TeaBuddy team facilitating the co-marketing relationship.
 
 ## Related Concepts
 
-- **Competitive Battlecards:** Strategic sales guides focusing on competitor drawbacks, such as emphasizing SenseNode's 3-year subscription costs.
-- **Co-Marketing Partnership:** Relationship with TeaBuddy, confirmed as non-merging and purely collaborative.
-- **[Mesh Networking](./mesh-networking.md):** Local communication standard utilized by Aurora Labs via MeshSync.
-- **Waterproof Ratings:** [Hardware](./hardware.md) durability metrics comparing IP54, IP65, and IP67 standards.
+* **MeshSync:** Aurora Labs' proprietary mesh technology powering the Nova Widget.
+* **LoRaWAN & WiFi:** Competing communication [protocols](./protocols.md) used by SenseNode and CheapoCo respectively.
+* **Subscription-free Model:** A core competitive advantage highlighting local mesh operation without recurring cloud fees.
+* **Waterproofing Ratings:** Industry standards (IP54, IP65, IP67) distinguishing [hardware](./hardware.md) durability across competing devices.
 
 ## Contradictions
 
-&gt; **Contradiction:** Internal product documentation and marketing materials contain conflicting [battery specifications](./battery-specifications.md). The internal Q3 competitive landscape document lists the Nova Widget battery as a CR2032, whereas an Amazon draft text claims it uses a CR2450. This discrepancy must be resolved before publishing.
+&gt; **Contradiction:** An internal Amazon draft listing stated that the Nova Widget uses a CR2450 battery, whereas the internal Q3 competitive landscape document and engineering specs correctly identify it as using a CR2032 battery. The Amazon draft must be fixed prior to publishing.
 
 ## References & Trust
 

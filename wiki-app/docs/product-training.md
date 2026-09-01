@@ -8,7 +8,7 @@ tags:
   - sensenode
   - teabuddy
   - wiki
-last_updated: "2026-09-01T19:21:01.831326+00:00"
+last_updated: "2026-09-01T21:25:07.549098+00:00"
 sidebar_label: Product Training
 slug: /product-training
 ---
@@ -18,30 +18,38 @@ slug: /product-training
 # Product Training
 
 ## Overview
-This page documents support training roleplay scenarios and key [troubleshooting](./troubleshooting.md) guidelines covering multiple product lines, including [Nova Widget](./nova-widget.md), [TeaBuddy](./teabuddy.md), and [SenseNode SN-400](./sensenode-sn-400.md) [hardware](./hardware.md) comparisons.
+This page documents support training roleplay scenarios and key [troubleshooting](./troubleshooting.md) guidelines covering multiple product lines, including [Nova Widget](./nova-widget.md), [TeaBuddy](./teabuddy.md), and third-party interactions such as [SenseNode SN-400](./sensenode-sn-400.md). It addresses cross-ticket handling, app ecosystems, [firmware](./firmware.md) fixes, and [documentation](./documentation.md) updates.
 
 ## Key Details
-- **Multi-[Product Management](./product-management.md)**: When a customer owns both Nova Widget and TeaBuddy pucks and makes a single app request, support must recognize they are from different companies. Nova Widget uses the MeshSync garden app, while TeaBuddy uses a [BLE](./ble.md) kitchen app.
-- **Waterproof Specifications (SenseNode)**: SenseNode features IP67 [waterproofing](./waterproofing.md) ratings compared to our IP54 rating. Support should recommend using a protective cover and provide a link to the comparison page.
-- **Ticket #2099 (Rejoin Loop)**: This is a known issue. The resolution is to update to version `0.3.8` and keep the network at a maximum of six nodes.
-- **TeaBuddy iOS 18 Pairing**: Pairing issues on iOS 18 are resolved in version `0.9.3`. For the TB-142 cancel bug, agents should instruct customers to use a long-press reset.
-- **[Battery Specifications](./battery-specifications.md) and [Documentation](./documentation.md)**: Regarding the CR2450 blog typo, clarification is made that our products use CR2032 batteries. The internal wiki and Alex's blog have been updated to reflect this.
+- **Multi-Product Ownership & Apps:** When a customer owns multiple products from different companies (such as Nova Widget and a [TeaBuddy](./teabuddy.md) puck) within a single app request, support must direct them to the appropriate ecosystem. Nova uses the [MeshSync](./meshsync.md) garden app, whereas TeaBuddy uses a [BLE](./ble.md) kitchen app.
+- **[Waterproofing](./waterproofing.md) Comparison (SenseNode):** 
+  - SenseNode features an IP67 waterproof rating.
+  - Our products feature an IP54 rating.
+  - Support should recommend using a protective cover and link the comparison page when customers compare devices against SenseNode.
+- **Ticket #2099 (Rejoin Loop):**
+  - Identified as a known issue.
+  - Resolution: Update firmware to version `0.3.8`.
+  - Operational constraint: Users must stay at a maximum of six nodes.
+- **TeaBuddy Pairing (iOS 18):**
+  - Pairing issues on iOS 18 were resolved in firmware version `0.9.3`.
+  - For the TB-142 cancel bug, users must perform a long-press reset.
+- **Documentation & Blog Corrections:**
+  - A customer-facing blog typo incorrectly referenced the CR2450 battery.
+  - Verified that our [hardware](./hardware.md) uses the CR2032 battery. 
+  - Both the internal wiki and Alex's blog have been updated to reflect the correction.
 
 ## Related Entities
 - **Nova Widget**
-- **TeaBuddy**
+- **TeaBuddy (including model TB-142)**
 - **SenseNode**
+- **MeshSync Garden App**
 - **Alex**
 
 ## Related Concepts
-- **MeshSync Garden App**
-- **BLE Kitchen App**
-- **IP54 vs IP67 Waterproof Ratings**
-- **[Firmware Updates](./firmware-updates.md) (`0.3.8`, `0.9.3`)**
-- **Battery Specifications (`CR2032`)**
-
-## Contradictions
-*(No contradictions present in the current training logs.)*
+- **[Firmware Updates](./firmware-updates.md):** Managing version upgrades (e.g., `0.3.8` for loop fixes, `0.9.3` for iOS 18 pairing).
+- **Waterproof Ratings:** IP54 versus IP67 classifications and hardware mitigation strategies.
+- **Cross-Platform Support:** Handling inquiries involving distinct company hardware and application separation.
+- **Documentation Maintenance:** Correcting [Hardware Specifications](./hardware-specifications.md) (CR2032 vs. CR2450) across blogs and wikis.
 
 ## References & Trust
 

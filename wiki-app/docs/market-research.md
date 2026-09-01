@@ -10,7 +10,7 @@ tags:
   - sensenode
   - teabuddy
   - wiki
-last_updated: "2026-09-01T19:19:47.793566+00:00"
+last_updated: "2026-09-01T21:23:57.136832+00:00"
 sidebar_label: Market Research
 slug: /market-research
 ---
@@ -20,30 +20,19 @@ slug: /market-research
 # Market Research
 
 ## Overview
-This page compiles internal market research and [competitive analysis](./competitive-analysis.md) for [Aurora Labs](./aurora-labs.md), specifically focusing on Q3 2026. It evaluates garden and soil [sensors](./sensors.md), kitchen and lifestyle adjacent products, competitive battlecard strategies, and ongoing [documentation](./documentation.md) discrepancies.
+This internal [Aurora Labs](./aurora-labs.md) market research document, authored by Jonah Park for Q3 2026, outlines the competitive landscape across garden/soil [sensors](./sensors.md) and adjacent kitchen/lifestyle products. It provides direct feature comparisons, battlecard updates, and notes discrepancies in marketing materials.
 
 ## Key Details
-
-### Garden / Soil Sensors Comparison
-The following table outlines specifications for Aurora Labs and its competitors in the garden and soil sensor market:
-
-| Vendor | Product | Mesh | Cloud | Waterproof | Battery |
-|--------|---------|------|-------|------------|---------|
-| Aurora Labs | [Nova Widget](./nova-widget.md) | MeshSync | optional | IP54 | CR2032 |
-| [SenseNode SN-400](./sensenode-sn-400.md) | SN-400 | [LoRaWAN](./lorawan.md) | required | IP67 | CR2450 |
-| CheapoCo | SoilStick | WiFi | required | none | USB |
-
-### Kitchen / Lifestyle (Adjacent) Products
-Adjacent lifestyle products and their [protocols](./protocols.md):
-
-| Vendor | Product | Protocol | Notes |
-|--------|---------|----------|-------|
-| [TeaBuddy](./teabuddy.md) | Puck | [BLE](./ble.md) | local-only tea timer |
-| TimerCap | KS failed 2024 | mechanical | not smart |
-
-### Competitive Battlecard Updates
-- **SenseNode:** Sales and marketing should emphasize their ongoing subscription cost over a 3-year period.
-- **TeaBuddy:** Classified as a non-competitor; positioning should focus on partnership and co-marketing opportunities only.
+- **Garden / Soil Sensors Comparison:**
+  - **Aurora Labs ([Nova Widget](./nova-widget.md)):** Uses [MeshSync](./meshsync.md) [mesh networking](./mesh-networking.md), optional cloud integration, IP54 waterproof rating, and a CR2032 battery.
+  - **[SenseNode SN-400](./sensenode-sn-400.md) (SN-400):** Uses [LoRaWAN](./lorawan.md), required cloud integration, IP67 waterproof rating, and a CR2450 battery.
+  - **CheapoCo (SoilStick):** Uses WiFi, required cloud integration, has no waterproof rating, and uses USB power.
+- **Kitchen / Lifestyle (Adjacent) Products:**
+  - **[TeaBuddy](./teabuddy.md) (Puck):** Operates on [BLE](./ble.md) as a local-only tea timer.
+  - **TimerCap:** A mechanical, non-smart product that failed on Kickstarter in 2024.
+- **Battlecard Updates:**
+  - **SenseNode:** Strategy is to emphasize the total subscription cost over a 3-year period.
+  - **TeaBuddy:** Classified not as a competitor, but as an opportunity for partnership and co-marketing.
 
 ## Related Entities
 - Aurora Labs
@@ -53,14 +42,14 @@ Adjacent lifestyle products and their [protocols](./protocols.md):
 - TimerCap
 
 ## Related Concepts
-- Competitive Landscape
-- Soil Sensors
-- [Mesh Networking](./mesh-networking.md) (MeshSync, LoRaWAN, WiFi)
-- [Product Specifications](./product-specifications.md) ([Waterproofing](./waterproofing.md), Battery Types)
-- Battlecards
+- Competitive landscape
+- Garden and soil sensors
+- Mesh networking
+- LoRaWAN
+- Product battlecards
 
 ## Contradictions
-&gt; **Contradiction:** An internal Amazon draft stated that the Nova Widget uses a CR2450 battery, whereas the official product specifications list it as a CR2032 battery. This discrepancy must be fixed before publication.
+&gt; **Contradiction:** The internal [product specifications](./product-specifications.md) state that the Nova Widget uses a CR2032 battery, but the Amazon draft material incorrectly listed a CR2450 battery. This needs to be fixed before publication.
 
 ## References & Trust
 

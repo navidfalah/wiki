@@ -195,6 +195,85 @@ def test_answer_question_uses_hybrid_retrieval(tmp_path):
     assert fake_llm.embed_calls  # hybrid retrieval actually ran, not just BM25
 
 
+def test_answer_question_doc_scope_excludes_other_pages(tmp_path):
+    docs_dir = tmp_path / "docs"
+    docs_dir.mkdir()
+    _write_page(
+        docs_dir,
+        "meshsync.md",
+        "MeshSync",
+        "## Battery\n\nRelay radios drain batteries 30% faster than spec once relay mode is enabled.\n",
+    )
+    _write_page(docs_dir, "other.md", "Other", "## Something\n\nCompletely unrelated content.\n")
+
+    no_key_client = LLMClient(api_key="")
+    in_scope = rag_engine.answer_question(
+        "why do batteries drain fast", docs_dir=docs_dir, llm=no_key_client, doc_scope=["meshsync.md"]
+    )
+    assert in_scope["mode"] == "extractive"
+    assert in_scope["sources"][0]["doc_path"] == "meshsync.md"
+
+    out_of_scope = rag_engine.answer_question(
+        "why do batteries drain fast", docs_dir=docs_dir, llm=no_key_client, doc_scope=["other.md"]
+    )
+    assert out_of_scope["mode"] == "no_match"
+
+
+def test_answer_question_stream_extractive_deltas_join_into_final_answer(tmp_path):
+    docs_dir = tmp_path / "docs"
+    docs_dir.mkdir()
+    _write_page(
+        docs_dir,
+        "meshsync.md",
+        "MeshSync",
+        "## Battery\n\nRelay radios drain batteries 30% faster than spec once relay mode is enabled.\n",
+    )
+    no_key_client = LLMClient(api_key="")
+
+    events = list(
+        rag_engine.answer_question_stream("why do batteries drain fast", docs_dir=docs_dir, llm=no_key_client)
+    )
+    types = [e["type"] for e in events]
+    assert types[0] == "sources"
+    assert types[-1] == "done"
+    assert events[0]["sources"][0]["doc_path"] == "meshsync.md"
+
+    deltas = [e["text"] for e in events if e["type"] == "delta"]
+    assert "".join(deltas) == events[-1]["answer"]
+    assert events[-1]["mode"] == "extractive"
+
+
+class FakeStreamingLLM(FakeHybridLLM):
+    def __init__(self, chunks: list[str], **kwargs):
+        super().__init__(**kwargs)
+        self._chunks = chunks
+
+    def stream_response(self, prompt: str, system_prompt: str, temperature: float = 0.1):
+        yield from self._chunks
+
+
+def test_answer_question_stream_generated_deltas_join_into_final_answer(tmp_path):
+    docs_dir = tmp_path / "docs"
+    docs_dir.mkdir()
+    _write_page(
+        docs_dir,
+        "meshsync.md",
+        "MeshSync",
+        "## Battery\n\nRelay radios drain batteries 30% faster than spec once relay mode is enabled.\n",
+    )
+    fake_llm = FakeStreamingLLM(chunks=["Grounded ", "streamed ", "answer."], rerank_response="[1]")
+
+    events = list(
+        rag_engine.answer_question_stream("why do batteries drain fast", docs_dir=docs_dir, llm=fake_llm)
+    )
+    deltas = [e["text"] for e in events if e["type"] == "delta"]
+    assert deltas == ["Grounded ", "streamed ", "answer."]
+    done = events[-1]
+    assert done["type"] == "done"
+    assert done["mode"] == "generated"
+    assert done["answer"] == "Grounded streamed answer."
+
+
 def test_passage_id_is_stable_across_calls_and_content_addressed():
     a = rag_engine.Passage("doc.md", "Doc", "Heading", "same text")
     b = rag_engine.Passage("doc.md", "Doc", "Heading", "same text")

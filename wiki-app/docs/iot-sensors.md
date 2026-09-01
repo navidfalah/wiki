@@ -10,7 +10,7 @@ tags:
   - hardware-habit
   - iot-sensors
   - ip67-enclosure
-last_updated: "2026-09-01T19:19:31.602618+00:00"
+last_updated: "2026-09-01T21:23:40.237590+00:00"
 sidebar_label: IoT Sensors
 slug: /iot-sensors
 ---
@@ -20,33 +20,32 @@ slug: /iot-sensors
 # IoT Sensors
 
 ## Overview
-[IoT](./iot.md) [sensors](./sensors.md) are [hardware](./hardware.md) devices deployed for environmental monitoring, such as tracking soil moisture, air temperature, and ambient light for home gardeners and small-acreage farmers. Recent developments in the indie sensor space highlight a design tension between robust environmental weather sealing (such as IP67 enclosures) and open, cloud-free data architectures that rely on [mesh networking](./mesh-networking.md) instead of paid subscription dashboards. Prominent hardware examples include the commercial [SenseNode SN-400](./sensenode-sn-400.md) and the pre-release [Aurora Labs Nova](./aurora-labs.md) Widget v2.
+[IoT](./iot.md) [sensors](./sensors.md) are [hardware](./hardware.md) devices deployed for remote monitoring in environments such as home gardens and small-acreage farms. Modern development focuses on balancing power efficiency, weather durability, connectivity [protocols](./protocols.md) (such as [LoRaWAN](./lorawan.md) versus custom mesh networks), and data ownership (cloud-free local management versus subscription-based cloud dashboards). Notable hardware comparisons include commercial offerings like the [SenseNode SN-400](./sensenode-sn-400.md) and beta units like the [Aurora Labs Nova](./aurora-nova-widget.md) Widget v2.
 
 ## Key Details
 - **SenseNode SN-400 ($49):**
-  - Features an IP67 enclosure, offering top-tier weather sealing.
-  - Utilizes an STM32WL module communicating via [LoRaWAN](./lorawan.md) (non-mesh).
-  - Requires a cloud dashboard for alerts, which includes a limited free tier.
-  - Claimed 3-year [battery life](./battery-life.md), with real-world estimates closer to ~22 months at default 30-minute intervals.
+  - Features an IP67 enclosure, providing robust weather sealing.
+  - Utilizes an STM32WL module running [LoRaWAN](./lorawan.md).
+  - Requires a cloud dashboard for alerts and offers a claimed 3-year [battery life](./battery-life.md) (estimated at ~22 months under default 30-minute intervals).
 - **Aurora Labs [Nova Widget v2](./nova-widget-v2.md) (Beta):**
-  - Designed with an IP54 plastic enclosure (identified as moderately sealed).
-  - Built with an nRF52840 MCU and a custom [BLE](./ble.md)-based mesh protocol known as **MeshSync**.
-  - Provides open [MQTT](./mqtt.md) and CSV data exports without requiring a cloud account or subscription.
-  - Powered by a CR2032 coin cell battery (an initial blog typo incorrectly stated a CR2450 battery was used). 
-  - Designed to monitor soil moisture (capacitive), air temperature, and ambient light.
+  - Features an IP54 plastic enclosure (PETG for beta units) and is designed for home gardeners and small-acreage farmers.
+  - Employs an nRF52840 microcontroller combined with a custom "[MeshSync](./meshsync.md)" mesh protocol over [BLE](./ble.md).
+  - Operates cloud-free, offering open [MQTT](./mqtt.md) and CSV data exports without requiring user accounts or gateway subscriptions.
+  - Uses a CR2032 coin cell battery (an earlier blog version mistakenly cited a CR2450). Aurora targets a 2-year battery life with hourly readings, while power profiling and teardown estimates place real-world performance around 20 months (~92 µA average with a 3-node mesh).
+  - V1 scope includes soil moisture (capacitive), air temperature, and ambient light (simple photodiode).
 
 ## Related Entities
-- **Aurora Labs:** A hardware startup founded by [Mira Chen](./aurora-labs.md) and Jonah Park in Portland, OR, focused on building open, subscription-free sensors.
-- **Alex Rivera:** Author and hardware reviewer for the *Hardware Habit* blog who conducted teardowns and power profiling on garden sensors.
-- **SenseNode SN-400:** A competing commercial garden sensor known for its strong LoRaWAN connectivity and IP67 weather resistance.
+- **Alex Rivera:** Author and hardware reviewer for *Hardware Habit* who conducted teardowns and power profiling of the SenseNode and [Aurora Nova](./aurora-nova-widget.md) sensors.
+- **Aurora Labs:** An independent hardware startup founded by [Mira Chen](./aurora-nova-widget.md) and Jonah Park in Portland, OR, focused on building open, cloud-free [IoT Devices](./iot-devices.md).
+- **SenseNode:** Manufacturer of the SN-400 outdoor sensor.
 
 ## Related Concepts
-- **MeshSync:** A custom BLE mesh protocol developed by Aurora Labs to extend range between sensor nodes without incurring LoRaWAN gateway fees.
-- **Battery Life Optimization:** Engineering targets aimed at maximizing coin cell lifespan (such as CR2032) through aggressive power profiling, sleep states, and optimized reading intervals.
-- **Cloud-Free IoT:** A design philosophy emphasizing local data ownership, offering direct MQTT or CSV data exports instead of mandatory cloud dashboard subscriptions.
+- **MeshSync:** A custom [mesh networking](./mesh-networking.md) protocol designed by Mira Chen for Aurora Labs to extend range between nodes without subscription fees.
+- **Battery Life Optimization:** Hardware and [firmware](./firmware.md) strategies aimed at maximizing coin cell lifespan (such as using low-power nRF52840 microcontrollers and efficient sleep profiles).
+- **IP Ratings:** Ingress Protection standards determining dust and water resistance, contrasting the industrial IP67 rating of SenseNode with the lighter IP54 rating of the Aurora beta unit.
 
 ## Contradictions
-&gt; **Contradiction:** There is a discrepancy between Aurora Labs' internal design targets and independent power profiling regarding the Nova Widget's battery longevity and [power consumption](./power-consumption.md). Kickoff [meeting notes](./meeting-notes.md) state a target of 2 years on a CR2032 battery with *hourly* readings, while hardware teardown analysis and community discussions reference a 2-year lifespan based on *15-minute* readings, with actual 48-hour power profiling showing an average draw of ~92 µA (slightly exceeding the 85 µA target) resulting in an estimated ~20-month battery life.
+&gt; **Contradiction:** Aurora Labs' internal kickoff [documentation](./documentation.md) states a power target of 2 years on a CR2032 battery with *hourly* readings, whereas independent teardown analysis and community discussions reference the 2-year claim based on *15-minute* readings.
 
 ## References & Trust
 

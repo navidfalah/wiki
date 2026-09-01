@@ -10,7 +10,7 @@ tags:
   - sam-rivera
   - teabuddy
   - uibackgroundtask
-last_updated: "2026-09-01T19:18:03.262729+00:00"
+last_updated: "2026-09-01T21:22:13.592684+00:00"
 sidebar_label: Bluetooth Low Energy
 slug: /bluetooth-low-energy
 ---
@@ -20,26 +20,26 @@ slug: /bluetooth-low-energy
 # Bluetooth Low Energy
 
 ## Overview
-Bluetooth Low Energy ([BLE](./ble.md)) integration and pairing behavior underwent notable changes in iOS 18 beta, impacting consumer applications such as [TeaBuddy](./teabuddy.md). Research conducted by Sam Rivera explored these modifications regarding permission prompt ordering and background task management.
+Bluetooth Low Energy ([BLE](./ble.md)) implementations, particularly on mobile operating systems like iOS 18, require careful management of permissions, background tasks, and connection flows to ensure stability and proper user experience.
 
 ## Key Details
-- **iOS 18 Permission Changes:** Apple modified the permission prompt order in iOS 18 beta, which directly triggered TeaBuddy ticket #2156. 
-- **GATT Connection Requirements:** `CBManagerAuthorization` must now completely resolve before a QR deep link is permitted to trigger a GATT connection.
-- **Background Task Management:** The background steep timer requires `UIBackgroundTask` renewal to prevent background termination bugs (tracked as the TB-background-kill bug).
-- **TeaBuddy Updates:** Action items included shipping version 0.9.3 to resolve the issue and documenting the ordering requirement in the Android kickoff to prevent similar mistakes.
+- **iOS 18 Pairing Changes:** Apple's iOS 18 beta introduced changes to the permission prompt order, which surfaced issues such as [TeaBuddy](./teabuddy.md) ticket #2156.
+- **Authorization Requirements:** `CBManagerAuthorization` must be fully resolved before any QR deep link triggers a GATT connection.
+- **Background Operations:** Background steep timers require `UIBackgroundTask` renewal to prevent background termination bugs (such as the TB-background-kill bug).
 
 ## Related Entities
-- **Sam Rivera:** Author of the iOS 18 CoreBluetooth pairing research notes for TeaBuddy.
-- **TeaBuddy:** Consumer application affected by the iOS 18 BLE permission prompt order changes (Ticket #2156).
-- **[Nova Widget](./nova-widget.md):** Internal project utilizing UART provisioning rather than a consumer QR flow, exhibiting minimal relevance to these specific iOS 18 pairing changes.
+- **Sam Rivera (TeaBuddy):** Researcher and author who documented the iOS 18 CoreBluetooth pairing changes and findings for TeaBuddy.
+- **TeaBuddy:** Product/project affected by iOS 18 permission ordering and background task issues (Ticket #2156).
+- **[Nova Widget](./nova-widget.md):** A separate product featuring minimal [Aurora](./nova-widget.md) relevance that utilizes UART provisioning instead of a consumer QR flow.
 
 ## Related Concepts
-- **CoreBluetooth:** Apple framework managing Bluetooth Low Energy devices on iOS, specifically involving `CBManagerAuthorization`.
-- **Background Tasks:** Mechanism (`UIBackgroundTask`) used to maintain app execution states during operations like background steep timers.
-- **UART Provisioning:** An alternative connection and provisioning method used by Nova Widget, distinct from the consumer QR-based BLE flow.
+- **CoreBluetooth:** Apple's framework for interacting with Bluetooth low energy devices.
+- **GATT Connect:** The generic attribute profile connection process used by BLE devices.
+- **UIBackgroundTask:** iOS mechanism for handling background task lifecycles and expirations.
+- **UART Provisioning:** An alternative provisioning method used by Nova Widget.
 
 ## Contradictions
-*No contradictions present in the current source material.*
+*No contradictions reported in the current research notes.*
 
 ## References & Trust
 

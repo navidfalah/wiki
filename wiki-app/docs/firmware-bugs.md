@@ -10,7 +10,7 @@ tags:
   - kevin-ostrander
   - mesh-118
   - nova-59
-last_updated: "2026-09-01T19:18:36.438917+00:00"
+last_updated: "2026-09-01T21:22:45.148230+00:00"
 sidebar_label: Firmware Bugs
 slug: /firmware-bugs
 ---
@@ -20,28 +20,28 @@ slug: /firmware-bugs
 # Firmware Bugs
 
 ## Overview
-[Firmware](./firmware.md) bugs in [Aurora Labs](./aurora-labs.md) devices involve state-corruption and reconnection issues, notably affecting the [Nova Widget](./nova-widget.md) on firmware version 0.3.8. An example includes devices failing to rejoin home [Wi-Fi Connectivity](./wi-fi-connectivity.md) networks following unexpected power losses or router updates, resulting in persistent blinking blue indicator states.
+[Firmware](./firmware.md) bugs in [IoT](./iot.md) deployment can lead to unexpected device behavior, such as connection failures following power outages or router updates. A prominent example is tracked under **[NOVA](./nova-widget.md)-59**, affecting the [Nova Widget](./nova-widget.md) on firmware version `0.3.8`. These issues often stem from state-corruption vulnerabilities where device credentials or states fail to survive unclean power losses.
 
 ## Key Details
-- **Nova Widget Issue (NOVA-59):** Wi-Fi credentials and connection state fail to survive an unclean power loss or router [Firmware Updates](./firmware-updates.md) on firmware version 0.3.8.
-- **Data Loss:** Users experiencing the issue have reported losing weeks of sensor history when forced to factory reset and re-pair devices from scratch.
-- **Workarounds:** 
-  - Setting a static DHCP reservation for the widget's MAC address can mitigate reconnection issues caused by changed IP addresses.
-  - Performing a soft Wi-Fi-only reset (holding the side button for 3 seconds) instead of a full factory reset allows users to clear connection states without wiping local sensor history.
-- **[Debugging](./debugging.md):** Support has requested router logs—specifically DHCP lease renewal timestamps surrounding outages—to further diagnose the bug.
+- **Affected Device/Version:** Nova Widget (Batch 4 beta tester unit), running firmware version `0.3.8`.
+- **Primary Symptom:** Devices get stuck blinking blue and refuse to rejoin the home Wi-Fi after a power outage or router firmware update.
+- **Data Loss Risk:** Full factory resets required to resolve reconnection failures currently wipe accumulated local sensor history (e.g., 3 weeks of data).
+- **Mitigation & Workarounds:**
+  - Setting a static DHCP reservation on the router can prevent issues related to IP changes upon reconnection.
+  - Using a soft Wi-Fi-only reset (holding the side button for 3 seconds) instead of a full factory reset preserves local sensor history.
+- **[Debugging](./debugging.md) Requirements:** Support teams request router logs, specifically DHCP lease renewal timestamps around the time of the outage.
 
 ## Related Entities
 - **Kevin Ostrander:** Beta tester (batch 4) who reported the Nova Widget Wi-Fi reconnection bug.
-- **[Aurora Labs Support](./aurora-labs.md) / Sam Okafor:** Support team handling customer [Troubleshooting](./troubleshooting.md) and internal triage.
-- **Jonah Park:** Firmware engineer looped in to investigate the state-corruption bug class.
+- **[Aurora Labs Support](./nova-widget.md) / Sam Okafor:** Support team handling triage and customer communication.
+- **Jonah Park:** Firmware engineer looped in to investigate potential state-corruption classes of bugs.
 
 ## Related Concepts
-- **NOVA-59:** The tracking ID for the Nova Widget Wi-Fi credential and state persistence bug.
-- **[MESH-118](./mesh-118.md):** A related bug class dealing with state-corruption in the relay radio subsystem, sharing structural similarities with the Wi-Fi supplicant state issue.
-- **State Corruption:** A recurring theme in firmware behavior where device settings or [Networking](./networking.md) configurations fail to persist securely across reboots or power outages.
+- **State-Corruption Bugs:** Vulnerabilities where volatile or non-volatile state data becomes corrupted or unrecoverable during power interruptions.
+- **Wi-Fi Supplicant State:** The subsystem responsible for managing Wi-Fi credentials and connection handshakes, suspected in NOVA-59.
 
 ## Contradictions
-*(No direct contradictions found in the current sources.)*
+*No contradictions were identified in the provided sources.*
 
 ## References & Trust
 

@@ -10,7 +10,7 @@ tags:
   - ip54-vs-ip65-tooling-mitigation
   - meshsync
   - mira-chen
-last_updated: "2026-09-01T19:19:24.448096+00:00"
+last_updated: "2026-09-01T21:23:32.374217+00:00"
 sidebar_label: Investor Updates
 slug: /investor-updates
 ---
@@ -20,37 +20,36 @@ slug: /investor-updates
 # Investor Updates
 
 ## Overview
-This page compiles information regarding investor communications for [Aurora Labs](./aurora-labs.md), specifically focusing on the drafted July 2026 update authored by [Mira Chen](./aurora-labs.md). It covers recent traction metrics, ongoing product and operational challenges, external engagements, and current [fundraising](./fundraising.md) asks.
+This page compiles draft investor update materials for [Aurora Labs](./aurora-labs.md), detailing recent [product traction](./product-traction.md), ongoing operational and [documentation](./documentation.md) challenges, external engagements, and current [fundraising](./fundraising.md) asks.
 
 ## Key Details
-- **Traction**: 
-  - 47 beta [Nova Widget](./nova-widget.md) units currently deployed in the field.
-  - MeshSync 0.3.8 successfully shipped, featuring a rejoin fix that unblocks 8-node deployments.
-  - A [wiki compiler](./wiki-compiler.md) demo recently impressed a seed investor, which included a mention of the "karpathy pattern."
-- **Challenges**:
-  - IP65 tooling ($8k) has been deferred; the company is shipping an IP54 beta variant accompanied by clear splash-resistance disclaimers.
-  - Competitor [SenseNode SN-400](./sensenode-sn-400.md) continues to lead the outdoor waterproof narrative with an IP67 rating.
-  - [Documentation](./documentation.md) currently contains a contradiction regarding [battery life](./battery-life.md) claims (2 years versus 18 months), which is slated for resolution by publishing a comprehensive [power budget](./power-budget.md) spreadsheet in Q3.
-- **[TeaBuddy](./teabuddy.md) Tangent**:
-  - Alex Kim reached out regarding potential co-marketing opportunities at Maker Faire, though this has been deferred until the Aurora beta ships.
-  - No [firmware](./firmware.md) merge has occurred, limited to a shared joke regarding the CR2032 supply chain.
-- **Funding Ask**: Seeking a $500k bridge financing round dedicated to injection mold tooling and 2 full-time equivalent (FTE) firmware engineers.
+* **Traction:**
+  * 47 beta [Nova Widget](./nova-widget.md) units currently deployed in the field.
+  * [MeshSync](./meshsync.md) 0.3.8 successfully shipped, featuring a rejoin fix that unblocks 8-node deployments.
+  * A [wiki compiler](./wiki-compiler.md) demo impressed a seed investor, noting the "karpathy pattern."
+* **Challenges & Mitigations:**
+  * IP65 tooling ($8k) has been deferred; the company is shipping an IP54 beta with clear splash-resistance documentation.
+  * Competitor [SenseNode SN-400](./sensenode-sn-400.md) continues to win the outdoor waterproof narrative with its IP67 rating.
+  * Publishing a comprehensive [power budget](./power-budget.md) spreadsheet in Q3 to reconcile conflicting battery longevity claims.
+* **[TeaBuddy](./teabuddy.md) Tangent:**
+  * Alex Kim reached out regarding co-marketing at Maker Faire, which has been deferred until the Aurora beta ships.
+  * There was no [firmware](./firmware.md) merge; discussions were limited to a shared CR2032 supply chain joke.
+* **Fundraising Ask:**
+  * Seeking a $500k bridge round to fund injection molding and 2 full-time equivalent (FTE) firmware engineers.
 
 ## Related Entities
-- **Aurora Labs**: The underlying company and subject of the investor update.
-- **Mira Chen**: CEO of Aurora Labs and author of the update draft.
-- **Alex Kim**: Individual representing TeaBuddy who initiated contact regarding Maker Faire co-marketing.
-- **SenseNode SN-400**: Competitor [hardware](./hardware.md) product maintaining an IP67 rating.
-- **Nova Widget**: Aurora Labs' beta hardware product (47 units in the field).
+* **Aurora Labs**
+* **[Mira Chen](./nova-widget.md)** (CEO / Author of the draft)
+* **Alex Kim** (TeaBuddy representative)
+* **SenseNode SN-400**
 
 ## Related Concepts
-- **MeshSync**: Proprietary software/protocol (version 0.3.8) focused on [mesh networking](./mesh-networking.md) deployments.
-- **Bridge Financing**: The $500k fundraising instrument requested to cover tooling and personnel.
-- **Documentation Reconciliation**: Resolving conflicting internal claims, such as the battery life discrepancy.
-- **Tooling Mitigation**: Shifting from IP65 to IP54 tooling to manage upfront capital expenditures.
+* **MeshSync 0.3.8**
+* **IP54 vs IP65 Tooling Mitigation**
+* **Bridge Financing**
 
 ## Contradictions
-&gt; **Contradiction:** Internal documentation contains conflicting claims regarding battery life, stating both 2 years and 18 months. This is scheduled to be officially reconciled and clarified with the publication of a power budget spreadsheet in Q3.
+&gt; **Contradiction:** Internal documentation contains conflicting claims regarding [battery life](./battery-life.md), stating both a 2-year lifespan and an 18-month lifespan. This is scheduled for reconciliation via a Q3 power budget spreadsheet publication.
 
 ## References & Trust
 

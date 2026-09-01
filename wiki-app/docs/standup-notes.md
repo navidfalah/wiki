@@ -10,7 +10,7 @@ tags:
   - mira
   - standup-notes
   - wiki
-last_updated: "2026-09-01T19:21:41.277473+00:00"
+last_updated: "2026-09-01T21:25:46.018978+00:00"
 sidebar_label: Standup Notes
 slug: /standup-notes
 ---
@@ -20,32 +20,29 @@ slug: /standup-notes
 # Standup Notes
 
 ## Overview
-This wiki page captures the rough notes and scribbles from a team standup meeting in early June 2026. The session covered mesh network scaling issues, [hardware](./hardware.md) enclosure testing, [wiki maintenance](./wiki-maintenance.md) tasks, and conflicting opinions on solar trickle charging.
+This wiki page captures the rough notes, updates, and action items from a team standup meeting held in early June 2026. The discussion covered [mesh networking](./mesh-networking.md) metrics, enclosure [hardware](./hardware.md) prototyping, data sovereignty principles, and internal task tracking.
 
 ## Key Details
-- **Mesh Network ([Mira](./aurora-labs.md)):** The mesh network is still exhibiting unusual behavior at 8 nodes, showing a 110µA spike on rejoin, which is currently considered "fine for beta."
-- **Enclosures (Jonah):** Gasket samples arrived and are underwhelming. IP54 is acceptable, but upgrading to an IP65 rating would require an $8,000 tooling rip.
-- **Wiki Maintenance:** The author acknowledged forgetting to update the wiki again.
-- **Action Items & TODOs:**
-  - Fix the cron job on staging (tentative).
-  - Resolve the disagreement regarding solar trickle charging.
-  - Get lunch.
-- **Miscellaneous Thoughts:** 
-  - Questioning why CR2032 coin cell batteries are more expensive at hardware stores compared to online retailers.
-  - Re-evaluating the guiding tagline: *"open [sensors](./sensors.md) for people who own their data"*.
-  - Noted tags for future checks: `#touch test` and `#incremental test`.
+* **Mesh Network Status:** [Mira](./nova-widget.md) reported that the mesh network is still exhibiting unusual behavior at 8 nodes, noting a spike of 110µA upon node rejoin. Despite this, it was deemed "fine for beta."
+* **Hardware & Enclosures:** Jonah evaluated gasket samples and found them to be mediocre. While the current samples achieve an IP54 rating, upgrading to IP65 would require an expensive tooling redesign costing $8,000.
+* **Wiki & [Documentation](./documentation.md):** The author acknowledged a recurring lapse in keeping the project wiki updated.
+* **Open Questions & Random Observations:** 
+  * A debate arose regarding solar trickle charging: Jonah expressed approval ("yes"), while Mira expressed disapproval ("no").
+  * A side observation questioned why CR2032 coin cell batteries carry a higher price tag at local hardware stores compared to online retailers.
+* **Core Philosophy:** The team briefly revisited the guiding mantra: *"open [sensors](./sensors.md) for people who own their data"*, affirming its ongoing relevance.
 
 ## Related Entities
-- **Mira:** Team member overseeing mesh network performance and scaling behavior.
-- **Jonah:** Team member handling hardware enclosures, gaskets, and IP ratings.
+* **Mira:** Team member overseeing mesh network performance and expressing skepticism toward solar trickle charging.
+* **Jonah:** Team member handling hardware prototyping (gaskets and enclosures) who supports solar trickle charging.
 
 ## Related Concepts
-- **Mesh Network Scaling:** Observing behavior and [power consumption](./power-consumption.md) spikes (e.g., 110µA rejoin spikes) as node counts increase during the beta phase.
-- **IP Enclosure Ratings:** The trade-offs between enclosure protection levels (IP54 vs. IP65) and associated tooling costs.
-- **Data Sovereignty:** The core mission and philosophy embodied by the tagline "open sensors for people who own their data."
+* **Data Sovereignty:** Highlighted by the mission statement focusing on user ownership of sensor data.
+* **Mesh Network Scaling:** Examined via the behavior and power draw anomalies observed at an 8-node threshold.
+* **IP Enclosure Ratings:** Evaluated through the comparison between IP54 and IP65 standards and associated tooling costs.
+* **[Power Management](./power-management.md):** Discussed in the context of node rejoin spikes (110µA), coin cell battery economics (CR2032), and solar trickle options.
 
 ## Contradictions
-&gt; **Contradiction:** There is an internal disagreement regarding solar trickle charging between team members: Jonah is in favor ("yes"), while Mira is against it ("no").
+&gt; **Contradiction:** There is a direct disagreement between team members regarding the implementation of solar trickle charging: Jonah supports it ("yes"), whereas Mira opposes it ("no").
 
 ## References & Trust
 

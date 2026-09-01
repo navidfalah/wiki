@@ -10,7 +10,7 @@ tags:
   - local-first-software
   - mira
   - nova-widget
-last_updated: "2026-09-01T19:19:44.014596+00:00"
+last_updated: "2026-09-01T21:23:53.394678+00:00"
 sidebar_label: Local-First Software
 slug: /local-first-software
 ---
@@ -20,28 +20,34 @@ slug: /local-first-software
 # Local-First Software
 
 ## Overview
-Local-First Software focuses on application designs and [IoT](./iot.md) architectures that prioritize local execution, direct device communication, and user data ownership over mandatory cloud dependencies. A notable example in this space is [TeaBuddy](./teabuddy.md), which rejected cloud accounts for its version 1 release to emphasize privacy, simplicity, and reliability.
+Local-first software and [hardware design](./hardware-design.md) prioritize device autonomy, local control, and the minimization or complete elimination of mandatory cloud infrastructure. This topic was the focus of a lunch-and-learn session at the [Aurora](./nova-widget.md) office featuring invited guest presenter Alex Kim from [TeaBuddy](./teabuddy.md).
 
 ## Key Details
-- **Presenter & Event:** Alex Kim (from TeaBuddy) served as an invited guest presenter at the [Aurora Labs](./aurora-labs.md) office for a lunch-and-learn session titled "Local-First IoT" on July 5.
+- **Presenter:** Alex Kim (TeaBuddy, invited guest at the Aurora office)
 - **Core Topics Covered:**
-  - Tradeoffs between [Bluetooth Low Energy](./bluetooth-low-energy.md) ([BLE](./ble.md)) and mesh networks for consumer gadgets.
-  - The architectural decision behind TeaBuddy's rejection of cloud accounts for v1.
-  - Live demonstrations comparing a puck buzzer and [Nova Widget](./nova-widget.md) LED patterns.
-- **Action Item:** Add a cross-link wiki page for `teabuddy-cross-ref` (noted as potentially already existing).
+  - [BLE](./ble.md) ([Bluetooth Low Energy](./bluetooth-low-energy.md)) versus [mesh networking](./mesh-networking.md) tradeoffs for consumer gadgets.
+  - The architectural decision behind why TeaBuddy rejected cloud accounts for version 1 (v1).
+  - Live demonstrations comparing puck buzzer behaviors against [Nova Widget](./nova-widget.md) LED patterns.
+- **Q&A Highlights:**
+  - **[Mira](./nova-widget.md):** Noted that mesh complexity is worthwhile when scaling to 6 or more garden [sensors](./sensors.md).
+  - **Alex Kim:** Emphasized that target users (tea drinkers) prefer devices with a single, dedicated job.
+  - **Jonah:** Offered to share enclosure supplier contacts.
+- **Action Items:** Add a cross-link wiki page for `teabuddy-cross-ref` (noting that it may already exist).
 
 ## Related Entities
-- **Alex Kim:** Invited guest presenter from TeaBuddy who led the lunch-and-learn session.
-- **TeaBuddy:** Consumer gadget creator that rejects cloud accounts for its version 1 products, focusing on a "one device, one job" philosophy.
+- **Alex Kim:** Invited guest presenter from TeaBuddy.
 - **Aurora:** Office location hosting the lunch-and-learn session.
-- **Nova Widget:** [Hardware](./hardware.md) device featured in the LED pattern demonstration alongside the puck buzzer.
+- **TeaBuddy:** Company developing local-first consumer gadgets without cloud accounts.
+- **Mira:** Participant in the Q&A discussing mesh complexity and garden sensors.
+- **Jonah:** Participant in the Q&A offering supplier contacts.
+- **Nova Widget:** Hardware device used in the LED pattern demonstration.
 
 ## Related Concepts
-- **BLE vs. Mesh Tradeoffs:** Discussion on selecting between Bluetooth Low Energy and [mesh networking](./mesh-networking.md) for consumer hardware.
-- **Local-First IoT:** The practice of building Internet of Things devices that operate independently of cloud infrastructure.
+- **Local-First [IoT](./iot.md):** Designing Internet of Things devices that operate independently of cloud servers.
+- **BLE vs Mesh Tradeoffs:** Evaluating the range, [power consumption](./power-consumption.md), and network topology choices for hardware communication.
 
 ## Contradictions
-*(No contradictions present in the current source material)*
+*(No direct contradictions reported in the source material.)*
 
 ## References & Trust
 

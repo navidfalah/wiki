@@ -10,7 +10,7 @@ tags:
   - sensenode
   - teabuddy
   - wiki
-last_updated: "2026-09-01T19:22:06.562415+00:00"
+last_updated: "2026-09-01T21:26:12.860084+00:00"
 sidebar_label: Wiki Migration
 slug: /wiki-migration
 ---
@@ -20,45 +20,30 @@ slug: /wiki-migration
 # Wiki Migration
 
 ## Overview
-
-This page documents notes recovered and synthesized from a flawed Notion markdown export dated 2026-06-17 during a wiki migration attempt. It captures technical details regarding the [Nova Widget](./nova-widget.md), [TeaBuddy](./teabuddy.md), and [SenseNode](./sensenode-sn-400.md) [hardware](./hardware.md).
+This wiki page documents the recovery and migration notes originating from a broken Notion markdown export dated 2026-06-17. It captures specifications, architectural decisions, and cross-references regarding [hardware](./hardware.md) devices and software [protocols](./protocols.md) such as [Nova Widget](./nova-widget.md), [TeaBuddy](./teabuddy.md), and SenseNode.
 
 ## Key Details
-
-### Nova Widget Specifications
-- **Mesh Protocol:** Uses MeshSync.
-- **Default Read Interval:** 15 minutes.
-- **Battery Type:** Uses CR2032.
-- **[Power Consumption](./power-consumption.md):**
-  - Sleep mode: 4.2 µA
-  - Transmit (TX): 12 mA
-
-### SenseNode
-- **Enclosure:** IP67 rated for improved waterproof performance.
-
-### TeaBuddy
-- **Connectivity:** Uses [BLE](./ble.md) ([Bluetooth Low Energy](./bluetooth-low-energy.md)) rather than a mesh network.
+- **Nova Widget Protocol:** Uses [MeshSync](./meshsync.md) as its mesh protocol.
+- **Default Read Interval:** Configured to 15 minutes.
+- **Nova Widget Power Specifications:**
+  - Battery type: CR2032 (some [documentation](./documentation.md) incorrectly references CR2450).
+  - Sleep current: 4.2 µA.
+  - Transmission (TX) current: 12 mA.
+- **TeaBuddy Connectivity:** Relies on [BLE](./ble.md) ([Bluetooth Low Energy](./bluetooth-low-energy.md)) rather than a mesh network.
+- **SenseNode Casing:** Built with an IP67 rating, offering superior [waterproofing](./waterproofing.md).
 
 ## Related Entities
-
-- **Nova Widget**
-- **TeaBuddy**
-- **SenseNode**
-- **MeshSync**
-- **Sam Rivera**
+- **Nova Widget:** The primary [IoT](./iot.md) device tracked in these notes, utilizing MeshSync and CR2032 batteries.
+- **TeaBuddy:** A separate product/codebase utilizing BLE.
+- **SenseNode:** A hardware node noted for its IP67 waterproof rating.
+- **Sam Rivera:** Team member/lead who advised against merging codebases between Nova Widget and TeaBuddy.
 
 ## Related Concepts
-
-- **[Battery Specifications](./battery-specifications.md)**
-- **Default Read Intervals**
-- **Mesh [Protocols](./protocols.md) vs. BLE**
-- **Hardware Enclosures (IP67)**
+- **[Mesh Networking](./mesh-networking.md):** Implemented via MeshSync for Nova Widget, contrasted with TeaBuddy's direct BLE implementation.
+- **[Hardware Power Management](./hardware-power-management.md):** Sleep and TX power draw specifications for low-power sensor nodes.
 
 ## Contradictions
-
-&gt; **Contradiction:** There is a discrepancy regarding the Nova Widget's default read interval; current notes state 15 minutes, but kickoff [documentation](./documentation.md) previously indicated it was hourly.
-
-&gt; **Contradiction:** Documentation conflicts regarding the battery type for the Nova Widget, with some older documentation incorrectly specifying a CR2450 battery instead of the correct CR2032 cell.
+&gt; **Contradiction:** There is a discrepancy regarding the Nova Widget battery type. While current specifications and correct documentation specify a CR2032 battery, older documentation incorrectly states that the device uses a CR2450. Additionally, the default read interval was initially noted as hourly during [project kickoff](./project-kickoff.md), but is currently set to 15 minutes.
 
 ## References & Trust
 

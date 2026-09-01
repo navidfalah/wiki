@@ -10,7 +10,7 @@ tags:
   - reading-interval
   - sensenode-sn-400
   - teabuddy
-last_updated: "2026-09-01T19:18:19.123141+00:00"
+last_updated: "2026-09-01T21:22:28.953695+00:00"
 sidebar_label: Customer Onboarding
 slug: /customer-onboarding
 ---
@@ -20,26 +20,27 @@ slug: /customer-onboarding
 # Customer Onboarding
 
 ## Overview
-This page provides essential onboarding guidance, frequently asked questions, and technical specifications for setting up the [Aurora Nova Widget](./aurora-nova-widget.md) during the [beta testing](./beta-testing.md) program.
+This page provides essential onboarding information, frequently asked questions, and [hardware specifications](./hardware-specifications.md) for users participating in the [Aurora Nova Widget](./aurora-nova-widget.md) beta program.
 
 ## Key Details
-- **Sensor Limit:** The beta recommendation is limited to **6 nodes** until MeshSync 0.3.9 is released. Adding eight or more nodes may trigger rejoin loops (referenced in ticket #2099).
-- **Reading Interval:** The default reading interval is set to **15 minutes**. (Note: Some older [documentation](./documentation.md) incorrectly stated hourly intervals due to a kickoff mistake).
-- **Water Resistance:** The device holds an **IP54 rating**, making it splash resistant but not submersible. For outdoor submersion requirements, the [SenseNode SN-400](./sensenode-sn-400.md) offers an IP67 rating.
-- **[Battery Specifications](./battery-specifications.md):** Uses a **CR2032** [battery life](./battery-life.md). (Note: Some blog posts mistakenly referenced CR2450, which has since been corrected in the wiki).
+* **Sensor Limits:** The beta recommendation is a maximum of **6 nodes** until the release of [MeshSync](./meshsync.md) 0.3.9. Adding eight or more nodes may trigger rejoin loops (referenced in ticket #2099).
+* **Reading Interval:** The default reading interval is set to **15 minutes**.
+* **[Waterproofing](./waterproofing.md) & Durability:** The device carries an **IP54 rating**, making it splash resistant but not submersible. For outdoor submersion requirements, the [SenseNode SN-400](./sensenode-sn-400.md) offers an IP67 rating.
+* **Battery Type:** Uses a **CR2032** battery.
 
 ## Related Entities
-- **Aurora Nova Widget:** The primary [hardware](./hardware.md) device covered under this beta onboarding FAQ.
-- **SenseNode SN-400:** An alternative hardware option providing an IP67 rating for outdoor submersion.
-- **[TeaBuddy](./teabuddy.md):** A separate [local-first software](./local-first-software.md) product from a different company using a different app.
+* **Aurora Nova Widget:** The primary hardware product for the beta onboarding program.
+* **SenseNode SN-400:** An alternative hardware device offering IP67 rating for outdoor submersion.
+* **[TeaBuddy](./teabuddy.md):** A separate product from a different company and application, though it shares a similar [local-first software](./local-first-software.md) philosophy.
 
 ## Related Concepts
-- **MeshSync:** The synchronization protocol used by the Nova Widget, with version 0.3.9 addressing current sensor limit constraints.
-- **[Local-First Hardware](./local-first-hardware.md):** A shared philosophical approach to software and [hardware design](./hardware-design.md), though not shared by interoperable products like TeaBuddy.
+* **MeshSync:** The synchronization protocol and software version (currently targeting 0.3.9) that manages node limits and network stability.
+* **Local-First:** A shared philosophical approach to data and device management utilized by both the Nova Widget and TeaBuddy.
 
 ## Contradictions
-&gt; **Contradiction:** Older project documentation stated that the default reading interval was hourly, whereas current onboarding FAQs specify a 15-minute default interval.
-&gt; **Contradiction:** Early blog posts mentioned that the device uses a CR2450 battery, but the official wiki and FAQ confirm it utilizes a CR2032 battery.
+&gt; **Contradiction:** [Documentation](./documentation.md) regarding the default reading interval contains a discrepancy. While current onboarding guidelines establish a 15-minute default interval, some older documentation incorrectly states that the interval is hourly due to a kickoff mistake.
+
+&gt; **Contradiction:** [Battery Specifications](./battery-specifications.md) vary across publications. Official onboarding and wiki documentation specify the CR2032 battery, whereas certain blog posts incorrectly claim the device uses a CR2450 battery.
 
 ## References & Trust
 

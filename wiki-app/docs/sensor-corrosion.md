@@ -10,7 +10,7 @@ tags:
   - sensenode
   - sensenode-sn-400
   - sensor-corrosion
-last_updated: "2026-09-01T19:21:23.357351+00:00"
+last_updated: "2026-09-01T21:25:28.699311+00:00"
 sidebar_label: Sensor Corrosion
 slug: /sensor-corrosion
 ---
@@ -20,26 +20,24 @@ slug: /sensor-corrosion
 # Sensor Corrosion
 
 ## Overview
-Sensor corrosion is a significant factor in the longevity and total cost of ownership for [hardware](./hardware.md) deployed in environmental monitoring, particularly in soil testing applications. Findings compiled from the HomeLab [Sensors](./sensors.md) thread and research documents highlight how material selection and protective coatings directly impact probe lifespan under acidic soil conditions.
+Sensor corrosion is a critical durability and total cost of ownership factor for environmental monitoring [hardware](./hardware.md), particularly for capacitive [soil probes](./soil-probes.md) deployed in acidic soils. Based on community findings and [hardware reviews](./hardware-reviews.md), low-cost [sensors](./sensors.md) often face accelerated degradation, requiring careful selection of coated or premium-plated alternatives.
 
 ## Key Details
-- **Cheap Probes:** Inexpensive capacitive [soil probes](./soil-probes.md) typically fail within 6 to 9 months when deployed in acidic soil environments.
-- **[SenseNode SN-400](./sensenode-sn-400.md):** This unit utilizes a coated probe design to resist degradation and is available with a replacement cost of $12.
-- **Aurora Beta Probe:** Features a gold-flashed PCB design, though its long-term durability remains untested in the field.
+- **Failure Rates:** Inexpensive capacitive soil probes typically fail within 6 to 9 months when deployed in acidic soil environments.
+- **[SenseNode SN-400](./sensenode-sn-400.md):** This model utilizes a coated probe design to mitigate corrosion issues, with replacement units priced at $12.
+- **Aurora Beta Probe:** Features a gold-flashed printed circuit board (PCB), though long-term durability data remains untested.
 
 ## Related Entities
-- **SenseNode (SenseNode SN-400):** Hardware solution featuring a coated probe for improved corrosion resistance.
-- **Aurora Beta Probe:** Alternative hardware utilizing a gold-flashed PCB.
-- **[Nova Widget](./nova-widget.md):** Mentioned in relation to hardware categorization and ecosystem components.
-- **Jonah:** Team member who noted that sensor lifespan and replacement costs should be factored into the comparison page under total cost of ownership.
-- **Mira:** Team member who clarified that corrosion considerations are not a v1 blocker, but should be documented on the hardware page.
+- **SenseNode (and SenseNode SN-400):** Manufacturer/model providing coated probe solutions for corrosion resistance.
+- **[Aurora Nova Widget](./aurora-nova-widget.md):** Referenced in community discussions regarding hardware selection and durability.
+- **Aurora Beta Probe:** Alternative hardware utilizing gold-flashed PCB architecture.
 
 ## Related Concepts
-- **Total Cost of Ownership (TCO):** Incorporates initial hardware costs alongside replacement frequency driven by environmental degradation like soil acidity.
-- **Material Coating:** The application of protective layers (such as specialized coatings or gold flashing) to extend hardware operating life in corrosive substrates.
+- **Total Cost of Ownership (TCO):** Long-term financial impact of sensor replacements driven by corrosion failures.
+- **Hardware Durability:** Material resilience against environmental factors such as soil acidity.
 
 ## Contradictions
-*(No contradictions present in the current source data)*
+*(No direct contradictions present in the current source data.)*
 
 ## References & Trust
 

@@ -9,7 +9,7 @@ tags:
   - meeting-notes
   - mira
   - wiki
-last_updated: "2026-09-01T19:19:51.349778+00:00"
+last_updated: "2026-09-01T21:24:00.168243+00:00"
 sidebar_label: Meeting Notes
 slug: /meeting-notes
 ---
@@ -19,30 +19,28 @@ slug: /meeting-notes
 # Meeting Notes
 
 ## Overview
-This wiki page captures the summary, topics discussed, and implied decisions from an informal 23-minute meeting held without a formal agenda. The meeting was attended by [Mira](./aurora-labs.md), Jonah, and the note-taker.
+This wiki page captures the informal meeting notes from an un-agendized, 23-minute session attended by [Mira](./nova-widget.md), Jonah, and the note-taker. Despite having no formal agenda and making no official decisions, the meeting touched on several product, marketing, and community topics, resulting in several clear implied decisions.
 
 ## Key Details
-- **Duration:** 23 minutes
-- **Attendees:** Mira, Jonah, and the note-taker
-- **Topics Covered:**
-  - **Competitor Teardown Blog:** Reviewed the blog post, noting it was mostly fair, though one [Battery Specifications](./battery-specifications.md) was incorrect and has since been fixed.
-  - **Power Numbers:** Discussed whether to publish exact power numbers; Mira expressed caution regarding this decision.
-  - **Beta Tester List:** Currently stands at 12 participants, comprising 3 farmers and the rest hobbyists.
-  - **Tools & Ecosystem:** A brief mention of the Obsidian graph view prompted universal agreement/nodding from the group.
-- **Next Meeting:** Scheduled tentatively for "when mesh stable" (exact date/time TBD).
+* **Duration:** 23 minutes
+* **Attendees:** Mira, Jonah, and the note-taker
+* **Discussion Topics:**
+  * **Competitor Teardown Blog:** Reviewed the competitor teardown blog post, noting it was mostly fair, though one battery detail was incorrect and has since been fixed.
+  * **Power Numbers:** Discussed whether to publish power numbers, with Mira expressing caution.
+  * **[Beta Testing](./beta-testing.md) Tester List:** Reviewed the current roster of 12 beta testers, consisting of 3 farmers and the rest hobbyists.
+  * **Tooling:** A brief mention of the Obsidian graph view elicited universal agreement from the team.
 
 ## Related Entities
-- **Mira:** Meeting attendee who expressed caution regarding the publication of power numbers.
-- **Jonah:** Meeting attendee.
+* **Mira:** Team member who adopted a cautious stance regarding the publishing of power numbers.
+* **Jonah:** Meeting attendee participating in the product and strategy discussions.
 
 ## Related Concepts
-- **Competitor Teardown:** Analysis of competing products via a blog post format.
-- **[Beta Testing](./beta-testing.md) Program:** Initial testing group consisting of 12 participants (farmers and hobbyists) targeted for the IP54 [hardware](./hardware.md) release.
-- **Implied Decisions:** Operational directions taken during the meeting despite a lack of formal voting or sign-off.
-- **[Wiki Maintenance](./wiki-maintenance.md):** Ongoing need to update and organize [Documentation](./documentation.md).
+* **Competitor Teardown Blog:** Marketing and analysis content evaluating competitor products.
+* **Beta Testing Program:** Initial testing group comprising 3 farmers and several hobbyists.
+* **Implied Decisions:** Product direction derived from team consensus without a formal voting process.
 
 ## Contradictions
-*(No contradictions were noted in the source material.)*
+* *No contradictions reported in the source material.*
 
 ## References & Trust
 

@@ -6,13 +6,22 @@ import multer from 'multer';
 import { INDEX_JSON, OUTPUT_DIR, RAW_DIR, REVIEW_REPORT_PATH, STATE_FILE } from '../paths';
 import { HttpError, wrap } from '../lib/httpError';
 import { buildAnalytics, getTagDetail } from '../lib/analytics';
-import { appendChatTurn, clearChatHistory, loadChatHistory } from '../lib/chatHistory';
+import {
+  appendChatSessionTurn,
+  createChatSession,
+  deleteChatSession,
+  listChatSessions,
+  loadChatSession,
+  renameChatSession,
+  setChatSessionResourceScope,
+} from '../lib/chatSessions';
 import { listEvents, logEvent } from '../lib/activityLog';
 import { describeLlmBackend } from '../lib/llmBackend';
 import { requireAdmin, requireAuth } from '../lib/authMiddleware';
 import { createSession, deleteSession } from '../lib/sessions';
 import { createUser, deleteUser, ensureBootstrapAdmin, listUsers, UserError, verifyPassword } from '../lib/users';
 import { loadLlmSettings, LlmSettingsError, saveLlmSettings, toPublicSettings } from '../lib/llmSettings';
+import { CompanySettingsError, loadCompanySettings, saveCompanySettings } from '../lib/companySettings';
 import {
   collectSourceMetadata,
   parseFrontmatter,
@@ -28,7 +37,7 @@ import {
   validateConnections,
 } from '../lib/linkOverrides';
 import { getPipelineRun, listPipelineRuns } from '../lib/pipelineRuns';
-import { isBuildRunning, runCli, stopBuild, streamCompilerBuild } from '../lib/pythonBridge';
+import { isBuildRunning, runCli, stopBuild, streamChat, streamCompilerBuild } from '../lib/pythonBridge';
 import { createFolder, deleteFile, deleteFolder, discoverRawFolders, FolderError, moveFile, uploadFiles } from '../lib/rawFolders';
 import {
   computeMd5,
@@ -38,7 +47,7 @@ import {
   mimeTypeFor,
   TEXT_PREVIEW_EXTENSIONS,
 } from '../lib/rawFiles';
-import { getResourceDetail, listResources } from '../lib/resourcesEngine';
+import { getResourceDetail, listResources, resolveDocPaths } from '../lib/resourcesEngine';
 import { addSource, listSources, removeSource, setEnabled, SourceError, syncSymlinks } from '../lib/sourcesRegistry';
 
 function safePath(root: string, relPath: string): string {
@@ -620,21 +629,6 @@ export function registerRoutes(app: Express): void {
 
   // --- Chat / RAG (bridged to rag_engine.py) --------------------------------
 
-  app.post(
-    '/api/chat',
-    wrap(async (req, res) => {
-      const message = String(req.body?.message ?? '').trim();
-      if (!message) throw new HttpError(400, "'message' is required");
-      const history = req.body?.history;
-      if (history !== undefined && !Array.isArray(history)) {
-        throw new HttpError(400, "'history' must be a list");
-      }
-      const result = await runCli('chat', { message, history });
-      appendChatTurn(message, result.answer ?? '', result.sources);
-      res.json(result);
-    }),
-  );
-
   app.get(
     '/api/chat/status',
     wrap(async (_req, res) => {
@@ -643,18 +637,106 @@ export function registerRoutes(app: Express): void {
   );
 
   app.get(
-    '/api/chat/history',
+    '/api/chat/sessions',
     wrap((_req, res) => {
-      res.json(loadChatHistory());
+      res.json({ sessions: listChatSessions() });
+    }),
+  );
+
+  app.post(
+    '/api/chat/sessions',
+    wrap((req, res) => {
+      const session = createChatSession(req.body?.title);
+      res.json(session);
+    }),
+  );
+
+  app.get(
+    '/api/chat/sessions/:id',
+    wrap((req, res) => {
+      const session = loadChatSession(req.params.id);
+      if (!session) throw new HttpError(404, `Chat session not found: ${req.params.id}`);
+      res.json(session);
+    }),
+  );
+
+  app.patch(
+    '/api/chat/sessions/:id',
+    wrap((req, res) => {
+      let session = loadChatSession(req.params.id);
+      if (!session) throw new HttpError(404, `Chat session not found: ${req.params.id}`);
+      if (typeof req.body?.title === 'string') {
+        session = renameChatSession(req.params.id, req.body.title);
+      }
+      if (req.body?.resource_scope !== undefined) {
+        const scope = req.body.resource_scope;
+        if (scope !== null && !Array.isArray(scope)) throw new HttpError(400, "'resource_scope' must be a list or null");
+        session = setChatSessionResourceScope(req.params.id, scope);
+      }
+      res.json(session);
     }),
   );
 
   app.delete(
-    '/api/chat/history',
+    '/api/chat/sessions/:id',
     wrap((req, res) => {
-      clearChatHistory();
-      logEvent(req.user?.username, 'Cleared chat history');
-      res.json({ cleared: true });
+      if (!deleteChatSession(req.params.id)) throw new HttpError(404, `Chat session not found: ${req.params.id}`);
+      logEvent(req.user?.username, 'Deleted chat session', req.params.id);
+      res.json({ removed: true, id: req.params.id });
+    }),
+  );
+
+  // Not wrap()'d: streamChat() writes SSE headers immediately (like
+  // streamCompilerBuild's /api/build/stream above), so any failure after
+  // that point has to be reported as an SSE 'error' event, not a JSON
+  // error response -- see streamChat's own error handling for that.
+  app.get('/api/chat/sessions/:id/stream', async (req, res) => {
+    const message = String(req.query.message ?? '').trim();
+    if (!message) {
+      res.status(400).json({ detail: "'message' is required" });
+      return;
+    }
+    const session = loadChatSession(req.params.id);
+    if (!session) {
+      res.status(404).json({ detail: `Chat session not found: ${req.params.id}` });
+      return;
+    }
+
+    const docScope = session.resource_scope ? resolveDocPaths(session.resource_scope) : null;
+    const history = session.messages.map((m) => ({ role: m.role, content: m.content }));
+
+    try {
+      const result = await streamChat(res, { message, history, docScope });
+      const sourcesWithSlug = (result.sources ?? []).map((s) => ({
+        ...s,
+        slug: s.doc_path.replace(/\.md$/, ''),
+      }));
+      appendChatSessionTurn(req.params.id, message, result.answer, sourcesWithSlug);
+    } catch {
+      /* already reported to the client as an SSE 'error' event by streamChat */
+    }
+  });
+
+  // --- Company profile (general org context) --------------------------------
+
+  app.get(
+    '/api/settings/company',
+    wrap((_req, res) => {
+      res.json(loadCompanySettings());
+    }),
+  );
+
+  app.put(
+    '/api/settings/company',
+    wrap((req, res) => {
+      try {
+        const saved = saveCompanySettings(req.body);
+        logEvent(req.user?.username, 'Updated company settings');
+        res.json(saved);
+      } catch (err) {
+        if (err instanceof CompanySettingsError) throw new HttpError(400, err.message);
+        throw err;
+      }
     }),
   );
 

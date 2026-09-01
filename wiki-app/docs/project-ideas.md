@@ -8,7 +8,7 @@ tags:
   - reverse-mesh
   - self-maintaining-wiki
   - wiki
-last_updated: "2026-09-01T19:21:04.928685+00:00"
+last_updated: "2026-09-01T21:25:10.950430+00:00"
 sidebar_label: Project Ideas
 slug: /project-ideas
 ---
@@ -18,20 +18,31 @@ slug: /project-ideas
 # Project Ideas
 
 ## Overview
-This page collects miscellaneous project ideas, [hardware](./hardware.md) prototyping thoughts, and conceptual notions ranging from mobile applications to self-maintaining [documentation](./documentation.md) systems. 
+This page compiles miscellaneous project concepts, [hardware](./hardware.md) notes, and late-night thoughts captured alongside daily [groceries](./groceries.md) lists and [personal notes](./personal-notes.md). It highlights early-stage exploration into connected devices, mobile [networking](./networking.md), and automated [knowledge management](./knowledge-management.md).
 
 ## Key Details
-- **Project Idea #47 ("Plant Whisperer"):** An application designed to alert users vocally when soil moisture is low. It is conceived to connect with the [Nova Widget](./nova-widget.md), with potential monetization through stickers.
-- **Project Idea #48 ("Reverse Mesh"):** A [networking](./networking.md) concept utilizing standard mobile phones as [mesh networking](./mesh-networking.md) nodes, though noted with skepticism regarding its viability.
-- **Self-Maintaining Wiki:** Inspired by a 2 AM thought process and concepts akin to Andrej Karpathy's work, this explores the "LLM wiki pattern" where a knowledge base maintains itself autonomously.
-- **Hardware Prototyping:** Development for Nova prototypes requires CR2032 batteries (x4). Physical design notes suggest that hardware enclosures should resemble a "pebble" rather than conventional shapes.
+- **Project Idea #47: "Plant Whisperer"**
+  - An application designed to alert users audibly when soil moisture levels are too low.
+  - Potential integration with the "[Nova Widget](./nova-widget.md)" widget.
+  - Monetization concept: Custom stickers.
+- **Project Idea #48: Reverse Mesh**
+  - A networking concept utilizing mobile phones as individual nodes (noted tentatively as a potentially bad idea).
+- **Self-Maintaining Wiki Concept**
+  - A late-night (2:00 AM) concept exploring a wiki that maintains itself autonomously, drawing inspiration from automated [Artificial Intelligence](./artificial-intelligence.md) architecture patterns (referencing a "karpathy thing" and the "LLM wiki pattern").
+- **Hardware Prototyping Notes**
+  - Nova prototypes require CR2032 batteries (pack of 4).
+  - Enclosure design philosophy: needs to feel "more like a pebble and less like a" (sentence left unfinished).
 
 ## Related Entities
-- **Nova:** A hardware/widget ecosystem associated with prototype development and potential integration with the Plant Whisperer app.
+- **Nova**: A hardware or widget system linked to prototype development (batteries) and potential plant-monitoring integration.
 
 ## Related Concepts
-- **LLM Wiki Pattern:** The concept of using Large Language Models to automate the curation and maintenance of wiki documentation.
-- **Mesh Networking:** Decentralized device-to-device communication using consumer hardware like smartphones.
+- **LLM Wiki Pattern**: An automated approach to knowledge base maintenance using language models.
+- **[Mesh Networking](./mesh-networking.md)**: Decentralized node architectures using consumer devices like smartphones.
+- **[IoT](./iot.md) Plant Monitoring**: Sensor-driven automation for houseplants.
+
+## Contradictions
+*(No contradictions present in the source material.)*
 
 ## References & Trust
 

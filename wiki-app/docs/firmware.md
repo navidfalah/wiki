@@ -8,7 +8,7 @@ tags:
   - meshsync
   - nova-widget
   - wiki
-last_updated: "2026-09-01T19:18:46.960628+00:00"
+last_updated: "2026-09-01T21:22:54.663159+00:00"
 sidebar_label: Firmware
 slug: /firmware
 ---
@@ -18,28 +18,23 @@ slug: /firmware
 # Firmware
 
 ## Overview
-
-This page details specifications and requirements associated with the [Nova Widget](./nova-widget.md) [hardware](./hardware.md) revision C, with a specific focus on its [firmware](./firmware.md) baseline, [mechanical design](./mechanical-design.md), and electrical components.
+This page documents the firmware baseline and related [Hardware](./hardware.md) context for the [Nova Widget](./nova-widget.md) (Hardware Revision C). 
 
 ## Key Details
-
-- **Firmware Baseline:** MeshSync 0.3.8 operating on a 15-minute default interval.
-- **Mechanical Enclosure:** PETG beta, pebble shape (designated as Jonah).
-- **Gasket and Water Resistance:** Silicone 50A gasket providing IP54 splash resistance (an IP65 tooled variant was deferred following a $7,850 quote).
-- **Electrical Components:** Powered by an nRF52840 MCU and a CR2032 [battery](./battery-life.md) with a revision C holder designed to fix previous rattling issues. It also includes a 30mm capacitive [soil probes](./soil-probes.md).
-- **Labeling Instructions:** Explicitly prohibits printing CR2450 to prevent a recurrence of ticket #2201 caused by a previous misprint.
+- **Firmware Baseline:** [MeshSync](./meshsync.md) 0.3.8
+- **Default Interval:** 15 minutes
+- **Hardware Integration:** Designed to operate on the Nova Widget hardware revision C, featuring an nRF52840 MCU, a CR2032 battery holder (rev C fix for rattle), and a 30mm capacitive soil probe.
 
 ## Related Entities
-
-- **Jonah:** Code name or design reference for the pebble-shaped PETG beta enclosure.
-- **MeshSync:** The [firmware architecture](./firmware-architecture.md) protocol/system utilized at baseline version 0.3.8.
-- **Nova Widget:** The hardware device (Revision C) utilizing these specifications.
+- **Nova Widget:** The target device running the MeshSync firmware (Hardware Revision C).
+- **Jonah:** Codename/reference associated with the pebble-shaped PETG beta enclosure.
 
 ## Related Concepts
+- **MeshSync:** The underlying protocol/software version (0.3.8) used for synchronization on the device firmware baseline.
+- **IP54 Splash Resistance:** Environmental protection provided by the silicone 50A gasket.
 
-- **IP54 Splash Resistance:** The ingress protection rating provided by the silicone 50A gasket.
-- **Capacitive Soil Probing:** The sensing mechanism utilizing a 30mm length probe.
-- **[Battery Management](./battery-management.md):** The use of a CR2032 cell with a revised holder to secure the battery and eliminate rattling.
+## Contradictions
+*(No contradictions present in the current source material)*
 
 ## References & Trust
 

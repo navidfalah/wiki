@@ -10,7 +10,7 @@ tags:
   - read-interval
   - teabuddy
   - wiki
-last_updated: "2026-09-01T19:18:45.377001+00:00"
+last_updated: "2026-09-01T21:22:53.484536+00:00"
 sidebar_label: Firmware Updates
 slug: /firmware-updates
 ---
@@ -20,28 +20,31 @@ slug: /firmware-updates
 # Firmware Updates
 
 ## Overview
-[Firmware](./firmware.md) update releases and [beta testing](./beta-testing.md) communications for [Aurora Labs](./aurora-labs.md) [hardware](./hardware.md), specifically focusing on the [Aurora Nova Widget](./aurora-nova-widget.md) and its MeshSync capabilities. Updates are distributed to beta testers to resolve hardware and software issues, such as relay [battery drain](./battery-drain.md) and configuration adjustments.
+[Firmware](./firmware.md) update releases for devices such as the [Aurora Nova Widget](./aurora-nova-widget.md) managed by [Aurora Labs](./aurora-labs.md). These updates address critical [bug fixes](./bug-fixes.md), including [battery drain](./battery-drain.md) issues, and introduce configuration adjustments like default read intervals.
 
 ## Key Details
-- **Aurora Nova Widget [Firmware](./firmware.md) Versions:**
-  - **[Release 0.3.9](./release-039.md) Candidate:** Released for batch 4 retest on June 10, 2026. This build specifically addresses the MeshSync relay battery drain reported under ticket [MESH-118](./mesh-118.md). Testers are instructed to flash this version before adding more than 6 nodes to a mesh. Associated [release notes](./release-notes.md) are available via `release-notes-0.3.9.txt`.
-  - **[Firmware](./firmware.md) 0.3.8:** Distributed to batch 3 beta testers. Users were similarly advised to flash this version before adding more than 6 nodes.
-- **Read Interval Configuration:** The default read interval is 15 minutes.
-- **[Documentation](./documentation.md) & Support:** 
-  - Official documentation is compiled on the wiki at `wiki.auroralabs.example`.
-  - Issue tracking is managed via GitHub under `aurora-labs/meshsync #442` or through `support@auroralabs.example`.
+- **Firmware 0.3.9 Candidate:** 
+  - Released for batch 4 retest.
+  - Addresses the [MeshSync](./meshsync.md) relay battery drain issue reported under ticket [MESH-118](./mesh-118.md).
+  - Instructions: Flash before adding more than 6 nodes to a mesh.
+  - Associated attachments: [release-notes-0.3.9.txt](../static/media/release-notes-0.3.9-b38073c1c1.txt)
+- **Firmware 0.3.8:**
+  - Distributed to beta invite batch 3.
+  - Instructions: Flash before adding more than 6 nodes.
+- **Default Read Interval:** Configured to 15 minutes.
 
 ## Related Entities
-- **Aurora Labs:** The organization developing the Nova Widget and managing [firmware releases](./firmware-releases.md) and beta programs.
-- **Aurora Nova Widget:** The primary hardware device undergoing beta [firmware](./firmware.md) testing.
+- **Aurora Labs:** The organization issuing the [firmware updates](./firmware-updates.md) and [beta testing](./beta-testing.md) invitations.
+- **Aurora Nova Widget:** The [hardware](./hardware.md) device receiving the firmware updates.
+- **[TeaBuddy](./teabuddy.md):** Mentioned in connection with a puck demo at Maker Faire.
 
 ## Related Concepts
-- **MeshSync:** A [mesh networking](./mesh-networking.md) protocol/feature utilized by the Nova Widget, associated with node scaling limits (recommending firmware flashes past 6 nodes) and battery drain issues (addressed in version 0.3.9).
-- **Firmware Flashing:** The process of updating device software prior to expanding mesh networks or deploying new configurations.
-- **[TeaBuddy](./teabuddy.md):** A puck demo showcased at Maker Faire by Aurora Labs affiliates (noted as an unrelated but fun project).
+- **MeshSync:** Mesh network synchronization tool associated with GitHub issue #442 and ticket MESH-118.
+- **[Beta Testing](./beta-testing.md):** Managed via beta tester email groups (`beta-testers@auroralabs.example`).
+- **[Documentation](./documentation.md):** Compiled from raw sources and hosted on the wiki (`wiki.auroralabs.example`).
 
 ## Contradictions
-&gt; **Contradiction:** Documentation regarding the default read interval differs across materials. Beta communications state that the default read interval is 15 minutes, instructing users to ignore older documentation (such as an old PDF) that stated the read interval was hourly.
+&gt; **Contradiction:** Documentation regarding the default read interval contains conflicting information. Beta batch 3 communications state that the default read interval is 15 minutes, explicitly noting to "ignore old PDF saying hourly."
 
 ## References & Trust
 

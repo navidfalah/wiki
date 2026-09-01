@@ -10,7 +10,7 @@ tags:
   - hardware-form-factor
   - jonah
   - meshsink
-last_updated: "2026-09-01T19:20:48.905600+00:00"
+last_updated: "2026-09-01T21:24:53.255445+00:00"
 sidebar_label: Product Naming
 slug: /product-naming
 ---
@@ -20,43 +20,36 @@ slug: /product-naming
 # Product Naming
 
 ## Overview
-
-Product Naming covers internal brainstorms, rejected product and taglines, and internal debates regarding [hardware](./hardware.md) form factors and [brand identity](./brand-identity.md). It also touches on internal tooling, backlogs, and project organization ideas.
+This page compiles internal brainstorming sessions, rejected concepts, taglines, and associated backlog items related to product naming and [brand identity](./brand-identity.md). It also touches on internal [hardware design](./hardware-design.md) debates and [documentation](./documentation.md) workflows.
 
 ## Key Details
-
 - **Approved Names:** 
   - [Nova Widget](./nova-widget.md) (kept)
   - [Aurora Labs](./aurora-labs.md) (kept)
-- **Rejected Names:** 
-  - SoilPal, GritNode, PetalPing, CloudFree Sensor ("too on the nose"), KarpathyGarden (???)
-- **Taglines Explored:**
-  - "Sense without surrender" (noted as "cringe")
-  - "Your data, your dirt" (noted as "worse")
-  - "Open [sensors](./sensors.md) for people who own their data" (considered "still the best???")
-- **Hardware Form Factor Debates:** 
-  - Jonah prefers a pebble shape.
-  - [Mira](./aurora-labs.md) prefers a hex shape.
-  - The design disagreement is ongoing.
-- **MeshSync Naming Debates:**
-  - There has been a proposal to rename MeshSync to MeshSink, though it has been explicitly rejected three times.
+- **Rejected Names:**
+  - SoilPal
+  - GritNode
+  - PetalPing
+  - CloudFree Sensor (considered too on the nose)
+  - KarpathyGarden
+  - MeshSink (specifically noted as rejected three times despite suggestions to rename [MeshSync](./meshsync.md))
+- **Tagline Exploration:**
+  - "Sense without surrender" (rejected as cringe)
+  - "Your data, your dirt" (rejected as worse)
+  - "Open [sensors](./sensors.md) for people who own their data" (retained as the best option so far)
 
 ## Related Entities
-
-- **Aurora Labs:** Approved organizational/brand name.
-- **Nova Widget:** Approved product name.
-- **Jonah:** Team member advocating for a pebble hardware form factor.
-- **Mira:** Team member advocating for a hex hardware form factor.
+- **Jonah:** Advocates for a pebble hardware form factor.
+- **[Mira](./nova-widget.md):** Advocates for a hexagonal hardware form factor.
+- **[Aurora Labs](./aurora-labs.md):** Approved organizational/brand name.
 
 ## Related Concepts
-
-- **Hardware Form Factor:** The physical design shape of the device, currently contested between pebble and hexagonal designs.
-- **Taglines:** Marketing phrases tested for the sensors, prioritizing themes of open data ownership.
-- **Backlog Management:** Unsorted [project ideas](./project-ideas.md), including a wiki linter, color-coded LED battery state indicators, community garden [partnerships](./partnerships.md), and a raw text to Docusaurus [documentation](./documentation.md) pipeline.
+- **Hardware Form Factor:** Ongoing internal disagreements regarding the physical shape of the device (pebble vs. hex).
+- **Documentation Pipeline & Standards:** Internal practices including compiling raw text files to Markdown for Docusaurus, explicitly documenting contradictions in wiki pages, and maintaining orphan-finding wiki linters.
+- **Device Status Indicators:** Consideration of color-coded LEDs on devices to communicate critical battery states ("I'm dying").
 
 ## Contradictions
-
-&gt; **Contradiction:** The backlog notes explicitly mention that renaming MeshSync to MeshSink has been rejected three times, yet the proposed name "MeshSink" persists as a tag and topic of discussion in project materials.
+&gt; **Contradiction:** Internal naming notes explicitly state that renaming *[MeshSync](./meshsync.md)* to *MeshSink* has been rejected three times, yet *MeshSink* appears alongside *[Aurora Labs](./aurora-labs.md)* in the suggested wiki tags, indicating potential lingering inconsistency or indecision across project metadata.
 
 ## References & Trust
 

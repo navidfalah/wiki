@@ -10,7 +10,7 @@ tags:
   - aurora-nova-widget-v2-beta
   - auroralabs
   - duty-cycle-limits
-last_updated: "2026-09-01T19:20:03.029281+00:00"
+last_updated: "2026-09-01T21:24:10.732542+00:00"
 sidebar_label: MeshSync
 slug: /meshsync
 ---
@@ -21,64 +21,39 @@ slug: /meshsync
 
 ## Overview
 
-MeshSync is a proprietary [mesh networking](./mesh-networking.md) [firmware](./firmware.md) and synchronization protocol developed by [Aurora Labs](./aurora-labs.md) for the Aurora Nova Widget v2 beta. Designed as an alternative to cloud-dependent or gateway-heavy setups (such as [LoRaWAN](./lorawan.md)-class systems like SenseNode), MeshSync allows sensor nodes—powered by CR2032 coin cell batteries—to communicate locally without requiring a cloud subscription or a wall-powered gateway. 
-
-While MeshSync provides distinct advantages in Total Cost of Ownership (TCO) and topology independence, it experiences specific stability and power scaling challenges when scaling beyond 6 nodes.
-
----
+MeshSync is a proprietary mesh synchronization [firmware](./firmware.md) and communication protocol developed by [Aurora Labs](./aurora-labs.md) for the [Aurora Nova Widget v2 beta](./nova-widget.md) and related [hardware](./hardware.md). It enables multi-node sensor communication (such as soil moisture and temperature telemetry) without requiring a cloud subscription or an always-on gateway wall wart. MeshSync relies on CR2032 coin cell batteries per node and supports local integration through optional [MQTT export](./mqtt-export.md) schema v2.
 
 ## Key Details
 
-### Firmware Iterations & Core Specs
-- **Default Read Interval:** Configured to **15 minutes** (established in firmware versions 0.3.8 and later). 
-- **Power and [Hardware](./hardware.md):** Devices run on CR2032 batteries (correcting early teardown or blog typos referencing CR2450). Rejoin events cause power spikes (initially ranging from 110µA to 340µA, reduced to 180µA in version 0.3.8).
-- **Relay Optimization:** In batch 4 field units, [battery drain](./battery-drain.md) ran ~30% faster than spec because the relay radio's sleep timer reset upon receiving any packet in a busy mesh. Firmware version 0.3.9 addresses this by dropping radio wake time from 400ms to 80ms per hop.
-- **Parent Election:** Exported via debug UART using RSSI and hop count metrics.
-
-### MQTT Export Schema v2
-MeshSync supports an optional, local-only [MQTT export](./mqtt-export.md) schema compatible with [Home Assistant](./home-assistant.md) and local brokers (no cloud required).
-- **Topic Structure:**
-  - `aurora/{device_id}/telemetry`
-  - `aurora/{device_id}/battery`
-  - `aurora/{device_id}/mesh/neighbors`
-- **Payload Example:**
-  ```json
-  {
-    "soil_moisture_pct": 42,
-    "temp_c": 19.2,
-    "read_interval_min": 15,
-    "battery_mv": 2980,
-    "mesh_hops": 2
-  }
-  ```
-
----
+- **Default Read Interval:** Configured to **15 minutes** for reading cycles.
+- **Power & [Battery Life](./battery-life.md):** Uses CR2032 batteries (earlier teardowns or typos incorrectly referenced CR2450). Engineering estimates 18 months of battery life at 10 nodes, while marketing references up to 2 years. Rejoin operations cause [power consumption](./power-consumption.md) spikes (historically dropping from 340µA to 180µA in firmware 0.3.8, with targets near 110µA).
+- **Scalability and Known Issues:** 
+  - Officially recommended to cap deployments at **6 nodes** during beta to prevent rejoin storms and multi-hour network silence.
+  - Expanding to 8+ nodes remains unstable in field reports (tracked under ticket #2099 and GitHub issue #442).
+  - Firmware 0.3.9 introduces a parent election rewrite to address rejoin loops and reduce relay radio wake times from 400ms to 80ms per hop.
+- **MQTT Export Schema v2:** An optional, local-only export feature compatible with [Home Assistant](./home-assistant.md) setups. Topic structures include `aurora/{device_id}/telemetry`, `aurora/{device_id}/battery`, and `aurora/{device_id}/mesh/neighbors`.
 
 ## Related Entities
 
-- **Aurora Labs:** The organization developing MeshSync and the Nova Widget product line.
-- **Mira Chen:** Firmware owner and lead researcher for MeshSync.
-- **Jonah Park:** QA sign-off and firmware contributor handling bench testing and radio sleep optimizations.
-- **[TeaBuddy](./teabuddy.md):** A separate internal product line at Aurora Labs. Inquiries regarding synchronizing tea timers across a house via MeshSync were ruled out as entirely out of scope for version 1.
-- **SenseNode:** A competing LoRaWAN-class system noted for simpler topology and cloud subscriptions, frequently used as a benchmark by customers.
-
----
+- **[Mira Chen](./nova-widget.md):** Firmware owner and lead engineer.
+- **Jonah Park:** QA sign-off and firmware contributor handling hardware bench testing and radio sleep optimizations.
+- **Alex:** Teardown author who previously misidentified [battery specifications](./battery-specifications.md).
+- **[TeaBuddy](./teabuddy.md) / TeaBuddyHQ:** A separate kitchen/appliance project exploring tea timer synchronization, which is explicitly out of scope for Aurora v1.
+- **[SenseNode](./sensenode-sn-400.md):** A competing [LoRaWAN](./lorawan.md)-class sensor solution utilizing gateway wall power and subscription models, serving as a comparison point for mesh complexity.
 
 ## Related Concepts
 
-- **Rejoin Storms:** A network stabilization issue occurring when meshes exceed 6 nodes, resulting in multi-hour periods of device silence. Mitigation strategies include capping networks at 6 nodes during beta and utilizing parent election rewrites.
-- **Home Integration:** Community-driven setups leveraging Mosquitto and local brokers via `mqtt on` debug commands before full app integration.
-- **Power Profiling:** Comparison of battery longevity between LoRaWAN gateways (always-on wall power subject to EU duty cycle limits) and CR2032-driven local mesh nodes.
-
----
+- **Parent Election:** The mechanism by which nodes discover and connect to network parents, logged via debug UART (RSSI + hop count).
+- **Rejoin Storms:** Network congestion and latency issues that occur when multiple nodes attempt to reconnect or re-elect parents simultaneously at scale (8+ nodes).
+- **Local MQTT Export:** Broker-less telemetry integration allowing users to ingest data directly into [home automation](./home-automation.md) platforms like Home Assistant.
 
 ## Contradictions
 
-&gt; **Contradiction:** Kickoff slides and early blog posts stated that the default read interval was hourly, whereas official firmware specifications and [documentation](./documentation.md) mandate a 15-minute interval.
+&gt; **Contradiction:** Kickoff slides and old blog posts incorrectly stated that the default read interval was **hourly**, whereas the official specification and firmware defaults mandate a **15-minute** interval.
 
-&gt; **Contradiction:** Early research notes and informal bookmarks suggested that mesh networks always consume lower power than alternatives under all conditions. However, field reports and testing demonstrate that power efficiency degrades due to rejoin spikes when scaling past 8+ nodes.
+&gt; **Contradiction:** Early research notes and promotional materials assumed mesh networks inherently draw lower power across all scales; however, real-world deployment data demonstrates that rejoin storms and relay radio wake behavior make mesh power consumption higher than alternative setups at 8+ nodes.
 
-&gt; **Contradiction:** Early teardown documentation by Alex incorrectly specified that devices use CR2450 batteries, whereas official hardware builds utilize CR2032 cells.
+&gt; **Contradiction:** An early teardown by Alex suggested the hardware used a CR2450 battery, whereas engineering [documentation](./documentation.md) and product specs confirm the use of a CR2032 cell.
 
 ## References & Trust
 

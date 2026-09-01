@@ -10,7 +10,7 @@ tags:
   - mqtt-export
   - rejoin-storms
   - teabuddy
-last_updated: "2026-09-01T19:20:08.031389+00:00"
+last_updated: "2026-09-01T21:24:14.511992+00:00"
 sidebar_label: MQTT
 slug: /mqtt
 ---
@@ -20,26 +20,31 @@ slug: /mqtt
 # MQTT
 
 ## Overview
-MQTT (Message Queuing Telemetry Transport) is utilized for local integrations involving the [Aurora Nova Widget v2 beta](./aurora-labs.md) and [Home Assistant](./home-assistant.md) via a local MQTT broker like Mosquitto. Proper integration requires MeshSync version 0.3.8 or higher alongside the Aurora MQTT schema v2.
+MQTT is utilized within the homelab integration framework for devices such as the [Aurora Nova Widget v2 beta](./nova-widget.md). It allows local telemetry export using brokers like Mosquitto, enabling integration with platforms like [Home Assistant](./home-assistant.md) (e.g., mapping soil moisture to percentage entities). 
 
 ## Key Details
-- **Quick Start:** Enable [MQTT Export](./mqtt-export.md) in device settings using the UART command `mqtt on` (pending full app support). Subscribe to the `aurora/+/telemetry` topic and map soil moisture to a percentage (`%`) entity.
-- **Polling Interval:** The default telemetry interval is 15 minutes. Avoid using hourly automation templates from older blog posts.
-- **Rejoin Storms & Duplicates:** Duplicate messages can occur during rejoin storms on older versions (such as version 0.3.7). This is resolved by upgrading to MeshSync 0.3.8+ and filtering the `mesh/neighbors` topic. It is also recommended to limit networks to a maximum of 6 nodes.
-- **Schema Requirements:** Aurora MQTT schema v2 is strictly required for MeshSync 0.3.8+.
+- **Prerequisites:** Requires [MeshSync](./meshsync.md) version 0.3.8+, a local MQTT broker (Mosquitto), and the Aurora MQTT schema v2.
+- **Quick Start:** 
+  1. Enable [MQTT Export](./mqtt-export.md) in device settings using the UART command `mqtt on` (pending full app support).
+  2. Subscribe to the telemetry topic: `aurora/+/telemetry`.
+  3. Map soil moisture values to `%` entities.
+- **Configuration & Limits:** 
+  - The default reporting interval is 15 minutes (avoid hourly automation templates from older blog posts).
+  - Version 0.3.7 suffered from duplicate messages during rejoin storms; upgrading to MeshSync 0.3.8+ resolves this issue when paired with schema v2 and limiting deployments to a maximum of 6 nodes.
+- **Known Quirks:** Rejoin events can flood logs at 8 nodes; this can be mitigated by filtering the `mesh/neighbors` topic.
 
 ## Related Entities
-- **MeshSync:** Required at version 0.3.8+ for stable telemetry and duplicate suppression.
-- **Mosquitto:** The recommended local MQTT broker for handling device messaging.
-- **Aurora Nova Widget v2 beta:** The primary [Hardware](./hardware.md) product requiring MQTT setup for Home Assistant integration.
-- **[TeaBuddy](./teabuddy.md):** A kitchen device belonging to the same user ecosystem, but which operates exclusively via a [BLE](./ble.md) app rather than MQTT (contrary to community jokes).
+- **Aurora Nova Widget v2 beta:** The [Hardware](./hardware.md) product utilizing MQTT export features.
+- **MeshSync:** The underlying synchronization tool (required at version 0.3.8+).
+- **Mosquitto:** The recommended local MQTT broker.
 
 ## Related Concepts
-- **Home Assistant Integration:** The primary use case for enabling local MQTT export and telemetry mapping.
-- **Telemetry Mapping:** Subscribing to `aurora/+/telemetry` to track metrics like soil moisture.
+- **Aurora MQTT schema v2:** The required data schema version for MQTT exports on supported [Firmware](./firmware.md)/software versions.
+- **Telemetry export:** The mechanism of pushing device metrics over MQTT topics.
+- **Rejoin storms:** Network reconnection events that can flood log outputs if neighbor topics are unfiltered.
 
 ## Contradictions
-&gt; **Contradiction:** Regarding the TeaBuddy device, a community guide humorously mentions a microphone hack listening for buzzes via MQTT as a "community hack," but official support clarifies that TeaBuddy has no MQTT support and relies solely on a BLE app.
+&gt; **Contradiction:** Regarding [TeaBuddy](./teabuddy.md) integration, a community guide jokes that a microphone listens for a buzz (noting it is a joke post and not a real specification), whereas support clarification explicitly states that TeaBuddy has no MQTT functionality and operates strictly via a [Bluetooth Low Energy](./bluetooth-low-energy.md) ([BLE](./ble.md)) app.
 
 ## References & Trust
 

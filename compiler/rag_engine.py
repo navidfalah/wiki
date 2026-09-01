@@ -41,7 +41,7 @@ import hashlib
 import re
 from dataclasses import dataclass, field
 from pathlib import Path
-from typing import Any
+from typing import Any, Iterator
 
 import hybrid_retrieval
 from doc_utils import parse_frontmatter, strip_frontmatter
@@ -259,6 +259,15 @@ def _format_context(scored: list[ScoredPassage]) -> str:
     return "\n\n".join(blocks)
 
 
+def _filter_corpus(corpus: list[Passage], doc_scope: list[str] | None) -> list[Passage]:
+    """Restrict the corpus to passages from the given doc_path allowlist.
+    None/empty means no filter -- the full corpus is searched."""
+    if not doc_scope:
+        return corpus
+    scope = set(doc_scope)
+    return [p for p in corpus if p.doc_path in scope]
+
+
 def _deduped_sources(scored: list[ScoredPassage]) -> list[dict[str, Any]]:
     sources: list[dict[str, Any]] = []
     seen_docs: set[str] = set()
@@ -278,6 +287,72 @@ def _deduped_sources(scored: list[ScoredPassage]) -> list[dict[str, Any]]:
     return sources
 
 
+def _extractive_answer(scored: list[ScoredPassage]) -> str:
+    lines = ["No LLM is configured, so here are the closest matches from the wiki:"]
+    for item in scored[:3]:
+        passage = item.passage
+        snippet = passage.text if len(passage.text) <= 400 else f"{passage.text[:400]}…"
+        lines.append(f"\n**{passage.title} — {passage.heading}**\n{snippet}")
+    return "\n".join(lines)
+
+
+def _build_prompt(query: str, scored: list[ScoredPassage], history: list[dict[str, str]] | None) -> str:
+    context = _format_context(scored)
+    history_block = ""
+    if history:
+        turns = "\n".join(f"{turn.get('role', 'user')}: {turn.get('content', '')}" for turn in history[-6:])
+        history_block = f"Conversation so far:\n{turns}\n\n"
+    return f"{history_block}Wiki excerpts:\n{context}\n\nQuestion: {query}"
+
+
+def _retrieve(
+    query: str,
+    *,
+    docs_dir: Path | None,
+    llm: LLMClient | None,
+    top_k: int,
+    doc_scope: list[str] | None,
+) -> dict[str, Any]:
+    """Shared corpus-build + retrieve + dedupe-sources step used by both
+    answer_question() and answer_question_stream(). Returns either
+    {"early": {...}} (the empty/no_match response, ready to return as-is)
+    or {"scored": [...], "sources": [...], "client": LLMClient}."""
+    query = (query or "").strip()
+    docs_dir = docs_dir or OUTPUT_DIR
+    corpus = _filter_corpus(build_corpus(docs_dir), doc_scope)
+
+    if not query:
+        return {"early": {"answer": "Ask a question about anything in the wiki.", "sources": [], "mode": "empty"}}
+
+    if not corpus:
+        return {
+            "early": {
+                "answer": (
+                    "The wiki hasn't been compiled yet, so there's nothing to search. "
+                    "Run the compiler pipeline first, then ask again."
+                ),
+                "sources": [],
+                "mode": "empty",
+            }
+        }
+
+    client = llm or LLMClient()
+    scored = retrieve_hybrid(query, corpus, top_k=top_k, llm=client)
+    if not scored:
+        return {
+            "early": {
+                "answer": (
+                    "I couldn't find anything in the wiki about that. Try rephrasing, or make "
+                    "sure the relevant source has been compiled."
+                ),
+                "sources": [],
+                "mode": "no_match",
+            }
+        }
+
+    return {"scored": scored, "sources": _deduped_sources(scored), "client": client}
+
+
 def answer_question(
     query: str,
     *,
@@ -285,8 +360,12 @@ def answer_question(
     docs_dir: Path | None = None,
     llm: LLMClient | None = None,
     top_k: int = 5,
+    doc_scope: list[str] | None = None,
 ) -> dict[str, Any]:
     """Answer a question over the compiled wiki.
+
+    doc_scope, when given, restricts retrieval to passages from those
+    doc_paths (e.g. a chat session scoped to a subset of resources).
 
     Returns {"answer", "sources", "mode"} where mode is one of:
     - "empty": nothing has been compiled yet
@@ -295,55 +374,60 @@ def answer_question(
     - "extractive": no LLM configured (or the call failed) — the retrieved
       passages are returned directly as the answer
     """
-    query = (query or "").strip()
-    docs_dir = docs_dir or OUTPUT_DIR
-    corpus = build_corpus(docs_dir)
+    retrieval = _retrieve(query, docs_dir=docs_dir, llm=llm, top_k=top_k, doc_scope=doc_scope)
+    if "early" in retrieval:
+        return retrieval["early"]
 
-    if not query:
-        return {"answer": "Ask a question about anything in the wiki.", "sources": [], "mode": "empty"}
-
-    if not corpus:
-        return {
-            "answer": (
-                "The wiki hasn't been compiled yet, so there's nothing to search. "
-                "Run the compiler pipeline first, then ask again."
-            ),
-            "sources": [],
-            "mode": "empty",
-        }
-
-    client = llm or LLMClient()
-    scored = retrieve_hybrid(query, corpus, top_k=top_k, llm=client)
-    if not scored:
-        return {
-            "answer": (
-                "I couldn't find anything in the wiki about that. Try rephrasing, or make "
-                "sure the relevant source has been compiled."
-            ),
-            "sources": [],
-            "mode": "no_match",
-        }
-
-    sources = _deduped_sources(scored)
+    scored, sources, client = retrieval["scored"], retrieval["sources"], retrieval["client"]
 
     if client.available:
-        context = _format_context(scored)
-        history_block = ""
-        if history:
-            turns = "\n".join(
-                f"{turn.get('role', 'user')}: {turn.get('content', '')}" for turn in history[-6:]
-            )
-            history_block = f"Conversation so far:\n{turns}\n\n"
-        prompt = f"{history_block}Wiki excerpts:\n{context}\n\nQuestion: {query}"
+        prompt = _build_prompt(query.strip(), scored, history)
         try:
             answer = client.generate_response(prompt, CHAT_SYSTEM_PROMPT, temperature=0.1)
             return {"answer": answer.strip(), "sources": sources, "mode": "generated"}
         except RuntimeError:
             pass  # fall through to the extractive answer below
 
-    lines = ["No LLM is configured, so here are the closest matches from the wiki:"]
-    for item in scored[:3]:
-        passage = item.passage
-        snippet = passage.text if len(passage.text) <= 400 else f"{passage.text[:400]}…"
-        lines.append(f"\n**{passage.title} — {passage.heading}**\n{snippet}")
-    return {"answer": "\n".join(lines), "sources": sources, "mode": "extractive"}
+    return {"answer": _extractive_answer(scored), "sources": sources, "mode": "extractive"}
+
+
+def answer_question_stream(
+    query: str,
+    *,
+    history: list[dict[str, str]] | None = None,
+    docs_dir: Path | None = None,
+    llm: LLMClient | None = None,
+    top_k: int = 5,
+    doc_scope: list[str] | None = None,
+) -> Iterator[dict[str, Any]]:
+    """Streaming counterpart to answer_question(). Yields event dicts:
+    {"type": "sources", "sources": [...]} once retrieval finishes, then one
+    or more {"type": "delta", "text": "..."} chunks as the answer is
+    generated (or a single chunk carrying the extractive fallback when no
+    LLM is configured), then a final {"type": "done", "mode", "answer"}.
+    """
+    retrieval = _retrieve(query, docs_dir=docs_dir, llm=llm, top_k=top_k, doc_scope=doc_scope)
+    if "early" in retrieval:
+        early = retrieval["early"]
+        yield {"type": "sources", "sources": early["sources"]}
+        yield {"type": "done", "mode": early["mode"], "answer": early["answer"]}
+        return
+
+    scored, sources, client = retrieval["scored"], retrieval["sources"], retrieval["client"]
+    yield {"type": "sources", "sources": sources}
+
+    if client.available:
+        prompt = _build_prompt(query.strip(), scored, history)
+        try:
+            full_text = ""
+            for delta in client.stream_response(prompt, CHAT_SYSTEM_PROMPT, temperature=0.1):
+                full_text += delta
+                yield {"type": "delta", "text": delta}
+            yield {"type": "done", "mode": "generated", "answer": full_text.strip()}
+            return
+        except RuntimeError:
+            pass  # fall through to the extractive answer below
+
+    extractive = _extractive_answer(scored)
+    yield {"type": "delta", "text": extractive}
+    yield {"type": "done", "mode": "extractive", "answer": extractive}

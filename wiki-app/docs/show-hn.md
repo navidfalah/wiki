@@ -9,7 +9,7 @@ tags:
   - nova-widget
   - show-hn
   - wiki
-last_updated: "2026-09-01T19:21:28.981453+00:00"
+last_updated: "2026-09-01T21:25:33.960891+00:00"
 sidebar_label: Show HN
 slug: /show-hn
 ---
@@ -19,31 +19,29 @@ slug: /show-hn
 # Show HN
 
 ## Overview
-This wiki page documents a specific Hacker News "Show HN" thread discussion from July 2026 regarding the **[Nova Widget](./nova-widget.md) beta**, a local mesh soil sensor developed by user `mirachen`. The submission received 142 points and sparked community discussions about [hardware design](./hardware-design.md), [battery life](./battery-life.md), LAN-first architecture, and durability ratings.
+This wiki page covers the Hacker News "Show HN" submission and community discussion for the **[Nova Widget](./nova-widget.md)**, a local mesh soil sensor developed by user `mirachen`. Posted on July 10, 2026, the submission garnered 142 points and sparked a technical discussion regarding [hardware design](./hardware-design.md), [battery life](./battery-life.md), [networking](./networking.md) choices, and enclosure ratings.
 
 ## Key Details
-* **Submission Title:** "Show HN: Local mesh soil sensor"
-* **Author/OP:** `mirachen`
-* **Score:** 142 points
-* **Date:** July 10, 2026
-* **Product Features:** 
-  * Nova Widget beta
-  * [MeshSync protocol](./meshsync-protocol.md) support
-  * Optional [MQTT](./mqtt.md) integration
-  * No mandatory cloud dependency
-  * Powered by a CR2032 coin cell battery taking 15-minute interval reads
-  * LAN-first architecture designed for a lower duty cycle compared to traditional Wi-Fi [sensors](./sensors.md)
+* **Project Name:** Nova Widget beta
+* **Creator / OP:** `mirachen`
+* **Core Features:** [MeshSync](./meshsync.md) technology, optional [MQTT](./mqtt.md) support, and a completely local, non-mandatory cloud architecture.
+* **Power Source & Longevity:** Powered by a CR2032 coin cell battery taking readings every 15 minutes (with a detailed battery spreadsheet promised by the creator).
+* **Networking Strategy:** Designed with a LAN-first architecture and lower duty cycle rather than standard Wi-Fi to optimize energy consumption.
+* **Enclosure:** The discussion touched on enclosure durability, specifically comparing IP67 and IP54 ratings.
 
 ## Related Entities
-* `mirachen` (OP and creator of the Nova Widget)
-* `@dang` (Hacker News moderator who questioned if the post was a duplicate of a May thread)
-* `@hardwarefan`, `@cloudbro`, `@teafan`, `@sensenode` (Community commenters in the thread)
-* [TeaBuddy](./teabuddy.md) (A related project by friends of the creator, noted as a separate company)
+* **`mirachen`:** The original poster and creator of the Nova Widget beta.
+* **`@dang`:** Hacker News moderator who questioned if the submission was a duplicate of a May thread.
+* **[Teabuddy](./teabuddy.md):** A related project seen at a faire by community members, confirmed by the creator to be built by friends at a different company.
 
 ## Related Concepts
-* **LAN-First Architecture:** A design approach prioritizing local network communication and reliability over cloud connectivity, keeping operations internal to the user's network.
-* **MeshSync:** A protocol or syncing mechanism utilized by the Nova Widget for peer-to-peer or mesh communication.
-* **IP67 Rating:** A hardware durability standard discussed in the thread regarding weatherproofing and submersion resistance, contrasted against IP54.
+* **LAN-First Architecture:** A design philosophy prioritizing local network communication and reducing dependency on external cloud services.
+* **MeshSync:** A synchronization mechanism used in the Nova Widget's [mesh networking](./mesh-networking.md) approach.
+* **IP67 vs. IP54 Ratings:** Environmental protection standards for enclosures; community members debated the necessity of IP67 over IP54, with the creator acknowledging IP67's validity for submersion use cases.
+* **Duty Cycle & Battery Math:** Calculations concerning energy consumption, sleep intervals, and lifespan when utilizing CR2032 batteries for periodic [IoT](./iot.md) sensor reads.
+
+## Contradictions
+&gt; **Contradiction:** Moderator `@dang` questioned whether the July submission was a duplicate of an earlier May thread, though no formal resolution or removal was documented in the scraped thread excerpt.
 
 ## References & Trust
 

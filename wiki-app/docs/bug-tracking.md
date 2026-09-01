@@ -10,7 +10,7 @@ tags:
   - sam-rivera
   - teabuddy
   - uibackgroundtask
-last_updated: "2026-09-01T19:18:11.457161+00:00"
+last_updated: "2026-09-01T21:22:21.184879+00:00"
 sidebar_label: Bug Tracking
 slug: /bug-tracking
 ---
@@ -20,27 +20,25 @@ slug: /bug-tracking
 # Bug Tracking
 
 ## Overview
-This wiki page documents bug tracking insights and technical findings related to mobile platform updates, specifically focusing on iOS 18 CoreBluetooth pairing changes, associated ticket incidents for [TeaBuddy](./teabuddy.md), and implications for other projects like [Nova Widget](./nova-widget.md).
+Bug tracking involves identifying, documenting, and resolving software defects and workflow issues across various platforms and applications, such as managing permission prompt changes introduced in iOS 18 beta for the [TeaBuddy](./teabuddy.md) application.
 
 ## Key Details
-- **Author:** Sam Rivera (TeaBuddy)
-- **iOS 18 CoreBluetooth Changes:** An iOS 18 beta change to the permission prompt order directly caused TeaBuddy ticket #2156.
-- **Technical Findings:**
-  - `CBManagerAuthorization` must be fully resolved before any QR deep link triggers a GATT connection.
-  - The background steep timer requires `UIBackgroundTask` renewal to prevent the `TB-background-kill` bug.
-- **Action Items:**
-  - Ship the 0.9.3 fix.
-  - Document the issue during the Android kickoff to avoid repeating the same ordering mistake.
+- **iOS 18 CoreBluetooth Changes:** An iOS 18 beta update altered the permission prompt order, resulting in TeaBuddy ticket #2156.
+- **Technical Requirements:** 
+  - `CBManagerAuthorization` must resolve prior to a QR deep link triggering a GATT connection.
+  - Background steep timers require `UIBackgroundTask` renewal to address the `TB-background-kill` bug.
+- **Action Items:** 
+  - Ship version 0.9.3 fix.
+  - Document the findings for the Android kickoff to prevent similar ordering mistakes.
 
 ## Related Entities
-- **TeaBuddy:** Product affected by iOS 18 permission prompt order changes (ticket #2156).
-- **Nova Widget:** Uses UART provisioning rather than the consumer QR flow, resulting in minimal [Aurora Labs](./aurora-labs.md) relevance for this specific issue.
-- **Sam Rivera:** Author of the research notes.
+- **Sam Rivera:** Author and researcher from TeaBuddy.
+- **TeaBuddy:** Product associated with ticket #2156, the consumer QR flow, and version 0.9.3.
+- **[Nova Widget](./nova-widget.md):** Product utilizing UART provisioning instead of the consumer QR flow, with minimal relevance to the iOS 18 [BLE](./ble.md) pairing changes.
 
 ## Related Concepts
-- **[BLE](./ble.md) Pairing:** [Bluetooth Low Energy](./bluetooth-low-energy.md) pairing affected by permission prompt alterations in mobile operating systems.
-- **CoreBluetooth:** Apple framework involved in Bluetooth connection management (`CBManagerAuthorization`).
-- **Background Tasks:** Management of application lifecycles and timers (`UIBackgroundTask`).
+- **BLE ([Bluetooth Low Energy](./bluetooth-low-energy.md)):** Wireless technology framework affected by iOS 18 CoreBluetooth pairing updates.
+- **App Permissions & Background Tasks:** Management of `CBManagerAuthorization` and `UIBackgroundTask` renewals.
 
 ## References & Trust
 

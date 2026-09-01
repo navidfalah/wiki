@@ -10,7 +10,7 @@ tags:
   - mira
   - wiki
   - wiki-ingestion
-last_updated: "2026-09-01T19:18:27.274619+00:00"
+last_updated: "2026-09-01T21:22:36.302861+00:00"
 sidebar_label: Documentation
 slug: /documentation
 ---
@@ -20,24 +20,25 @@ slug: /documentation
 # Documentation
 
 ## Overview
-Documentation management involves maintaining accurate technical specifications, aligning marketing claims with engineering capabilities, and keeping internal [Knowledge Management](./knowledge-management.md) bases (such as the wiki) up-to-date with corrections from team members.
+Documentation practices, specifications, and corrections are critical for maintaining accurate project records. A sync fragment from June 2026 highlights discrepancies between marketing claims, engineering requirements, and public blog posts regarding [battery specifications](./battery-specifications.md) and project timelines.
 
 ## Key Details
-* **Engineering Timeline:** Marketing may project longer timelines (e.g., two years), but engineering requirements target an eighteen-month minimum at ten nodes.
-* **Battery Specification Correction:** An engineering sync revealed that a blog post by Alex incorrectly specified the battery as a CR2450. The correct specification is the CR2032 (two-oh-three-two).
-* **[Wiki Maintenance](./wiki-maintenance.md):** The team identified a need to ingest corrections—such as the battery specification fix—directly into the wiki.
-* **Lost Action Items:** Due to a recording failure and data corruption during the sync fragment, certain action items were lost, including:
-  * Revalidating battery math
-  * Replying to a [Hardware](./hardware.md) Habit comment
+- **Engineering Timeline & Specs:** A specification indicates a 15-minute default interval. While marketing may suggest a two-year timeline, engineering requires an 18-month minimum at ten nodes.
+- **Battery Specification Correction:** Jonah noted that Alex's blog incorrectly listed the battery as a CR2450. The correct specification is CR2032.
+- **[Wiki Maintenance](./wiki-maintenance.md):** Mira recommended ingesting the battery correction into the wiki to ensure accurate documentation.
+- **Lost Action Items:** Due to recording corruption during the sync fragment, certain action items were lost:
+  - Revalidate battery math.
+  - Reply to the [Hardware](./hardware.md) Habit comment.
 
 ## Related Entities
-* **Alex:** Author of a blog post containing the incorrect battery specification.
-* **Jonah:** Team member who identified the battery error in Alex's blog and noted kickoff details.
-* **[Mira](./aurora-labs.md):** Team member who emphasized ingesting specification corrections into the wiki and discussed timeline specs.
+- **Alex:** Author of a blog post containing incorrect hardware details.
+- **Jonah:** Identified the battery specification error in Alex's blog.
+- **Mira:** Suggested ingesting the battery correction into the wiki and discussed engineering timeline specifications.
 
 ## Related Concepts
-* **Wiki Ingestion:** The process of capturing and updating institutional knowledge and corrections from team discussions into the central documentation repository.
-* **Engineering Specifications:** Technical parameters (such as battery types and operational longevity) that require careful cross-referencing between public-facing content and internal engineering standards.
+- **Battery Specification:** The distinction between CR2450 and CR2032 components used in the [hardware design](./hardware-design.md).
+- **Engineering Timeline:** The variance between marketing projections (two years) and [engineering constraints](./engineering-constraints.md) (eighteen months minimum at ten nodes).
+- **Wiki Ingestion:** The process of updating and correcting documentation based on team syncs and verified details.
 
 ## References & Trust
 

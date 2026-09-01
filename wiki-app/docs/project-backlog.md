@@ -10,7 +10,7 @@ tags:
   - meshsync
   - project-backlog
   - wiki
-last_updated: "2026-09-01T19:21:03.445365+00:00"
+last_updated: "2026-09-01T21:25:09.126572+00:00"
 sidebar_label: Project Backlog
 slug: /project-backlog
 ---
@@ -20,32 +20,28 @@ slug: /project-backlog
 # Project Backlog
 
 ## Overview
-
-The Project Backlog serves as an unsorted repository for [project-ideas](./project-ideas.md), feature concepts, half-baked pipelines, and miscellaneous improvements. Currently, the overall priority for these items is undetermined (`¯\_(ツ)_/¯`).
+The Project Backlog serves as an unsorted repository for raw ideas, feature requests, shower thoughts, and half-baked concepts. Currently, the overall priority for these items is undetermined (`¯\_(ツ)_/¯`).
 
 ## Key Details
+The backlog contains a mix of software [documentation](./documentation.md) improvements, [hardware](./hardware.md) indicators, administrative tasks, and utility tools:
 
-The backlog contains several distinct items ranging from [hardware](./hardware.md) indicators and [documentation](./documentation.md) tools to experimental concepts:
-
-- **Wiki Linter:** A proposed tool designed to locate and flag orphan pages within the wiki, adhering to the principle that orphan pages are undesirable.
-- **Battery State Indicator:** A hardware feature suggestion involving a color-coded LED on the device to indicate a critical "I'm dying" battery state.
-- **Partnership Outreach:** A vague idea regarding a partnership with a community garden network, with a cold email draft supposedly stored somewhere.
-- **Fake Competitor Generator:** A tool to generate fictional competitor names specifically for product demonstrations.
-- **Index Maintenance Problem:** An observation and open question regarding why `index.md` files consistently fall out of date across projects.
-- **Documentation Pipeline (Half-baked):** A proposed automated compilation pipeline taking raw text files (`.txt`), converting them to Markdown (`.md`), and feeding them into Docusaurus.
+- **Wiki Linter:** A proposed tool designed to locate and flag orphan pages within the wiki, as orphan pages are considered undesirable.
+- **Battery State Indicator:** A hardware feature implementation involving a color-coded LED on the device to indicate a critical "I'm dying" battery state.
+- **Community Garden Network Partnership:** A potential outreach effort, with a cold email draft located somewhere in the archives.
+- **Fake Competitor Generator:** A utility tool intended to generate fictional competitor names for product demonstrations.
+- **Documentation Maintenance:** An observation addressing the persistent issue of why `index.md` files consistently fall out of date across projects.
+- **Documentation Pipeline:** A half-baked concept to automatically compile raw text files (`.txt`) into Markdown (`.md`) formatted for Docusaurus.
 
 ## Related Entities
-
-- **Docusaurus:** The target static site generator for the half-baked raw text to Markdown compilation pipeline.
+- **Docusaurus:** The target static site generator for the proposed raw text-to-Markdown documentation pipeline.
+- **[MeshSync](./meshsync.md) / MeshSink:** The subject of a naming debate that has been repeatedly addressed.
 
 ## Related Concepts
-
-- **[Wiki Maintenance](./wiki-maintenance.md):** Concepts relating to keeping the wiki organized, such as linting for orphan pages and documenting contradictions explicitly.
-- **Hardware Status Indicators:** Visual cues like color-coded LEDs used to communicate device health.
+- **[Wiki Maintenance](./wiki-maintenance.md):** Concepts relating to the health and structure of documentation, such as linter detection of orphan pages and keeping index pages up to date.
+- **Hardware Status Indicators:** Visual cues via physical hardware (such as color-coded LEDs) to communicate device health states.
 
 ## Contradictions
-
-- **Naming Conflict:** There is a recurring proposal to rename **MeshSync** to **MeshSink**, which has been explicitly rejected three times.
+- **MeshSync Naming:** There has been a proposal to rename "MeshSync" to "MeshSink", but this change has been formally rejected three times.
 
 ## References & Trust
 

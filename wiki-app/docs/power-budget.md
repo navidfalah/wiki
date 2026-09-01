@@ -7,10 +7,9 @@ tags:
   - meshsync
   - mira-chen
   - power-budget
-  - power-budget-estimation
   - sam
   - teabuddy-puck
-last_updated: "2026-09-01T19:20:33.420209+00:00"
+last_updated: "2026-09-01T21:24:37.864262+00:00"
 sidebar_label: Power Budget
 slug: /power-budget
 ---
@@ -20,37 +19,36 @@ slug: /power-budget
 # Power Budget
 
 ## Overview
-This wiki page documents the power budget working notes for the [Aurora Nova Widget](./aurora-nova-widget.md), authored by [Mira Chen](./aurora-labs.md). It details [power consumption](./power-consumption.md) assumptions, device states, duty cycles, and [battery life](./battery-life.md) estimations using a CR2032 coin cell battery, alongside a comparative analysis with the [TeaBuddy puck](./teabuddy.md).
+This wiki page covers the power budget working notes for the [Aurora Nova Widget](./aurora-nova-widget.md), authored by Mira Chen. It details [battery specifications](./battery-specifications.md) assumptions, operational states, duty cycles, and daily [power consumption](./power-consumption.md) calculations, alongside comparisons with related devices like the [TeaBuddy](./teabuddy.md) puck and marketing claims.
 
 ## Key Details
-- **[Battery Specifications](./battery-specifications.md):** CR2032 nominal capacity is calculated at 220 mAh (accounting for datasheet variance, rather than an optimistic 240 mAh).
-- **Operational Assumptions:** 
-  - Read interval: 15 minutes (authoritative specification).
-  - Mesh size: 10 nodes (evaluated as a stress case).
+- **Battery Capacity:** CR2032 assumed at a nominal 220 mAh (accounting for datasheet variance, rather than an optimistic 240 mAh).
+- **Read Interval:** 15 minutes (authoritative specification).
+- **Mesh Size:** 10 nodes (stress case scenario).
 
-### Aurora Nova Widget Power States
-| State | Current | Duty | Daily mAh |
-|-------|---------|------|-----------|
-| Sleep | 4.2 µA | 99.7% | 0.10 |
-| Sample+TX | 12 mA | 0.03% | 0.05 |
-| Rejoin spike | 180 µA avg | 0.01% | 0.04 |
+### Operational State Breakdown
+| State | Current | Duty Cycle | Daily Consumption |
+|-------|---------|------------|-------------------|
+| Sleep | 4.2 µA | 99.7% | 0.10 mAh |
+| Sample + TX | 12 mA | 0.03% | 0.05 mAh |
+| Rejoin spike | 180 µA avg | 0.01% | 0.04 mAh |
 
-- **Total Consumption:** Approximately 0.19 mAh/day.
-- **Estimated Lifespan:** ~18 months (engineering claim).
+- **Total Estimated Consumption:** ~0.19 mAh/day
+- **Engineering Lifetime Claim:** ~18 months
 
 ## Related Entities
-- **Mira Chen:** Author of the Aurora Nova Widget power budget working notes and estimation calculations.
-- **Sam:** Contributor who provided comparative numbers for the TeaBuddy puck.
-- **Aurora Nova Widget:** The primary [hardware](./hardware.md) device evaluated in the power budget calculations.
-- **TeaBuddy puck:** A comparative device evaluated for power consumption.
+- **Aurora Nova Widget:** The primary device evaluated in these power budget notes.
+- **Mira Chen:** Author of the power budget working notes.
+- **Sam:** Provided the comparative numbers for the TeaBuddy puck.
+- **TeaBuddy puck:** A comparable device referenced for power analysis (~0.35 mAh/day @ 5 steeps, making a 12-month target plausible).
 
 ## Related Concepts
-- **CR2032 Battery Capacity:** A coin cell lithium battery specified here with a realistic 220 mAh nominal capacity.
-- **MeshSync:** The underlying [networking](./networking.md) protocol/mesh context used in the 10-node stress case.
-- **Power Budget Estimation:** The methodology of summing sleep, sample/transmit, and rejoin spike currents against duty cycles to forecast battery longevity.
+- **CR2032 Battery Capacity:** Lithium coin cell battery evaluated under realistic variance conditions (220 mAh).
+- **[MeshSync](./meshsync.md):** Network protocol or synchronization mechanism operating across the 10-node mesh network stress case.
+- **Power Budget Estimation:** The methodology of balancing sleep currents, sample/transmission spikes, and duty cycles to project device lifespan.
 
 ## Contradictions
-&gt; **Contradiction:** The marketing slide claim of "2 years" for the Aurora Nova Widget battery life assumes 6 nodes, an optimistic cell, and hourly reads (which contradicts the authoritative 15-minute read interval specification). Based on engineering calculations with realistic assumptions (10 nodes, 15-minute reads, 220 mAh capacity), the actual expected lifespan is approximately 18 months at ~0.19 mAh/day.
+&gt; **Contradiction:** There is a discrepancy between engineering calculations and marketing claims regarding [battery life](./battery-life.md). While engineering estimates a realistic lifespan of ~18 months based on a 15-minute read interval, 10 nodes, and a conservative 220 mAh cell, the marketing slide claims "2 years" by incorrectly assuming 6 nodes, an optimistic cell, and an hourly read interval.
 
 ## References & Trust
 

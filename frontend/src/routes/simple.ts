@@ -11,6 +11,7 @@ const pages: { path: string; view: string; title: string; active: string; client
   { path: '/graph', view: 'graph', title: 'Topic Graph', active: 'Graph', clientScript: 'graph' },
   { path: '/analytics', view: 'analytics', title: 'Analytics', active: 'Analytics', clientScript: 'analytics' },
   { path: '/settings', view: 'settings', title: 'Settings', active: 'Settings', clientScript: 'settings' },
+  { path: '/company', view: 'company', title: 'Company Profile', active: 'Company', clientScript: 'company' },
   { path: '/logs', view: 'logs', title: 'Logs', active: 'Logs', clientScript: 'logs' },
 ];
 

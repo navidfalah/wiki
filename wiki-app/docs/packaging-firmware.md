@@ -10,7 +10,7 @@ tags:
   - nova-widget
   - packaging-firmware
   - sam-rivera
-last_updated: "2026-09-01T19:20:23.958540+00:00"
+last_updated: "2026-09-01T21:24:28.983045+00:00"
 sidebar_label: "Packaging & Firmware"
 slug: /packaging-firmware
 ---
@@ -20,28 +20,28 @@ slug: /packaging-firmware
 # Packaging & Firmware
 
 ## Overview
-This wiki page documents issues and discussions regarding product packaging, [firmware](./firmware.md) versions, [documentation](./documentation.md) discrepancies, and related metrics for the [TeaBuddy](./teabuddy.md) fictional startup, based on Slack product channel exports from July 2026.
+This wiki page documents product details regarding packaging, [firmware](./firmware.md) specifications, and recent updates from the [TeaBuddy](./teabuddy.md) startup team, captured during a Slack `#product` export on July 6, 2026.
 
 ## Key Details
-- **Packaging and Documentation Discrepancies:** The herbal box copy currently reads "5 min" in print proof v3. Meanwhile, marketing PDFs also state 5 minutes, but the firmware and wiki specify 7 minutes (following the last compile). 
-- **Remediation Plans:** Alex Kim proposed shipping with a sticker overlay to correct the packaging error, but Sam Rivera rejected this solution and insisted on fixing the print instead.
-- **[Firmware Updates](./firmware-updates.md):** Firmware version 0.9.3 has contributed to a decrease in pairing complaints.
-- **Metrics:** The raw Beta NPS (Net Promoter Score) currently stands at 42.
-- **Event Logistics:** Sam Rivera noted that a shared booth arrangement with [Aurora Labs](./aurora-labs.md) is declined unless they pay half of the costs.
+- **Packaging Copy:** The herbal box copy currently states "5 min" in print proof v3, which conflicts with current firmware and [documentation](./documentation.md) specifications. Sam Rivera has rejected using a sticker overlay and insists the print proof must be fixed.
+- **Firmware & Documentation Specs:** The firmware is configured for 7 minutes, and the project wiki reflects a 7-minute duration following the last compile run.
+- **Marketing Materials:** The marketing PDF still indicates a 5-minute duration.
+- **Beta NPS & Pairing:** The raw Beta Net Promoter Score (NPS) stands at 42, with pairing complaints noting a decrease following firmware version 0.9.3.
+- **Operations:** Team members have discussed trade show logistics, specifically declining a shared booth with [Aurora Mira](./nova-widget.md) unless they pay half, as well as noting unrelated industrial design elements like the [Nova widget](./nova-widget.md)'s pebble shape.
 
 ## Related Entities
-- **Alex Kim:** Product team member dealing with herbal box copy, print proofs, and sticker overlay proposals.
-- **Jamie QA:** Quality assurance team member tracking documentation contradictions, firmware specs, and beta NPS metrics.
-- **Sam Rivera:** Decision maker who vetoed the sticker overlay fix and set the stance on the shared booth with Aurora Mira.
-- **Aurora Mira:** Entity interested in a shared booth arrangement.
+- **Alex Kim**
+- **Jamie QA**
+- **Sam Rivera**
+- **Aurora Mira**
 
 ## Related Concepts
-- **Beta NPS:** Stands at 42, reflecting user feedback during the testing phase.
-- **[Nova Widget](./nova-widget.md):** Mentioned as having a cute pebble shape, though noted by Alex Kim as a distraction requiring team focus.
-- **Firmware 0.9.3:** Update that successfully reduced pairing complaints.
+- **Beta NPS**
+- **Firmware 0.9.3**
+- **Print Proofs**
 
 ## Contradictions
-&gt; **Contradiction:** There is a persistent time discrepancy across different product materials regarding steeping or brew time: the print proof v3 and marketing PDF state 5 minutes, whereas the actual firmware and the wiki state 7 minutes.
+&gt; **Contradiction:** There is a discrepancy in the brewing/steeping time specifications across different media. The print proof v3 for the herbal box and the marketing PDF indicate 5 minutes, whereas the current firmware and the project wiki specify 7 minutes.
 
 ## References & Trust
 

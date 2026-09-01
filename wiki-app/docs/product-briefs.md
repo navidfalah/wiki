@@ -9,7 +9,7 @@ tags:
   - ota
   - product-briefs
   - wiki
-last_updated: "2026-09-01T19:20:38.372120+00:00"
+last_updated: "2026-09-01T21:24:42.749844+00:00"
 sidebar_label: Product Briefs
 slug: /product-briefs
 ---
@@ -19,30 +19,22 @@ slug: /product-briefs
 # Product Briefs
 
 ## Overview
-Product briefs provide high-level summaries of [hardware](./hardware.md) and [firmware](./firmware.md) specifications for upcoming or variant device models. This page covers the specifications for the [Nova Widget Mini](./nova-widget-mini.md).
+This wiki page provides product brief information for [hardware](./hardware.md) variants, focusing on specifications, [firmware](./firmware.md) configurations, and target audiences such as the [Nova Widget Mini](./nova-widget-mini.md).
 
 ## Key Details
-- **Device Variant:** Nova Widget Mini (a cheaper variant designed for hobbyists)
-- **[Hardware Specifications](./hardware-specifications.md):**
-  - CR2032 coin cell battery
-  - Capacitive soil probe
-  - nRF52840 microcontroller
-- **Firmware Specifications:**
-  - MeshSync default reporting interval set to 15 minutes
-  - Over-The-Air (OTA) updates deferred
+- **[Hardware Specifications](./hardware-specifications.md):** Powered by an nRF52840 microcontroller, utilizes a CR2032 coin cell battery, and includes a capacitive soil probe.
+- **Firmware Configuration:** Configured with [MeshSync](./meshsync.md) using a default 15-minute interval. Over-The-Air ([OTA Updates](./ota-updates.md)) updates are deferred.
+- **Product Summary:** Designed as a more affordable, budget-friendly [Nova Widget](./nova-widget.md) variant specifically targeted at hobbyists.
 
 ## Related Entities
-- **Nova Widget Mini:** The primary hardware subject of the product brief.
-- **nRF52840:** The core microcontroller powering the device.
-- **CR2032:** The power source utilized by the mini variant.
+- **Nova Widget Mini:** The primary product subject of this brief.
+- **nRF52840:** The core microcontroller hardware component.
+- **CR2032:** The battery power source used by the device.
 
 ## Related Concepts
-- **MeshSync:** The default synchronization protocol running at a 15-minute interval.
-- **OTA (Over-The-Air):** Firmware update methodology, currently deferred in this model.
-- **Capacitive Soil Probe:** Integrated sensor used for soil monitoring applications.
-
-## Contradictions
-*No contradictions have been identified across the available product brief sources.*
+- **MeshSync:** The default synchronization protocol running at 15-minute intervals.
+- **OTA (Over-The-Air):** [Firmware Updates](./firmware-updates.md) methodology currently deferred for this variant.
+- **Capacitive Soil Probe:** The onboard sensor used for soil monitoring.
 
 ## References & Trust
 

@@ -10,7 +10,7 @@ tags:
   - sensenode-sn-400
   - sprint-goal
   - sprint-planning
-last_updated: "2026-09-01T19:21:37.693635+00:00"
+last_updated: "2026-09-01T21:25:42.426376+00:00"
 sidebar_label: Sprint Planning
 slug: /sprint-planning
 ---
@@ -20,39 +20,40 @@ slug: /sprint-planning
 # Sprint Planning
 
 ## Overview
-This wiki page details the Sprint 15 planning session for [Aurora Labs](./aurora-labs.md), held on July 10, 2026. The primary focus of the sprint centers around stabilizing an 8-node mesh network and publishing an official [Power Budget](./power-budget.md).
+This wiki page documents the Sprint 15 planning session for [Aurora Labs](./aurora-labs.md), held on July 10, 2026. The team outlined their primary objectives, commitments, stretch goals, carried-over tasks, and parking lot items for the upcoming sprint cycle.
 
 ## Key Details
-* **Sprint Goal:** Stabilize 8-node mesh + publish power budget
+* **Sprint Goal:** Stabilize the 8-node mesh network and publish the [power budget](./power-budget.md).
 * **Committed Items:**
-  * **[Mira](./aurora-labs.md):** Rejoin spike profiling on the nRF5340 eval board.
-  * **Jonah:** Comparison page update versus the [SenseNode SN-400](./sensenode-sn-400.md).
-  * **Intern:** Fix forum scrape CSS selector.
-* **Stretch Items:**
-  * [MQTT Export](./mqtt-export.md) CSV sample.
-  * OTA update design [Documentation](./documentation.md) (design only, no implementation).
-* **Carried Over Items:**
+  * **[Mira](./nova-widget.md):** Conduct rejoin spike profiling on the nRF5340 evaluation board.
+  * **Jonah:** Update the comparison page against the [SenseNode SN-400](./sensenode-sn-400.md).
+  * **Intern:** Fix the forum scrape CSS selector.
+* **Stretch Goals:**
+  * [MQTT export](./mqtt-export.md) CSV sample.
+  * [OTA Updates](./ota-updates.md) design doc (design only, no implementation).
+* **Carried Over Tasks:**
   * Contradiction linter for battery claims.
-  * `index.md` refresh ahead of the upcoming investor demo.
+  * `index.md` refresh ahead of the investor demonstration.
 * **Parking Lot:**
-  * [TeaBuddy](./teabuddy.md) co-marketing (scheduled to be revisited in August).
-  * Proposal to rename MeshSync to MeshSink (rejected for the 5th time).
+  * [TeaBuddy](./teabuddy.md) co-marketing (to be revisited in August).
+  * Proposal to rename [MeshSync](./meshsync.md) to MeshSink (rejected for the 5th time).
 
 ## Related Entities
-* **Aurora Labs**
-* **Mira**
-* **Jonah**
-* **SenseNode SN-400**
-* **TeaBuddy**
+* [Aurora Labs](./aurora-labs.md)
+* Mira
+* Jonah
+* [SenseNode SN-400](./sensenode-sn-400.md)
+* [TeaBuddy](./teabuddy.md)
 
 ## Related Concepts
-* **Mesh Network / MeshSync**
-* **Power Budget**
-* **OTA Update**
-* **Investor Demo**
+* Sprint Goal
+* [Mesh Networking](./mesh-networking.md)
+* [OTA Updates](./ota-updates.md)
+* [Power Budget](./power-budget.md)
+* [Backlog Grooming](./backlog-grooming.md)
 
 ## Contradictions
-*(No direct contradictions reported in this sprint planning session.)*
+*(No contradictions noted in the current source material.)*
 
 ## References & Trust
 

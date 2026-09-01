@@ -10,7 +10,7 @@ tags:
   - nrf52840
   - open-sensors
   - wiki
-last_updated: "2026-09-01T19:18:51.895895+00:00"
+last_updated: "2026-09-01T21:22:59.687506+00:00"
 sidebar_label: Hardware Architecture
 slug: /hardware-architecture
 ---
@@ -20,23 +20,24 @@ slug: /hardware-architecture
 # Hardware Architecture
 
 ## Overview
-The [hardware](./hardware.md) architecture focuses on developing open [sensors](./sensors.md) designed specifically for gardeners who prioritize owning and controlling their personal data. The foundational product for this initiative is the [Nova Widget](./nova-widget.md), a specialized device engineered for monitoring soil conditions while meeting strict longevity and connectivity requirements.
+The [hardware](./hardware.md) architecture focuses on creating open-source [sensors](./sensors.md) designed specifically for gardeners who prioritize data ownership. The flagship product under this initiative is the [Nova Widget](./nova-widget.md), a soil moisture and temperature sensor engineered for long-term deployment and reliable localized communication.
 
 ## Key Details
-- **Core Product:** Nova Widget (a soil moisture and temperature sensor)
+- **Flagship Product:** Nova Widget (soil moisture and temperature sensor)
 - **Microcontroller Unit (MCU):** nRF52840
-- **Connectivity:** [MeshSync Protocol](./meshsync-protocol.md) utilized for extended range
-- **[Power Management](./power-management.md):** Designed to achieve a target [Battery Life](./battery-life.md) of 18 months
+- **Communication Protocol / Range Extension:** [MeshSync](./meshsync.md) for extended range
+- **[Power Management](./power-management.md):** Battery target of 18 months
 
 ## Related Entities
-- **Nova Widget:** The primary hardware product incorporating the specified MCU and connectivity stack.
-- **Mira Chen:** Project attendee and contributor present during the technical kickoff.
-- **Jonah Park:** Project attendee and contributor present during the technical kickoff.
+- **[Mira Chen](./nova-widget.md):** Attendee and contributor in the [project kickoff](./project-kickoff.md)
+- **Jonah Park:** Attendee and contributor in the project kickoff
 
 ## Related Concepts
-- **Open Sensors:** Hardware designed with an emphasis on local data ownership and open-source principles.
-- **MeshSync:** A [networking](./networking.md) protocol used to boost communication range between devices in the sensor network.
-- **Battery Optimization:** Engineering efforts aimed at extending device lifespan (targeting 18 months of continuous operation).
+- **Open Sensors:** Garden-focused data-ownership hardware initiative
+- **MeshSync:** Wireless [mesh networking](./mesh-networking.md) technology utilized for range extension
+
+## Contradictions
+*(No known contradictions in the current source material)*
 
 ## References & Trust
 

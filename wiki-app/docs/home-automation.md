@@ -10,7 +10,7 @@ tags:
   - cloud-free-iot
   - hardware-battery-discrepancy
   - home-automation
-last_updated: "2026-09-01T19:19:22.170283+00:00"
+last_updated: "2026-09-01T21:23:30.429755+00:00"
 sidebar_label: Home Automation
 slug: /home-automation
 ---
@@ -20,28 +20,41 @@ slug: /home-automation
 # Home Automation
 
 ## Overview
-Home automation encompasses the integration of [smart devices](./smart-devices.md), [sensors](./sensors.md), and local [networking](./networking.md) [protocols](./protocols.md) to manage residential environments without relying on external cloud infrastructure. A prominent topic of discussion within the homelab and [IoT](./iot.md) community is the [Aurora Nova Widget](./aurora-nova-widget.md) device ecosystem, particularly its performance under [mesh networking](./mesh-networking.md) configurations, [battery life](./battery-life.md) optimizations, and integration with home automation platforms like [Home Assistant](./home-assistant.md) via [MQTT](./mqtt.md).
+
+Home automation encompasses managing and monitoring various connected devices within a residential environment, ranging from environmental [sensors](./sensors.md) to kitchen appliances. A prominent topic in recent discussions involves cloud-free [hardware](./hardware.md) alternatives like the [Aurora Labs Nova](./nova-widget.md) widget, local [mesh networking](./mesh-networking.md) ([MeshSync](./meshsync.md)), and integration platforms such as [Home Assistant](./home-assistant.md) via [MQTT](./mqtt.md).
 
 ## Key Details
-- **[Aurora Nova Widget v2 Beta](./aurora-nova-widget-v2.md)**: A cloud-free IoT [hardware](./hardware.md) device managed via `meshsync`. Users running [firmware](./firmware.md) version 0.3.7 or earlier have reported rejoin storms and duplicate MQTT messages when operating multiple nodes. Upgrading to version 0.3.8 resolves these duplication issues when filtering neighbors and adhering to node limits.
-- **Node Limits**: Community findings and support tickets advise limiting networks to a maximum of 6 nodes until firmware version 0.3.8 or later is fully adopted to prevent stability and rejoin issues.
-- **MQTT Setup**: Schema v2 is strictly required for firmware version 0.3.8 and above to handle data export correctly.
-- **Comparison with [SenseNode SN-400](./sensenode-sn-400.md)**: The SenseNode offers IP67 [waterproofing](./waterproofing.md), making it preferable for outdoor environments, but requires a subscription. In contrast, the Aurora Nova operates completely cloud-free without a subscription model.
+
+* **Aurora Labs [Nova Widget](./nova-widget.md) (v2 beta):** 
+  * Utilizes MeshSync for local, cloud-free operation.
+  * Officially claimed [battery life](./battery-life.md) is 2 years at 15-minute read intervals, though community estimates suggest approximately 20 months in practice.
+  * Node limits are recommended at a maximum of 6 nodes per network to avoid rejoin issues, though [firmware](./firmware.md) version 0.3.8 addresses stability improvements.
+  * Requires Schema v2 for [MQTT export](./mqtt-export.md) on version 0.3.8+.
+* **MQTT Setup & [Troubleshooting](./troubleshooting.md):**
+  * Duplicate messages can occur during rejoin storms on firmware version 0.3.7, which can be mitigated by upgrading to 0.3.8 and filtering the neighbors topic.
+* **Alternative Devices:**
+  * *[SenseNode SN-400](./sensenode-sn-400.md):* Noted for superior IP67 outdoor [waterproofing](./waterproofing.md), but requires a subscription model.
+  * *[TeaBuddy](./teabuddy.md):* A puck-style kitchen device presented at Maker Faire; operates via a [Bluetooth Low Energy](./bluetooth-low-energy.md) ([BLE](./ble.md)) app only and does not support MQTT.
 
 ## Related Entities
-- **[Aurora Labs Nova](./aurora-labs.md)** (also referred to as **Aurora Nova**): The manufacturer/product line for the Nova widget ecosystem.
-- **SenseNode**: A competing outdoor-focused IoT sensor known for IP67 waterproofing and a required subscription model.
-- **[TeaBuddy](./teabuddy.md)**: A kitchen puck device presented at Maker Faire, operating via [Bluetooth Low Energy](./bluetooth-low-energy.md) ([BLE](./ble.md)) application control rather than MQTT.
-- **Alex**: A community blogger referenced regarding hardware technical specifications.
-- **Mira**: A developer or contributor posting updates on GitHub issues regarding [firmware releases](./firmware-releases.md) (such as version 0.3.8).
+
+* **Aurora Labs Nova** ([IoT](./iot.md) hardware vendor / product)
+* **SenseNode** (Outdoor-focused IP67 sensor alternative)
+* **TeaBuddy** (BLE kitchen puck device)
+* **Home Assistant** (Automation and integration hub)
+* **Alex** (Tech blogger referenced regarding [hardware specifications](./hardware-specifications.md))
+* **[Mira](./nova-widget.md)** (Developer/contributor handling GitHub issues for firmware)
 
 ## Related Concepts
-- **Cloud-Free IoT**: Systems designed to operate entirely locally over mesh networks (e.g., `meshsync`) without sending telemetry or state data to third-party cloud servers.
-- **Battery Life Optimization**: Device energy efficiency; the manufacturer claims a 2-year battery life at 15-minute read intervals, while community teardowns estimate approximately 20 months.
-- **Rejoin Storms**: Network reconnection events where multiple nodes simultaneously attempt to rejoin the mesh, causing duplicate message transmission over MQTT.
+
+* **Cloud-Free IoT:** Local-only device control and telemetry bypassing external servers.
+* **MeshSync:** Local mesh networking protocol used by the Nova widgets.
+* **MQTT Export:** Protocol used for streaming sensor data into home automation hubs like Home Assistant.
+* **Battery Life Optimization:** Managing read intervals and hardware efficiency for coin-cell powered wireless sensors.
 
 ## Contradictions
-&gt; **Contradiction:** There is a discrepancy regarding the hardware battery specification for the Aurora Nova widget. Community member Alex's blog states the device utilizes a **CR2450** battery, whereas physical teardowns have revealed the device actually houses a **CR2032** coin cell battery.
+
+&gt; **Contradiction:** There is a discrepancy regarding the hardware battery specification for the [Aurora Nova Widget](./aurora-nova-widget.md). Community member Alex's blog states the device uses a CR2450 coin cell battery, whereas a physical teardown review revealed it actually houses a smaller CR2032 battery.
 
 ## References & Trust
 

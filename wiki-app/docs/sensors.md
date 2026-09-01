@@ -9,7 +9,7 @@ tags:
   - nova-widget
   - sensors
   - wiki
-last_updated: "2026-09-01T19:21:27.146848+00:00"
+last_updated: "2026-09-01T21:25:32.066996+00:00"
 sidebar_label: Sensors
 slug: /sensors
 ---
@@ -19,25 +19,26 @@ slug: /sensors
 # Sensors
 
 ## Overview
-The discussion around modern local sensor development highlights the **[Nova Widget](./nova-widget.md)** beta, a local mesh soil sensor presented by creator **[mirachen](./aurora-labs.md)** on Hacker News in July 2026. The project emphasizes local-first communication [protocols](./protocols.md), avoiding mandatory cloud dependencies in favor of a LAN-first architecture with MeshSync and optional [MQTT](./mqtt.md) support.
+The "Sensors" topic covers the discussion surrounding the [Nova Widget](./nova-widget.md) beta, a local mesh soil sensor showcased on Hacker News in July 2026. Developed by user `mirachen`, the project emphasizes local-first connectivity, featuring [MeshSync](./meshsync.md), optional [MQTT](./mqtt.md) protocol support, and a strict no-mandatory-cloud design philosophy.
 
 ## Key Details
-- **[Hardware](./hardware.md) & Power:** Powered by a CR2032 coin cell battery executing 15-minute read intervals. Battery math details are planned for release via spreadsheet by the creator.
-- **Architecture & Connectivity:** Designed with a LAN-first approach and lower duty cycles rather than relying solely on Wi-Fi, which reduces power overhead and maintains local control via MeshSync and optional MQTT.
-- **Durability:** Features robust environmental ratings, sparking discussions within the community regarding the superiority of IP67 over IP54 ratings, particularly for submersion use cases.
-- **Ecosystem Connections:** The team behind the Nova Widget is separate from, though friendly with, the creators of "[teabuddy](./teabuddy.md)" seen at a recent faire.
+- **Product:** Nova Widget beta (Local mesh soil sensor)
+- **Creator / OP:** `mirachen`
+- **Connectivity:** LAN-first architecture with lower duty cycle and optional MQTT; avoids mandatory cloud dependencies and Wi-Fi-only approaches to optimize power and local reliability.
+- **[Power Management](./power-management.md):** Powered by a CR2032 battery taking 15-minute interval reads (battery math spreadsheet promised by the OP).
+- **Build & Durability:** Community and developer debate highlight ruggedness specifications, specifically comparing IP67 versus IP54 ratings, with the creator conceding that IP67 is appropriate for submersion use cases.
 
 ## Related Entities
-- **mirachen:** Original poster (OP) and creator of the Nova Widget beta.
-- **Nova Widget:** The local mesh soil sensor project in beta.
+- **[mirachen](./nova-widget.md):** OP and creator of the Nova Widget beta project.
+- **[Teabuddy](./teabuddy.md):** A separate product/team seen at a faire, distinct from the Nova Widget creators.
 
 ## Related Concepts
-- **LAN-First Architecture:** Network design prioritizing local network communication over cloud-dependent setups.
-- **MeshSync:** The synchronization protocol used within the mesh sensor network.
-- **IP67 Rating:** Enclosure rating discussed for its suitability in submersion scenarios compared to lower standards like IP54.
+- **MeshSync:** The underlying mesh synchronization protocol used by the Nova Widget.
+- **LAN-First Architecture:** A design approach prioritizing local network communication over cloud-dependent setups.
+- **IP67 Rating:** Enclosure rating standard discussed for [hardware](./hardware.md) water and dust resistance, contrasted against IP54.
 
 ## Contradictions
-*No contradictions were identified in the provided sources regarding this topic.*
+*There are no direct contradictions present in the source material, though minor clarifications were made regarding team independence from "Teabuddy" and the suitability of IP67 over IP54 ratings.*
 
 ## References & Trust
 

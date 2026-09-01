@@ -8,7 +8,7 @@ tags:
   - parent-election
   - teabuddy
   - wiki
-last_updated: "2026-09-01T19:20:09.672625+00:00"
+last_updated: "2026-09-01T21:24:16.082801+00:00"
 sidebar_label: Networking
 slug: /networking
 ---
@@ -18,16 +18,16 @@ slug: /networking
 # Networking
 
 ## Overview
-This wiki page covers the networking specifications and protocol definitions associated with the [MeshSync protocol](./meshsync-protocol.md) (version 0.3), detailing node limitations, roles, and interval configurations.
+This wiki page covers networking specifications and protocol definitions, specifically detailing the [MeshSync Protocol](./meshsync-protocol.md) header (v0.3 excerpt). It establishes constraints for node scaling, safe node limits, synchronization intervals, and node roles within the network architecture.
 
 ## Key Details
-- **Protocol Version:** [MeshSync protocol](./meshsync-protocol.md) header v0.3 (`meshsync.h`)
-- **Node Limits:** 
+- **Protocol Version:** [MeshSync Protocol](./meshsync-protocol.md) header v0.3 (`meshsync.h`)
+- **Node Limits:**
   - Maximum nodes (`MESHSYNC_MAX_NODES`): 32
   - Beta safe nodes (`MESHSYNC_BETA_SAFE_NODES`): 6
-- **Interval Configuration:** 
+- **Intervals:** 
   - Default interval minimum (`MESHSYNC_DEFAULT_INTERVAL_MIN`): 15 minutes
-  - *Note:* The hourly interval is deprecated in favor of `MESHSYNC_DEFAULT_INTERVAL_MIN`.
+  - Hourly intervals are deprecated in favor of the minute-based default interval.
 - **Node Roles (`meshsync_role_t`):**
   - `MESHSYNC_ROLE_PARENT`
   - `MESHSYNC_ROLE_CHILD`
@@ -35,16 +35,14 @@ This wiki page covers the networking specifications and protocol definitions ass
 - **Parent Election:** Utilizes an RSSI-weighted random backoff mechanism (referenced from the July 3 whiteboard).
 
 ## Related Entities
-- **[Aurora](./aurora-labs.md)**
-- **MeshSync**
+- **[Aurora Nova Widget](./nova-widget.md):** Associated protocol and system context (referenced in tag metadata).
+- **[TeaBuddy](./teabuddy.md):** Integration request was formally denied per the partnership memo.
 
 ## Related Concepts
-- **MeshSync Protocol Header**
-- **Parent Election**
-- **[TeaBuddy](./teabuddy.md) Integration**
-
-## Contradictions
-*(No direct contradictions present in the current source material, though a TeaBuddy integration request was explicitly denied per the partnership memo.)*
+- Protocol headers
+- Node role management
+- Parent election algorithms
+- Network synchronization intervals
 
 ## References & Trust
 

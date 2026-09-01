@@ -8,7 +8,7 @@ tags:
   - protocols
   - teabuddy
   - wiki
-last_updated: "2026-09-01T19:21:12.590415+00:00"
+last_updated: "2026-09-01T21:25:18.297073+00:00"
 sidebar_label: Protocols
 slug: /protocols
 ---
@@ -18,30 +18,30 @@ slug: /protocols
 # Protocols
 
 ## Overview
-This wiki page outlines specifications and implementation details regarding [networking](./networking.md) and synchronization protocols, specifically focusing on the [MeshSync Protocol](./meshsync-protocol.md) version 0.3 header definitions and [node management](./node-management.md) rules associated with the [Aurora Labs](./aurora-labs.md) project.
+This wiki page documents protocol specifications and headers, with a primary focus on the [MeshSync protocol](./meshsync-protocol.md) (v0.3) header configuration and its associated parameters, node limits, and role definitions.
 
 ## Key Details
-* **Protocol Version**: MeshSync v0.3 (excerpt derived from `meshsync.h`).
-* **Node Limits & Intervals**:
-  * Maximum nodes (`MESHSYNC_MAX_NODES`): 32
-  * Beta safe nodes (`MESHSYNC_BETA_SAFE_NODES`): 6
-  * Default interval (`MESHSYNC_DEFAULT_INTERVAL_MIN`): 15 minutes (note: the hourly interval has been officially deprecated in favor of this setting).
-* **Node Roles (`meshsync_role_t`)**:
-  * `MESHSYNC_ROLE_PARENT`
-  * `MESHSYNC_ROLE_CHILD`
-  * `MESHSYNC_ROLE_LOST` (represents the rejoin storm state)
-* **Parent Election**: Utilizes an RSSI-weighted random backoff mechanism (referencing whiteboard notes from July 3).
+- **Protocol Version:** MeshSync v0.3 (`meshsync.h`)
+- **Node Configuration Constants:**
+  - `MESHSYNC_MAX_NODES`: 32
+  - `MESHSYNC_BETA_SAFE_NODES`: 6
+  - `MESHSYNC_DEFAULT_INTERVAL_MIN`: 15 minutes (hourly intervals are deprecated)
+- **Node Roles (`meshsync_role_t`):**
+  - `MESHSYNC_ROLE_PARENT`
+  - `MESHSYNC_ROLE_CHILD`
+  - `MESHSYNC_ROLE_LOST` (rejoin storm state)
+- **Parent Election:** Determined via RSSI-weighted random backoff (referencing the July 3 whiteboard).
 
 ## Related Entities
-* **Aurora**: The overarching project ecosystem associated with the MeshSync protocol specifications.
-* **[TeaBuddy](./teabuddy.md)**: An integration request for this entity was officially denied, as outlined in the partnership memo.
+- **[Aurora](./nova-widget.md)**: Associated system or ecosystem referenced in the tagging and context.
+- **[TeaBuddy](./teabuddy.md)**: External integration requested, though the integration request was formally denied (see partnership memo).
 
 ## Related Concepts
-* **Parent Election**: Network topology formation using RSSI-weighted random backoff to assign parent and child roles among nodes.
-* **Rejoin Storm State**: Handled via the `MESHSYNC_ROLE_LOST` state when nodes lose connectivity and attempt to reconnect.
+- **Parent Election**: The mechanism by which nodes establish hierarchy using RSSI-weighted random backoff.
+- **Rejoin Storm State**: Handled via the `MESHSYNC_ROLE_LOST` role during network disruptions.
 
 ## Contradictions
-*(No contradictions present in the current source data.)*
+*(No direct contradictions present in the current source material.)*
 
 ## References & Trust
 
