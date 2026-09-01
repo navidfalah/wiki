@@ -1,51 +1,39 @@
-<%- include('partials/head', { title: doc.title, apiBase, active: 'Wiki' }) %>
+<%- include('partials/head', { title, apiBase, active }) %>
 
-<div class="grid grid-cols-1 gap-6 lg:grid-cols-[240px_1fr]">
-  <aside class="order-2 lg:order-1">
-    <div class="sticky top-20">
-      <input
-        id="wiki-search"
-        type="search"
-        placeholder="Search pages…"
-        class="mb-3 w-full rounded-lg border border-gray-300 px-3 py-1.5 text-sm focus:border-accent focus:outline-none focus:ring-2 focus:ring-accent/20"
-      />
-      <nav id="wiki-page-list" class="max-h-[75vh] space-y-0.5 overflow-y-auto text-sm">
-        <% pages.forEach(function(page) { %>
-          <a
-            href="/wiki/<%= page.slug %>"
-            data-title="<%= page.title.toLowerCase() %>"
-            class="flex items-center gap-1.5 truncate rounded-md px-2 py-1 no-underline <%= page.slug === currentSlug ? 'bg-generated-bg font-medium text-generated' : 'text-gray-600 hover:bg-gray-100' %>">
-            <span class="shrink-0 text-xs text-gray-400">▤</span>
-            <span class="truncate"><%= page.title %>.txt</span>
-          </a>
-        <% }); %>
-      </nav>
-    </div>
-  </aside>
+<h1 class="text-2xl font-semibold tracking-tight text-gray-900">Wiki</h1>
+<p class="mt-1 max-w-2xl text-sm text-gray-600">
+  Every compiled wiki page, as a file. Click one to download it as <code>.txt</code> —
+  nothing is shown inline.
+</p>
 
-  <article class="order-1 min-w-0 lg:order-2">
-    <div class="overflow-hidden rounded-xl border border-gray-200 bg-white shadow-card">
-      <div class="flex items-center justify-between gap-2 border-b border-gray-100 bg-gray-50 px-4 py-2.5">
-        <div class="flex min-w-0 items-center gap-2">
-          <span class="shrink-0 text-gray-400">▤</span>
-          <span class="truncate text-sm font-medium text-gray-800"><%= doc.filename %></span>
-        </div>
-        <a
-          href="/wiki/<%= currentSlug %>/download"
-          class="shrink-0 rounded-md border border-gray-300 bg-white px-2.5 py-1 text-xs font-medium text-gray-700 no-underline hover:bg-gray-100">
-          Download
-        </a>
-      </div>
-      <pre class="max-h-[75vh] overflow-auto p-4 font-mono text-xs leading-relaxed text-gray-800 whitespace-pre-wrap"><%= doc.text %></pre>
-    </div>
-  </article>
+<input
+  id="wiki-search"
+  type="search"
+  placeholder="Search files…"
+  class="mt-4 w-full max-w-sm rounded-lg border border-gray-300 px-3 py-1.5 text-sm focus:border-accent focus:outline-none focus:ring-2 focus:ring-accent/20"
+/>
+
+<div id="wiki-file-grid" class="mt-6 grid grid-cols-3 gap-1 sm:grid-cols-4 md:grid-cols-6 lg:grid-cols-8">
+  <% pages.forEach(function(page) { %>
+    <a
+      href="/wiki/<%= page.slug %>/download"
+      data-title="<%= page.title.toLowerCase() %>"
+      class="wiki-file-tile flex flex-col items-center gap-1.5 rounded-lg p-3 text-center no-underline hover:bg-gray-50">
+      <span class="flex h-12 w-12 items-center justify-center rounded-xl bg-generated-bg text-xl text-generated">📄</span>
+      <span class="line-clamp-2 w-24 text-xs font-medium text-gray-800"><%= page.title %></span>
+      <span class="text-[10px] font-medium tracking-wide text-gray-400">TXT</span>
+    </a>
+  <% }); %>
+  <% if (pages.length === 0) { %>
+    <p class="col-span-full py-10 text-center text-sm text-gray-400">No compiled pages yet. Run the compiler.</p>
+  <% } %>
 </div>
 
 <script>
   document.getElementById('wiki-search').addEventListener('input', function (event) {
     var needle = event.target.value.trim().toLowerCase();
-    document.querySelectorAll('#wiki-page-list a').forEach(function (link) {
-      link.style.display = !needle || link.dataset.title.includes(needle) ? '' : 'none';
+    document.querySelectorAll('.wiki-file-tile').forEach(function (tile) {
+      tile.style.display = !needle || tile.dataset.title.includes(needle) ? '' : 'none';
     });
   });
 </script>

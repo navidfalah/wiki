@@ -120,8 +120,8 @@ not its request/response shapes.
 
 | Route | Renders | Client bundle |
 |-------|---------|----------------|
-| `/wiki` | redirects to `/wiki/index` | — |
-| `/wiki/:slug` | one compiled page shown as **raw text**, not rendered HTML — a `<pre>` block of the page's actual markdown source, plus a Download button (`/wiki/:slug/download`, `Content-Disposition: attachment`); left sidebar (all pages, alphabetical, client-side filtered) | inline (search filter only) |
+| `/wiki` | every compiled page as a **file tile** in an icon grid (title + `.txt` badge), searchable — no content shown inline, matching the dashboard's file-explorer visual language | inline (search filter only) |
+| `/wiki/:slug/download` | streams that page's raw markdown source with `Content-Disposition: attachment` — clicking a tile downloads it as `<slug>.txt`, nothing renders in the browser | — |
 | `/dashboard` | stat cards, run-compiler panel (SSE log), source folders grid, file-explorer grid (same feature set as the previous React `DataWorkspace`/`SourceFolders`: breadcrumbs, create/delete folder, move file, preview-on-demand modal) | `dashboard.ts` |
 | `/chat` | ask a question, grounded answer + cited pages | `chat.ts` |
 | `/emails` | ingested `.eml` list + detail modal | `emails.ts` |
@@ -131,10 +131,15 @@ not its request/response shapes.
 
 ### App shell (`src/views/partials/head.ejs`, `foot.ejs`)
 
-One nav, one layout, included at the top/bottom of every view — this is
-the actual fix for the "dashboard inside a dashboard" complaint: `/wiki`
-and `/dashboard` are two links in the *same* pill nav, not two different
-site frames.
+One persistent left sidebar (icon + label per section, active one
+highlighted), one layout, included at the top/bottom of every view — this
+is the actual fix for the "dashboard inside a dashboard" complaint:
+`/wiki` and `/dashboard` are two entries in the *same* sidebar nav, not
+two different site frames. Collapses to a horizontally-scrolling bar
+above the content on narrow screens (`md:` breakpoint switches from
+`flex-col` to `flex-row` on the outer `<body>` wrapper) rather than a
+hidden hamburger menu — there's only seven items, so it stays usable
+without a toggle.
 
 ### Two backend URLs (important for Docker)
 
@@ -156,16 +161,19 @@ under Docker Compose, where `backend` only resolves inside the container
 network. `docker-compose.yml` sets both explicitly; local dev can leave
 both unset and get the same default for each.
 
-### Wiki pages are shown as raw text, deliberately
+### Wiki pages are files, not rendered text — no preview at all
 
-`/wiki/:slug` does **not** render markdown to HTML — it fetches the
-page's raw body from the backend and puts it straight into a `<pre>`
-block, at the user's explicit request ("I don't want to see the actual
-text[, rendered,] but the files in the txt format"). No `marked`
-dependency, no link rewriting, no heading-anchor TOC — those all existed
-in an earlier version of this file and were removed along with the now-
-unused `marked` and `@tailwindcss/typography` packages once nothing
-referenced them. `/wiki/:slug/download` streams the same content back
+`/wiki` doesn't render markdown to HTML, and as of this iteration doesn't
+show page content in the browser at all, not even as raw text in a
+`<pre>` block (an intermediate version did that; the user's explicit
+follow-up was "do not show me the text in the file only keep it like the
+files in the directory"). It's a grid of file tiles — the same visual
+language as the dashboard's file explorer — and clicking one downloads
+it; there is no per-page detail view anymore. No `marked` dependency, no
+link rewriting, no heading-anchor TOC, no `not-found.ejs` (nothing left
+to 404 into once there's no per-page route) — all removed along with the
+`marked` and `@tailwindcss/typography` packages once nothing referenced
+them. `/wiki/:slug/download` streams the raw content back
 with `Content-Type: text/plain` and a `Content-Disposition: attachment`
 header, so it saves as a real `.txt` file.
 

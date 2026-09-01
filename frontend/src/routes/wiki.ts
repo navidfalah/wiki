@@ -20,9 +20,13 @@ function isNotFound(err: any): boolean {
   return String(err.message).includes('404') || String(err.message).toLowerCase().includes('not found');
 }
 
+// Files only -- no page renders the page body as text. Browsing the wiki
+// means seeing it as a directory of files, same as the dashboard's file
+// explorer; opening one downloads it as .txt rather than displaying it.
 router.get('/', async (_req, res, next) => {
   try {
-    res.redirect('/wiki/index');
+    const pages = await loadPageList();
+    res.render('wiki', { apiBase: PUBLIC_API_URL, title: 'Wiki', active: 'Wiki', pages });
   } catch (err) {
     next(err);
   }
@@ -39,32 +43,6 @@ router.get('/:slug(*)/download', async (req, res, next) => {
   } catch (err: any) {
     if (isNotFound(err)) {
       res.status(404).send('Not found');
-      return;
-    }
-    next(err);
-  }
-});
-
-router.get('/:slug(*)', async (req, res, next) => {
-  try {
-    const slug = req.params.slug;
-    const [pages, doc] = await Promise.all([
-      loadPageList(),
-      apiGet<{ title: string; body: string }>(`/api/docs/${slug}.md`),
-    ]);
-    res.render('wiki', {
-      apiBase: PUBLIC_API_URL,
-      pages,
-      currentSlug: slug,
-      doc: {
-        title: doc.title,
-        text: doc.body,
-        filename: `${slug.split('/').pop()}.txt`,
-      },
-    });
-  } catch (err: any) {
-    if (isNotFound(err)) {
-      res.status(404).render('not-found', { apiBase: PUBLIC_API_URL, path: req.params.slug });
       return;
     }
     next(err);
