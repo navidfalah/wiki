@@ -1,0 +1,74 @@
+{
+  "id": "co-marketing",
+  "title": "Co-marketing",
+  "description": "Overview",
+  "source": "@site/docs/co-marketing.md",
+  "sourceDirName": ".",
+  "slug": "/co-marketing",
+  "permalink": "/docs/co-marketing",
+  "draft": false,
+  "unlisted": false,
+  "tags": [
+    {
+      "inline": true,
+      "label": "co-marketing",
+      "permalink": "/docs/tags/co-marketing"
+    },
+    {
+      "inline": true,
+      "label": "co-marketing-guidelines",
+      "permalink": "/docs/tags/co-marketing-guidelines"
+    },
+    {
+      "inline": true,
+      "label": "logo-separation-minimum",
+      "permalink": "/docs/tags/logo-separation-minimum"
+    },
+    {
+      "inline": true,
+      "label": "aurora-labs",
+      "permalink": "/docs/tags/aurora-labs"
+    },
+    {
+      "inline": true,
+      "label": "meshsync",
+      "permalink": "/docs/tags/meshsync"
+    },
+    {
+      "inline": true,
+      "label": "teabuddy",
+      "permalink": "/docs/tags/teabuddy"
+    },
+    {
+      "inline": true,
+      "label": "trademark-clearance",
+      "permalink": "/docs/tags/trademark-clearance"
+    }
+  ],
+  "version": "current",
+  "frontMatter": {
+    "id": "co-marketing",
+    "title": "Co-marketing",
+    "tags": [
+      "co-marketing",
+      "co-marketing-guidelines",
+      "logo-separation-minimum",
+      "aurora-labs",
+      "meshsync",
+      "teabuddy",
+      "trademark-clearance"
+    ],
+    "last_updated": "2026-06-25T07:15:49.471904+00:00",
+    "sidebar_label": "Co-marketing",
+    "slug": "/co-marketing"
+  },
+  "sidebar": "wikiSidebar",
+  "previous": {
+    "title": "Business Strategy",
+    "permalink": "/docs/business-strategy"
+  },
+  "next": {
+    "title": "Communication",
+    "permalink": "/docs/communication"
+  }
+}

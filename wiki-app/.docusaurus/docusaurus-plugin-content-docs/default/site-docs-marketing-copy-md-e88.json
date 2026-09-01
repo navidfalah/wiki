@@ -1,0 +1,80 @@
+{
+  "id": "marketing-copy",
+  "title": "Marketing Copy",
+  "description": "Overview",
+  "source": "@site/docs/marketing-copy.md",
+  "sourceDirName": ".",
+  "slug": "/marketing-copy",
+  "permalink": "/docs/marketing-copy",
+  "draft": false,
+  "unlisted": false,
+  "tags": [
+    {
+      "inline": true,
+      "label": "aurora-labs",
+      "permalink": "/docs/tags/aurora-labs"
+    },
+    {
+      "inline": true,
+      "label": "cloudfree-sensor",
+      "permalink": "/docs/tags/cloudfree-sensor"
+    },
+    {
+      "inline": true,
+      "label": "gritnode",
+      "permalink": "/docs/tags/gritnode"
+    },
+    {
+      "inline": true,
+      "label": "jonah",
+      "permalink": "/docs/tags/jonah"
+    },
+    {
+      "inline": true,
+      "label": "karpathygarden",
+      "permalink": "/docs/tags/karpathygarden"
+    },
+    {
+      "inline": true,
+      "label": "marketing-copy",
+      "permalink": "/docs/tags/marketing-copy"
+    },
+    {
+      "inline": true,
+      "label": "mira",
+      "permalink": "/docs/tags/mira"
+    },
+    {
+      "inline": true,
+      "label": "nova-widget",
+      "permalink": "/docs/tags/nova-widget"
+    }
+  ],
+  "version": "current",
+  "frontMatter": {
+    "id": "marketing-copy",
+    "title": "Marketing Copy",
+    "tags": [
+      "aurora-labs",
+      "cloudfree-sensor",
+      "gritnode",
+      "jonah",
+      "karpathygarden",
+      "marketing-copy",
+      "mira",
+      "nova-widget"
+    ],
+    "last_updated": "2026-06-25T07:40:00.585623+00:00",
+    "sidebar_label": "Marketing Copy",
+    "slug": "/marketing-copy"
+  },
+  "sidebar": "wikiSidebar",
+  "previous": {
+    "title": "Marketing & Branding",
+    "permalink": "/docs/marketing-branding"
+  },
+  "next": {
+    "title": "Mechanical Design",
+    "permalink": "/docs/mechanical-design"
+  }
+}

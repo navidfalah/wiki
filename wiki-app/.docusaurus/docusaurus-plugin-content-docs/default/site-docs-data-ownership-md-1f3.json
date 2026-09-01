@@ -1,0 +1,80 @@
+{
+  "id": "data-ownership",
+  "title": "Data Ownership",
+  "description": "Overview",
+  "source": "@site/docs/data-ownership.md",
+  "sourceDirName": ".",
+  "slug": "/data-ownership",
+  "permalink": "/docs/data-ownership",
+  "draft": false,
+  "unlisted": false,
+  "tags": [
+    {
+      "inline": true,
+      "label": "battery-target",
+      "permalink": "/docs/tags/battery-target"
+    },
+    {
+      "inline": true,
+      "label": "data-ownership",
+      "permalink": "/docs/tags/data-ownership"
+    },
+    {
+      "inline": true,
+      "label": "jonah-park",
+      "permalink": "/docs/tags/jonah-park"
+    },
+    {
+      "inline": true,
+      "label": "mesh-networking",
+      "permalink": "/docs/tags/mesh-networking"
+    },
+    {
+      "inline": true,
+      "label": "meshsync",
+      "permalink": "/docs/tags/meshsync"
+    },
+    {
+      "inline": true,
+      "label": "mira-chen",
+      "permalink": "/docs/tags/mira-chen"
+    },
+    {
+      "inline": true,
+      "label": "nova-widget",
+      "permalink": "/docs/tags/nova-widget"
+    },
+    {
+      "inline": true,
+      "label": "nrf52840",
+      "permalink": "/docs/tags/nrf-52840"
+    }
+  ],
+  "version": "current",
+  "frontMatter": {
+    "id": "data-ownership",
+    "title": "Data Ownership",
+    "tags": [
+      "battery-target",
+      "data-ownership",
+      "jonah-park",
+      "mesh-networking",
+      "meshsync",
+      "mira-chen",
+      "nova-widget",
+      "nrf52840"
+    ],
+    "last_updated": "2026-06-25T07:19:11.504617+00:00",
+    "sidebar_label": "Data Ownership",
+    "slug": "/data-ownership"
+  },
+  "sidebar": "wikiSidebar",
+  "previous": {
+    "title": "Data Management",
+    "permalink": "/docs/data-management"
+  },
+  "next": {
+    "title": "Data Privacy",
+    "permalink": "/docs/data-privacy"
+  }
+}

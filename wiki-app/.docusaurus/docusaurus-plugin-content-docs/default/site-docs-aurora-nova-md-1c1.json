@@ -1,0 +1,80 @@
+{
+  "id": "aurora-nova",
+  "title": "Aurora Nova",
+  "description": "Overview",
+  "source": "@site/docs/aurora-nova.md",
+  "sourceDirName": ".",
+  "slug": "/aurora-nova",
+  "permalink": "/docs/aurora-nova",
+  "draft": false,
+  "unlisted": false,
+  "tags": [
+    {
+      "inline": true,
+      "label": "alex",
+      "permalink": "/docs/tags/alex"
+    },
+    {
+      "inline": true,
+      "label": "aurora-nova",
+      "permalink": "/docs/tags/aurora-nova"
+    },
+    {
+      "inline": true,
+      "label": "battery-life",
+      "permalink": "/docs/tags/battery-life"
+    },
+    {
+      "inline": true,
+      "label": "cr2450-cr2032",
+      "permalink": "/docs/tags/cr-2450-cr-2032"
+    },
+    {
+      "inline": true,
+      "label": "ip67",
+      "permalink": "/docs/tags/ip-67"
+    },
+    {
+      "inline": true,
+      "label": "meshsync",
+      "permalink": "/docs/tags/meshsync"
+    },
+    {
+      "inline": true,
+      "label": "mira",
+      "permalink": "/docs/tags/mira"
+    },
+    {
+      "inline": true,
+      "label": "rejoin-issues",
+      "permalink": "/docs/tags/rejoin-issues"
+    }
+  ],
+  "version": "current",
+  "frontMatter": {
+    "id": "aurora-nova",
+    "title": "Aurora Nova",
+    "tags": [
+      "alex",
+      "aurora-nova",
+      "battery-life",
+      "cr2450-cr2032",
+      "ip67",
+      "meshsync",
+      "mira",
+      "rejoin-issues"
+    ],
+    "last_updated": "2026-06-25T07:12:23.754571+00:00",
+    "sidebar_label": "Aurora Nova",
+    "slug": "/aurora-nova"
+  },
+  "sidebar": "wikiSidebar",
+  "previous": {
+    "title": "Aurora Nova Widget",
+    "permalink": "/docs/aurora-nova-widget"
+  },
+  "next": {
+    "title": "Backlog Grooming",
+    "permalink": "/docs/backlog-grooming"
+  }
+}

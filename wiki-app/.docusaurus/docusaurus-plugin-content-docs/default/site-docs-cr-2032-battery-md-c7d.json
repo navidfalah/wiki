@@ -1,0 +1,80 @@
+{
+  "id": "cr2032-battery",
+  "title": "CR2032 Battery",
+  "description": "Overview",
+  "source": "@site/docs/cr2032-battery.md",
+  "sourceDirName": ".",
+  "slug": "/cr2032-battery",
+  "permalink": "/docs/cr2032-battery",
+  "draft": false,
+  "unlisted": false,
+  "tags": [
+    {
+      "inline": true,
+      "label": "cr2032",
+      "permalink": "/docs/tags/cr-2032"
+    },
+    {
+      "inline": true,
+      "label": "battery",
+      "permalink": "/docs/tags/battery"
+    },
+    {
+      "inline": true,
+      "label": "power-budget",
+      "permalink": "/docs/tags/power-budget"
+    },
+    {
+      "inline": true,
+      "label": "aurora-nova-widget",
+      "permalink": "/docs/tags/aurora-nova-widget"
+    },
+    {
+      "inline": true,
+      "label": "mah",
+      "permalink": "/docs/tags/mah"
+    },
+    {
+      "inline": true,
+      "label": "battery-life",
+      "permalink": "/docs/tags/battery-life"
+    },
+    {
+      "inline": true,
+      "label": "engineering-claim",
+      "permalink": "/docs/tags/engineering-claim"
+    },
+    {
+      "inline": true,
+      "label": "marketing-claim",
+      "permalink": "/docs/tags/marketing-claim"
+    }
+  ],
+  "version": "current",
+  "frontMatter": {
+    "id": "cr2032-battery",
+    "title": "CR2032 Battery",
+    "tags": [
+      "cr2032",
+      "battery",
+      "power-budget",
+      "aurora-nova-widget",
+      "mah",
+      "battery-life",
+      "engineering-claim",
+      "marketing-claim"
+    ],
+    "last_updated": "2026-06-25T07:17:37.267628+00:00",
+    "sidebar_label": "CR2032 Battery",
+    "slug": "/cr2032-battery"
+  },
+  "sidebar": "wikiSidebar",
+  "previous": {
+    "title": "Corrosion",
+    "permalink": "/docs/corrosion"
+  },
+  "next": {
+    "title": "Customer Support FAQ",
+    "permalink": "/docs/customer-support-faq"
+  }
+}

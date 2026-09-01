@@ -1,0 +1,80 @@
+{
+  "id": "product-roadmap",
+  "title": "Product Roadmap",
+  "description": "Overview",
+  "source": "@site/docs/product-roadmap.md",
+  "sourceDirName": ".",
+  "slug": "/product-roadmap",
+  "permalink": "/docs/product-roadmap",
+  "draft": false,
+  "unlisted": false,
+  "tags": [
+    {
+      "inline": true,
+      "label": "aurora-nova-widget",
+      "permalink": "/docs/tags/aurora-nova-widget"
+    },
+    {
+      "inline": true,
+      "label": "costtooling-tradeoff",
+      "permalink": "/docs/tags/costtooling-tradeoff"
+    },
+    {
+      "inline": true,
+      "label": "gardener",
+      "permalink": "/docs/tags/gardener"
+    },
+    {
+      "inline": true,
+      "label": "ip54",
+      "permalink": "/docs/tags/ip-54"
+    },
+    {
+      "inline": true,
+      "label": "ip65",
+      "permalink": "/docs/tags/ip-65"
+    },
+    {
+      "inline": true,
+      "label": "ip67",
+      "permalink": "/docs/tags/ip-67"
+    },
+    {
+      "inline": true,
+      "label": "jonah",
+      "permalink": "/docs/tags/jonah"
+    },
+    {
+      "inline": true,
+      "label": "local-mesh-open-export",
+      "permalink": "/docs/tags/local-mesh-open-export"
+    }
+  ],
+  "version": "current",
+  "frontMatter": {
+    "id": "product-roadmap",
+    "title": "Product Roadmap",
+    "tags": [
+      "aurora-nova-widget",
+      "costtooling-tradeoff",
+      "gardener",
+      "ip54",
+      "ip65",
+      "ip67",
+      "jonah",
+      "local-mesh-open-export"
+    ],
+    "last_updated": "2026-06-25T07:50:42.987973+00:00",
+    "sidebar_label": "Product Roadmap",
+    "slug": "/product-roadmap"
+  },
+  "sidebar": "wikiSidebar",
+  "previous": {
+    "title": "Product Naming",
+    "permalink": "/docs/product-naming"
+  },
+  "next": {
+    "title": "Product Safety",
+    "permalink": "/docs/product-safety"
+  }
+}

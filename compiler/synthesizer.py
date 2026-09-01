@@ -173,18 +173,24 @@ def scan_raw_file_changes(
     state: dict | None = None,
     *,
     force: bool = False,
+    exclude_prefixes: frozenset[str] | None = None,
 ) -> FileChangeSet:
     """
     Compare MD5 hashes of data/raw/ files against state.json.
 
     Returns which files are new, modified, deleted, or unchanged.
+
+    ``exclude_prefixes`` scopes the scan to files outside those top-level
+    folders (see discover_raw_source_files) -- a previously-processed file
+    under an excluded folder is treated as out of scope for this run, not
+    deleted, so toggling a folder off and back on never prunes its topics.
     """
     root = raw_dir or RAW_DIR
     state = state if state is not None else load_state()
     files_state: dict = state.setdefault("files", {})
 
     current: dict[str, Path] = {}
-    for path in discover_raw_source_files(root):
+    for path in discover_raw_source_files(root, exclude_prefixes=exclude_prefixes):
         rel = str(path.relative_to(root)).replace("\\", "/")
         current[rel] = path
 
@@ -201,8 +207,11 @@ def scan_raw_file_changes(
             changes.unchanged.append(rel)
 
     for rel in sorted(files_state.keys()):
-        if rel not in current:
-            changes.deleted.append(rel)
+        if rel in current:
+            continue
+        if exclude_prefixes and rel.split("/", 1)[0] in exclude_prefixes:
+            continue
+        changes.deleted.append(rel)
 
     return changes
 
@@ -352,13 +361,22 @@ def cleanup_stale_drafts(
     return removed
 
 
-def discover_raw_source_files(raw_dir: Path | None = None) -> list[Path]:
+def discover_raw_source_files(
+    raw_dir: Path | None = None,
+    exclude_prefixes: frozenset[str] | None = None,
+) -> list[Path]:
     """Return every recognized raw source file under data/raw/, excluding _archive/.
 
     Covers plain text/markdown notes, .eml emails, images, and the file types
     listed in media_ingest.FILE_EXTENSIONS (PDF/CSV/JSON/DOCX/XLSX/PPTX/ZIP).
     Hidden files (dotfiles like .gitkeep) and unrecognized extensions are
     skipped rather than ingested as opaque noise.
+
+    ``exclude_prefixes`` (if given) is a set of top-level folder names under
+    ``raw_dir`` -- e.g. ``{"emails", "samples"}`` -- to leave out entirely,
+    letting a run scope itself to a subset of data/raw/ (see the Dashboard's
+    "Sources to include" picker). Anything under one of those folders is
+    treated as absent, not deleted -- see scan_raw_file_changes().
     """
     root = raw_dir or RAW_DIR
     files: list[Path] = []
@@ -371,11 +389,17 @@ def discover_raw_source_files(raw_dir: Path | None = None) -> list[Path]:
             continue
         if path.suffix.lower() not in ALL_SOURCE_EXTENSIONS:
             continue
+        if exclude_prefixes and path.relative_to(root).parts[0] in exclude_prefixes:
+            continue
         files.append(path)
     return sorted(set(files))
 
 
-def read_raw_chunks(raw_dir: Path | None = None, llm: LLMClient | None = None) -> list[RawChunk]:
+def read_raw_chunks(
+    raw_dir: Path | None = None,
+    llm: LLMClient | None = None,
+    exclude_prefixes: frozenset[str] | None = None,
+) -> list[RawChunk]:
     """Read every raw source file (text, email, image, file) and chunk it.
 
     ``llm`` is required only if images are present (for captioning) — pass it
@@ -385,7 +409,7 @@ def read_raw_chunks(raw_dir: Path | None = None, llm: LLMClient | None = None) -
     root = raw_dir or RAW_DIR
     chunks: list[RawChunk] = []
 
-    for path in discover_raw_source_files(root):
+    for path in discover_raw_source_files(root, exclude_prefixes=exclude_prefixes):
         chunks.extend(_chunks_for_file(path, root, llm))
 
     return chunks
@@ -465,22 +489,26 @@ def extract_topics_from_raw_files(
     on_progress: ProgressCallback | None = None,
     extra_system_context: str = "",
     redact_pii: bool = False,
+    exclude_prefixes: frozenset[str] | None = None,
 ) -> dict:
     """
     Read text files from data/raw/ and extract topics per chunk.
 
     Uses MD5 hashes stored in data/state.json to skip unchanged files on
     subsequent runs. Only new or modified files are sent to the LLM.
+
+    ``exclude_prefixes`` scopes this to files outside those top-level
+    data/raw/ folders -- see discover_raw_source_files().
     """
     llm = require_llm(llm)
     root = raw_dir or RAW_DIR
     state = load_state()
     files_state: dict[str, dict] = state.setdefault("files", {})
-    changes = scan_raw_file_changes(root, state, force=force)
+    changes = scan_raw_file_changes(root, state, force=force, exclude_prefixes=exclude_prefixes)
 
     path_by_rel = {
         str(p.relative_to(root)).replace("\\", "/"): p
-        for p in discover_raw_source_files(root)
+        for p in discover_raw_source_files(root, exclude_prefixes=exclude_prefixes)
     }
 
     for rel in changes.deleted:

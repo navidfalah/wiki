@@ -1,0 +1,68 @@
+{
+  "id": "wiki-management",
+  "title": "Wiki Management",
+  "description": "Overview",
+  "source": "@site/docs/wiki-management.md",
+  "sourceDirName": ".",
+  "slug": "/wiki-management",
+  "permalink": "/docs/wiki-management",
+  "draft": false,
+  "unlisted": false,
+  "tags": [
+    {
+      "inline": true,
+      "label": "wiki linter",
+      "permalink": "/docs/tags/wiki-linter"
+    },
+    {
+      "inline": true,
+      "label": "orphan pages",
+      "permalink": "/docs/tags/orphan-pages"
+    },
+    {
+      "inline": true,
+      "label": "documentation pipeline",
+      "permalink": "/docs/tags/documentation-pipeline"
+    },
+    {
+      "inline": true,
+      "label": "docusaurus",
+      "permalink": "/docs/tags/docusaurus"
+    },
+    {
+      "inline": true,
+      "label": "content freshness",
+      "permalink": "/docs/tags/content-freshness"
+    },
+    {
+      "inline": true,
+      "label": "contradiction management",
+      "permalink": "/docs/tags/contradiction-management"
+    }
+  ],
+  "version": "current",
+  "frontMatter": {
+    "id": "wiki-management",
+    "title": "Wiki Management",
+    "tags": [
+      "wiki linter",
+      "orphan pages",
+      "documentation pipeline",
+      "docusaurus",
+      "content freshness",
+      "contradiction management"
+    ],
+    "last_updated": "2026-06-25T08:05:29.062624+00:00",
+    "sidebar_label": "Wiki Management",
+    "slug": "/wiki-management"
+  },
+  "sidebar": "wikiSidebar",
+  "previous": {
+    "title": "Wiki Compiler",
+    "permalink": "/docs/wiki-compiler"
+  },
+  "next": {
+    "title": "Wiki Migration",
+    "permalink": "/docs/wiki-migration"
+  }
+}

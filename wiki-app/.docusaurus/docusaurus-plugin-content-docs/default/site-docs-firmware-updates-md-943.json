@@ -1,0 +1,80 @@
+{
+  "id": "firmware-updates",
+  "title": "Firmware Updates",
+  "description": "Overview",
+  "source": "@site/docs/firmware-updates.md",
+  "sourceDirName": ".",
+  "slug": "/firmware-updates",
+  "permalink": "/docs/firmware-updates",
+  "draft": false,
+  "unlisted": false,
+  "tags": [
+    {
+      "inline": true,
+      "label": "aurora",
+      "permalink": "/docs/tags/aurora"
+    },
+    {
+      "inline": true,
+      "label": "aurora-labs",
+      "permalink": "/docs/tags/aurora-labs"
+    },
+    {
+      "inline": true,
+      "label": "aurora-nova-widget",
+      "permalink": "/docs/tags/aurora-nova-widget"
+    },
+    {
+      "inline": true,
+      "label": "aurora-nova-widget-v2-beta",
+      "permalink": "/docs/tags/aurora-nova-widget-v-2-beta"
+    },
+    {
+      "inline": true,
+      "label": "batch-update-all",
+      "permalink": "/docs/tags/batch-update-all"
+    },
+    {
+      "inline": true,
+      "label": "beta-invite-batch",
+      "permalink": "/docs/tags/beta-invite-batch"
+    },
+    {
+      "inline": true,
+      "label": "ble-app-only",
+      "permalink": "/docs/tags/ble-app-only"
+    },
+    {
+      "inline": true,
+      "label": "ble-proxy-update",
+      "permalink": "/docs/tags/ble-proxy-update"
+    }
+  ],
+  "version": "current",
+  "frontMatter": {
+    "id": "firmware-updates",
+    "title": "Firmware Updates",
+    "tags": [
+      "aurora",
+      "aurora-labs",
+      "aurora-nova-widget",
+      "aurora-nova-widget-v2-beta",
+      "batch-update-all",
+      "beta-invite-batch",
+      "ble-app-only",
+      "ble-proxy-update"
+    ],
+    "last_updated": "2026-06-25T07:23:13.073730+00:00",
+    "sidebar_label": "Firmware Updates",
+    "slug": "/firmware-updates"
+  },
+  "sidebar": "wikiSidebar",
+  "previous": {
+    "title": "Firmware Specification",
+    "permalink": "/docs/firmware-specification"
+  },
+  "next": {
+    "title": "Firmware",
+    "permalink": "/docs/firmware"
+  }
+}

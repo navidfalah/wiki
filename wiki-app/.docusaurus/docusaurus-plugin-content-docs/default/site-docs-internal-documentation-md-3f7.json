@@ -1,0 +1,80 @@
+{
+  "id": "internal-documentation",
+  "title": "Internal Documentation",
+  "description": "Internal documentation is critical for maintaining accuracy, consistency, and facilitating knowledge sharing across teams within Aurora Labs. This page synthesizes recent discussions and action items related to updating and correcting various internal documents, including the company wiki, product specifications, and shared spreadsheets.",
+  "source": "@site/docs/internal-documentation.md",
+  "sourceDirName": ".",
+  "slug": "/internal-documentation",
+  "permalink": "/docs/internal-documentation",
+  "draft": false,
+  "unlisted": false,
+  "tags": [
+    {
+      "inline": true,
+      "label": "internal documentation",
+      "permalink": "/docs/tags/internal-documentation"
+    },
+    {
+      "inline": true,
+      "label": "wiki updates",
+      "permalink": "/docs/tags/wiki-updates"
+    },
+    {
+      "inline": true,
+      "label": "product specifications",
+      "permalink": "/docs/tags/product-specifications"
+    },
+    {
+      "inline": true,
+      "label": "battery",
+      "permalink": "/docs/tags/battery"
+    },
+    {
+      "inline": true,
+      "label": "defaults",
+      "permalink": "/docs/tags/defaults"
+    },
+    {
+      "inline": true,
+      "label": "action items",
+      "permalink": "/docs/tags/action-items"
+    },
+    {
+      "inline": true,
+      "label": "aurora labs",
+      "permalink": "/docs/tags/aurora-labs"
+    },
+    {
+      "inline": true,
+      "label": "contradictions",
+      "permalink": "/docs/tags/contradictions"
+    }
+  ],
+  "version": "current",
+  "frontMatter": {
+    "id": "internal-documentation",
+    "title": "Internal Documentation",
+    "tags": [
+      "internal documentation",
+      "wiki updates",
+      "product specifications",
+      "battery",
+      "defaults",
+      "action items",
+      "aurora labs",
+      "contradictions"
+    ],
+    "last_updated": "2026-06-25T07:28:48.778764+00:00",
+    "sidebar_label": "Internal Documentation",
+    "slug": "/internal-documentation"
+  },
+  "sidebar": "wikiSidebar",
+  "previous": {
+    "title": "Ingress Protection Ratings",
+    "permalink": "/docs/ingress-protection-ratings"
+  },
+  "next": {
+    "title": "Internal Reporting",
+    "permalink": "/docs/internal-reporting"
+  }
+}

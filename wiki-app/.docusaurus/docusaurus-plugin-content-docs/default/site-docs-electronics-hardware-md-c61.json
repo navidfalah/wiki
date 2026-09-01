@@ -1,0 +1,80 @@
+{
+  "id": "electronics-hardware",
+  "title": "Electronics & Hardware",
+  "description": "",
+  "source": "@site/docs/electronics-hardware.md",
+  "sourceDirName": ".",
+  "slug": "/electronics-hardware",
+  "permalink": "/docs/electronics-hardware",
+  "draft": false,
+  "unlisted": false,
+  "tags": [
+    {
+      "inline": true,
+      "label": "nrf52840",
+      "permalink": "/docs/tags/nrf-52840"
+    },
+    {
+      "inline": true,
+      "label": "cr2032",
+      "permalink": "/docs/tags/cr-2032"
+    },
+    {
+      "inline": true,
+      "label": "battery-management",
+      "permalink": "/docs/tags/battery-management"
+    },
+    {
+      "inline": true,
+      "label": "power-optimization",
+      "permalink": "/docs/tags/power-optimization"
+    },
+    {
+      "inline": true,
+      "label": "sensors",
+      "permalink": "/docs/tags/sensors"
+    },
+    {
+      "inline": true,
+      "label": "corrosion",
+      "permalink": "/docs/tags/corrosion"
+    },
+    {
+      "inline": true,
+      "label": "wireless-communication",
+      "permalink": "/docs/tags/wireless-communication"
+    },
+    {
+      "inline": true,
+      "label": "mesh-networks",
+      "permalink": "/docs/tags/mesh-networks"
+    }
+  ],
+  "version": "current",
+  "frontMatter": {
+    "id": "electronics-hardware",
+    "title": "Electronics & Hardware",
+    "tags": [
+      "nrf52840",
+      "cr2032",
+      "battery-management",
+      "power-optimization",
+      "sensors",
+      "corrosion",
+      "wireless-communication",
+      "mesh-networks"
+    ],
+    "last_updated": "2026-06-25T07:21:50.337590+00:00",
+    "sidebar_label": "Electronics & Hardware",
+    "slug": "/electronics-hardware"
+  },
+  "sidebar": "wikiSidebar",
+  "previous": {
+    "title": "Electrical Design",
+    "permalink": "/docs/electrical-design"
+  },
+  "next": {
+    "title": "Embedded Systems",
+    "permalink": "/docs/embedded-systems"
+  }
+}

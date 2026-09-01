@@ -1,0 +1,80 @@
+{
+  "id": "hardware-engineering",
+  "title": "Hardware Engineering",
+  "description": "Overview",
+  "source": "@site/docs/hardware-engineering.md",
+  "sourceDirName": ".",
+  "slug": "/hardware-engineering",
+  "permalink": "/docs/hardware-engineering",
+  "draft": false,
+  "unlisted": false,
+  "tags": [
+    {
+      "inline": true,
+      "label": "agile-sprint",
+      "permalink": "/docs/tags/agile-sprint"
+    },
+    {
+      "inline": true,
+      "label": "beta-testing",
+      "permalink": "/docs/tags/beta-testing"
+    },
+    {
+      "inline": true,
+      "label": "firmware-development",
+      "permalink": "/docs/tags/firmware-development"
+    },
+    {
+      "inline": true,
+      "label": "hardware-engineering",
+      "permalink": "/docs/tags/hardware-engineering"
+    },
+    {
+      "inline": true,
+      "label": "ip54-rating",
+      "permalink": "/docs/tags/ip-54-rating"
+    },
+    {
+      "inline": true,
+      "label": "jonah",
+      "permalink": "/docs/tags/jonah"
+    },
+    {
+      "inline": true,
+      "label": "mesh-networking",
+      "permalink": "/docs/tags/mesh-networking"
+    },
+    {
+      "inline": true,
+      "label": "meshsync",
+      "permalink": "/docs/tags/meshsync"
+    }
+  ],
+  "version": "current",
+  "frontMatter": {
+    "id": "hardware-engineering",
+    "title": "Hardware Engineering",
+    "tags": [
+      "agile-sprint",
+      "beta-testing",
+      "firmware-development",
+      "hardware-engineering",
+      "ip54-rating",
+      "jonah",
+      "mesh-networking",
+      "meshsync"
+    ],
+    "last_updated": "2026-06-25T07:25:48.195560+00:00",
+    "sidebar_label": "Hardware Engineering",
+    "slug": "/hardware-engineering"
+  },
+  "sidebar": "wikiSidebar",
+  "previous": {
+    "title": "Hardware Development",
+    "permalink": "/docs/hardware-development"
+  },
+  "next": {
+    "title": "Hardware Evaluation",
+    "permalink": "/docs/hardware-evaluation"
+  }
+}

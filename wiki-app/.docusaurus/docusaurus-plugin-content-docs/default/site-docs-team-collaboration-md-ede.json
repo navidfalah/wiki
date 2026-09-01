@@ -1,0 +1,74 @@
+{
+  "id": "team-collaboration",
+  "title": "Team Collaboration",
+  "description": "Overview",
+  "source": "@site/docs/team-collaboration.md",
+  "sourceDirName": ".",
+  "slug": "/team-collaboration",
+  "permalink": "/docs/team-collaboration",
+  "draft": false,
+  "unlisted": false,
+  "tags": [
+    {
+      "inline": true,
+      "label": "communication",
+      "permalink": "/docs/tags/communication"
+    },
+    {
+      "inline": true,
+      "label": "knowledge sharing",
+      "permalink": "/docs/tags/knowledge-sharing"
+    },
+    {
+      "inline": true,
+      "label": "documentation",
+      "permalink": "/docs/tags/documentation"
+    },
+    {
+      "inline": true,
+      "label": "specifications",
+      "permalink": "/docs/tags/specifications"
+    },
+    {
+      "inline": true,
+      "label": "action items",
+      "permalink": "/docs/tags/action-items"
+    },
+    {
+      "inline": true,
+      "label": "cross-functional teams",
+      "permalink": "/docs/tags/cross-functional-teams"
+    },
+    {
+      "inline": true,
+      "label": "project management",
+      "permalink": "/docs/tags/project-management"
+    }
+  ],
+  "version": "current",
+  "frontMatter": {
+    "id": "team-collaboration",
+    "title": "Team Collaboration",
+    "tags": [
+      "communication",
+      "knowledge sharing",
+      "documentation",
+      "specifications",
+      "action items",
+      "cross-functional teams",
+      "project management"
+    ],
+    "last_updated": "2026-06-25T08:02:13.867611+00:00",
+    "sidebar_label": "Team Collaboration",
+    "slug": "/team-collaboration"
+  },
+  "sidebar": "wikiSidebar",
+  "previous": {
+    "title": "TeaBuddy",
+    "permalink": "/docs/teabuddy"
+  },
+  "next": {
+    "title": "Team Communication",
+    "permalink": "/docs/team-communication"
+  }
+}

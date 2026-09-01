@@ -1,0 +1,80 @@
+{
+  "id": "quality-assurance",
+  "title": "Quality Assurance",
+  "description": "Overview",
+  "source": "@site/docs/quality-assurance.md",
+  "sourceDirName": ".",
+  "slug": "/quality-assurance",
+  "permalink": "/docs/quality-assurance",
+  "draft": false,
+  "unlisted": false,
+  "tags": [
+    {
+      "inline": true,
+      "label": "agile-sprint",
+      "permalink": "/docs/tags/agile-sprint"
+    },
+    {
+      "inline": true,
+      "label": "beta-testing",
+      "permalink": "/docs/tags/beta-testing"
+    },
+    {
+      "inline": true,
+      "label": "compile-run",
+      "permalink": "/docs/tags/compile-run"
+    },
+    {
+      "inline": true,
+      "label": "contradiction-flag",
+      "permalink": "/docs/tags/contradiction-flag"
+    },
+    {
+      "inline": true,
+      "label": "firmware",
+      "permalink": "/docs/tags/firmware"
+    },
+    {
+      "inline": true,
+      "label": "nps",
+      "permalink": "/docs/tags/nps"
+    },
+    {
+      "inline": true,
+      "label": "pairing",
+      "permalink": "/docs/tags/pairing"
+    },
+    {
+      "inline": true,
+      "label": "product-documentation",
+      "permalink": "/docs/tags/product-documentation"
+    }
+  ],
+  "version": "current",
+  "frontMatter": {
+    "id": "quality-assurance",
+    "title": "Quality Assurance",
+    "tags": [
+      "agile-sprint",
+      "beta-testing",
+      "compile-run",
+      "contradiction-flag",
+      "firmware",
+      "nps",
+      "pairing",
+      "product-documentation"
+    ],
+    "last_updated": "2026-06-25T07:54:18.213089+00:00",
+    "sidebar_label": "Quality Assurance",
+    "slug": "/quality-assurance"
+  },
+  "sidebar": "wikiSidebar",
+  "previous": {
+    "title": "Protocol Design",
+    "permalink": "/docs/protocol-design"
+  },
+  "next": {
+    "title": "Release Notes",
+    "permalink": "/docs/release-notes"
+  }
+}

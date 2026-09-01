@@ -1,0 +1,80 @@
+{
+  "id": "garden-sensors",
+  "title": "Garden Sensors",
+  "description": "",
+  "source": "@site/docs/garden-sensors.md",
+  "sourceDirName": ".",
+  "slug": "/garden-sensors",
+  "permalink": "/docs/garden-sensors",
+  "draft": false,
+  "unlisted": false,
+  "tags": [
+    {
+      "inline": true,
+      "label": "garden-sensors",
+      "permalink": "/docs/tags/garden-sensors"
+    },
+    {
+      "inline": true,
+      "label": "ip67",
+      "permalink": "/docs/tags/ip-67"
+    },
+    {
+      "inline": true,
+      "label": "ip54",
+      "permalink": "/docs/tags/ip-54"
+    },
+    {
+      "inline": true,
+      "label": "lorawan",
+      "permalink": "/docs/tags/lorawan"
+    },
+    {
+      "inline": true,
+      "label": "meshsync",
+      "permalink": "/docs/tags/meshsync"
+    },
+    {
+      "inline": true,
+      "label": "cloud-lock-in",
+      "permalink": "/docs/tags/cloud-lock-in"
+    },
+    {
+      "inline": true,
+      "label": "cr2032",
+      "permalink": "/docs/tags/cr-2032"
+    },
+    {
+      "inline": true,
+      "label": "hardware-habit",
+      "permalink": "/docs/tags/hardware-habit"
+    }
+  ],
+  "version": "current",
+  "frontMatter": {
+    "id": "garden-sensors",
+    "title": "Garden Sensors",
+    "tags": [
+      "garden-sensors",
+      "ip67",
+      "ip54",
+      "lorawan",
+      "meshsync",
+      "cloud-lock-in",
+      "cr2032",
+      "hardware-habit"
+    ],
+    "last_updated": "2026-06-25T07:23:59.869817+00:00",
+    "sidebar_label": "Garden Sensors",
+    "slug": "/garden-sensors"
+  },
+  "sidebar": "wikiSidebar",
+  "previous": {
+    "title": "Funding",
+    "permalink": "/docs/funding"
+  },
+  "next": {
+    "title": "GitHub Issues",
+    "permalink": "/docs/github-issues"
+  }
+}

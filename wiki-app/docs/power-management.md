@@ -2,91 +2,48 @@
 id: power-management
 title: Power Management
 tags:
-  - cr2032
-  - battery life
+  - aurora-nova-widget-v2
+  - jonah-park
   - meshsync
-  - aurora nova widget
-  - teabuddy
-  - firmware
-  - power budget
-  - sleep modes
-last_updated: "2026-06-25T07:46:55.164128+00:00"
+  - mira-chen
+  - parent-election
+  - power-budget
+  - power-management
+  - sensenode-sn-400
+last_updated: "2026-09-01T19:20:37.038006+00:00"
 sidebar_label: Power Management
 slug: /power-management
 ---
 
-```markdown
+<!-- AUTO-GENERATED — compiled by the LLM Wiki compiler from data/raw/ sources into compiler/temp_output/, then linked here. Edits to this file are overwritten on the next compile: edit sources under data/raw/, or manual cross-links in data/link_overrides.json, instead. -->
+
 # Power Management
 
 ## Overview
-
-Power management is a critical aspect of device design and operation, particularly for battery-powered devices like the Aurora Nova Widget and TeaBuddy. Key considerations include optimizing Sleep Modes, managing power spikes during network operations (e.g., mesh rejoin), and accurately budgeting for Battery Life. The CR2032 coin cell battery is a common component in several projects, necessitating careful attention to its discharge characteristics and cost-effectiveness.
+Power management for the [Aurora Nova Widget v2 beta](./aurora-labs.md) unit governs its [power consumption](./power-consumption.md) across different operating states, balancing power efficiency with its MeshSync local mesh functionality and sampling intervals. The product is co-owned by [Mira Chen](./aurora-labs.md) ([firmware](./firmware.md)) and Jonah Park ([hardware](./hardware.md)).
 
 ## Key Details
-
-### Aurora Nova Widget (v2 Beta Unit)
-*   **Owners**: Mira Chen (Firmware) and Jonah Park (hardware).
-*   **Battery**: Uses a single CR2032 cell.
-*   **Power Budget (DRAFT)**:
-    *   Sleep: Target of 4.2 µA.
-    *   Sample + TX: 12 mA peak, with a 15-minute interval.
-    *   Rejoin Spike: A known issue, observed spikes range from 110–340 µA.
-*   **MeshSync Network**:
-    *   Theoretical maximum of 32 nodes.
-    *   Beta tested up to 8 nodes, where it has shown instability and 110µA spikes on rejoin.
-*   **Action Items**: Revalidate power numbers after a rejoin fix is implemented.
-*   **Research**: NRF52840 sleep modes are being researched for optimization.
-
-### TeaBuddy
-*   **Battery**: Uses a CR2032 cell.
-*   **Firmware Optimizations**:
-    *   v0.9.2 (2026-06-20): CR2032 sleep draw reduced from 12µA to 9µA.
-    *   v0.9.3 (2026-06-28): Haptic motor duty cycle capped at 70% following an Alex Kim UX review.
-*   **Battery Calculator Spreadsheet**: The TeaBuddy team requested access to the Aurora Nova Widget's battery calculator spreadsheet. It was agreed to share it with credit, noting differences in chemistry and haptic motor draw.
-
-### General Power Management Concepts
-*   **CR2032 Batteries**: Research includes discharge curves and cost comparisons (e.g., hardware store vs. online pricing).
-*   **Mesh Network Power**: Persistent spikes during mesh rejoin operations are a concern. Comparisons with LoRaWAN duty cycle are being considered for future analysis.
-*   **Solar Trickle Charging**: Discussed as a potential option, with Jonah Park in favor and Mira Chen against.
-*   **Enclosure IP Rating**: IP54 is acceptable, but achieving IP65 would require an $8,000 tooling investment.
+* **[Power Budget](./power-budget.md) (Draft):**
+  * **Sleep Mode:** Target current of 4.2 µA.
+  * **Sample + TX Mode:** 12 mA peak current draw, executing at 15-minute intervals.
+  * **Rejoin Spike:** Known issue resulting in a current spike of **110–340 µA**.
+* **[Battery Specifications](./battery-specifications.md):**
+  * Uses dual CR2032 batteries (CR2032 × 2).
+  * Marketing projections claim a 2-year [battery life](./battery-life.md), whereas engineering estimates an 18-month lifespan at a 10-node scale.
 
 ## Related Entities
-
-*   **Alex Kim**: Conducted UX review for TeaBuddy haptic motor, and his blog contained incorrect battery information for the Aurora Nova Widget.
-*   **Mira Chen**: Firmware owner for Aurora Nova Widget, involved in MeshSync and battery life discussions.
-*   **Jonah Park**: Hardware owner for Aurora Nova Widget, involved in gasket samples and battery life discussions.
-*   **Sam Rivera**: Fixed a timer issue in TeaBuddy firmware v0.9.4.
-*   **Aurora Nova Widget v2 Beta Unit**: An open-source soil moisture + temp sensor.
-*   **TeaBuddy**: A device with ongoing firmware updates and power optimizations.
-*   **SenseNode SN-400**: A competitor mentioned in the Aurora Nova Widget's cross-links.
-*   **CR2032**: A common coin cell battery used in both Aurora Nova Widget and TeaBuddy.
-*   **nRF52840**: A microcontroller whose sleep modes are being researched for power optimization.
+* **Aurora Nova Widget v2 beta unit:** The open-source soil moisture and temperature sensor governed by these power specifications.
+* **Mira Chen:** Firmware owner.
+* **Jonah Park:** Hardware owner.
+* **[SenseNode SN-400](./sensenode-sn-400.md):** Competitor product referenced in cross-links.
+* **[TeaBuddy](./teabuddy.md):** Unrelated product mentioned during [project kickoff](./project-kickoff.md).
 
 ## Related Concepts
+* **MeshSync:** Local [mesh networking](./mesh-networking.md) protocol utilized by the widget (supports a theoretical maximum of 32 nodes, though [beta testing](./beta-testing.md) up to 8 nodes has been unstable).
+* **Parent Election:** Node hierarchy mechanism whose implementation details are currently unresolved ("??? (see whiteboard)").
 
-*   **MeshSync**: A local mesh networking protocol used by the Aurora Nova Widget, known for power spikes during rejoin.
-*   **BLE (Bluetooth Low Energy)**: Used by TeaBuddy, with recent firmware updates addressing pairing timeouts and CoreBluetooth permissions.
-*   **Firmware**: Critical for implementing power optimizations and fixing power-related bugs.
-*   **Battery Life**: A frequent point of discussion, often with discrepancies between marketing claims and engineering estimates.
-*   **Sleep Modes**: Essential for reducing power consumption in low-activity states.
-*   **IP Rating**: Specifies the ingress protection of device enclosures, impacting hardware design and cost.
+## References & Trust
 
-## Contradictions
-
-*   **TeaBuddy Herbal Preset**:
-    **Contradiction:** The Herbal preset constant was 7:00 in firmware v0.9.4, but marketing copy previously stated 5:00. This was fixed in firmware only.
-*   **Aurora Nova Widget Battery Life Claims**:
-    **Contradiction:** Marketing claims a 2-year battery life, while engineering estimates 18 months minimum at 10 nodes.
-*   **Aurora Nova Widget Sample Interval**:
-    **Contradiction:** The product specification states a 15-minute default sample interval, but kickoff slides mentioned an hourly interval.
-*   **Aurora Nova Widget Battery Type**:
-    **Contradiction:** Alex's blog incorrectly listed the battery as CR2450, whereas the device actually uses a CR2032.
-
-## Sources
-
-*   `dummy-test/2026-07-01-firmware-changelog.md`
-*   `notes/2026-06-01-standup-scribbles.txt`
-*   `notes/2026-06-10-fragmented-research.txt`
-*   `samples/articles/[SAMPLE]-2026-06-11-nova-widget-spec-fragment.md`
-*   `samples/transcripts/[SAMPLE]-2026-06-19-mira-jonah-battery-debate.txt`
-```
+| # | Source | Type | Trust |
+|---|--------|------|-------|
+| 1 | `samples/articles/[SAMPLE]-2026-06-11-nova-widget-spec-fragment.md` | text | Unverified |

@@ -1,0 +1,74 @@
+{
+  "id": "product-information",
+  "title": "Product Information",
+  "description": "Overview",
+  "source": "@site/docs/product-information.md",
+  "sourceDirName": ".",
+  "slug": "/product-information",
+  "permalink": "/docs/product-information",
+  "draft": false,
+  "unlisted": false,
+  "tags": [
+    {
+      "inline": true,
+      "label": "aurora-nova-widget",
+      "permalink": "/docs/tags/aurora-nova-widget"
+    },
+    {
+      "inline": true,
+      "label": "battery-specifications",
+      "permalink": "/docs/tags/battery-specifications"
+    },
+    {
+      "inline": true,
+      "label": "battery-life",
+      "permalink": "/docs/tags/battery-life"
+    },
+    {
+      "inline": true,
+      "label": "power-budget",
+      "permalink": "/docs/tags/power-budget"
+    },
+    {
+      "inline": true,
+      "label": "product-ecosystem",
+      "permalink": "/docs/tags/product-ecosystem"
+    },
+    {
+      "inline": true,
+      "label": "alex",
+      "permalink": "/docs/tags/alex"
+    },
+    {
+      "inline": true,
+      "label": "mira",
+      "permalink": "/docs/tags/mira"
+    }
+  ],
+  "version": "current",
+  "frontMatter": {
+    "id": "product-information",
+    "title": "Product Information",
+    "tags": [
+      "aurora-nova-widget",
+      "battery-specifications",
+      "battery-life",
+      "power-budget",
+      "product-ecosystem",
+      "alex",
+      "mira"
+    ],
+    "last_updated": "2026-06-25T07:49:34.190574+00:00",
+    "sidebar_label": "Product Information",
+    "slug": "/product-information"
+  },
+  "sidebar": "wikiSidebar",
+  "previous": {
+    "title": "Product Ideas",
+    "permalink": "/docs/product-ideas"
+  },
+  "next": {
+    "title": "Product Management",
+    "permalink": "/docs/product-management"
+  }
+}

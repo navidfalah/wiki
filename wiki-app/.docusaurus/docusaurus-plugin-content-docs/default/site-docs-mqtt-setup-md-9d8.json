@@ -1,0 +1,80 @@
+{
+  "id": "mqtt-setup",
+  "title": "MQTT Setup",
+  "description": "Overview",
+  "source": "@site/docs/mqtt-setup.md",
+  "sourceDirName": ".",
+  "slug": "/mqtt-setup",
+  "permalink": "/docs/mqtt-setup",
+  "draft": false,
+  "unlisted": false,
+  "tags": [
+    {
+      "inline": true,
+      "label": "ble-app-only",
+      "permalink": "/docs/tags/ble-app-only"
+    },
+    {
+      "inline": true,
+      "label": "duplicate-messages",
+      "permalink": "/docs/tags/duplicate-messages"
+    },
+    {
+      "inline": true,
+      "label": "filtering-neighbors-topic",
+      "permalink": "/docs/tags/filtering-neighbors-topic"
+    },
+    {
+      "inline": true,
+      "label": "firmware-upgrade",
+      "permalink": "/docs/tags/firmware-upgrade"
+    },
+    {
+      "inline": true,
+      "label": "home-assistant",
+      "permalink": "/docs/tags/home-assistant"
+    },
+    {
+      "inline": true,
+      "label": "homelab",
+      "permalink": "/docs/tags/homelab"
+    },
+    {
+      "inline": true,
+      "label": "mqtt-export",
+      "permalink": "/docs/tags/mqtt-export"
+    },
+    {
+      "inline": true,
+      "label": "mqtt-export-schema",
+      "permalink": "/docs/tags/mqtt-export-schema"
+    }
+  ],
+  "version": "current",
+  "frontMatter": {
+    "id": "mqtt-setup",
+    "title": "MQTT Setup",
+    "tags": [
+      "ble-app-only",
+      "duplicate-messages",
+      "filtering-neighbors-topic",
+      "firmware-upgrade",
+      "home-assistant",
+      "homelab",
+      "mqtt-export",
+      "mqtt-export-schema"
+    ],
+    "last_updated": "2026-06-25T07:42:37.248620+00:00",
+    "sidebar_label": "MQTT Setup",
+    "slug": "/mqtt-setup"
+  },
+  "sidebar": "wikiSidebar",
+  "previous": {
+    "title": "MQTT Export",
+    "permalink": "/docs/mqtt-export"
+  },
+  "next": {
+    "title": "MQTT",
+    "permalink": "/docs/mqtt"
+  }
+}

@@ -1,0 +1,28 @@
+Message-ID: <d5f0a4e3-9b6d-4c1e-a04f-4d5b9e0f1234@gmail.example>
+Subject: Nova Widget won't reconnect to wifi after power outage
+From: Kevin Ostrander <kevin.ostrander@gmail.example>
+To: support@auroralabs.example
+Date: Thu, 11 Jun 2026 07:40:00 -0700
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 8bit
+MIME-Version: 1.0
+
+Hi there,
+
+Beta tester here (batch 4). We had a brief power outage last night and now
+my Nova Widget won't rejoin the home wifi — it's stuck blinking blue.
+Rebooted the router, rebooted the widget, no change. Had to factory reset
+and re-pair it from scratch, which lost my 3 weeks of sensor history.
+
+This is the second time this has happened (first was after a router
+firmware update in May). Seems related to whatever state it saves about the
+wifi connection.
+
+Firmware version showing in the app: 0.3.8.
+
+Happy to send router logs if that helps debug.
+
+Kevin
+
+---
+[DUMMY TEST DATA — fictional]

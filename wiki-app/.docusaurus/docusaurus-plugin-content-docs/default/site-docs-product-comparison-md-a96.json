@@ -1,0 +1,98 @@
+{
+  "id": "product-comparison",
+  "title": "Product Comparison",
+  "description": "",
+  "source": "@site/docs/product-comparison.md",
+  "sourceDirName": ".",
+  "slug": "/product-comparison",
+  "permalink": "/docs/product-comparison",
+  "draft": false,
+  "unlisted": false,
+  "tags": [
+    {
+      "inline": true,
+      "label": "alex-rivera",
+      "permalink": "/docs/tags/alex-rivera"
+    },
+    {
+      "inline": true,
+      "label": "amazon",
+      "permalink": "/docs/tags/amazon"
+    },
+    {
+      "inline": true,
+      "label": "aurora-labs",
+      "permalink": "/docs/tags/aurora-labs"
+    },
+    {
+      "inline": true,
+      "label": "aurora-nova-widget",
+      "permalink": "/docs/tags/aurora-nova-widget"
+    },
+    {
+      "inline": true,
+      "label": "aurora-nova-widget-v2-beta",
+      "permalink": "/docs/tags/aurora-nova-widget-v-2-beta"
+    },
+    {
+      "inline": true,
+      "label": "battlecard",
+      "permalink": "/docs/tags/battlecard"
+    },
+    {
+      "inline": true,
+      "label": "cheapoco",
+      "permalink": "/docs/tags/cheapoco"
+    },
+    {
+      "inline": true,
+      "label": "sensenode-sn-400",
+      "permalink": "/docs/tags/sensenode-sn-400"
+    },
+    {
+      "inline": true,
+      "label": "garden-sensors",
+      "permalink": "/docs/tags/garden-sensors"
+    },
+    {
+      "inline": true,
+      "label": "iot-sensors",
+      "permalink": "/docs/tags/iot-sensors"
+    },
+    {
+      "inline": true,
+      "label": "competitive-analysis",
+      "permalink": "/docs/tags/competitive-analysis"
+    }
+  ],
+  "version": "current",
+  "frontMatter": {
+    "id": "product-comparison",
+    "title": "Product Comparison",
+    "tags": [
+      "alex-rivera",
+      "amazon",
+      "aurora-labs",
+      "aurora-nova-widget",
+      "aurora-nova-widget-v2-beta",
+      "battlecard",
+      "cheapoco",
+      "sensenode-sn-400",
+      "garden-sensors",
+      "iot-sensors",
+      "competitive-analysis"
+    ],
+    "last_updated": "2026-06-25T07:47:56.849066+00:00",
+    "sidebar_label": "Product Comparison",
+    "slug": "/product-comparison"
+  },
+  "sidebar": "wikiSidebar",
+  "previous": {
+    "title": "Product Briefs",
+    "permalink": "/docs/product-briefs"
+  },
+  "next": {
+    "title": "Product Compatibility",
+    "permalink": "/docs/product-compatibility"
+  }
+}

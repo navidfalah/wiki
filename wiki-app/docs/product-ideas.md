@@ -2,54 +2,55 @@
 id: product-ideas
 title: Product Ideas
 tags:
-  - color-coded-led-battery-state
-  - community-garden-network
-  - document-contradictions-explicitly
-  - documentation-pipeline
-  - docusaurus
-  - fake-competitor-name-generator
-  - meshsink
-  - meshsync
-last_updated: "2026-06-25T07:49:28.970095+00:00"
+  - aurora
+  - auto-ingest
+  - ble
+  - cr2032
+  - graph-diff
+  - jonah
+  - karpathy
+  - llm-faq-summarization
+last_updated: "2026-09-01T19:20:44.990418+00:00"
 sidebar_label: Product Ideas
 slug: /product-ideas
 ---
 
+<!-- AUTO-GENERATED — compiled by the LLM Wiki compiler from data/raw/ sources into compiler/temp_output/, then linked here. Edits to this file are overwritten on the next compile: edit sources under data/raw/, or manual cross-links in data/link_overrides.json, instead. -->
+
 # Product Ideas
 
 ## Overview
-
-This page compiles a backlog of unsorted and largely unprioritized product and project ideas, often originating as "shower thoughts." These ideas range from specific device features to documentation improvements and potential partnerships. They are currently in a raw, half-baked state, awaiting further evaluation and development.
+This wiki page compiles [wiki automation](./wiki-automation.md) ideas, cross-product initiatives, and rejected proposals from a July 4 braindump. The proposals focus on enhancing [documentation](./documentation.md) workflows, automated content generation, and system integrations, drawing inspiration from patterns like the Karpathy LLM wiki pattern and docusaurus graph plugins.
 
 ## Key Details
-
-*   **Wiki Linter for Orphan Pages**: An idea for a tool to identify and flag wiki pages that are not linked from any other page, indicating potential discoverability issues or outdated content.
-*   **Color-Coded LED for Battery State**: A proposed device feature where an LED changes color to visually indicate a "dying" or critically low battery state.
-*   **Community Garden Network Partnership**: An exploration into a potential partnership with community garden networks, with a cold email draft possibly existing.
-*   **MeshSync/MeshSink Renaming**: A suggestion to rename "MeshSync" to "MeshSink," which has been explicitly rejected multiple times.
-*   **Explicit Contradiction Documentation**: An idea to formally document contradictions within wiki pages to improve clarity and accuracy.
-*   **Fake Competitor Name Generator**: A tool or utility to generate fictitious competitor names, potentially useful for demos, testing, or competitive analysis exercises.
-*   **`index.md` Out-of-Date Issue**: An observation about the common problem of `index.md` files frequently being outdated across various projects.
-*   **Raw Text to Markdown to Docusaurus Pipeline**: A half-baked concept for an automated pipeline to convert raw text files into Markdown, and then integrate them into a Docusaurus documentation site.
+- **Wiki Automation Initiatives:**
+  - Implement a pre-commit hook that greps raw files for the `CONTRADICTION` marker.
+  - Set up auto-ingestion of Slack exports from the `dummy-test/` folder.
+  - Create a graph diff tool between compiles to highlight newly added entities.
+  - Utilize LLMs to automatically summarize support tickets into FAQ pages.
+  - Address orphan pages using a linter (already tracked on backlog item #1).
+- **Cross-Product Initiatives:**
+  - Establish a shared glossary covering terms such as `CR2032`, [BLE](./ble.md), MeshSync, and `steep preset`.
+  - Draft a unified "local-first manifesto" page incorporating quotes from [Aurora Labs](./aurora-labs.md) and [TeaBuddy](./teabuddy.md).
+- **Rejected Proposals:**
+  - Building a single app for both products (vetoed by the CEOs).
+  - Developing a mesh tea timer (explicitly rejected by Jonah with "absolutely not").
+- **References:** 
+  - Karpathy LLM wiki pattern
+  - Docusaurus graph plugin
 
 ## Related Entities
-
-*   **Docusaurus**: A static site generator, specifically mentioned in the context of a documentation pipeline.
-*   **MeshSync**: A product or concept whose name was considered for renaming.
-*   **Community Garden Network**: A type of organization considered for a potential partnership.
+- **Aurora** (Product associated with the local-first manifesto)
+- **TeaBuddy** (Product associated with the local-first manifesto and tea timer idea)
+- **Jonah** (Decision maker who rejected the mesh tea timer)
 
 ## Related Concepts
+- **Wiki Automation** (Pre-commit hooks, auto-ingestion, graph diffs, and orphan linters)
+- **LLM Integration** (Support ticket summarization into FAQ pages)
+- **[Local-First Software](./local-first-software.md)** (Unified local-first manifesto concept)
 
-*   **Wiki Maintenance**: Concepts like identifying orphan pages and explicitly documenting contradictions fall under general wiki health and maintenance.
-*   **Documentation Automation**: The idea of a `raw txt → md → docusaurus` pipeline points towards automating documentation workflows.
-*   **User Experience (UX)**: The color-coded LED for battery state aims to improve user awareness of device status.
-*   **Competitive Analysis**: The fake competitor name generator could be a tool for competitive strategy or training.
+## References & Trust
 
-## Contradictions
-
-*   **MeshSync Renaming**:
-    **Contradiction:** The idea to rename "MeshSync" to "MeshSink" has been explicitly rejected three times. This indicates a strong consensus against the proposed change despite its initial suggestion.
-
-## Sources
-
-*   `ideas/backlog-shower-thoughts.txt`
+| # | Source | Type | Trust |
+|---|--------|------|-------|
+| 1 | `samples/ideas/[SAMPLE]-2026-07-04-wiki-automation-ideas.txt` | text | Unverified |

@@ -2,66 +2,71 @@
 id: home-assistant
 title: Home Assistant
 tags:
+  - aurora-labs
   - aurora-mqtt-schema-v2
-  - default-interval-15-min
-  - filter-meshneighbors-topic
   - home-assistant
-  - hourly-automation-templates
-  - local-mqtt-broker
-  - map-soil-moisture-to-entity
-  - meshsync-038
-last_updated: "2026-06-25T07:27:47.750855+00:00"
+  - local-mqtt-export
+  - meshsync
+  - mira-chen
+  - mosquitto
+  - nova-widget
+last_updated: "2026-09-01T19:19:19.795130+00:00"
 sidebar_label: Home Assistant
 slug: /home-assistant
 ---
+
+<!-- AUTO-GENERATED — compiled by the LLM Wiki compiler from data/raw/ sources into compiler/temp_output/, then linked here. Edits to this file are overwritten on the next compile: edit sources under data/raw/, or manual cross-links in data/link_overrides.json, instead. -->
 
 # Home Assistant
 
 ## Overview
 
-Home Assistant is a popular open-source home automation platform. This page outlines an unofficial community guide for integrating Nova Widget devices with Home Assistant, primarily leveraging MQTT for data export and control.
+Home Assistant integrations for [Aurora Labs](./aurora-labs.md) [hardware](./hardware.md) (specifically the [Nova Widget](./nova-widget.md)) leverage an optional local [MQTT export](./mqtt-export.md) feature. This setup allows hobbyist users to run local automations and telemetry tracking without requiring a cloud connection or cloud broker hosting by Aurora Labs.
 
 ## Key Details
 
-### Prerequisites for Integration
-
-To integrate Nova Widget devices with Home Assistant, the following prerequisites must be met:
-
-*   **MeshSync**: Version 0.3.8 or newer.
-*   **Local MQTT Broker**: A local MQTT broker, such as Mosquitto, is required to facilitate communication.
-*   **Aurora MQTT Schema**: The Aurora MQTT Schema v2 must be in use for data formatting.
-
-### Quick Start Guide
-
-Follow these steps for a basic integration:
-
-1.  **Enable MQTT Export**: Enable MQTT export in the device settings. This can currently be done via the UART command `mqtt on` until app support is available.
-2.  **Subscribe to Telemetry**: Subscribe to the `aurora/+/telemetry` MQTT topic to receive data from your devices.
-3.  **Map Soil Moisture**: Map the received soil moisture data to a percentage (`%`) entity within Home Assistant.
-
-### Known Quirks
-
-Users should be aware of the following known behaviors:
-
-*   **Log Flooding**: Rejoin events can flood logs when operating with 8 or more nodes. To mitigate this, filter the `mesh/neighbors` topic.
-*   **Default Interval**: The default data reporting interval is 15 minutes. Avoid using hourly automation templates found in older blog posts, as they may not align with this default interval.
-
-### TeaBuddy Integration
-
-There is currently no official integration for TeaBuddy with Home Assistant.
+- **Prerequisites:** MeshSync version 0.3.8 or higher, a local MQTT broker (such as Mosquitto), and the Aurora MQTT schema v2.
+- **Quick Start:** 
+  1. Enable MQTT export in the device settings (or use the UART command `mqtt on` until official app support is available).
+  2. Subscribe to the topic wildcard `aurora/+/telemetry`.
+  3. Map the soil moisture payload to a percentage entity in Home Assistant.
+- **Topic Structure:**
+  - `aurora/{device_id}/telemetry`
+  - `aurora/{device_id}/battery`
+  - `aurora/{device_id}/mesh/neighbors`
+- **Payload Example:**
+  ```json
+  {
+    "soil_moisture_pct": 42,
+    "temp_c": 19.2,
+    "read_interval_min": 15,
+    "battery_mv": 2980,
+    "mesh_hops": 2
+  }
+  ```
+- **Known Quirks & Maintenance:**
+  - Rejoin events can flood logs when scaling to 8 nodes; users should filter the `mesh/neighbors` topic to keep logs clean.
+  - [TeaBuddy](./teabuddy.md) steep events and integrations are considered out of scope or community jokes (e.g., a community hack involving a microphone listening for a buzz).
 
 ## Related Entities
 
-*   Nova Widget
-*   Mosquitto
-*   TeaBuddy
+- **Nova Widget:** The primary device utilizing the local MQTT export schema.
+- **Aurora Labs:** The manufacturer/entity responsible for the Nova Widget hardware and telemetry schema (Draft v2 owned by [Mira Chen](./aurora-labs.md)).
+- **Mosquitto:** A local MQTT broker commonly utilized in these homelab setups.
 
 ## Related Concepts
 
-*   MQTT
-*   MeshSync
-*   Aurora MQTT Schema
+- **MeshSync:** A [networking](./networking.md)/sync layer (v0.3.8+) required for proper integration and neighborhood mesh data handling.
+- **Aurora MQTT Schema v2:** The specification defining telemetry topics and payload JSON structures.
+- **Local Telemetry Export:** The capability to broadcast device metrics locally without third-party cloud dependency.
 
-## Sources
+## Contradictions
 
-*   `samples/articles/[SAMPLE]-2026-07-08-homelab-integration-guide.md`
+&gt; **Contradiction:** Kickoff slides originally showed hourly export batching for the telemetry data, whereas the Draft v2 specification and community guide mandate a 15-minute interval per reading cycle. Additionally, users are warned not to rely on hourly automation templates from older blog posts.
+
+## References & Trust
+
+| # | Source | Type | Trust |
+|---|--------|------|-------|
+| 1 | `samples/articles/[SAMPLE]-2026-07-02-mqtt-export-schema.md` | text | Unverified |
+| 2 | `samples/articles/[SAMPLE]-2026-07-08-homelab-integration-guide.md` | text | Unverified |

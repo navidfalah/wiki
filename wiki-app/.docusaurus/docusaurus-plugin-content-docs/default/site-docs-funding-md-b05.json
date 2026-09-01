@@ -1,0 +1,80 @@
+{
+  "id": "funding",
+  "title": "Funding",
+  "description": "Overview",
+  "source": "@site/docs/funding.md",
+  "sourceDirName": ".",
+  "slug": "/funding",
+  "permalink": "/docs/funding",
+  "draft": false,
+  "unlisted": false,
+  "tags": [
+    {
+      "inline": true,
+      "label": "alex-kim",
+      "permalink": "/docs/tags/alex-kim"
+    },
+    {
+      "inline": true,
+      "label": "aurora-labs",
+      "permalink": "/docs/tags/aurora-labs"
+    },
+    {
+      "inline": true,
+      "label": "bridge-funding",
+      "permalink": "/docs/tags/bridge-funding"
+    },
+    {
+      "inline": true,
+      "label": "co-marketing",
+      "permalink": "/docs/tags/co-marketing"
+    },
+    {
+      "inline": true,
+      "label": "fte-firmware",
+      "permalink": "/docs/tags/fte-firmware"
+    },
+    {
+      "inline": true,
+      "label": "funding",
+      "permalink": "/docs/tags/funding"
+    },
+    {
+      "inline": true,
+      "label": "injection-mold",
+      "permalink": "/docs/tags/injection-mold"
+    },
+    {
+      "inline": true,
+      "label": "ip65ip54ip67",
+      "permalink": "/docs/tags/ip-65-ip-54-ip-67"
+    }
+  ],
+  "version": "current",
+  "frontMatter": {
+    "id": "funding",
+    "title": "Funding",
+    "tags": [
+      "alex-kim",
+      "aurora-labs",
+      "bridge-funding",
+      "co-marketing",
+      "fte-firmware",
+      "funding",
+      "injection-mold",
+      "ip65ip54ip67"
+    ],
+    "last_updated": "2026-06-25T07:23:38.284055+00:00",
+    "sidebar_label": "Funding",
+    "slug": "/funding"
+  },
+  "sidebar": "wikiSidebar",
+  "previous": {
+    "title": "Forum Discussions",
+    "permalink": "/docs/forum-discussions"
+  },
+  "next": {
+    "title": "Garden Sensors",
+    "permalink": "/docs/garden-sensors"
+  }
+}

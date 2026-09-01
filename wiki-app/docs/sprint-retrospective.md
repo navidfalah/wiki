@@ -2,74 +2,61 @@
 id: sprint-retrospective
 title: Sprint Retrospective
 tags:
-  - sprint retrospective
-  - aurora labs
-  - sprint review
-  - action items
-  - team performance
-  - agile development
-  - project management
-last_updated: "2026-06-25T08:00:09.987925+00:00"
+  - aurora-labs
+  - contradiction-linter
+  - documentation-maintenance
+  - jonah
+  - mesh-network-stability
+  - meshsync
+  - mira
+  - sprint-retrospective
+last_updated: "2026-09-01T19:21:39.417739+00:00"
 sidebar_label: Sprint Retrospective
 slug: /sprint-retrospective
 ---
 
+<!-- AUTO-GENERATED — compiled by the LLM Wiki compiler from data/raw/ sources into compiler/temp_output/, then linked here. Edits to this file are overwritten on the next compile: edit sources under data/raw/, or manual cross-links in data/link_overrides.json, instead. -->
+
 # Sprint Retrospective
 
 ## Overview
-
-A Sprint Retrospective is a meeting held at the end of a sprint in agile development to reflect on the past sprint. The team discusses what went well, what didn't go well, and what could be improved in the next sprint. This particular page synthesizes notes from a Sprint 14 Retrospective held at Aurora Labs.
+This wiki page documents the outcomes, successes, challenges, action items, and parking lot items from the [Aurora Labs](./aurora-labs.md) Sprint 14 Retrospective, reflecting on team performance, project milestones, and administrative hurdles.
 
 ## Key Details
-
-### Context
-*   **Team:** Aurora Labs
-*   **Sprint:** 14
-
-### What Went Well
-*   **Mesh Stability:** The mesh network achieved stable operation with 6 nodes in the lab environment.
-*   **Wiki Compiler:** The heuristic mode for the wiki compiler was successfully implemented and functions without requiring an API key.
-*   **Nova Widget Enclosure:** The "pebble shape" design for the Nova widget enclosure was approved, with Jonah's design being selected.
-
-### What Didn't Go Well
-*   **Documentation Discrepancy:** Documentation still incorrectly states an hourly default for a specific setting, despite the specification mandating a 15-minute default. This issue was noted as a recurring problem.
-*   **Support Ticket:** Support ticket #1042 remains open.
-*   **`index.md` Update:** The `index.md` file was not updated prior to a recent demo.
-
-### Action Items
-1.  Implement a contradiction linter specifically for battery claims within documentation or code.
-2.  Publish the power budget spreadsheet.
-3.  Invite three additional beta testers from the homelab forum community.
-
-### Shoutouts
-*   Mira was recognized for quickly fixing a sleep regression issue within two hours.
-
-### Parking Lot (Rejected/Deferred Ideas)
-*   **TeaBuddy Partnership:** A proposed partnership for "smart garden tea" was unanimously rejected.
-*   **MeshSync Rename:** The suggestion to rename "MeshSync" to "MeshSink" was rejected for the fourth time.
+- **Sprint Identifier:** Sprint 14 (Aurora Labs)
+- **What Went Well:**
+  - Mesh network stability achieved a solid 6 nodes in the lab environment.
+  - The [wiki compiler](./wiki-compiler.md) [heuristic mode](./heuristic-mode.md) is successfully operational without requiring an API key.
+  - The [Nova Widget](./aurora-nova-widget.md) enclosure pebble shape design was approved (following Jonah's preference).
+  - [Mira](./aurora-labs.md) successfully resolved a sleep regression in just two hours.
+- **What Didn't Go Well:**
+  - [Documentation](./documentation.md) discrepancies persist: docs still state an hourly default, whereas the specification mandates 15 minutes (recurring issue).
+  - Support ticket #1042 remains open.
+  - The `index.md` file was not updated prior to the demo.
+- **Action Items:**
+  - Implement a contradiction linter for battery claims.
+  - Publish the [power budget](./power-budget.md) spreadsheet.
+  - Invite three additional beta testers from the homelab forum.
+- **Parking Lot:**
+  - **[TeaBuddy](./teabuddy.md) Partnership:** "Smart garden tea" proposal was rejected unanimously.
+  - **MeshSync Renaming:** Proposal to rename `MeshSync` to `MeshSink` was rejected for the fourth time.
 
 ## Related Entities
-
-*   **Aurora Labs:** The company conducting the sprint.
-*   **Jonah:** Team member whose Nova widget enclosure design was approved.
-*   **Mira:** Team member recognized for fixing a sleep regression.
-*   **TeaBuddy:** A potential partner whose "smart garden tea" proposal was rejected.
+- **Aurora Labs**
+- **Jonah**
+- **Mira**
 
 ## Related Concepts
-
-*   **Agile Development:** The overarching methodology guiding the sprint.
-*   **Mesh Networking:** A key technology being developed and tested.
-*   **Documentation Management:** Highlighted by the discrepancy in default settings and the `index.md` update issue.
-*   **Wiki Compiler:** A tool or system being developed.
-*   **Product Design:** Illustrated by the Nova widget enclosure approval.
-*   **Power Budgeting:** An area requiring published information.
-*   **Beta Testing:** An upcoming activity to expand the tester pool.
-*   **Contradiction Linter:** A proposed tool for quality assurance.
+- **Mesh-Network Stability**
+- **Documentation Maintenance**
+- **Contradiction Linter**
+- **MeshSync**
 
 ## Contradictions
+*(No contradictions were noted within this sprint retrospective source text.)*
 
-No explicit contradictions were found within the provided source material.
+## References & Trust
 
-## Sources
-
-*   `samples/notes/[SAMPLE]-2026-06-16-sprint-retro-aurora.txt`
+| # | Source | Type | Trust |
+|---|--------|------|-------|
+| 1 | `samples/notes/[SAMPLE]-2026-06-16-sprint-retro-aurora.txt` | text | Unverified |

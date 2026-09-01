@@ -2,90 +2,65 @@
 id: product-naming
 title: Product Naming
 tags:
-  - alex-kim
   - aurora-labs
-  - class-21-kitchen-gadgets
-  - cloudfree-sensor
-  - co-marketing-guidelines
-  - crowded-mark
-  - gritnode
+  - battery-state-indicator
+  - documentation-pipeline
+  - docusaurus
+  - explicit-contradiction-documentation
+  - hardware-form-factor
   - jonah
-last_updated: "2026-06-25T07:50:26.104857+00:00"
+  - meshsink
+last_updated: "2026-09-01T19:20:48.905600+00:00"
 sidebar_label: Product Naming
 slug: /product-naming
 ---
+
+<!-- AUTO-GENERATED — compiled by the LLM Wiki compiler from data/raw/ sources into compiler/temp_output/, then linked here. Edits to this file are overwritten on the next compile: edit sources under data/raw/, or manual cross-links in data/link_overrides.json, instead. -->
 
 # Product Naming
 
 ## Overview
 
-Product naming is a critical process involving internal brainstorming, legal review for trademark clearance, and consideration of market crowdedness. This page synthesizes various discussions and decisions related to product and company naming, including approved names, rejected ideas, legal caveats, and co-marketing guidelines.
+Product Naming covers internal brainstorms, rejected product and taglines, and internal debates regarding [hardware](./hardware.md) form factors and [brand identity](./brand-identity.md). It also touches on internal tooling, backlogs, and project organization ideas.
 
 ## Key Details
 
-### Approved and Cleared Names
-
-*   **Nova Widget**: Approved for use, specifically as "Nova Widget" to avoid conflict with an existing "Nova" tech mark.
-*   **Aurora Labs**: The company name, confirmed as "keep" in internal brainstorms.
-*   **MeshSync**: Preliminary clearance received, with a caveat regarding similar mesh IoT marks.
-*   **TeaBuddy**: Cleared for use specifically within "class 21 kitchen gadgets."
-*   **TeaBuddy Puck**: Recommended for use together, as "Puck" alone is a crowded mark.
-
-### Rejected Names and Concepts
-
-*   **SoilPal**
-*   **GritNode**
-*   **PetalPing**
-*   **CloudFree Sensor**: Rejected for being "too on the nose."
-*   **KarpathyGarden**
-*   **SteepSync**: Internally rejected prior to legal review.
-*   **Nova (alone)**: Conflicts with an existing tech mark.
-*   **Puck (alone)**: Considered a crowded mark, requiring combination with another name like "TeaBuddy."
-
-### Trademark and Legal Considerations
-
-*   **MeshSync**: Requires careful consideration due to the existence of similar mesh IoT marks.
-*   **TeaBuddy**: Trademark clearance is specific to "class 21 kitchen gadgets."
-*   **Nova**: Must be used as part of a larger name (e.g., "Nova Widget") to avoid conflict with existing tech trademarks.
-*   **Puck**: As a standalone name, it is considered "crowded" in the market, necessitating its use in conjunction with another mark (e.g., "TeaBuddy Puck").
-
-### Co-marketing Guidelines
-
-*   Co-marketing efforts are permissible if logos are separated by a minimum of 24 pixels.
-
-### Tagline Brainstorm
-
-Internal brainstorming yielded several taglines, with varying reception:
-
-*   "Sense without surrender" — deemed "cringe."
-*   "Your data, your dirt" — considered "worse."
-*   "Open sensors for people who own their data" — identified as "still the best???" among the options, indicating ongoing refinement.
-
-### Internal Design Discussions
-
-*   There is an ongoing internal debate regarding product shape preferences: Jonah prefers a pebble shape, while Mira advocates for a hexagonal design.
+- **Approved Names:** 
+  - [Nova Widget](./nova-widget.md) (kept)
+  - [Aurora Labs](./aurora-labs.md) (kept)
+- **Rejected Names:** 
+  - SoilPal, GritNode, PetalPing, CloudFree Sensor ("too on the nose"), KarpathyGarden (???)
+- **Taglines Explored:**
+  - "Sense without surrender" (noted as "cringe")
+  - "Your data, your dirt" (noted as "worse")
+  - "Open [sensors](./sensors.md) for people who own their data" (considered "still the best???")
+- **Hardware Form Factor Debates:** 
+  - Jonah prefers a pebble shape.
+  - [Mira](./aurora-labs.md) prefers a hex shape.
+  - The design disagreement is ongoing.
+- **MeshSync Naming Debates:**
+  - There has been a proposal to rename MeshSync to MeshSink, though it has been explicitly rejected three times.
 
 ## Related Entities
 
-*   **Aurora Labs**: The company involved in product development and naming.
-*   **Alex Kim**: Contact person at TeaBuddy, involved in trademark discussions.
-*   **Mira Chen**: Contact person at Aurora Labs, involved in trademark discussions and design preferences.
-*   **Jonah**: Involved in design preferences.
+- **Aurora Labs:** Approved organizational/brand name.
+- **Nova Widget:** Approved product name.
+- **Jonah:** Team member advocating for a pebble hardware form factor.
+- **Mira:** Team member advocating for a hex hardware form factor.
 
 ## Related Concepts
 
-*   Trademark Law
-*   Co-marketing
-*   IoT (Internet of Things)
-*   Kitchen Gadgets (Class 21)
-*   Sensor Technology
-*   Brand Identity
+- **Hardware Form Factor:** The physical design shape of the device, currently contested between pebble and hexagonal designs.
+- **Taglines:** Marketing phrases tested for the sensors, prioritizing themes of open data ownership.
+- **Backlog Management:** Unsorted [project ideas](./project-ideas.md), including a wiki linter, color-coded LED battery state indicators, community garden [partnerships](./partnerships.md), and a raw text to Docusaurus [documentation](./documentation.md) pipeline.
 
 ## Contradictions
 
-No direct contradictions were found between the provided source materials.
+&gt; **Contradiction:** The backlog notes explicitly mention that renaming MeshSync to MeshSink has been rejected three times, yet the proposed name "MeshSink" persists as a tag and topic of discussion in project materials.
 
-## Sources
+## References & Trust
 
-*   `ideas/2026-06-07-product-naming-brainstorm.txt`
-*   `samples/emails/[SAMPLE]-2026-07-08-legal-review-trademark.txt`
+| # | Source | Type | Trust |
+|---|--------|------|-------|
+| 1 | `ideas/2026-06-07-product-naming-brainstorm.txt` | text | Medium |
+| 2 | `ideas/backlog-shower-thoughts.txt` | text | Medium |

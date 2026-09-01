@@ -1,0 +1,80 @@
+{
+  "id": "node-management",
+  "title": "Node Management",
+  "description": "",
+  "source": "@site/docs/node-management.md",
+  "sourceDirName": ".",
+  "slug": "/node-management",
+  "permalink": "/docs/node-management",
+  "draft": false,
+  "unlisted": false,
+  "tags": [
+    {
+      "inline": true,
+      "label": "node management",
+      "permalink": "/docs/tags/node-management"
+    },
+    {
+      "inline": true,
+      "label": "meshsync",
+      "permalink": "/docs/tags/meshsync"
+    },
+    {
+      "inline": true,
+      "label": "aurora-labs",
+      "permalink": "/docs/tags/aurora-labs"
+    },
+    {
+      "inline": true,
+      "label": "beta release",
+      "permalink": "/docs/tags/beta-release"
+    },
+    {
+      "inline": true,
+      "label": "rejoin storm",
+      "permalink": "/docs/tags/rejoin-storm"
+    },
+    {
+      "inline": true,
+      "label": "parent election",
+      "permalink": "/docs/tags/parent-election"
+    },
+    {
+      "inline": true,
+      "label": "deprecated features",
+      "permalink": "/docs/tags/deprecated-features"
+    },
+    {
+      "inline": true,
+      "label": "github issue",
+      "permalink": "/docs/tags/github-issue"
+    }
+  ],
+  "version": "current",
+  "frontMatter": {
+    "id": "node-management",
+    "title": "Node Management",
+    "tags": [
+      "node management",
+      "meshsync",
+      "aurora-labs",
+      "beta release",
+      "rejoin storm",
+      "parent election",
+      "deprecated features",
+      "github issue"
+    ],
+    "last_updated": "2026-06-25T07:43:31.971661+00:00",
+    "sidebar_label": "Node Management",
+    "slug": "/node-management"
+  },
+  "sidebar": "wikiSidebar",
+  "previous": {
+    "title": "Network Engineering",
+    "permalink": "/docs/network-engineering"
+  },
+  "next": {
+    "title": "Notion Export",
+    "permalink": "/docs/notion-export"
+  }
+}

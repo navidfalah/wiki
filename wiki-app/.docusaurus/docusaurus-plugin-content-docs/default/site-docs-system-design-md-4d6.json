@@ -1,0 +1,80 @@
+{
+  "id": "system-design",
+  "title": "System Design",
+  "description": "Overview",
+  "source": "@site/docs/system-design.md",
+  "sourceDirName": ".",
+  "slug": "/system-design",
+  "permalink": "/docs/system-design",
+  "draft": false,
+  "unlisted": false,
+  "tags": [
+    {
+      "inline": true,
+      "label": "aurora",
+      "permalink": "/docs/tags/aurora"
+    },
+    {
+      "inline": true,
+      "label": "batch-update-all",
+      "permalink": "/docs/tags/batch-update-all"
+    },
+    {
+      "inline": true,
+      "label": "ble-proxy-update",
+      "permalink": "/docs/tags/ble-proxy-update"
+    },
+    {
+      "inline": true,
+      "label": "brick-scenario",
+      "permalink": "/docs/tags/brick-scenario"
+    },
+    {
+      "inline": true,
+      "label": "ed25519",
+      "permalink": "/docs/tags/ed-25519"
+    },
+    {
+      "inline": true,
+      "label": "explicit-user-consent",
+      "permalink": "/docs/tags/explicit-user-consent"
+    },
+    {
+      "inline": true,
+      "label": "mesh-wide-upgrade",
+      "permalink": "/docs/tags/mesh-wide-upgrade"
+    },
+    {
+      "inline": true,
+      "label": "meshsync-routing-table-invalidation",
+      "permalink": "/docs/tags/meshsync-routing-table-invalidation"
+    }
+  ],
+  "version": "current",
+  "frontMatter": {
+    "id": "system-design",
+    "title": "System Design",
+    "tags": [
+      "aurora",
+      "batch-update-all",
+      "ble-proxy-update",
+      "brick-scenario",
+      "ed25519",
+      "explicit-user-consent",
+      "mesh-wide-upgrade",
+      "meshsync-routing-table-invalidation"
+    ],
+    "last_updated": "2026-06-25T08:01:34.348609+00:00",
+    "sidebar_label": "System Design",
+    "slug": "/system-design"
+  },
+  "sidebar": "wikiSidebar",
+  "previous": {
+    "title": "Support Tickets",
+    "permalink": "/docs/support-tickets"
+  },
+  "next": {
+    "title": "TeaBuddy",
+    "permalink": "/docs/teabuddy"
+  }
+}

@@ -2,77 +2,51 @@
 id: competitor-analysis
 title: Competitor Analysis
 tags:
+  - beta-testing-program
   - competitor-analysis
-  - sensenode
-  - battery-life
-  - ip-ratings
-  - open-firmware
-  - local-mesh
-  - community-integrations
-  - co-marketing
-last_updated: "2026-06-25T07:16:34.628349+00:00"
+  - competitor-teardown
+  - implied-decisions
+  - jonah
+  - mira
+  - wiki
+last_updated: "2026-09-01T19:18:15.697506+00:00"
 sidebar_label: Competitor Analysis
 slug: /competitor-analysis
 ---
 
+<!-- AUTO-GENERATED — compiled by the LLM Wiki compiler from data/raw/ sources into compiler/temp_output/, then linked here. Edits to this file are overwritten on the next compile: edit sources under data/raw/, or manual cross-links in data/link_overrides.json, instead. -->
+
 # Competitor Analysis
 
 ## Overview
-Competitor analysis at Aurora Labs involves understanding the market landscape, identifying key differentiators against rivals like SenseNode, and evaluating product features such as Battery Life and IP Ratings. It also includes assessing potential partnerships and managing public perception through activities like competitor teardown blogs.
+
+A brief, unplanned 23-minute meeting was held between [Mira](./aurora-labs.md), Jonah, and the note-taker to discuss various product and marketing topics. The conversation wandered across multiple subjects, touching on competitor evaluations, [product specifications](./product-specifications.md), [beta testing](./beta-testing.md) demographics, and [documentation](./documentation.md) needs. 
 
 ## Key Details
 
-*   **Primary Competitor:** SenseNode is identified as a key competitor in the market.
-*   **Aurora Labs' Moat Against SenseNode:**
-    *   Offers Local Mesh functionality without requiring a subscription.
-    *   Features partially Open Firmware.
-    *   Provides robust Community Integrations.
-*   **Competitor Teardown Blog:**
-    *   A blog post performing a competitor teardown was generally fair but contained an error regarding battery life, which was subsequently fixed.
-    *   There is internal discussion and caution from Mira Chen regarding whether Aurora Labs should publicly publish its Power Numbers.
-*   **Battery Life Claims:**
-    *   Engineering estimates indicate 18 months of battery life for a setup with ten nodes and 15-minute read intervals.
-    *   Marketing rounds this figure to "two years."
-    *   Aurora Labs plans to publish the detailed spreadsheet supporting these claims.
-*   **IP Ratings:**
-    *   The current beta version of the product ships with an IP54 rating.
-    *   An upgrade to IP65 is planned for a future release, contingent on securing tooling funding.
-*   **Eight-Node Mesh Issue:**
-    *   An issue related to an eight-node mesh configuration was mitigated in software version 0.3.8.
-    *   For Beta Customers, a six-node mesh is currently recommended for optimal performance.
-*   **TeaBuddy Partnership:**
-    *   The relationship with TeaBuddy is strictly a Co-marketing partnership.
-    *   There are no plans for a merger, and the partnership is partly facilitated by Alex's personal connection.
-*   **Beta Tester List:**
-    *   The current beta tester list comprises 12 individuals, including 3 farmers and a majority of hobbyists.
-*   **Feature Inspiration:**
-    *   The concept of an "Obsidian Graph View" was mentioned in a meeting and received positive acknowledgment, potentially indicating interest in a similar feature for Aurora Labs' products.
+- **Competitor Teardown Blog**: The recent competitor teardown blog post was evaluated and considered mostly fair, though it contained a battery specification error that has since been corrected.
+- **Power Numbers**: The team briefly discussed whether to publish power numbers, with Mira expressing caution on the matter.
+- **Beta Tester List**: The current beta testing program includes 12 participants: 3 farmers and the remaining 9 as hobbyists.
+- **Tools & References**: A brief mention of the Obsidian graph view occurred during the meeting, which was met with universal agreement from all attendees.
+- **Future Scheduling**: The next meeting is not formally scheduled, set to occur "when mesh stable."
 
 ## Related Entities
 
-*   **SenseNode:** A primary competitor to Aurora Labs, against whom Aurora Labs emphasizes its differentiators.
-*   **TeaBuddy:** A co-marketing partner with Aurora Labs.
-*   **Mira Chen:** An Aurora Labs representative who discusses the company's competitive moat, battery life claims, and expresses caution about publishing power numbers.
-*   **Jonah Park:** An Aurora Labs representative who discusses IP ratings.
-*   **Alex:** An individual with a personal connection to TeaBuddy, facilitating the co-marketing partnership.
-*   **Beta Customers/Testers:** A group of 12 individuals (3 farmers, rest hobbyists) testing Aurora Labs' products.
+- **Mira**: Team member who is cautious about publishing power numbers.
+- **Jonah**: Meeting attendee participating in the product and strategy discussions.
 
 ## Related Concepts
 
-*   **Local Mesh:** A key differentiator for Aurora Labs, offering functionality without a subscription.
-*   **Open Firmware:** A partial implementation of open firmware is another competitive advantage.
-*   **Community Integrations:** Emphasized as a strength against competitors.
-*   **Battery Life:** A critical performance metric and point of comparison, with both engineering and marketing claims.
-*   **IP Ratings (IP54, IP65):** Standards for ingress protection, indicating product durability and a competitive feature.
-*   **Co-marketing:** A strategic partnership approach, exemplified by the TeaBuddy collaboration.
-*   **Power Numbers:** Data related to device power consumption, with internal debate about public disclosure.
-*   **Obsidian Graph View:** A concept noted for its potential relevance as a feature or design inspiration.
+- **Competitor Teardown**: Analyzing competitor [hardware](./hardware.md) and marketing, exemplified by the team's recent blog post.
+- **Beta Testing Program**: Early-stage user testing involving a small cohort of 12 users (farmers and hobbyists) to evaluate the IP54 beta hardware.
+- **Implied Decisions**: Strategic directions moving forward despite the lack of a formal agenda or voting structure.
 
 ## Contradictions
 
-*   **Contradiction:** While not a direct contradiction, there is a difference between the engineering estimate of "eighteen months" for battery life and the marketing claim of "two years," which is described as a rounding. Aurora Labs plans to publish a spreadsheet to clarify.
+*(No direct contradictions were recorded in the source material.)*
 
-## Sources
+## References & Trust
 
-*   `notes/2026-06-08-meeting-no-agenda.txt`
-*   `samples/transcripts/[SAMPLE]-2026-07-02-investor-call-fragment.txt`
+| # | Source | Type | Trust |
+|---|--------|------|-------|
+| 1 | `notes/2026-06-08-meeting-no-agenda.txt` | text | Medium |

@@ -1,58 +1,50 @@
 ---
 id: ios-development
-title: iOS Development
+title: "iOS Development: CoreBluetooth Pairing & Background Tasks"
 tags:
-  - ble
-  - corebluetooth
-  - pairing
-  - ios-18-beta
-  - testflight
-  - firmware
-  - ux-review
+  - apple
+  - ble-pairing
+  - cbmanagerauthorization
+  - ios-development
+  - nova-widget
+  - sam-rivera
   - teabuddy
-last_updated: "2026-06-25T07:30:38.124134+00:00"
-sidebar_label: iOS Development
+  - uibackgroundtask
+last_updated: "2026-09-01T19:19:26.049392+00:00"
+sidebar_label: "iOS Development: CoreBluetooth Pairing & Background Tasks"
 slug: /ios-development
 ---
 
-# iOS Development
+<!-- AUTO-GENERATED — compiled by the LLM Wiki compiler from data/raw/ sources into compiler/temp_output/, then linked here. Edits to this file are overwritten on the next compile: edit sources under data/raw/, or manual cross-links in data/link_overrides.json, instead. -->
+
+# iOS Development: CoreBluetooth Pairing & Background Tasks
 
 ## Overview
-
-iOS development, in the context of connected devices, involves creating applications that interact seamlessly with hardware. This often includes managing BLE (Bluetooth Low Energy) connections, handling permissions, implementing UX Review features like Haptic Feedback, and ensuring compatibility with various iOS versions and testing platforms like TestFlight. [Firmware](./firmware.md) updates on companion devices frequently address issues or introduce features that directly impact the iOS application's functionality and user experience.
+This wiki page documents critical findings and research regarding iOS 18 CoreBluetooth pairing changes, permission flows, and background execution requirements impacting applications like [TeaBuddy](./teabuddy.md), based on findings by Sam Rivera.
 
 ## Key Details
-
-*   **BLE Pairing Timeout**: For devices interacting with iOS 18 beta, the BLE (Bluetooth Low Energy) Pairing timeout was increased to 45 seconds. This adjustment likely accommodates changes or specific requirements within the iOS 18 beta environment to ensure successful device Pairing.
-*   **CoreBluetooth Permissions**: A fix was implemented to address the order in which CoreBluetooth permission prompts appear. This ensures a smoother and more compliant user experience when an iOS application requests Bluetooth access.
-*   **Pairing Paths**: A "box QR Pairing path" was introduced for TestFlight builds. This suggests a streamlined method for users to pair devices during beta testing, potentially by scanning a QR code on the device packaging directly from the iOS app.
-*   **Haptic Motor Duty Cycle**: The duty cycle for a device's haptic motor was capped at 70% following a UX Review conducted by Alex Kim. This indicates that user experience considerations, often driven by how the device interacts with its iOS companion app, directly influence hardware performance parameters.
-*   **Timer Bug Fix**: A bug where a timer continued to run after being canceled within the iOS application was fixed by Sam Rivera. This highlights the importance of robust app logic for managing device states and user interactions.
-*   **CR2032 Sleep Draw**: The sleep current draw for devices using CR2032 batteries was reduced from 12µA to 9µA. While primarily a [Firmware](./firmware.md) optimization, this can impact the overall user experience by extending battery life for devices paired with iOS.
-*   **Herbal Preset Constant**: A discrepancy between marketing copy (5:00) and [Firmware](./firmware.md) (7:00) for an Herbal Preset Constant was resolved in the [Firmware](./firmware.md), aligning it to 7:00.
+- **iOS 18 Permission Prompt Changes:** Changes to the permission prompt order in iOS 18 betas directly led to TeaBuddy ticket #2156. 
+- **CoreBluetooth Authorization:** `CBManagerAuthorization` must be fully resolved *before* a QR deep link is allowed to trigger a Generic Attribute Profile (GATT) connection.
+- **Background Execution:** The background steep timer requires proper `UIBackgroundTask` renewal to prevent the `TB-background-kill` bug.
+- **Action Items:** 
+  - Ship version 0.9.3 fix for TeaBuddy.
+  - Document the permission ordering requirement in the Android kickoff to avoid repeating the same architectural mistake cross-platform.
 
 ## Related Entities
-
-*   **Alex Kim**: Conducted a UX Review that led to the capping of the haptic motor duty cycle.
-*   **Aurora Nova Widget**: A separate product that utilizes [MeshSync](./meshsync.md), explicitly noted as not sharing a codebase with the [TeaBuddy](./teabuddy.md), but mentioned in a cross-reference context.
-*   **Sam Rivera**: Developer responsible for fixing a timer bug within the application.
-*   **TeaBuddy**: The primary product whose [Firmware](./firmware.md) changelog provides the context for these iOS development-related updates, indicating a device designed to interact with iOS applications.
+- **TeaBuddy:** Consumer application affected by the iOS 18 CoreBluetooth pairing permission changes (Ticket #2156, bug `TB-background-kill`).
+- **[Nova Widget](./nova-widget.md):** Internal project utilizing UART provisioning rather than consumer QR flows, resulting in minimal relevance to the iOS 18 QR pairing bug.
+- **Sam Rivera:** Author of the research notes and contributor from TeaBuddy.
 
 ## Related Concepts
-
-*   **BLE (Bluetooth Low Energy)**: The fundamental wireless technology used for communication between iOS devices and connected hardware, with specific Pairing timeout adjustments for iOS 18 beta.
-*   **CoreBluetooth**: Apple's framework for interacting with Bluetooth Low Energy devices on iOS, with specific attention to permission prompt order.
-*   **Firmware**: The embedded software on a device that often requires updates to ensure compatibility and optimal interaction with iOS applications.
-*   **Haptic Feedback**: Tactile feedback provided by a device's motor, with its behavior (e.g., duty cycle) influenced by UX Review considerations and iOS app control.
-*   **Pairing**: The process of establishing a wireless connection between a device and an iOS device, with specific methods like QR code Pairing implemented for ease of use.
-*   **TestFlight**: Apple's platform for distributing beta versions of iOS applications, indicating that new features and fixes are often tested in this environment.
-*   **UX Review**: A process focused on improving user experience, which can lead to adjustments in both hardware behavior and iOS application design.
-*   **MeshSync**: A technology used by a related product ([Aurora Nova Widget](./aurora-nova-widget.md)), indicating broader ecosystem considerations in development.
+- **CoreBluetooth (`CBManagerAuthorization`):** The iOS framework and authorization state mechanism required for managing [Bluetooth Low Energy](./bluetooth-low-energy.md) peripherals.
+- **Background Tasks (`UIBackgroundTask`):** iOS background task management systems used to keep operations like steep timers alive during app state transitions.
+- **GATT Connect / QR Deep Linking:** Consumer onboarding flows where scanning a QR code immediately triggers a Bluetooth connection attempt.
 
 ## Contradictions
+*(No contradictions present in the current source materials.)*
 
-*   **Herbal Preset Constant**: The marketing copy for an Herbal Preset Constant stated 5:00, while the [Firmware](./firmware.md) initially had it set to 7:00. This was resolved by aligning the [Firmware](./firmware.md) constant to 7:00.
+## References & Trust
 
-## Sources
-
-*   `dummy-test/2026-07-01-firmware-changelog.md`
+| # | Source | Type | Trust |
+|---|--------|------|-------|
+| 1 | `samples/research/[SAMPLE]-2026-07-02-ble-pairing-ios18-notes.md` | text | Unverified |

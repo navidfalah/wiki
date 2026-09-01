@@ -2,59 +2,50 @@
 id: personal-notes
 title: Personal Notes
 tags:
-  - dentist
-  - enclosure-design
-  - karpathy
-  - llm-wiki-pattern
-  - nova-prototypes
-  - nova-widget
+  - nova
   - personal-notes
   - plant-whisperer
-last_updated: "2026-06-25T07:45:15.461576+00:00"
+  - reverse-mesh
+  - self-maintaining-wiki
+  - wiki
+last_updated: "2026-09-01T19:20:27.135473+00:00"
 sidebar_label: Personal Notes
 slug: /personal-notes
 ---
 
+<!-- AUTO-GENERATED — compiled by the LLM Wiki compiler from data/raw/ sources into compiler/temp_output/, then linked here. Edits to this file are overwritten on the next compile: edit sources under data/raw/, or manual cross-links in data/link_overrides.json, instead. -->
+
 # Personal Notes
 
 ## Overview
-This page compiles various personal notes, including grocery items, project ideas, spontaneous thoughts, and reminders. The notes touch upon hardware prototypes, software concepts, and general life tasks.
+This page compiles personal notes, [groceries](./groceries.md) lists, [project ideas](./project-ideas.md), and late-night thoughts recorded on June 3, 2026. It serves as a catch-all for various tasks, experimental [product ideas](./project-ideas.md), and technological explorations.
 
 ## Key Details
-
-*   **Grocery List**:
-    *   Milk
-    *   CR2032 batteries (specifically for Nova prototypes)
-    *   Coffee
-    *   A specific, unnamed cheese
-
-*   **Project Ideas**:
-    *   **"Plant Whisperer" (Project Idea #47)**: An application designed to alert users when plant soil is dry. It is envisioned to potentially connect with a Nova widget. Monetization is vaguely considered through stickers.
-    *   **"Reverse Mesh" (Project Idea #48)**: An concept exploring the use of phones as network nodes, with a self-assessment noting it might be a "bad idea."
-
-*   **Wiki Maintenance Thought**: A thought at 2 AM pondered the concept of a self-maintaining wiki, drawing inspiration from "Karpathy's work."
-
-*   **Research Reminder**: A note to self to investigate the "LLM wiki pattern."
-
-*   **Personal Reminder**: Schedule a call with the dentist for Thursday.
-
-*   **Design Note**: An unfinished thought regarding enclosure design, suggesting it should be "more like a pebble and less like a..."
+* **Grocery Items:**
+  * Milk
+  * Batteries (CR2032 x4, intended for [Nova Labs](./aurora-labs.md) prototypes)
+  * Coffee
+  * "That one cheese"
+* **Project Ideas:**
+  * **Project Idea #47 ("Plant Whisperer"):** An application that alerts users when soil is dry, potentially connecting to a [Nova Widget](./nova-widget.md). Planned monetization includes stickers.
+  * **Project Idea #48 ("Reverse Mesh"):** A [networking](./networking.md) concept utilizing phones as nodes (noted as potentially a "bad idea").
+* **Late-Night Thoughts:**
+  * Explored the concept of a self-maintaining wiki (inspired by Andrej Karpathy's work). Planned to look up the "LLM wiki pattern."
+  * Noted an unfinished thought regarding [hardware design](./hardware-design.md): *"the enclosure needs to be more like a pebble and less like a..."*
+* **Reminders:**
+  * Call the dentist on Thursday.
 
 ## Related Entities
-*   **Nova Prototypes**: Hardware projects requiring specific CR2032 batteries.
-*   **Nova Widget**: A potential hardware component for the "Plant Whisperer" app.
-*   **Karpathy**: Referenced in the context of self-maintaining wiki concepts.
-*   **Dentist**: A personal appointment reminder.
+* **Nova:** A hardware or widget project associated with CR2032 batteries and a potential Plant Whisperer integration.
+* **Andrej Karpathy:** Mentioned as an inspiration or reference point for the self-maintaining wiki concept.
 
 ## Related Concepts
-*   **Enclosure Design**: A specific design consideration for a physical product, emphasizing a "pebble-like" aesthetic.
-*   **LLM Wiki Pattern**: A concept or pattern to be researched, likely related to using Large Language Models for wiki maintenance.
-*   **App Development**: The "Plant Whisperer" idea is an example of an app concept.
-*   **Mesh Networking**: The "reverse mesh" project idea explores this networking paradigm.
-*   **Self-Maintaining Systems**: A conceptual thought about wikis that can maintain themselves, inspired by Karpathy.
+* **Self-Maintaining Wiki:** An autonomous wiki system powered by language models that manages and updates its own content.
+* **[Mesh Networking](./mesh-networking.md) / Reverse Mesh:** A decentralized communication topology utilizing mobile phones as routing nodes.
+* **[IoT](./iot.md) and Smart Plants:** Application of [sensors](./sensors.md) and mobile alerts to monitor houseplant soil moisture.
 
-## Contradictions
-No contradictions were identified in the provided source material.
+## References & Trust
 
-## Sources
-*   `notes/2026-06-03-grocery-and-ideas.txt`
+| # | Source | Type | Trust |
+|---|--------|------|-------|
+| 1 | `notes/2026-06-03-grocery-and-ideas.txt` | text | Medium |

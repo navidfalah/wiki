@@ -1,0 +1,80 @@
+{
+  "id": "market-research",
+  "title": "Market Research",
+  "description": "",
+  "source": "@site/docs/market-research.md",
+  "sourceDirName": ".",
+  "slug": "/market-research",
+  "permalink": "/docs/market-research",
+  "draft": false,
+  "unlisted": false,
+  "tags": [
+    {
+      "inline": true,
+      "label": "market-research",
+      "permalink": "/docs/tags/market-research"
+    },
+    {
+      "inline": true,
+      "label": "competitive-landscape",
+      "permalink": "/docs/tags/competitive-landscape"
+    },
+    {
+      "inline": true,
+      "label": "soil-sensors",
+      "permalink": "/docs/tags/soil-sensors"
+    },
+    {
+      "inline": true,
+      "label": "aurora-labs",
+      "permalink": "/docs/tags/aurora-labs"
+    },
+    {
+      "inline": true,
+      "label": "sensenode",
+      "permalink": "/docs/tags/sensenode"
+    },
+    {
+      "inline": true,
+      "label": "cheapoco",
+      "permalink": "/docs/tags/cheapoco"
+    },
+    {
+      "inline": true,
+      "label": "nova-widget",
+      "permalink": "/docs/tags/nova-widget"
+    },
+    {
+      "inline": true,
+      "label": "ip-ratings",
+      "permalink": "/docs/tags/ip-ratings"
+    }
+  ],
+  "version": "current",
+  "frontMatter": {
+    "id": "market-research",
+    "title": "Market Research",
+    "tags": [
+      "market-research",
+      "competitive-landscape",
+      "soil-sensors",
+      "aurora-labs",
+      "sensenode",
+      "cheapoco",
+      "nova-widget",
+      "ip-ratings"
+    ],
+    "last_updated": "2026-06-25T07:39:43.089540+00:00",
+    "sidebar_label": "Market Research",
+    "slug": "/market-research"
+  },
+  "sidebar": "wikiSidebar",
+  "previous": {
+    "title": "Markdown Export Issues",
+    "permalink": "/docs/markdown-export-issues"
+  },
+  "next": {
+    "title": "Marketing & Branding",
+    "permalink": "/docs/marketing-branding"
+  }
+}

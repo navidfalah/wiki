@@ -3,52 +3,43 @@ id: hardware-evaluation
 title: Hardware Evaluation
 tags:
   - hardware-evaluation
-  - hop-count
   - jonah
-  - mesh-quirks
-  - meshsync
   - mira
   - nrf52840
   - nrf5340
-last_updated: "2026-06-25T07:26:00.150951+00:00"
+  - parent-swap
+  - rejoin-storm
+  - teabuddy
+last_updated: "2026-09-01T19:18:58.836684+00:00"
 sidebar_label: Hardware Evaluation
 slug: /hardware-evaluation
 ---
 
+<!-- AUTO-GENERATED — compiled by the LLM Wiki compiler from data/raw/ sources into compiler/temp_output/, then linked here. Edits to this file are overwritten on the next compile: edit sources under data/raw/, or manual cross-links in data/link_overrides.json, instead. -->
+
 # Hardware Evaluation
 
 ## Overview
-Hardware evaluation involves assessing the performance, power consumption, and suitability of different hardware components for specific applications, particularly within a Mesh Networking context. This process often includes comparing different chipsets, monitoring network behavior, and identifying potential issues that could impact system stability or efficiency.
+During a MeshSync debug session on June 12 by [Mira](./aurora-labs.md) and Jonah, [hardware](./hardware.md) evaluation tasks were discussed alongside ongoing mesh stability investigations. A central action item emerged to compare microcontroller options for the next hardware revision, specifically evaluating the nRF52840 against the nRF5340.
 
 ## Key Details
-*   **Chipset Comparison**: A key action item for future revisions is to compare the nRF52840 and nRF5340 chipsets. This comparison is crucial for determining the optimal hardware for the next iteration of the system, likely focusing on performance, power efficiency, and mesh networking capabilities.
-*   **Mesh Network Behavior**:
-    *   **Rejoin Storms**: Debugging sessions, such as a MeshSync session involving Mira and Jonah, have identified persistent "Rejoin Storm" issues, even with 8 nodes. These storms can significantly impact network stability and performance.
-    *   **Current Consumption Spikes**: During a parent swap within the mesh network, a notable Current Consumption spike was observed, increasing from 110µA to 340µA. This power consumption characteristic is a critical factor in hardware evaluation, especially for battery-powered devices.
-    *   **Diagnostic Logging**: To better understand mesh network dynamics, it was suggested to log every rejoin event, including associated RSSI (Received Signal Strength Indicator) and Hop Count. These metrics are vital for assessing network health and routing efficiency.
-    *   **Parent/Child Role Ambiguity**: A fundamental question regarding mesh network architecture, "Parent/Child Roles? WHO DECIDES???", highlights potential ambiguities or complexities in how roles are assigned and managed, which can influence hardware requirements and software design.
-*   **Related Initiatives**:
-    *   A wiki page titled "known mesh quirks v0.3" is planned, suggesting ongoing efforts to document and address specific behaviors or issues within the mesh network.
-    *   Capturing a 24-hour trace on a staging mesh is an action item to gather long-term data for analysis.
-*   **Feature Requests**: The "teabuddy team" inquired about the mesh network's ability to sync tea timers across a house. This feature was explicitly rejected for version 1 ("absolutely not v1"), indicating current limitations or priorities that might influence future hardware considerations.
+- **Next-Rev Comparison:** The team highlighted the need to compare the `nRF52840` vs `nRF5340` microcontrollers for the next hardware iteration.
+- **Power and Performance Context:** Current mesh [debugging](./debugging.md) noted a rejoin storm at 8 nodes, which causes a current spike from 110µA to 340µA during a parent swap. While Mira deemed this behavior "fine for beta," power profiling and hardware capabilities remain critical considerations for future revisions.
 
 ## Related Entities
-*   **Mira**: An individual involved in the MeshSync debug session.
-*   **Jonah**: An individual involved in the MeshSync debug session.
-*   **MeshSync**: A system or protocol being debugged, central to the mesh network operations.
-*   **nRF52840**: A specific Nordic Semiconductor chipset under consideration for evaluation.
-*   **nRF5340**: Another specific Nordic Semiconductor chipset under consideration for evaluation, likely a successor or alternative to the nRF52840.
+- **Mira:** Engineering team member who considers current beta performance acceptable and oversees feature scope (e.g., rejecting the [TeaBuddy](./teabuddy.md) integration for v1).
+- **Jonah:** Engineering team member who requested detailed logging of every rejoin with RSSI and hop count.
+- **Teabuddy Team:** Internal group that inquired about syncing tea timers across a house using the mesh network.
 
 ## Related Concepts
-*   **Mesh Networking**: The underlying technology enabling devices to communicate in a decentralized network.
-*   **Hop Count**: A metric indicating the number of intermediate nodes a data packet travels through to reach its destination.
-*   **RSSI**: A measurement of the power present in a received radio signal, used to assess signal quality and proximity.
-*   **Current Consumption**: The amount of electrical current drawn by a device, critical for battery life and power management.
-*   **Rejoin Storm**: A scenario where multiple nodes repeatedly attempt to rejoin the network, often due to instability or poor connectivity.
-*   **Parent/Child Roles**: The hierarchical relationships between nodes in some mesh network topologies.
+- **Rejoin Storm:** A network event occurring at 8 nodes that triggers significant current spikes (110µA to 340µA) during parent swaps.
+- **MeshSync:** The underlying mesh synchronization protocol being debugged.
 
 ## Contradictions
-No explicit contradictions were identified in the provided source material.
+*No contradictions were identified in the source material for this topic.*
 
-## Sources
-*   `samples/notes/[SAMPLE]-2026-06-12-meshsync-debug-scribbles.txt`
+## References & Trust
+
+| # | Source | Type | Trust |
+|---|--------|------|-------|
+| 1 | `samples/notes/[SAMPLE]-2026-06-12-meshsync-debug-scribbles.txt` | text | Unverified |

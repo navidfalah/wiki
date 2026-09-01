@@ -1,0 +1,80 @@
+{
+  "id": "firmware-changelog",
+  "title": "Firmware Changelog",
+  "description": "Overview",
+  "source": "@site/docs/firmware-changelog.md",
+  "sourceDirName": ".",
+  "slug": "/firmware-changelog",
+  "permalink": "/docs/firmware-changelog",
+  "draft": false,
+  "unlisted": false,
+  "tags": [
+    {
+      "inline": true,
+      "label": "alex-kim",
+      "permalink": "/docs/tags/alex-kim"
+    },
+    {
+      "inline": true,
+      "label": "aurora-nova-widget",
+      "permalink": "/docs/tags/aurora-nova-widget"
+    },
+    {
+      "inline": true,
+      "label": "ble-pairing-timeout",
+      "permalink": "/docs/tags/ble-pairing-timeout"
+    },
+    {
+      "inline": true,
+      "label": "box-qr-pairing-path",
+      "permalink": "/docs/tags/box-qr-pairing-path"
+    },
+    {
+      "inline": true,
+      "label": "corebluetooth",
+      "permalink": "/docs/tags/corebluetooth"
+    },
+    {
+      "inline": true,
+      "label": "corebluetooth-permission-prompt-order",
+      "permalink": "/docs/tags/corebluetooth-permission-prompt-order"
+    },
+    {
+      "inline": true,
+      "label": "cr2032",
+      "permalink": "/docs/tags/cr-2032"
+    },
+    {
+      "inline": true,
+      "label": "firmware-changelog",
+      "permalink": "/docs/tags/firmware-changelog"
+    }
+  ],
+  "version": "current",
+  "frontMatter": {
+    "id": "firmware-changelog",
+    "title": "Firmware Changelog",
+    "tags": [
+      "alex-kim",
+      "aurora-nova-widget",
+      "ble-pairing-timeout",
+      "box-qr-pairing-path",
+      "corebluetooth",
+      "corebluetooth-permission-prompt-order",
+      "cr2032",
+      "firmware-changelog"
+    ],
+    "last_updated": "2026-06-25T07:22:17.439082+00:00",
+    "sidebar_label": "Firmware Changelog",
+    "slug": "/firmware-changelog"
+  },
+  "sidebar": "wikiSidebar",
+  "previous": {
+    "title": "Embedded Systems",
+    "permalink": "/docs/embedded-systems"
+  },
+  "next": {
+    "title": "Firmware Specification",
+    "permalink": "/docs/firmware-specification"
+  }
+}

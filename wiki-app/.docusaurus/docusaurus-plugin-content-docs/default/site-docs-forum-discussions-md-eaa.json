@@ -1,0 +1,80 @@
+{
+  "id": "forum-discussions",
+  "title": "Forum Discussions",
+  "description": "Overview",
+  "source": "@site/docs/forum-discussions.md",
+  "sourceDirName": ".",
+  "slug": "/forum-discussions",
+  "permalink": "/docs/forum-discussions",
+  "draft": false,
+  "unlisted": false,
+  "tags": [
+    {
+      "inline": true,
+      "label": "aurora-labs",
+      "permalink": "/docs/tags/aurora-labs"
+    },
+    {
+      "inline": true,
+      "label": "aurora-labs-nova",
+      "permalink": "/docs/tags/aurora-labs-nova"
+    },
+    {
+      "inline": true,
+      "label": "battery-life",
+      "permalink": "/docs/tags/battery-life"
+    },
+    {
+      "inline": true,
+      "label": "beta-invite",
+      "permalink": "/docs/tags/beta-invite"
+    },
+    {
+      "inline": true,
+      "label": "forum-discussions",
+      "permalink": "/docs/tags/forum-discussions"
+    },
+    {
+      "inline": true,
+      "label": "ip67-waterproof-rating",
+      "permalink": "/docs/tags/ip-67-waterproof-rating"
+    },
+    {
+      "inline": true,
+      "label": "meshsync",
+      "permalink": "/docs/tags/meshsync"
+    },
+    {
+      "inline": true,
+      "label": "no-cloud-operation",
+      "permalink": "/docs/tags/no-cloud-operation"
+    }
+  ],
+  "version": "current",
+  "frontMatter": {
+    "id": "forum-discussions",
+    "title": "Forum Discussions",
+    "tags": [
+      "aurora-labs",
+      "aurora-labs-nova",
+      "battery-life",
+      "beta-invite",
+      "forum-discussions",
+      "ip67-waterproof-rating",
+      "meshsync",
+      "no-cloud-operation"
+    ],
+    "last_updated": "2026-06-25T07:23:29.452858+00:00",
+    "sidebar_label": "Forum Discussions",
+    "slug": "/forum-discussions"
+  },
+  "sidebar": "wikiSidebar",
+  "previous": {
+    "title": "Firmware",
+    "permalink": "/docs/firmware"
+  },
+  "next": {
+    "title": "Funding",
+    "permalink": "/docs/funding"
+  }
+}

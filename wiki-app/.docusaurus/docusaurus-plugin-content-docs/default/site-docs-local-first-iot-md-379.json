@@ -1,0 +1,80 @@
+{
+  "id": "local-first-iot",
+  "title": "Local-first IoT",
+  "description": "Overview",
+  "source": "@site/docs/local-first-iot.md",
+  "sourceDirName": ".",
+  "slug": "/local-first-iot",
+  "permalink": "/docs/local-first-iot",
+  "draft": false,
+  "unlisted": false,
+  "tags": [
+    {
+      "inline": true,
+      "label": "alex-kim",
+      "permalink": "/docs/tags/alex-kim"
+    },
+    {
+      "inline": true,
+      "label": "aurora-office",
+      "permalink": "/docs/tags/aurora-office"
+    },
+    {
+      "inline": true,
+      "label": "ble-bluetooth-low-energy",
+      "permalink": "/docs/tags/ble-bluetooth-low-energy"
+    },
+    {
+      "inline": true,
+      "label": "cloud-accounts",
+      "permalink": "/docs/tags/cloud-accounts"
+    },
+    {
+      "inline": true,
+      "label": "jonah",
+      "permalink": "/docs/tags/jonah"
+    },
+    {
+      "inline": true,
+      "label": "local-first-iot",
+      "permalink": "/docs/tags/local-first-iot"
+    },
+    {
+      "inline": true,
+      "label": "mesh-networking",
+      "permalink": "/docs/tags/mesh-networking"
+    },
+    {
+      "inline": true,
+      "label": "mira",
+      "permalink": "/docs/tags/mira"
+    }
+  ],
+  "version": "current",
+  "frontMatter": {
+    "id": "local-first-iot",
+    "title": "Local-first IoT",
+    "tags": [
+      "alex-kim",
+      "aurora-office",
+      "ble-bluetooth-low-energy",
+      "cloud-accounts",
+      "jonah",
+      "local-first-iot",
+      "mesh-networking",
+      "mira"
+    ],
+    "last_updated": "2026-06-25T07:33:56.392983+00:00",
+    "sidebar_label": "Local-first IoT",
+    "slug": "/local-first-iot"
+  },
+  "sidebar": "wikiSidebar",
+  "previous": {
+    "title": "Local-first Gadgets",
+    "permalink": "/docs/local-first-gadgets"
+  },
+  "next": {
+    "title": "LoRaWAN",
+    "permalink": "/docs/lorawan"
+  }
+}

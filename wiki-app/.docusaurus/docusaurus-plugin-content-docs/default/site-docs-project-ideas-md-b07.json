@@ -1,0 +1,80 @@
+{
+  "id": "project-ideas",
+  "title": "Project Ideas",
+  "description": "Overview",
+  "source": "@site/docs/project-ideas.md",
+  "sourceDirName": ".",
+  "slug": "/project-ideas",
+  "permalink": "/docs/project-ideas",
+  "draft": false,
+  "unlisted": false,
+  "tags": [
+    {
+      "inline": true,
+      "label": "dentist",
+      "permalink": "/docs/tags/dentist"
+    },
+    {
+      "inline": true,
+      "label": "enclosure-design",
+      "permalink": "/docs/tags/enclosure-design"
+    },
+    {
+      "inline": true,
+      "label": "karpathy",
+      "permalink": "/docs/tags/karpathy"
+    },
+    {
+      "inline": true,
+      "label": "llm-wiki-pattern",
+      "permalink": "/docs/tags/llm-wiki-pattern"
+    },
+    {
+      "inline": true,
+      "label": "nova-prototypes",
+      "permalink": "/docs/tags/nova-prototypes"
+    },
+    {
+      "inline": true,
+      "label": "nova-widget",
+      "permalink": "/docs/tags/nova-widget"
+    },
+    {
+      "inline": true,
+      "label": "plant-whisperer",
+      "permalink": "/docs/tags/plant-whisperer"
+    },
+    {
+      "inline": true,
+      "label": "product-monetization",
+      "permalink": "/docs/tags/product-monetization"
+    }
+  ],
+  "version": "current",
+  "frontMatter": {
+    "id": "project-ideas",
+    "title": "Project Ideas",
+    "tags": [
+      "dentist",
+      "enclosure-design",
+      "karpathy",
+      "llm-wiki-pattern",
+      "nova-prototypes",
+      "nova-widget",
+      "plant-whisperer",
+      "product-monetization"
+    ],
+    "last_updated": "2026-06-25T07:53:29.850409+00:00",
+    "sidebar_label": "Project Ideas",
+    "slug": "/project-ideas"
+  },
+  "sidebar": "wikiSidebar",
+  "previous": {
+    "title": "Product Troubleshooting",
+    "permalink": "/docs/product-troubleshooting"
+  },
+  "next": {
+    "title": "Project Management",
+    "permalink": "/docs/project-management"
+  }
+}

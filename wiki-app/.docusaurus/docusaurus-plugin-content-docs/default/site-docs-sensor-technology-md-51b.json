@@ -1,0 +1,80 @@
+{
+  "id": "sensor-technology",
+  "title": "Sensor Technology",
+  "description": "",
+  "source": "@site/docs/sensor-technology.md",
+  "sourceDirName": ".",
+  "slug": "/sensor-technology",
+  "permalink": "/docs/sensor-technology",
+  "draft": false,
+  "unlisted": false,
+  "tags": [
+    {
+      "inline": true,
+      "label": "aurora-labs",
+      "permalink": "/docs/tags/aurora-labs"
+    },
+    {
+      "inline": true,
+      "label": "nova-widget",
+      "permalink": "/docs/tags/nova-widget"
+    },
+    {
+      "inline": true,
+      "label": "soil-sensors",
+      "permalink": "/docs/tags/soil-sensors"
+    },
+    {
+      "inline": true,
+      "label": "mesh-network",
+      "permalink": "/docs/tags/mesh-network"
+    },
+    {
+      "inline": true,
+      "label": "battery-life",
+      "permalink": "/docs/tags/battery-life"
+    },
+    {
+      "inline": true,
+      "label": "competitive-analysis",
+      "permalink": "/docs/tags/competitive-analysis"
+    },
+    {
+      "inline": true,
+      "label": "iot",
+      "permalink": "/docs/tags/iot"
+    },
+    {
+      "inline": true,
+      "label": "ip-rating",
+      "permalink": "/docs/tags/ip-rating"
+    }
+  ],
+  "version": "current",
+  "frontMatter": {
+    "id": "sensor-technology",
+    "title": "Sensor Technology",
+    "tags": [
+      "aurora-labs",
+      "nova-widget",
+      "soil-sensors",
+      "mesh-network",
+      "battery-life",
+      "competitive-analysis",
+      "iot",
+      "ip-rating"
+    ],
+    "last_updated": "2026-06-25T07:57:26.484800+00:00",
+    "sidebar_label": "Sensor Technology",
+    "slug": "/sensor-technology"
+  },
+  "sidebar": "wikiSidebar",
+  "previous": {
+    "title": "Sensor Products",
+    "permalink": "/docs/sensor-products"
+  },
+  "next": {
+    "title": "Sensors",
+    "permalink": "/docs/sensors"
+  }
+}

@@ -1,0 +1,80 @@
+{
+  "id": "mqtt",
+  "title": "MQTT",
+  "description": "Overview",
+  "source": "@site/docs/mqtt.md",
+  "sourceDirName": ".",
+  "slug": "/mqtt",
+  "permalink": "/docs/mqtt",
+  "draft": false,
+  "unlisted": false,
+  "tags": [
+    {
+      "inline": true,
+      "label": "mqtt",
+      "permalink": "/docs/tags/mqtt"
+    },
+    {
+      "inline": true,
+      "label": "home assistant",
+      "permalink": "/docs/tags/home-assistant"
+    },
+    {
+      "inline": true,
+      "label": "meshsync",
+      "permalink": "/docs/tags/meshsync"
+    },
+    {
+      "inline": true,
+      "label": "mqtt broker",
+      "permalink": "/docs/tags/mqtt-broker"
+    },
+    {
+      "inline": true,
+      "label": "aurora schema",
+      "permalink": "/docs/tags/aurora-schema"
+    },
+    {
+      "inline": true,
+      "label": "telemetry",
+      "permalink": "/docs/tags/telemetry"
+    },
+    {
+      "inline": true,
+      "label": "automation",
+      "permalink": "/docs/tags/automation"
+    },
+    {
+      "inline": true,
+      "label": "device integration",
+      "permalink": "/docs/tags/device-integration"
+    }
+  ],
+  "version": "current",
+  "frontMatter": {
+    "id": "mqtt",
+    "title": "MQTT",
+    "tags": [
+      "mqtt",
+      "home assistant",
+      "meshsync",
+      "mqtt broker",
+      "aurora schema",
+      "telemetry",
+      "automation",
+      "device integration"
+    ],
+    "last_updated": "2026-06-25T07:42:46.694183+00:00",
+    "sidebar_label": "MQTT",
+    "slug": "/mqtt"
+  },
+  "sidebar": "wikiSidebar",
+  "previous": {
+    "title": "MQTT Setup",
+    "permalink": "/docs/mqtt-setup"
+  },
+  "next": {
+    "title": "Network Configuration",
+    "permalink": "/docs/network-configuration"
+  }
+}

@@ -1,0 +1,70 @@
+{
+  "id": "wireless-mesh-networking",
+  "title": "Wireless Mesh Networking",
+  "description": "",
+  "source": "@site/docs/wireless-mesh-networking.md",
+  "sourceDirName": ".",
+  "slug": "/wireless-mesh-networking",
+  "permalink": "/docs/wireless-mesh-networking",
+  "draft": false,
+  "unlisted": false,
+  "tags": [
+    {
+      "inline": true,
+      "label": "mesh networking",
+      "permalink": "/docs/tags/mesh-networking"
+    },
+    {
+      "inline": true,
+      "label": "self-healing networks",
+      "permalink": "/docs/tags/self-healing-networks"
+    },
+    {
+      "inline": true,
+      "label": "iot connectivity",
+      "permalink": "/docs/tags/iot-connectivity"
+    },
+    {
+      "inline": true,
+      "label": "low power wireless",
+      "permalink": "/docs/tags/low-power-wireless"
+    },
+    {
+      "inline": true,
+      "label": "gateway devices",
+      "permalink": "/docs/tags/gateway-devices"
+    },
+    {
+      "inline": true,
+      "label": "nordic nrf52840",
+      "permalink": "/docs/tags/nordic-nrf-52840"
+    },
+    {
+      "inline": true,
+      "label": "battery life",
+      "permalink": "/docs/tags/battery-life"
+    }
+  ],
+  "version": "current",
+  "frontMatter": {
+    "id": "wireless-mesh-networking",
+    "title": "Wireless Mesh Networking",
+    "tags": [
+      "mesh networking",
+      "self-healing networks",
+      "iot connectivity",
+      "low power wireless",
+      "gateway devices",
+      "nordic nrf52840",
+      "battery life"
+    ],
+    "last_updated": "2026-06-25T08:06:50.054676+00:00",
+    "sidebar_label": "Wireless Mesh Networking",
+    "slug": "/wireless-mesh-networking"
+  },
+  "sidebar": "wikiSidebar",
+  "previous": {
+    "title": "Wireless Connectivity",
+    "permalink": "/docs/wireless-connectivity"
+  }
+}

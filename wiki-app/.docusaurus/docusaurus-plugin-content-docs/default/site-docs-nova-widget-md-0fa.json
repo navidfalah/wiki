@@ -1,0 +1,80 @@
+{
+  "id": "nova-widget",
+  "title": "Nova Widget",
+  "description": "&#123;",
+  "source": "@site/docs/nova-widget.md",
+  "sourceDirName": ".",
+  "slug": "/nova-widget",
+  "permalink": "/docs/nova-widget",
+  "draft": false,
+  "unlisted": false,
+  "tags": [
+    {
+      "inline": true,
+      "label": "15-min-default-interval",
+      "permalink": "/docs/tags/15-min-default-interval"
+    },
+    {
+      "inline": true,
+      "label": "aurora",
+      "permalink": "/docs/tags/aurora"
+    },
+    {
+      "inline": true,
+      "label": "aurora-labs",
+      "permalink": "/docs/tags/aurora-labs"
+    },
+    {
+      "inline": true,
+      "label": "aurora-mqtt-schema-v2",
+      "permalink": "/docs/tags/aurora-mqtt-schema-v-2"
+    },
+    {
+      "inline": true,
+      "label": "aurora-nova-widget-v2-beta-unit",
+      "permalink": "/docs/tags/aurora-nova-widget-v-2-beta-unit"
+    },
+    {
+      "inline": true,
+      "label": "batch-update-all",
+      "permalink": "/docs/tags/batch-update-all"
+    },
+    {
+      "inline": true,
+      "label": "battery-life",
+      "permalink": "/docs/tags/battery-life"
+    },
+    {
+      "inline": true,
+      "label": "ble-bluetooth-low-energy",
+      "permalink": "/docs/tags/ble-bluetooth-low-energy"
+    }
+  ],
+  "version": "current",
+  "frontMatter": {
+    "id": "nova-widget",
+    "title": "Nova Widget",
+    "tags": [
+      "15-min-default-interval",
+      "aurora",
+      "aurora-labs",
+      "aurora-mqtt-schema-v2",
+      "aurora-nova-widget-v2-beta-unit",
+      "batch-update-all",
+      "battery-life",
+      "ble-bluetooth-low-energy"
+    ],
+    "last_updated": "2026-06-25T07:45:01.100568+00:00",
+    "sidebar_label": "Nova Widget",
+    "slug": "/nova-widget"
+  },
+  "sidebar": "wikiSidebar",
+  "previous": {
+    "title": "Notion Export",
+    "permalink": "/docs/notion-export"
+  },
+  "next": {
+    "title": "OTA Updates",
+    "permalink": "/docs/ota-updates"
+  }
+}

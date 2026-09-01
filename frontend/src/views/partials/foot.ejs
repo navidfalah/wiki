@@ -1,6 +1,49 @@
       </main>
     </div>
   </div>
+
+  <div id="toast-stack" class="pointer-events-none fixed bottom-4 right-4 z-50 flex w-full max-w-xs flex-col gap-2"></div>
+  <script>
+    window.showToast = function (message, type) {
+      var stack = document.getElementById('toast-stack');
+      if (!stack) return;
+      var kind = type || 'success';
+      var palette = {
+        success: 'bg-gray-900 text-white',
+        error: 'bg-red-600 text-white',
+      };
+      var el = document.createElement('div');
+      el.className = 'pointer-events-auto flex items-start gap-2 rounded-lg px-3.5 py-2.5 text-sm font-medium shadow-lg transition-all duration-200 ease-out translate-y-1 opacity-0 ' + (palette[kind] || palette.success);
+      el.textContent = message;
+      stack.appendChild(el);
+      requestAnimationFrame(function () {
+        el.classList.remove('translate-y-1', 'opacity-0');
+      });
+      setTimeout(function () {
+        el.classList.add('opacity-0');
+        setTimeout(function () { el.remove(); }, 200);
+      }, 3200);
+    };
+
+    // For actions that redirect right after succeeding (e.g. delete, save),
+    // queue the toast and show it once the next page has loaded.
+    window.queueToast = function (message, type) {
+      try {
+        sessionStorage.setItem('pending-toast', JSON.stringify({ message: message, type: type || 'success' }));
+      } catch (err) {}
+    };
+    (function () {
+      try {
+        var raw = sessionStorage.getItem('pending-toast');
+        if (raw) {
+          sessionStorage.removeItem('pending-toast');
+          var payload = JSON.parse(raw);
+          window.showToast(payload.message, payload.type);
+        }
+      } catch (err) {}
+    })();
+  </script>
+
   <% if (typeof clientScript !== 'undefined' && clientScript) { %>
     <script src="/js/<%= clientScript %>.js" defer></script>
   <% } %>

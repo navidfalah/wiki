@@ -1,0 +1,80 @@
+{
+  "id": "iot-hardware-teardown",
+  "title": "IoT Hardware Teardown",
+  "description": "Overview",
+  "source": "@site/docs/iot-hardware-teardown.md",
+  "sourceDirName": ".",
+  "slug": "/iot-hardware-teardown",
+  "permalink": "/docs/iot-hardware-teardown",
+  "draft": false,
+  "unlisted": false,
+  "tags": [
+    {
+      "inline": true,
+      "label": "iot-hardware-teardown",
+      "permalink": "/docs/tags/iot-hardware-teardown"
+    },
+    {
+      "inline": true,
+      "label": "sensenode-sn-400",
+      "permalink": "/docs/tags/sensenode-sn-400"
+    },
+    {
+      "inline": true,
+      "label": "aurora-nova-widget-v2",
+      "permalink": "/docs/tags/aurora-nova-widget-v-2"
+    },
+    {
+      "inline": true,
+      "label": "lorawan",
+      "permalink": "/docs/tags/lorawan"
+    },
+    {
+      "inline": true,
+      "label": "meshsync",
+      "permalink": "/docs/tags/meshsync"
+    },
+    {
+      "inline": true,
+      "label": "ip-rating",
+      "permalink": "/docs/tags/ip-rating"
+    },
+    {
+      "inline": true,
+      "label": "battery-life",
+      "permalink": "/docs/tags/battery-life"
+    },
+    {
+      "inline": true,
+      "label": "cloud-lock-in",
+      "permalink": "/docs/tags/cloud-lock-in"
+    }
+  ],
+  "version": "current",
+  "frontMatter": {
+    "id": "iot-hardware-teardown",
+    "title": "IoT Hardware Teardown",
+    "tags": [
+      "iot-hardware-teardown",
+      "sensenode-sn-400",
+      "aurora-nova-widget-v2",
+      "lorawan",
+      "meshsync",
+      "ip-rating",
+      "battery-life",
+      "cloud-lock-in"
+    ],
+    "last_updated": "2026-06-25T07:30:52.805018+00:00",
+    "sidebar_label": "IoT Hardware Teardown",
+    "slug": "/iot-hardware-teardown"
+  },
+  "sidebar": "wikiSidebar",
+  "previous": {
+    "title": "IoT Device Design",
+    "permalink": "/docs/iot-device-design"
+  },
+  "next": {
+    "title": "IoT Product Development",
+    "permalink": "/docs/iot-product-development"
+  }
+}

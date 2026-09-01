@@ -1,0 +1,80 @@
+{
+  "id": "development-tools",
+  "title": "Development Tools",
+  "description": "Overview",
+  "source": "@site/docs/development-tools.md",
+  "sourceDirName": ".",
+  "slug": "/development-tools",
+  "permalink": "/docs/development-tools",
+  "draft": false,
+  "unlisted": false,
+  "tags": [
+    {
+      "inline": true,
+      "label": "aurora",
+      "permalink": "/docs/tags/aurora"
+    },
+    {
+      "inline": true,
+      "label": "auto-ingest",
+      "permalink": "/docs/tags/auto-ingest"
+    },
+    {
+      "inline": true,
+      "label": "ble",
+      "permalink": "/docs/tags/ble"
+    },
+    {
+      "inline": true,
+      "label": "ceos",
+      "permalink": "/docs/tags/ceos"
+    },
+    {
+      "inline": true,
+      "label": "contradiction-marker",
+      "permalink": "/docs/tags/contradiction-marker"
+    },
+    {
+      "inline": true,
+      "label": "cr2032",
+      "permalink": "/docs/tags/cr-2032"
+    },
+    {
+      "inline": true,
+      "label": "development-tools",
+      "permalink": "/docs/tags/development-tools"
+    },
+    {
+      "inline": true,
+      "label": "docusaurus",
+      "permalink": "/docs/tags/docusaurus"
+    }
+  ],
+  "version": "current",
+  "frontMatter": {
+    "id": "development-tools",
+    "title": "Development Tools",
+    "tags": [
+      "aurora",
+      "auto-ingest",
+      "ble",
+      "ceos",
+      "contradiction-marker",
+      "cr2032",
+      "development-tools",
+      "docusaurus"
+    ],
+    "last_updated": "2026-06-25T07:20:37.728131+00:00",
+    "sidebar_label": "Development Tools",
+    "slug": "/development-tools"
+  },
+  "sidebar": "wikiSidebar",
+  "previous": {
+    "title": "Data Schema",
+    "permalink": "/docs/data-schema"
+  },
+  "next": {
+    "title": "Documentation Management",
+    "permalink": "/docs/documentation-management"
+  }
+}

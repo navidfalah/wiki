@@ -1,0 +1,80 @@
+{
+  "id": "iot-device-design",
+  "title": "IoT Device Design",
+  "description": "Overview",
+  "source": "@site/docs/iot-device-design.md",
+  "sourceDirName": ".",
+  "slug": "/iot-device-design",
+  "permalink": "/docs/iot-device-design",
+  "draft": false,
+  "unlisted": false,
+  "tags": [
+    {
+      "inline": true,
+      "label": "alex-kim",
+      "permalink": "/docs/tags/alex-kim"
+    },
+    {
+      "inline": true,
+      "label": "aurora-office",
+      "permalink": "/docs/tags/aurora-office"
+    },
+    {
+      "inline": true,
+      "label": "ble-bluetooth-low-energy",
+      "permalink": "/docs/tags/ble-bluetooth-low-energy"
+    },
+    {
+      "inline": true,
+      "label": "cloud-accounts",
+      "permalink": "/docs/tags/cloud-accounts"
+    },
+    {
+      "inline": true,
+      "label": "iot-device-design",
+      "permalink": "/docs/tags/iot-device-design"
+    },
+    {
+      "inline": true,
+      "label": "jonah",
+      "permalink": "/docs/tags/jonah"
+    },
+    {
+      "inline": true,
+      "label": "local-first-iot",
+      "permalink": "/docs/tags/local-first-iot"
+    },
+    {
+      "inline": true,
+      "label": "mesh-networking",
+      "permalink": "/docs/tags/mesh-networking"
+    }
+  ],
+  "version": "current",
+  "frontMatter": {
+    "id": "iot-device-design",
+    "title": "IoT Device Design",
+    "tags": [
+      "alex-kim",
+      "aurora-office",
+      "ble-bluetooth-low-energy",
+      "cloud-accounts",
+      "iot-device-design",
+      "jonah",
+      "local-first-iot",
+      "mesh-networking"
+    ],
+    "last_updated": "2026-06-25T07:30:44.231442+00:00",
+    "sidebar_label": "IoT Device Design",
+    "slug": "/iot-device-design"
+  },
+  "sidebar": "wikiSidebar",
+  "previous": {
+    "title": "iOS Development",
+    "permalink": "/docs/ios-development"
+  },
+  "next": {
+    "title": "IoT Hardware Teardown",
+    "permalink": "/docs/iot-hardware-teardown"
+  }
+}

@@ -161,9 +161,82 @@ class LLMClient:
         self.retry_base_delay = max(0.1, retry_base_delay)
         self._client: Any = None
 
+        # Pipeline callers (see main.py's step_* functions) set current_step
+        # before invoking a step so every LLM call made within it — chat
+        # completions, embeddings, cache hits — is attributed to that step.
+        self.current_step: str = "unknown"
+        self.usage_log: list[dict[str, Any]] = []
+
+    @classmethod
+    def for_purpose(cls, purpose: str, **kwargs: Any) -> "LLMClient":
+        """Build a client for a named purpose (e.g. "thinking", "embedding").
+
+        Reads `{PURPOSE}_OPENAI_API_KEY` / `_BASE_URL` / `_MODEL` env vars in
+        preference to the default `OPENAI_*` ones, so the wiki app's Settings
+        page (backend/src/lib/llmSettings.ts) can point a specific pipeline
+        step at a different provider/model/key than the rest of the run --
+        e.g. a stronger "thinking" model for synthesis while extraction and
+        linking keep using a cheaper default. Falls back to the default
+        OPENAI_* vars for any purpose without its own override configured.
+        """
+        prefix = re.sub(r"[^A-Z0-9]+", "_", purpose.strip().upper()).strip("_")
+        api_key = os.getenv(f"{prefix}_OPENAI_API_KEY") or os.getenv("OPENAI_API_KEY", "")
+        base_url = os.getenv(f"{prefix}_OPENAI_BASE_URL") or os.getenv(
+            "OPENAI_BASE_URL", "https://api.openai.com/v1"
+        )
+        model = os.getenv(f"{prefix}_OPENAI_MODEL") or os.getenv("OPENAI_MODEL", "gpt-4o-mini")
+        return cls(api_key=api_key, base_url=base_url, model=model, **kwargs)
+
     @property
     def available(self) -> bool:
         return bool(self.api_key)
+
+    def _record_usage(
+        self,
+        *,
+        model: str,
+        prompt_tokens: int = 0,
+        completion_tokens: int = 0,
+        total_tokens: int = 0,
+        cached: bool = False,
+    ) -> None:
+        self.usage_log.append(
+            {
+                "step": self.current_step,
+                "model": model,
+                "prompt_tokens": prompt_tokens,
+                "completion_tokens": completion_tokens,
+                "total_tokens": total_tokens,
+                "cached": cached,
+            }
+        )
+
+    def usage_summary(self) -> list[dict[str, Any]]:
+        """Aggregate usage_log by (step, model): tokens plus call/cache-hit counts."""
+        totals: dict[tuple[str, str], dict[str, int]] = {}
+        for entry in self.usage_log:
+            key = (entry["step"], entry["model"])
+            bucket = totals.setdefault(
+                key,
+                {
+                    "prompt_tokens": 0,
+                    "completion_tokens": 0,
+                    "total_tokens": 0,
+                    "calls": 0,
+                    "cache_hits": 0,
+                },
+            )
+            if entry["cached"]:
+                bucket["cache_hits"] += 1
+            else:
+                bucket["calls"] += 1
+                bucket["prompt_tokens"] += entry["prompt_tokens"]
+                bucket["completion_tokens"] += entry["completion_tokens"]
+                bucket["total_tokens"] += entry["total_tokens"]
+        return [
+            {"step": step, "model": model, **bucket}
+            for (step, model), bucket in totals.items()
+        ]
 
     def _get_client(self) -> Any:
         if OpenAI is None:
@@ -183,6 +256,13 @@ class LLMClient:
                     model=self.model,
                     temperature=temperature,
                     messages=messages,
+                )
+                usage = getattr(response, "usage", None)
+                self._record_usage(
+                    model=self.model,
+                    prompt_tokens=getattr(usage, "prompt_tokens", 0) or 0,
+                    completion_tokens=getattr(usage, "completion_tokens", 0) or 0,
+                    total_tokens=getattr(usage, "total_tokens", 0) or 0,
                 )
                 return response.choices[0].message.content or ""
             except RETRYABLE_EXCEPTIONS as exc:
@@ -225,6 +305,7 @@ class LLMClient:
         if cache_on:
             cached = self.cache.get(cache_key)
             if cached is not None:
+                self._record_usage(model=self.model, cached=True)
                 return cached
 
         content = self._chat_completion_with_retries(
@@ -265,6 +346,7 @@ class LLMClient:
         if cache_on:
             cached = self.cache.get(cache_key)
             if cached is not None:
+                self._record_usage(model=self.embedding_model, cached=True)
                 return json.loads(cached)
 
         last_error: Exception | None = None
@@ -272,6 +354,12 @@ class LLMClient:
             try:
                 response = self._get_client().embeddings.create(model=self.embedding_model, input=text)
                 vector = list(response.data[0].embedding)
+                usage = getattr(response, "usage", None)
+                self._record_usage(
+                    model=self.embedding_model,
+                    prompt_tokens=getattr(usage, "prompt_tokens", 0) or 0,
+                    total_tokens=getattr(usage, "total_tokens", 0) or 0,
+                )
                 break
             except RETRYABLE_EXCEPTIONS as exc:
                 last_error = exc
@@ -323,6 +411,7 @@ class LLMClient:
         if cache_on:
             cached = self.cache.get(cache_key)
             if cached is not None:
+                self._record_usage(model=self.model, cached=True)
                 return cached
 
         data_url = f"data:{mime};base64,{base64.b64encode(image_bytes).decode('ascii')}"

@@ -1,0 +1,80 @@
+{
+  "id": "meshsync-debugging",
+  "title": "MeshSync Debugging",
+  "description": "Overview",
+  "source": "@site/docs/meshsync-debugging.md",
+  "sourceDirName": ".",
+  "slug": "/meshsync-debugging",
+  "permalink": "/docs/meshsync-debugging",
+  "draft": false,
+  "unlisted": false,
+  "tags": [
+    {
+      "inline": true,
+      "label": "hop-count",
+      "permalink": "/docs/tags/hop-count"
+    },
+    {
+      "inline": true,
+      "label": "jonah",
+      "permalink": "/docs/tags/jonah"
+    },
+    {
+      "inline": true,
+      "label": "mesh-quirks",
+      "permalink": "/docs/tags/mesh-quirks"
+    },
+    {
+      "inline": true,
+      "label": "meshsync",
+      "permalink": "/docs/tags/meshsync"
+    },
+    {
+      "inline": true,
+      "label": "meshsync-debugging",
+      "permalink": "/docs/tags/meshsync-debugging"
+    },
+    {
+      "inline": true,
+      "label": "mira",
+      "permalink": "/docs/tags/mira"
+    },
+    {
+      "inline": true,
+      "label": "nrf52840",
+      "permalink": "/docs/tags/nrf-52840"
+    },
+    {
+      "inline": true,
+      "label": "nrf5340",
+      "permalink": "/docs/tags/nrf-5340"
+    }
+  ],
+  "version": "current",
+  "frontMatter": {
+    "id": "meshsync-debugging",
+    "title": "MeshSync Debugging",
+    "tags": [
+      "hop-count",
+      "jonah",
+      "mesh-quirks",
+      "meshsync",
+      "meshsync-debugging",
+      "mira",
+      "nrf52840",
+      "nrf5340"
+    ],
+    "last_updated": "2026-06-25T07:41:11.460112+00:00",
+    "sidebar_label": "MeshSync Debugging",
+    "slug": "/meshsync-debugging"
+  },
+  "sidebar": "wikiSidebar",
+  "previous": {
+    "title": "Mesh Networking",
+    "permalink": "/docs/mesh-networking"
+  },
+  "next": {
+    "title": "MeshSync Firmware",
+    "permalink": "/docs/meshsync-firmware"
+  }
+}

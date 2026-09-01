@@ -35,6 +35,7 @@ from llm_client import LLMClient, require_llm
 from mechanical_linker import mentions_from_extractions
 from moc_generator import generate_moc
 from models import OUTPUT_DIR, RAW_DIR, STATE_FILE
+from pipeline_tracker import PipelineRun
 from synthesizer import (
     TEMP_OUTPUT_DIR,
     cleanup_stale_drafts,
@@ -123,9 +124,9 @@ def _print_incremental_table(incremental: dict) -> None:
     console.print(table)
 
 
-def step_read_data(llm: LLMClient) -> list:
+def step_read_data(llm: LLMClient, *, exclude_prefixes: frozenset[str] | None = None) -> list:
     """Step 1: Read all raw source files (text/email/image/file) and split into chunks."""
-    raw_files = discover_raw_source_files(RAW_DIR)
+    raw_files = discover_raw_source_files(RAW_DIR, exclude_prefixes=exclude_prefixes)
     if not raw_files:
         console.print(f"[red]No raw files found under[/] {RAW_DIR}")
         return []
@@ -150,7 +151,7 @@ def step_read_data(llm: LLMClient) -> list:
         console=console,
     ) as progress:
         task = progress.add_task("Reading and chunking files…", total=len(raw_files))
-        chunks = read_raw_chunks(RAW_DIR, llm)
+        chunks = read_raw_chunks(RAW_DIR, llm, exclude_prefixes=exclude_prefixes)
         progress.update(task, completed=len(raw_files))
 
     console.print(f"[green]✓[/] Read [bold]{len(raw_files)}[/] files → [bold]{len(chunks)}[/] chunks")
@@ -158,11 +159,17 @@ def step_read_data(llm: LLMClient) -> list:
 
 
 def step_extract(
-    chunks: list, llm: LLMClient, *, force: bool, extra_system_context: str = "", redact_pii: bool = False
+    chunks: list,
+    llm: LLMClient,
+    *,
+    force: bool,
+    extra_system_context: str = "",
+    redact_pii: bool = False,
+    exclude_prefixes: frozenset[str] | None = None,
 ) -> dict:
     """Step 2: Extract topics, entities, and concepts from each chunk."""
     mode = "LLM"
-    changes = scan_raw_file_changes(RAW_DIR, load_state(), force=force)
+    changes = scan_raw_file_changes(RAW_DIR, load_state(), force=force, exclude_prefixes=exclude_prefixes)
     total = len(changes.to_process)
 
     if not force and not changes.has_changes:
@@ -190,6 +197,7 @@ def step_extract(
             on_progress=on_progress if total else None,
             extra_system_context=extra_system_context,
             redact_pii=redact_pii,
+            exclude_prefixes=exclude_prefixes,
         )
         if total:
             progress.update(task, completed=total)
@@ -291,6 +299,7 @@ def step_synthesize(
         "written_filenames": written_filenames,
         "removed_filenames": removed_filenames,
         "dirty_topics": dirty_topics,
+        "skipped_count": len(skipped),
     }
 
 
@@ -407,8 +416,16 @@ def run_pipeline(
     critic_regenerate: bool = False,
     use_corrections: bool = False,
     redact_pii: bool = False,
+    exclude_prefixes: frozenset[str] | None = None,
 ) -> int:
-    """Run the full compiler pipeline sequentially."""
+    """Run the full compiler pipeline sequentially.
+
+    ``exclude_prefixes``, if given, leaves out entire top-level data/raw/
+    folders (e.g. skip "emails" for this run) -- see
+    synthesizer.discover_raw_source_files() for the exact semantics
+    (excluded != deleted, so toggling a folder back on doesn't need a
+    --force to pick its topics back up).
+    """
     start = time.perf_counter()
     try:
         llm = require_llm()
@@ -429,50 +446,160 @@ def run_pipeline(
         )
     )
 
-    _step_banner(1, 5, "Data Reading", "Scan data/raw/ and split files into text chunks")
-    chunks = step_read_data(llm)
-    if not chunks:
-        return 1
+    run = PipelineRun.start(force=force)
+    current_step_name = ""
+    try:
+        current_step_name = "1. Data Reading"
+        _step_banner(1, 5, "Data Reading", "Scan data/raw/ and split files into text chunks")
+        llm.current_step = current_step_name
+        run.start_step(current_step_name)
+        chunks = step_read_data(llm, exclude_prefixes=exclude_prefixes)
+        if not chunks:
+            run.finish_step(current_step_name, "error", error=f"No raw files found under {RAW_DIR}")
+            run.finish("error", error=f"No raw files found under {RAW_DIR}")
+            return 1
+        input_files = sorted({c.source_path for c in chunks})
+        run.finish_step(
+            current_step_name,
+            "success",
+            detail=f"Read {len(chunks)} chunks",
+            data={
+                "input": {"raw_dir": str(RAW_DIR), "excluded_folders": sorted(exclude_prefixes or [])},
+                "output": {"files": input_files, "chunk_count": len(chunks)},
+            },
+        )
 
-    _step_banner(2, 5, "Extraction", "Extract topics — skip unchanged files via MD5 state")
-    extra_system_context = ""
-    if use_corrections:
-        corrections = active_learning.load_corrections()
-        extra_system_context = active_learning.render_fewshot_block(corrections)
-        if corrections:
-            console.print(f"[cyan]Active learning:[/] applying {len(corrections)} human correction(s) as few-shot context")
-    extractions = step_extract(
-        chunks, llm, force=force, extra_system_context=extra_system_context, redact_pii=redact_pii
-    )
+        current_step_name = "2. Extraction"
+        _step_banner(2, 5, "Extraction", "Extract topics — skip unchanged files via MD5 state")
+        extra_system_context = ""
+        if use_corrections:
+            corrections = active_learning.load_corrections()
+            extra_system_context = active_learning.render_fewshot_block(corrections)
+            if corrections:
+                console.print(f"[cyan]Active learning:[/] applying {len(corrections)} human correction(s) as few-shot context")
+        llm.current_step = current_step_name
+        run.start_step(current_step_name)
+        extractions = step_extract(
+            chunks,
+            llm,
+            force=force,
+            extra_system_context=extra_system_context,
+            redact_pii=redact_pii,
+            exclude_prefixes=exclude_prefixes,
+        )
+        topic_total = sum(
+            len(c.get("topics", []))
+            for f in extractions.get("files", [])
+            for c in f.get("chunks", [])
+        )
+        incremental = extractions.get("incremental", {})
+        run.finish_step(
+            current_step_name,
+            "success",
+            detail=f"Extracted {extractions['chunk_count']} chunks ({topic_total} topic tags)",
+            data={
+                "input": {"chunk_count": len(chunks)},
+                "output": {
+                    "new": incremental.get("new", []),
+                    "modified": incremental.get("modified", []),
+                    "deleted": incremental.get("deleted", []),
+                    "unchanged_count": len(incremental.get("unchanged", [])),
+                    "topic_tag_count": topic_total,
+                },
+            },
+        )
 
-    _step_banner(3, 5, "Synthesis", "Regenerate only topic pages affected by changed files")
-    synth_result = step_synthesize(
-        extractions,
-        llm,
-        force=force,
-        apply_critic=apply_critic,
-        extra_system_context=extra_system_context,
-        critic_samples=critic_samples,
-        critic_regenerate=critic_regenerate,
-    )
+        current_step_name = "3. Synthesis"
+        _step_banner(3, 5, "Synthesis", "Regenerate only topic pages affected by changed files")
+        # Synthesis is the pipeline's one genuinely reasoning-heavy step, so
+        # it gets its own client -- lets the Settings page point "thinking"
+        # at a stronger/different model than extraction/indexing/linking use
+        # (see LLMClient.for_purpose and backend/src/lib/llmSettings.ts).
+        thinking_llm = LLMClient.for_purpose("thinking", cache=llm.cache, cache_enabled=llm.cache_enabled)
+        thinking_llm.current_step = current_step_name
+        run.start_step(current_step_name)
+        synth_result = step_synthesize(
+            extractions,
+            thinking_llm,
+            force=force,
+            apply_critic=apply_critic,
+            extra_system_context=extra_system_context,
+            critic_samples=critic_samples,
+            critic_regenerate=critic_regenerate,
+        )
+        llm.usage_log.extend(thinking_llm.usage_log)
+        run.finish_step(
+            current_step_name,
+            "success",
+            detail=(
+                f"Wrote {len(synth_result['written_filenames'])} drafts, "
+                f"skipped {synth_result['skipped_count']} unchanged"
+            ),
+            data={
+                "input": {"chunk_count": extractions["chunk_count"]},
+                "output": {
+                    "written": sorted(synth_result["written_filenames"]),
+                    "removed": sorted(synth_result["removed_filenames"]),
+                    "skipped_count": synth_result["skipped_count"],
+                },
+            },
+        )
 
-    _step_banner(4, 5, "Indexing", "Incrementally update index.json for changed drafts")
-    topic_index, index_delta = step_index(
-        written_filenames=synth_result["written_filenames"],
-        removed_filenames=synth_result["removed_filenames"],
-        force=force,
-    )
+        current_step_name = "4. Indexing"
+        _step_banner(4, 5, "Indexing", "Incrementally update index.json for changed drafts")
+        llm.current_step = current_step_name
+        run.start_step(current_step_name)
+        topic_index, index_delta = step_index(
+            written_filenames=synth_result["written_filenames"],
+            removed_filenames=synth_result["removed_filenames"],
+            force=force,
+        )
+        run.finish_step(
+            current_step_name,
+            "success",
+            detail=(
+                f"{len(index_delta.added)} added, {len(index_delta.updated)} updated, "
+                f"{len(index_delta.removed)} removed"
+            ),
+            data={
+                "input": {
+                    "written": sorted(synth_result["written_filenames"]),
+                    "removed": sorted(synth_result["removed_filenames"]),
+                },
+                "output": {
+                    "added": sorted(index_delta.added),
+                    "updated": sorted(index_delta.updated),
+                    "removed": sorted(index_delta.removed),
+                },
+            },
+        )
 
-    _step_banner(5, 5, "Cross-linking", "Re-link only affected pages → wiki-app/docs/")
-    written = step_link(
-        topic_index,
-        index_delta,
-        llm,
-        written_filenames=synth_result["written_filenames"],
-        removed_filenames=synth_result["removed_filenames"],
-        force=force,
-        extractions=extractions,
-    )
+        current_step_name = "5. Cross-linking"
+        _step_banner(5, 5, "Cross-linking", "Re-link only affected pages → wiki-app/docs/")
+        llm.current_step = current_step_name
+        run.start_step(current_step_name)
+        written = step_link(
+            topic_index,
+            index_delta,
+            llm,
+            written_filenames=synth_result["written_filenames"],
+            removed_filenames=synth_result["removed_filenames"],
+            force=force,
+            extractions=extractions,
+        )
+        run.finish_step(
+            current_step_name,
+            "success",
+            detail=f"Linked {len(written)} pages",
+            data={
+                "input": {"affected_titles": sorted(index_delta.affected_titles)},
+                "output": {"linked": written},
+            },
+        )
+    except Exception as exc:
+        run.finish_step(current_step_name, "error", error=str(exc))
+        run.finish("error", error=str(exc))
+        raise
 
     console.print("[bold cyan]Map of Content[/] — generating hierarchical index.md")
     moc_result = generate_moc(OUTPUT_DIR)
@@ -480,6 +607,10 @@ def run_pipeline(
         f"[green]✓[/] MOC index: [bold]{moc_result['page_count']}[/] pages in "
         f"[bold]{moc_result['category_count']}[/] categories → {moc_result['output']}"
     )
+
+    _print_token_usage_table(llm)
+    run.set_token_usage(llm.usage_summary())
+    run.finish("success")
 
     elapsed = time.perf_counter() - start
     inc = extractions.get("incremental", {})
@@ -496,6 +627,39 @@ def run_pipeline(
         )
     )
     return 0
+
+
+def _print_token_usage_table(llm: LLMClient) -> None:
+    """Print per-step, per-model token usage collected on llm.usage_log."""
+    summary = llm.usage_summary()
+    if not summary:
+        return
+
+    table = Table(title="Token usage by step & model", show_header=True, header_style="bold magenta")
+    table.add_column("Step", style="cyan")
+    table.add_column("Model", style="green")
+    table.add_column("Calls", justify="right")
+    table.add_column("Cache hits", justify="right")
+    table.add_column("Prompt tokens", justify="right")
+    table.add_column("Completion tokens", justify="right")
+    table.add_column("Total tokens", justify="right", style="bold")
+
+    grand_total = 0
+    for row in sorted(summary, key=lambda r: (r["step"], r["model"])):
+        table.add_row(
+            row["step"],
+            row["model"],
+            str(row["calls"]),
+            str(row["cache_hits"]),
+            f"{row['prompt_tokens']:,}",
+            f"{row['completion_tokens']:,}",
+            f"{row['total_tokens']:,}",
+        )
+        grand_total += row["total_tokens"]
+
+    table.add_section()
+    table.add_row("", "", "", "", "", "[bold]Grand total[/]", f"[bold]{grand_total:,}[/]")
+    console.print(table)
 
 
 def main() -> None:
@@ -560,7 +724,19 @@ def main() -> None:
             "extraction. Also enabled by setting WIKI_REDACT_PII=true."
         ),
     )
+    parser.add_argument(
+        "--exclude-folders",
+        type=str,
+        default="",
+        help=(
+            "Comma-separated top-level data/raw/ folder names to leave out of this run "
+            "entirely (e.g. --exclude-folders=emails,samples). Excluded files are treated "
+            "as out of scope, not deleted -- their topics aren't pruned, and they're "
+            "picked back up on a later run without needing --force."
+        ),
+    )
     args = parser.parse_args()
+    exclude_prefixes = frozenset(f.strip() for f in args.exclude_folders.split(",") if f.strip())
     raise SystemExit(
         run_pipeline(
             force=args.force,
@@ -569,6 +745,7 @@ def main() -> None:
             critic_regenerate=args.critic_regenerate,
             use_corrections=args.use_corrections,
             redact_pii=args.redact_pii,
+            exclude_prefixes=exclude_prefixes or None,
         )
     )
 

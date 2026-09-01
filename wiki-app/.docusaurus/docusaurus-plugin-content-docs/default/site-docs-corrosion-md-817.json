@@ -1,0 +1,80 @@
+{
+  "id": "corrosion",
+  "title": "Corrosion",
+  "description": "Overview",
+  "source": "@site/docs/corrosion.md",
+  "sourceDirName": ".",
+  "slug": "/corrosion",
+  "permalink": "/docs/corrosion",
+  "draft": false,
+  "unlisted": false,
+  "tags": [
+    {
+      "inline": true,
+      "label": "acidic-soil",
+      "permalink": "/docs/tags/acidic-soil"
+    },
+    {
+      "inline": true,
+      "label": "aurora",
+      "permalink": "/docs/tags/aurora"
+    },
+    {
+      "inline": true,
+      "label": "capacitive-soil-probe-corrosion",
+      "permalink": "/docs/tags/capacitive-soil-probe-corrosion"
+    },
+    {
+      "inline": true,
+      "label": "coated-probe",
+      "permalink": "/docs/tags/coated-probe"
+    },
+    {
+      "inline": true,
+      "label": "corrosion",
+      "permalink": "/docs/tags/corrosion"
+    },
+    {
+      "inline": true,
+      "label": "gold-flashed-pcb",
+      "permalink": "/docs/tags/gold-flashed-pcb"
+    },
+    {
+      "inline": true,
+      "label": "jonah",
+      "permalink": "/docs/tags/jonah"
+    },
+    {
+      "inline": true,
+      "label": "mira",
+      "permalink": "/docs/tags/mira"
+    }
+  ],
+  "version": "current",
+  "frontMatter": {
+    "id": "corrosion",
+    "title": "Corrosion",
+    "tags": [
+      "acidic-soil",
+      "aurora",
+      "capacitive-soil-probe-corrosion",
+      "coated-probe",
+      "corrosion",
+      "gold-flashed-pcb",
+      "jonah",
+      "mira"
+    ],
+    "last_updated": "2026-06-25T07:17:28.772787+00:00",
+    "sidebar_label": "Corrosion",
+    "slug": "/corrosion"
+  },
+  "sidebar": "wikiSidebar",
+  "previous": {
+    "title": "Content Management",
+    "permalink": "/docs/content-management"
+  },
+  "next": {
+    "title": "CR2032 Battery",
+    "permalink": "/docs/cr2032-battery"
+  }
+}

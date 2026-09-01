@@ -4,68 +4,63 @@ title: MQTT Export
 tags:
   - aurora-labs
   - home-assistant
-  - hourly-export-batching
   - local-mqtt-export
   - mira-chen
   - mqtt-export
-  - mqtt-export-schema
-  - non-goals
-last_updated: "2026-06-25T07:42:17.928461+00:00"
+  - nova-widget
+  - reading-cycle-interval
+  - teabuddy
+last_updated: "2026-09-01T19:20:04.988988+00:00"
 sidebar_label: MQTT Export
 slug: /mqtt-export
 ---
 
+<!-- AUTO-GENERATED — compiled by the LLM Wiki compiler from data/raw/ sources into compiler/temp_output/, then linked here. Edits to this file are overwritten on the next compile: edit sources under data/raw/, or manual cross-links in data/link_overrides.json, instead. -->
+
 # MQTT Export
 
 ## Overview
-
-This page describes the optional local MQTT export functionality, primarily designed for devices like the Nova Widget. This feature allows for data export without requiring cloud services and is compatible with hobbyist setups such as Home Assistant. The current specification is in Draft v2, with Mira Chen as the owner.
+The optional local [MQTT](./mqtt.md) export feature for the [Nova Widget](./nova-widget.md) provides a [local-first software](./local-first-software.md) telemetry integration that requires no cloud infrastructure. Designed by Mira Chen (Draft v2), it is fully compatible with [Home Assistant](./home-assistant.md) hobbyist setups.
 
 ## Key Details
-
-*   **Purpose**: Provides Local MQTT Export capabilities for devices, notably the Nova Widget.
-*   **Cloud Independence**: The system is designed to operate without requiring cloud services or Aurora Labs hosting a cloud MQTT broker.
-*   **Compatibility**: Engineered for compatibility with Home Assistant hobbyist setups.
-*   **Topic Structure**: Data is published to specific MQTT topics, using `device_id` as a unique identifier:
-    *   `aurora/{device_id}/telemetry`
-    *   `aurora/{device_id}/battery`
-    *   `aurora/{device_id}/mesh/neighbors`
-*   **Payload Example**: A typical Telemetry Data payload includes various sensor readings and device status:
-    ```json
-    {
-      "soil_moisture_pct": 42,
-      "temp_c": 19.2,
-      "read_interval_min": 15,
-      "battery_mv": 2980,
-      "mesh_hops": 2
-    }
-    ```
-*   **Reading Cycle**: The specification indicates a 15-minute interval for data readings.
-*   **Non-Goals**:
-    *   Handling TeaBuddy steep events, as this is a separate product.
-    *   Aurora Labs providing cloud broker hosting for MQTT.
+- **Status:** Draft v2
+- **Broker Hosting:** No cloud broker hosting is provided by [Aurora Labs](./aurora-labs.md); the export is strictly local.
+- **Topic Structure:**
+  ```
+  aurora/{device_id}/telemetry
+  aurora/{device_id}/battery
+  aurora/{device_id}/mesh/neighbors
+  ```
+- **Payload Example:**
+  ```json
+  {
+    "soil_moisture_pct": 42,
+    "temp_c": 19.2,
+    "read_interval_min": 15,
+    "battery_mv": 2980,
+    "mesh_hops": 2
+  }
+  ```
+- **Non-Goals:** 
+  - [TeaBuddy](./teabuddy.md) steep events (which belong to a different product)
+  - Cloud broker hosting by Aurora Labs
 
 ## Related Entities
-
-*   **Aurora Labs**: The organization developing the MQTT export feature.
-*   **Home Assistant**: A popular home automation platform with which the MQTT export is designed to be compatible.
-*   **Mira Chen**: The owner of the MQTT export specification.
-*   **Nova Widget**: A primary device intended to utilize this MQTT export functionality.
-*   **TeaBuddy**: Another product mentioned as a non-goal for this specific MQTT export schema.
+- **Nova Widget:** The [hardware](./hardware.md) device generating the telemetry and utilizing this local export schema.
+- **Home Assistant:** The target hobbyist platform compatible with this local MQTT export.
+- **Mira Chen:** The owner and author of the MQTT export specification draft.
+- **Aurora Labs:** The organization developing the Nova Widget (with a non-goal of providing cloud broker hosting).
 
 ## Related Concepts
-
-*   **Local MQTT Export**: The core concept of exporting data via MQTT without reliance on external cloud infrastructure.
-*   **Telemetry Data**: The sensor readings and operational data exported by devices.
-*   **Battery Monitoring**: A specific type of Battery Monitoring data, including battery voltage.
-*   **Mesh Networking**: Concepts related to device communication, including `mesh/neighbors` and `mesh_hops` in the payload. (Mesh Networking)
-*   **MeshSync**: A related technology or concept mentioned in the source tags. (MeshSync)
-*   **Hourly Export Batching**: A concept initially considered but superseded by a more frequent reading cycle. (Hourly Export Batching)
+- **MeshSync:** The underlying mesh and synchronization framework associated with the export tags.
+- **Local MQTT Export:** The core architectural approach allowing device data to be published locally without cloud dependencies.
+- **Reading Cycle Interval:** The frequency at which device readings and telemetry payloads are published.
 
 ## Contradictions
+&gt; **Contradiction:** Kickoff slides showed hourly export batching — spec is 15 min per reading cycle.
 
-*   **Contradiction:** While initial kickoff slides suggested an Hourly Export Batching interval, the current specification details a 15-minute reading cycle for data collection.
+## References & Trust
 
-## Sources
-
-*   `samples/articles/[SAMPLE]-2026-07-02-mqtt-export-schema.md`
+| # | Source | Type | Trust |
+|---|--------|------|-------|
+| 1 | `samples/articles/[SAMPLE]-2026-07-02-mqtt-export-schema.md` | text | Unverified |

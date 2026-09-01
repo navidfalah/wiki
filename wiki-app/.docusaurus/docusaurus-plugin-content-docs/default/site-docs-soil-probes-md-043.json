@@ -1,0 +1,80 @@
+{
+  "id": "soil-probes",
+  "title": "Soil Probes",
+  "description": "Overview",
+  "source": "@site/docs/soil-probes.md",
+  "sourceDirName": ".",
+  "slug": "/soil-probes",
+  "permalink": "/docs/soil-probes",
+  "draft": false,
+  "unlisted": false,
+  "tags": [
+    {
+      "inline": true,
+      "label": "acidic-soil",
+      "permalink": "/docs/tags/acidic-soil"
+    },
+    {
+      "inline": true,
+      "label": "aurora",
+      "permalink": "/docs/tags/aurora"
+    },
+    {
+      "inline": true,
+      "label": "capacitive-soil-probe-corrosion",
+      "permalink": "/docs/tags/capacitive-soil-probe-corrosion"
+    },
+    {
+      "inline": true,
+      "label": "coated-probe",
+      "permalink": "/docs/tags/coated-probe"
+    },
+    {
+      "inline": true,
+      "label": "gold-flashed-pcb",
+      "permalink": "/docs/tags/gold-flashed-pcb"
+    },
+    {
+      "inline": true,
+      "label": "jonah",
+      "permalink": "/docs/tags/jonah"
+    },
+    {
+      "inline": true,
+      "label": "mira",
+      "permalink": "/docs/tags/mira"
+    },
+    {
+      "inline": true,
+      "label": "nova-widget",
+      "permalink": "/docs/tags/nova-widget"
+    }
+  ],
+  "version": "current",
+  "frontMatter": {
+    "id": "soil-probes",
+    "title": "Soil Probes",
+    "tags": [
+      "acidic-soil",
+      "aurora",
+      "capacitive-soil-probe-corrosion",
+      "coated-probe",
+      "gold-flashed-pcb",
+      "jonah",
+      "mira",
+      "nova-widget"
+    ],
+    "last_updated": "2026-06-25T07:59:20.597835+00:00",
+    "sidebar_label": "Soil Probes",
+    "slug": "/soil-probes"
+  },
+  "sidebar": "wikiSidebar",
+  "previous": {
+    "title": "Software Updates",
+    "permalink": "/docs/software-updates"
+  },
+  "next": {
+    "title": "Specifications",
+    "permalink": "/docs/specifications"
+  }
+}

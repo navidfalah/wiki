@@ -2,69 +2,50 @@
 id: node-management
 title: Node Management
 tags:
-  - node management
+  - meshfan
   - meshsync
-  - aurora-labs
-  - beta release
-  - rejoin storm
-  - parent election
-  - deprecated features
-  - github issue
-last_updated: "2026-06-25T07:43:31.971661+00:00"
+  - mira-chen
+  - node-management
+  - parent-election
+  - potato99
+  - rejoin-storm
+  - sensenode
+last_updated: "2026-09-01T19:20:11.928375+00:00"
 sidebar_label: Node Management
 slug: /node-management
 ---
 
-```markdown
+<!-- AUTO-GENERATED — compiled by the LLM Wiki compiler from data/raw/ sources into compiler/temp_output/, then linked here. Edits to this file are overwritten on the next compile: edit sources under data/raw/, or manual cross-links in data/link_overrides.json, instead. -->
+
 # Node Management
 
 ## Overview
-Node Management refers to the processes and protocols governing how individual nodes operate within a MeshSync network, particularly concerning their roles, connectivity, and scaling. This includes defining maximum node capacities, handling node joins and departures, and managing communication intervals. Aurora-Labs' MeshSync protocol, currently in beta, has faced challenges related to network stability and performance when scaling beyond a certain number of nodes.
+Node management in mesh network synchronization—specifically tracked via `aurora-labs/meshsync` Issue #442—concerns stability issues, network scaling limitations, and parent election [protocols](./protocols.md) in [firmware](./firmware.md) version `0.3.8` and upcoming releases.
 
 ## Key Details
-
-### Node Capacity and Limitations
-*   **Maximum Nodes**: The MeshSync protocol defines `MESHSYNC_MAX_NODES` as 32.
-*   **Beta Safe Nodes**: Due to ongoing issues, a `MESHSYNC_BETA_SAFE_NODES` limit of 6 is recommended as a workaround to maintain network stability.
-*   **Scaling Issues**:
-    *   Users have reported "rejoin storm" states and "multi-hour silence" when adding an 8th node, particularly with MeshSync version 0.3.8.
-    *   This issue is categorized as a `bug`, `power`, and `beta` problem.
-    *   While version 0.3.8 showed some improvement, the problem was not fully resolved.
-
-### Node Roles and States
-Nodes within the MeshSync network can assume specific roles:
-*   `MESHSYNC_ROLE_PARENT`: A node acting as a central coordinator or primary communication point.
-*   `MESHSYNC_ROLE_CHILD`: A node connected to a parent node.
-*   `MESHSYNC_ROLE_LOST`: A state indicating a node is experiencing a "rejoin storm" and is attempting to re-establish its connection or role.
-
-### Parent Election
-*   The mechanism for electing a parent node is based on an "RSSI-weighted random backoff" algorithm.
-*   A significant "Parent election rewrite" is planned for the 0.3.9 MeshSync milestone to address current stability issues.
-
-### Communication Intervals
-*   **Default Interval**: The `MESHSYNC_DEFAULT_INTERVAL_MIN` is set to 15 minutes.
-*   **Deprecated Interval**: An "hourly interval" for communication has been deprecated.
-
-### Integration Requests
-*   An integration request for "TeaBuddy" was denied, as noted in a partnership memo.
+- **Rejoin Storm Bug:** Users experience multi-hour silence and rejoin storms when networks reach 8 nodes on firmware version `0.3.8`.
+- **Workaround:** Operators are advised to cap their active nodes at 6 to maintain network stability until a permanent fix is released.
+- **Diagnostics:** The development team (led by [Mira Chen](./aurora-labs.md)) requests RSSI logs submitted to support for further investigation.
+- **Roadmap Updates:** Due to the persistence of the rejoin storm bug, the `0.3.9` milestone has been moved up to include a complete rewrite of the parent election mechanism.
 
 ## Related Entities
-*   **Aurora-Labs**: The developer behind the MeshSync protocol.
-*   **MeshSync**: The protocol and system governing node communication and management.
-*   **SenseNode**: A competitor or alternative mentioned in user discussions regarding mesh complexity.
-*   **potato99, mira-chen, meshfan, teaguy**: Users and contributors involved in discussions about node management issues.
+- **MeshSync (`aurora-labs/meshsync`):** The repository managing the synchronization software where Issue #442 is tracked.
+- **Mira Chen:** Core team member managing [bug reports](./bug-reports.md) and milestones (advanced the `0.3.9` parent election rewrite).
+- **Potato99:** GitHub user who originally reported the multi-hour silence and rejoin storm issue on 0.3.8.
+- **Meshfan:** Community contributor tracking firmware improvements and comparing network complexity with competing systems.
+- **Teaguy:** Forum/GitHub participant noting a repository misplacement.
+- **[SenseNode](./sensenode-sn-400.md):** A competing or alternative node system whose users reportedly find the mesh complexity amusing.
 
 ## Related Concepts
-*   **Rejoin Storm**: A state where nodes repeatedly attempt to rejoin the network, leading to instability and communication failures.
-*   **Parent Election**: The process by which a node is designated as the primary coordinator within a segment of the mesh network.
-*   **RSSI (Received Signal Strength Indicator)**: A measure of the power present in a received radio signal, used in parent election.
-*   **Beta Release**: A software release phase where the product is tested by a limited audience before general availability, often identifying bugs and performance issues.
-*   **Deprecated Features**: Features or functionalities that are no longer recommended for use and may be removed in future versions.
+- **Parent Election:** The algorithmic process by which nodes determine their hierarchical parent within the mesh network, currently scheduled for a full rewrite in version `0.3.9`.
+- **Rejoin Storm:** A network phenomenon where multiple nodes simultaneously attempt to reconnect after a failure or scaling event, causing systemic silence or congestion.
+- **RSSI Logs:** Received Signal Strength Indication logs utilized by support teams to diagnose wireless connectivity and scaling faults.
 
 ## Contradictions
-No direct contradictions were found in the provided source material.
+*(No contradictions present in the current source material.)*
 
-## Sources
-*   `samples/forums/[SAMPLE]-2026-07-03-github-issue-meshsync-442.txt`
-*   `samples/specs/[SAMPLE]-2026-07-07-meshsync-protocol-header.txt`
-```
+## References & Trust
+
+| # | Source | Type | Trust |
+|---|--------|------|-------|
+| 1 | `samples/forums/[SAMPLE]-2026-07-03-github-issue-meshsync-442.txt` | text | Unverified |

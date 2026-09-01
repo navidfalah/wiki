@@ -3,62 +3,45 @@ id: confidentiality
 title: Confidentiality
 tags:
   - aurora-nova-widget
-  - beta-firmware
-  - beta-tester
+  - beta-tester-confidentiality
   - confidentiality
-  - data-telemetry
-  - ip54-splash-resistant
-  - meshsync-source-partial
-  - mqtt-export
-last_updated: "2026-06-25T07:17:02.605970+00:00"
+  - endorsement-restrictions
+  - hardware-safety-rating
+  - meshsync
+  - sensenode
+  - teabuddy
+last_updated: "2026-09-01T19:18:17.234688+00:00"
 sidebar_label: Confidentiality
 slug: /confidentiality
 ---
 
+<!-- AUTO-GENERATED — compiled by the LLM Wiki compiler from data/raw/ sources into compiler/temp_output/, then linked here. Edits to this file are overwritten on the next compile: edit sources under data/raw/, or manual cross-links in data/link_overrides.json, instead. -->
+
 # Confidentiality
 
 ## Overview
-Confidentiality, particularly within the context of a Beta Testing agreement for products like the Aurora Nova Widget, refers to the obligation of beta testers to keep certain information private. This ensures that pre-release details, proprietary technology, and internal documentation are not disclosed to unauthorized parties.
+This wiki page outlines the confidentiality, safety, data handling, and endorsement guidelines associated with the [beta testing](./beta-testing.md) program for the [Aurora Nova Widget](./aurora-nova-widget.md), based on standard legal agreement excerpts.
 
 ## Key Details
-
-### Confidential Information
-As per beta tester agreements, specific materials are designated as confidential:
-*   **Beta firmware**: Pre-release software versions for the device.
-*   **MeshSync source partial**: Portions of the source code related to the MeshSync feature.
-*   **Power budget spreadsheets**: Internal documentation detailing power consumption and management.
-
-### Data Handling and Privacy
-While not strictly confidential information to be protected *by* the tester, the agreement outlines how user data is handled, which is related to privacy and trust:
-*   **Telemetry data**: Stays local to the device by default.
-*   **MQTT export**: An optional feature that users can configure to export data.
-
-### Device Specifications and Usage
-Beta testers are also informed about device specifications and limitations, which are part of the overall agreement context:
-*   The Aurora Nova Widget is **IP54 splash-resistant only**.
-*   It should **not be submerged** in water.
-*   Outdoor burial, similar to SenseNode devices, is **not supported**.
-
-### Public Discussion and Endorsement
-Beta testers are permitted to discuss certain aspects publicly, with clear stipulations:
-*   Testers may mention other products, such as TeaBuddy.
-*   Mentioning other products or companies **does not imply an Aurora partnership** or endorsement.
+* **Confidentiality Scope (Section 4):** Beta [firmware](./firmware.md), MeshSync source code partials, and [power budget](./power-budget.md) spreadsheets are strictly confidential.
+* **Safety Guidelines (Section 7):** The device carries an IP54 splash-resistant rating only and must not be submerged. Furthermore, [SenseNode SN-400](./sensenode-sn-400.md)-style outdoor burial is not supported.
+* **Data and Telemetry (Section 9):** Telemetry data remains local by default, with optional [MQTT export](./mqtt-export.md) available via user configuration.
+* **Endorsement Restrictions (Section 12):** Beta testers are permitted to mention products like [TeaBuddy](./teabuddy.md) or other items, but they must not imply any official partnership with Aurora.
 
 ## Related Entities
-*   Aurora Nova Widget
-*   TeaBuddy
-*   SenseNode
+* **Aurora Nova Widget**
+* **MeshSync**
+* **SenseNode**
+* **TeaBuddy**
 
 ## Related Concepts
-*   Beta Testing
-*   Firmware
-*   Data Telemetry
-*   Intellectual Property
-*   MQTT (Message Queuing Telemetry Transport)
-*   IP54 Rating
+* **Beta Tester Agreement**
+* **[Hardware Safety](./hardware-safety.md) Rating**
+* **Telemetry and [Data Privacy](./data-privacy.md)**
+* **Endorsement Restrictions**
 
-## Contradictions
-No contradictions were found in the provided source material.
+## References & Trust
 
-## Sources
-*   `samples/legal/[SAMPLE]-2026-07-04-beta-tester-agreement-snippet.txt`
+| # | Source | Type | Trust |
+|---|--------|------|-------|
+| 1 | `samples/legal/[SAMPLE]-2026-07-04-beta-tester-agreement-snippet.txt` | text | Unverified |

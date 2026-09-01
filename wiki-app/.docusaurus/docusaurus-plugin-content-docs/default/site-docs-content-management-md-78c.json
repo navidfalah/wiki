@@ -1,0 +1,80 @@
+{
+  "id": "content-management",
+  "title": "Content Management",
+  "description": "This page outlines various ideas and initiatives related to managing content, particularly within a wiki system, focusing on automation, cross-product collaboration, and content organization.",
+  "source": "@site/docs/content-management.md",
+  "sourceDirName": ".",
+  "slug": "/content-management",
+  "permalink": "/docs/content-management",
+  "draft": false,
+  "unlisted": false,
+  "tags": [
+    {
+      "inline": true,
+      "label": "wiki automation",
+      "permalink": "/docs/tags/wiki-automation"
+    },
+    {
+      "inline": true,
+      "label": "content ingestion",
+      "permalink": "/docs/tags/content-ingestion"
+    },
+    {
+      "inline": true,
+      "label": "knowledge management",
+      "permalink": "/docs/tags/knowledge-management"
+    },
+    {
+      "inline": true,
+      "label": "cross-product content",
+      "permalink": "/docs/tags/cross-product-content"
+    },
+    {
+      "inline": true,
+      "label": "llm applications",
+      "permalink": "/docs/tags/llm-applications"
+    },
+    {
+      "inline": true,
+      "label": "docusaurus",
+      "permalink": "/docs/tags/docusaurus"
+    },
+    {
+      "inline": true,
+      "label": "pre-commit hooks",
+      "permalink": "/docs/tags/pre-commit-hooks"
+    },
+    {
+      "inline": true,
+      "label": "glossary",
+      "permalink": "/docs/tags/glossary"
+    }
+  ],
+  "version": "current",
+  "frontMatter": {
+    "id": "content-management",
+    "title": "Content Management",
+    "tags": [
+      "wiki automation",
+      "content ingestion",
+      "knowledge management",
+      "cross-product content",
+      "llm applications",
+      "docusaurus",
+      "pre-commit hooks",
+      "glossary"
+    ],
+    "last_updated": "2026-06-25T07:17:17.640490+00:00",
+    "sidebar_label": "Content Management",
+    "slug": "/content-management"
+  },
+  "sidebar": "wikiSidebar",
+  "previous": {
+    "title": "Consumer Electronics Strategy",
+    "permalink": "/docs/consumer-electronics-strategy"
+  },
+  "next": {
+    "title": "Corrosion",
+    "permalink": "/docs/corrosion"
+  }
+}

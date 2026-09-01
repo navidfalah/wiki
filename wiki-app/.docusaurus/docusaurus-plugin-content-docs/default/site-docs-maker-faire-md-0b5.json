@@ -1,0 +1,80 @@
+{
+  "id": "maker-faire",
+  "title": "Maker Faire",
+  "description": "",
+  "source": "@site/docs/maker-faire.md",
+  "sourceDirName": ".",
+  "slug": "/maker-faire",
+  "permalink": "/docs/maker-faire",
+  "draft": false,
+  "unlisted": false,
+  "tags": [
+    {
+      "inline": true,
+      "label": "auroralabs",
+      "permalink": "/docs/tags/auroralabs"
+    },
+    {
+      "inline": true,
+      "label": "beta",
+      "permalink": "/docs/tags/beta"
+    },
+    {
+      "inline": true,
+      "label": "cr2032",
+      "permalink": "/docs/tags/cr-2032"
+    },
+    {
+      "inline": true,
+      "label": "cr2450",
+      "permalink": "/docs/tags/cr-2450"
+    },
+    {
+      "inline": true,
+      "label": "maker-faire",
+      "permalink": "/docs/tags/maker-faire"
+    },
+    {
+      "inline": true,
+      "label": "meshsync",
+      "permalink": "/docs/tags/meshsync"
+    },
+    {
+      "inline": true,
+      "label": "mqtt-schema-v2",
+      "permalink": "/docs/tags/mqtt-schema-v-2"
+    },
+    {
+      "inline": true,
+      "label": "nodes-max",
+      "permalink": "/docs/tags/nodes-max"
+    }
+  ],
+  "version": "current",
+  "frontMatter": {
+    "id": "maker-faire",
+    "title": "Maker Faire",
+    "tags": [
+      "auroralabs",
+      "beta",
+      "cr2032",
+      "cr2450",
+      "maker-faire",
+      "meshsync",
+      "mqtt-schema-v2",
+      "nodes-max"
+    ],
+    "last_updated": "2026-06-25T07:38:25.787613+00:00",
+    "sidebar_label": "Maker Faire",
+    "slug": "/maker-faire"
+  },
+  "sidebar": "wikiSidebar",
+  "previous": {
+    "title": "LoRaWAN",
+    "permalink": "/docs/lorawan"
+  },
+  "next": {
+    "title": "Manufacturing",
+    "permalink": "/docs/manufacturing"
+  }
+}

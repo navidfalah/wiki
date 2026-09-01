@@ -26,6 +26,12 @@ services:
       OPENAI_BASE_URL: ${OPENAI_BASE_URL:-https://api.openai.com/v1}
       OPENAI_MODEL: ${OPENAI_MODEL:-gpt-4o-mini}
       OPENAI_EMBEDDING_MODEL: ${OPENAI_EMBEDDING_MODEL:-text-embedding-3-small}
+      # Bootstrap admin account, created once on first boot (no-op if
+      # data/users.json already has a user) -- see backend/src/lib/users.ts.
+      # Leave ADMIN_PASSWORD unset to get a random one printed to
+      # `docker compose logs backend` instead.
+      ADMIN_USERNAME: ${ADMIN_USERNAME:-admin}
+      ADMIN_PASSWORD: ${ADMIN_PASSWORD:-}
     volumes:
       # Mutable data shared with the host and (for docs/media) the
       # frontend service — not baked into the image, so a compile's output
@@ -53,11 +59,13 @@ services:
       # wiki-page/dashboard rendering) — must be the Docker service
       # hostname, not localhost, since it's reached over the Compose
       # network, not the host's. PUBLIC_API_URL is embedded into every
-      # rendered page for the browser's own fetch/EventSource calls — the
-      # browser runs on the host, so it needs the host-published port.
+      # rendered page for the browser's own fetch/EventSource/<img>/<embed>
+      # calls — left empty (relative) so those go through this container's
+      # own /api proxy, which is what attaches the session cookie's token
+      # as the Authorization header the backend requires post-login.
       # See frontend/src/config.ts for the full explanation.
       BACKEND_API_URL: http://backend:8000
-      PUBLIC_API_URL: ${PUBLIC_API_URL:-http://localhost:8000}
+      PUBLIC_API_URL: ${PUBLIC_API_URL:-}
     ports:
       - "3000:3000"
     depends_on:

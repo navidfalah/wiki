@@ -1,0 +1,80 @@
+{
+  "id": "troubleshooting",
+  "title": "Troubleshooting",
+  "description": "",
+  "source": "@site/docs/troubleshooting.md",
+  "sourceDirName": ".",
+  "slug": "/troubleshooting",
+  "permalink": "/docs/troubleshooting",
+  "draft": false,
+  "unlisted": false,
+  "tags": [
+    {
+      "inline": true,
+      "label": "ble-app-only",
+      "permalink": "/docs/tags/ble-app-only"
+    },
+    {
+      "inline": true,
+      "label": "duplicate-messages",
+      "permalink": "/docs/tags/duplicate-messages"
+    },
+    {
+      "inline": true,
+      "label": "filtering-neighbors-topic",
+      "permalink": "/docs/tags/filtering-neighbors-topic"
+    },
+    {
+      "inline": true,
+      "label": "firmware-upgrade",
+      "permalink": "/docs/tags/firmware-upgrade"
+    },
+    {
+      "inline": true,
+      "label": "home-assistant",
+      "permalink": "/docs/tags/home-assistant"
+    },
+    {
+      "inline": true,
+      "label": "homelab",
+      "permalink": "/docs/tags/homelab"
+    },
+    {
+      "inline": true,
+      "label": "mqtt-export",
+      "permalink": "/docs/tags/mqtt-export"
+    },
+    {
+      "inline": true,
+      "label": "mqtt-export-schema",
+      "permalink": "/docs/tags/mqtt-export-schema"
+    }
+  ],
+  "version": "current",
+  "frontMatter": {
+    "id": "troubleshooting",
+    "title": "Troubleshooting",
+    "tags": [
+      "ble-app-only",
+      "duplicate-messages",
+      "filtering-neighbors-topic",
+      "firmware-upgrade",
+      "home-assistant",
+      "homelab",
+      "mqtt-export",
+      "mqtt-export-schema"
+    ],
+    "last_updated": "2026-06-25T08:04:46.800831+00:00",
+    "sidebar_label": "Troubleshooting",
+    "slug": "/troubleshooting"
+  },
+  "sidebar": "wikiSidebar",
+  "previous": {
+    "title": "Training",
+    "permalink": "/docs/training"
+  },
+  "next": {
+    "title": "Weekly Sync",
+    "permalink": "/docs/weekly-sync"
+  }
+}

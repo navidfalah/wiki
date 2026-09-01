@@ -1,0 +1,80 @@
+{
+  "id": "firmware",
+  "title": "Firmware",
+  "description": "Overview",
+  "source": "@site/docs/firmware.md",
+  "sourceDirName": ".",
+  "slug": "/firmware",
+  "permalink": "/docs/firmware",
+  "draft": false,
+  "unlisted": false,
+  "tags": [
+    {
+      "inline": true,
+      "label": "firmware",
+      "permalink": "/docs/tags/firmware"
+    },
+    {
+      "inline": true,
+      "label": "meshsync",
+      "permalink": "/docs/tags/meshsync"
+    },
+    {
+      "inline": true,
+      "label": "ota",
+      "permalink": "/docs/tags/ota"
+    },
+    {
+      "inline": true,
+      "label": "15-min-interval",
+      "permalink": "/docs/tags/15-min-interval"
+    },
+    {
+      "inline": true,
+      "label": "nrf52840",
+      "permalink": "/docs/tags/nrf-52840"
+    },
+    {
+      "inline": true,
+      "label": "nova-widget",
+      "permalink": "/docs/tags/nova-widget"
+    },
+    {
+      "inline": true,
+      "label": "hardware-revision-c",
+      "permalink": "/docs/tags/hardware-revision-c"
+    },
+    {
+      "inline": true,
+      "label": "hobbyist-market",
+      "permalink": "/docs/tags/hobbyist-market"
+    }
+  ],
+  "version": "current",
+  "frontMatter": {
+    "id": "firmware",
+    "title": "Firmware",
+    "tags": [
+      "firmware",
+      "meshsync",
+      "ota",
+      "15-min-interval",
+      "nrf52840",
+      "nova-widget",
+      "hardware-revision-c",
+      "hobbyist-market"
+    ],
+    "last_updated": "2026-06-25T07:23:19.111446+00:00",
+    "sidebar_label": "Firmware",
+    "slug": "/firmware"
+  },
+  "sidebar": "wikiSidebar",
+  "previous": {
+    "title": "Firmware Updates",
+    "permalink": "/docs/firmware-updates"
+  },
+  "next": {
+    "title": "Forum Discussions",
+    "permalink": "/docs/forum-discussions"
+  }
+}

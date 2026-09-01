@@ -1,0 +1,80 @@
+{
+  "id": "ota-updates",
+  "title": "OTA Updates",
+  "description": "Overview",
+  "source": "@site/docs/ota-updates.md",
+  "sourceDirName": ".",
+  "slug": "/ota-updates",
+  "permalink": "/docs/ota-updates",
+  "draft": false,
+  "unlisted": false,
+  "tags": [
+    {
+      "inline": true,
+      "label": "aurora",
+      "permalink": "/docs/tags/aurora"
+    },
+    {
+      "inline": true,
+      "label": "batch-update-all",
+      "permalink": "/docs/tags/batch-update-all"
+    },
+    {
+      "inline": true,
+      "label": "ble-proxy-update",
+      "permalink": "/docs/tags/ble-proxy-update"
+    },
+    {
+      "inline": true,
+      "label": "brick-scenario",
+      "permalink": "/docs/tags/brick-scenario"
+    },
+    {
+      "inline": true,
+      "label": "ed25519",
+      "permalink": "/docs/tags/ed-25519"
+    },
+    {
+      "inline": true,
+      "label": "explicit-user-consent",
+      "permalink": "/docs/tags/explicit-user-consent"
+    },
+    {
+      "inline": true,
+      "label": "mesh-wide-upgrade",
+      "permalink": "/docs/tags/mesh-wide-upgrade"
+    },
+    {
+      "inline": true,
+      "label": "meshsync-routing-table-invalidation",
+      "permalink": "/docs/tags/meshsync-routing-table-invalidation"
+    }
+  ],
+  "version": "current",
+  "frontMatter": {
+    "id": "ota-updates",
+    "title": "OTA Updates",
+    "tags": [
+      "aurora",
+      "batch-update-all",
+      "ble-proxy-update",
+      "brick-scenario",
+      "ed25519",
+      "explicit-user-consent",
+      "mesh-wide-upgrade",
+      "meshsync-routing-table-invalidation"
+    ],
+    "last_updated": "2026-06-25T07:45:09.808863+00:00",
+    "sidebar_label": "OTA Updates",
+    "slug": "/ota-updates"
+  },
+  "sidebar": "wikiSidebar",
+  "previous": {
+    "title": "Nova Widget",
+    "permalink": "/docs/nova-widget"
+  },
+  "next": {
+    "title": "Personal Notes",
+    "permalink": "/docs/personal-notes"
+  }
+}

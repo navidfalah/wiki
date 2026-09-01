@@ -62,13 +62,20 @@ function statCard(tone: string, value: string, label: string): string {
 
 // --- Build / run compiler -----------------------------------------------
 
-function setBadge(status: 'idle' | 'running' | 'success' | 'error') {
-  const labels: Record<string, string> = { idle: 'Ready', running: 'Running…', success: 'Done', error: 'Failed' };
+function setBadge(status: 'idle' | 'running' | 'success' | 'error' | 'stopped') {
+  const labels: Record<string, string> = {
+    idle: 'Ready',
+    running: 'Running…',
+    success: 'Done',
+    error: 'Failed',
+    stopped: 'Stopped',
+  };
   const tones: Record<string, string> = {
     idle: 'bg-gray-100 text-gray-600',
     running: 'bg-amber-50 text-amber-700',
     success: 'bg-emerald-50 text-emerald-700',
     error: 'bg-red-50 text-red-700',
+    stopped: 'bg-gray-100 text-gray-600',
   };
   const badge = el('build-status-badge');
   badge.className = `inline-flex items-center gap-1 rounded-full px-2 py-0.5 text-xs font-medium ${tones[status]}`;
@@ -81,13 +88,132 @@ function appendLog(line: string) {
   log.scrollTop = log.scrollHeight;
 }
 
+// --- Sources-to-include picker --------------------------------------------
+
+let excludedTopFolders = new Set<string>();
+
+function topLevelFolders(): string[] {
+  const tops = new Set<string>();
+  for (const f of foldersCache) tops.add(f.split('/')[0]);
+  for (const f of filesCache) tops.add(f.path.split('/')[0]);
+  return [...tops].sort();
+}
+
+function renderSourcesPicker() {
+  const tops = topLevelFolders();
+  // Drop exclusions for folders that no longer exist, so the count stays honest.
+  excludedTopFolders = new Set([...excludedTopFolders].filter((t) => tops.includes(t)));
+
+  const list = el('sources-picker-list');
+  if (!tops.length) {
+    list.innerHTML = '<p class="text-xs text-gray-400">No folders under data/raw/ yet.</p>';
+  } else {
+    list.innerHTML = tops
+      .map((t) => {
+        const checked = !excludedTopFolders.has(t);
+        const managed = managedFolders.includes(t);
+        return `
+        <label class="flex items-center gap-1.5 rounded-lg border border-gray-200 bg-white px-2.5 py-1.5 ${
+          checked ? '' : 'opacity-50'
+        }">
+          <input type="checkbox" data-top-folder="${escapeHtml(t)}" ${checked ? 'checked' : ''} class="rounded border-gray-300 text-accent focus:ring-accent/30" />
+          <span class="font-mono text-xs text-gray-700">${escapeHtml(t)}</span>
+          ${managed ? '<span class="text-[10px] text-source">source</span>' : ''}
+        </label>`;
+      })
+      .join('');
+    list.querySelectorAll<HTMLInputElement>('[data-top-folder]').forEach((input) =>
+      input.addEventListener('change', () => {
+        const top = input.dataset.topFolder ?? '';
+        if (input.checked) excludedTopFolders.delete(top);
+        else excludedTopFolders.add(top);
+        renderSourcesPicker();
+      }),
+    );
+  }
+
+  const total = tops.length;
+  const included = total - excludedTopFolders.size;
+  el('sources-picker-count').textContent = total ? `(${included}/${total})` : '';
+}
+
+function initSourcesPicker() {
+  const toggle = el('sources-picker-toggle');
+  const panel = el('sources-picker');
+  toggle.addEventListener('click', () => panel.classList.toggle('hidden'));
+}
+
+// --- Run options (critic pass, corrections, PII redaction) ----------------
+
+function updateRunOptionsCount() {
+  const criticOn = (el('run-opt-critic-pass') as HTMLInputElement).checked;
+  const correctionsOn = (el('run-opt-use-corrections') as HTMLInputElement).checked;
+  const redactOn = (el('run-opt-redact-pii') as HTMLInputElement).checked;
+  const count = [criticOn, correctionsOn, redactOn].filter(Boolean).length;
+  el('run-options-count').textContent = count ? `(${count})` : '';
+}
+
+function initRunOptions() {
+  const toggle = el('run-options-toggle');
+  const panel = el('run-options');
+  toggle.addEventListener('click', () => panel.classList.toggle('hidden'));
+
+  const criticPass = el('run-opt-critic-pass') as HTMLInputElement;
+  const criticSamplesLabel = el('run-opt-critic-samples-label');
+  const criticRegenerateLabel = el('run-opt-critic-regenerate-label');
+
+  const syncCriticSubOptions = () => {
+    criticSamplesLabel.classList.toggle('hidden', !criticPass.checked);
+    criticRegenerateLabel.classList.toggle('hidden', !criticPass.checked);
+  };
+  syncCriticSubOptions();
+
+  ['run-opt-critic-pass', 'run-opt-use-corrections', 'run-opt-redact-pii'].forEach((id) =>
+    el(id).addEventListener('change', () => {
+      syncCriticSubOptions();
+      updateRunOptionsCount();
+    }),
+  );
+  updateRunOptionsCount();
+}
+
+function runOptionsParams(): Record<string, string> {
+  const criticPass = (el('run-opt-critic-pass') as HTMLInputElement).checked;
+  const criticSamples = (el('run-opt-critic-samples') as HTMLInputElement).value.trim();
+  const criticRegenerate = (el('run-opt-critic-regenerate') as HTMLInputElement).checked;
+  const useCorrections = (el('run-opt-use-corrections') as HTMLInputElement).checked;
+  const redactPii = (el('run-opt-redact-pii') as HTMLInputElement).checked;
+
+  const params: Record<string, string> = {};
+  if (criticPass) {
+    params.critic_pass = 'true';
+    if (criticSamples && Number(criticSamples) > 1) params.critic_samples = criticSamples;
+    if (criticRegenerate) params.critic_regenerate = 'true';
+  }
+  if (useCorrections) params.use_corrections = 'true';
+  if (redactPii) params.redact_pii = 'true';
+  return params;
+}
+
 function initBuild() {
   const runButton = el('run-build') as HTMLButtonElement;
+  const stopButton = el('stop-build') as HTMLButtonElement;
   const clearButton = el('clear-log');
   const forceCheckbox = el('force-rebuild') as HTMLInputElement;
 
   clearButton.addEventListener('click', () => {
     el('build-log').textContent = 'Ready. Click "Run compiler" to start.';
+  });
+
+  stopButton.addEventListener('click', async () => {
+    stopButton.disabled = true;
+    try {
+      const res = await fetch(`${apiBase}/api/build/stop`, { method: 'POST' });
+      const data = await res.json();
+      if (!data.stopped) appendLog('Nothing to stop — no build is running.');
+    } catch {
+      appendLog('ERROR: Could not reach the API to stop the build.');
+    }
   });
 
   runButton.addEventListener('click', async () => {
@@ -105,9 +231,13 @@ function initBuild() {
     el('build-log').textContent = '';
     setBadge('running');
     runButton.disabled = true;
+    stopButton.classList.remove('hidden');
+    stopButton.disabled = false;
 
     const params = new URLSearchParams();
     if (forceCheckbox.checked) params.set('force', 'true');
+    if (excludedTopFolders.size) params.set('exclude_folders', [...excludedTopFolders].join(','));
+    for (const [key, value] of Object.entries(runOptionsParams())) params.set(key, value);
     const source = new EventSource(`${apiBase}/api/build/stream?${params.toString()}`);
 
     source.onmessage = (event) => {
@@ -124,8 +254,9 @@ function initBuild() {
         appendLog(`ERROR: ${payload.message}`);
       } else if (payload.type === 'done') {
         appendLog(payload.message ?? (payload.success ? 'Finished.' : 'Failed.'));
-        setBadge(payload.success ? 'success' : 'error');
+        setBadge(payload.stopped ? 'stopped' : payload.success ? 'success' : 'error');
         runButton.disabled = false;
+        stopButton.classList.add('hidden');
         source.close();
         if (payload.success) {
           loadStatCards();
@@ -138,6 +269,7 @@ function initBuild() {
       appendLog('ERROR: Lost connection to the build stream.');
       setBadge('error');
       runButton.disabled = false;
+      stopButton.classList.add('hidden');
       source.close();
     };
   });
@@ -295,6 +427,7 @@ async function loadFiles() {
     foldersCache = data.folders;
     managedFolders = data.managed_folders;
     renderExplorer();
+    renderSourcesPicker();
   } catch {
     el('file-grid').innerHTML = '<p class="col-span-full py-8 text-center text-sm text-red-600">Cannot reach the API.</p>';
   }
@@ -376,10 +509,13 @@ function renderExplorer() {
         ${
           managed
             ? ''
-            : `<select data-move="${escapeHtml(file.path)}" class="absolute right-0 top-0 w-6 opacity-0 group-hover:opacity-100" title="Move to…">
-                <option value="">⋯</option>
-                ${folderOptionsHtml(parentOf(file.path))}
-              </select>`
+            : `<div class="absolute right-0 top-0 flex items-center gap-0.5 opacity-0 group-hover:opacity-100">
+                <select data-move="${escapeHtml(file.path)}" class="w-6" title="Move to…">
+                  <option value="">⋯</option>
+                  ${folderOptionsHtml(parentOf(file.path))}
+                </select>
+                <button data-delete-file="${escapeHtml(file.path)}" class="h-6 w-6 rounded-lg text-gray-400 hover:bg-red-50 hover:text-red-600" title="Delete file">🗑</button>
+              </div>`
         }
       </div>`;
     })
@@ -407,6 +543,21 @@ function renderExplorer() {
     .querySelectorAll<HTMLButtonElement>('[data-preview]')
     .forEach((btn) => btn.addEventListener('click', () => openPreview(btn.dataset.preview ?? '')));
   el('file-grid')
+    .querySelectorAll<HTMLButtonElement>('[data-delete-file]')
+    .forEach((btn) =>
+      btn.addEventListener('click', async (event) => {
+        event.stopPropagation();
+        const filePath = btn.dataset.deleteFile ?? '';
+        if (!confirm(`Delete "${nameOf(filePath)}"? This cannot be undone.`)) return;
+        try {
+          await apiFetch(`/api/raw-files/${filePath.split('/').map(encodeURIComponent).join('/')}`, { method: 'DELETE' });
+          await loadFiles();
+        } catch (err: any) {
+          alert(err.message);
+        }
+      }),
+    );
+  el('file-grid')
     .querySelectorAll<HTMLSelectElement>('[data-move]')
     .forEach((select) =>
       select.addEventListener('change', async () => {
@@ -430,7 +581,7 @@ async function openPreview(filePath: string) {
   modal.classList.remove('hidden');
   modal.innerHTML = `
     <div class="fixed inset-0 z-50 flex items-center justify-center bg-gray-900/40 p-4">
-      <div class="flex max-h-[85vh] w-full max-w-4xl flex-col overflow-hidden rounded-xl bg-white shadow-panel">
+      <div class="flex max-h-[90vh] w-full max-w-5xl flex-col overflow-hidden rounded-xl bg-white shadow-panel">
         <div class="flex items-center justify-between border-b border-gray-100 px-5 py-3">
           <h2 class="truncate text-sm font-medium text-gray-900">${escapeHtml(filePath)}</h2>
           <button id="close-preview" class="rounded-lg p-1.5 text-gray-500 hover:bg-gray-100">✕</button>
@@ -448,21 +599,102 @@ async function openPreview(filePath: string) {
   try {
     const detail = await apiFetch(`/api/raw-files/${filePath.split('/').map(encodeURIComponent).join('/')}`);
     const page = detail.synthesized_pages?.[0];
+    const rawUrl = `${apiBase}${detail.raw_url}`;
+
+    let sourcePanel: string;
+    if (detail.is_pdf) {
+      sourcePanel = `<embed src="${escapeHtml(rawUrl)}" type="application/pdf" class="h-[65vh] w-full bg-gray-50" />`;
+    } else if (detail.is_image) {
+      sourcePanel = `<div class="flex h-[65vh] items-center justify-center bg-gray-50 p-2"><img src="${escapeHtml(
+        rawUrl,
+      )}" alt="${escapeHtml(filePath)}" class="max-h-full max-w-full object-contain" /></div>`;
+    } else if (detail.is_text) {
+      sourcePanel = `<pre class="max-h-[65vh] overflow-auto p-3 font-mono text-xs text-gray-800 whitespace-pre-wrap">${escapeHtml(detail.content ?? '')}</pre>`;
+    } else {
+      sourcePanel = `
+        <div class="flex h-40 flex-col items-center justify-center gap-2 p-4 text-center">
+          <p class="text-sm text-gray-500">No inline preview for this file type (${escapeHtml(detail.mime ?? 'unknown')}).</p>
+          <a href="${escapeHtml(rawUrl)}" target="_blank" rel="noopener" class="rounded-lg bg-accent px-3 py-1.5 text-sm font-medium text-white hover:bg-accent-dark">Open / download</a>
+        </div>`;
+    }
+
     document.getElementById('preview-body')!.innerHTML = `
       <p class="mb-4 text-sm text-gray-500">${escapeHtml(detail.status)} · ${detail.synthesized_pages.length} wiki page(s)</p>
       <div class="grid gap-4 lg:grid-cols-2">
         <div class="overflow-hidden rounded-xl border border-source-border">
-          <div class="border-b border-source-border bg-source-bg px-3 py-2 text-sm font-medium text-source">Source (raw, unedited)</div>
-          <pre class="max-h-96 overflow-auto p-3 font-mono text-xs text-gray-800 whitespace-pre-wrap">${escapeHtml(detail.content)}</pre>
+          <div class="flex items-center justify-between border-b border-source-border bg-source-bg px-3 py-2 text-sm font-medium text-source">
+            <span>Source (raw, unedited)</span>
+            <a href="${escapeHtml(rawUrl)}" target="_blank" rel="noopener" class="text-xs font-normal text-source hover:underline">Open in new tab ↗</a>
+          </div>
+          ${sourcePanel}
         </div>
         <div class="overflow-hidden rounded-xl border border-generated-border">
           <div class="border-b border-generated-border bg-generated-bg px-3 py-2 text-sm font-medium text-generated">${page ? escapeHtml(page.title) : 'Generated wiki page'}</div>
-          ${page ? `<pre class="max-h-96 overflow-auto p-3 text-xs text-gray-800 whitespace-pre-wrap">${escapeHtml(page.body)}</pre>` : '<p class="p-4 text-sm text-gray-500">No wiki page yet. Run the compiler.</p>'}
+          ${page ? `<pre class="max-h-[65vh] overflow-auto p-3 text-xs text-gray-800 whitespace-pre-wrap">${escapeHtml(page.body)}</pre>` : '<p class="p-4 text-sm text-gray-500">No wiki page yet. Run the compiler.</p>'}
         </div>
       </div>`;
   } catch (err: any) {
     document.getElementById('preview-body')!.innerHTML = `<p class="text-sm text-red-600">${escapeHtml(err.message)}</p>`;
   }
+}
+
+async function uploadFilesToCurrentFolder(fileList: FileList | File[]) {
+  const files = Array.from(fileList);
+  if (!files.length) return;
+  const status = el('upload-status');
+  status.classList.remove('hidden');
+  status.textContent = `Uploading ${files.length} file${files.length === 1 ? '' : 's'}…`;
+  const form = new FormData();
+  form.set('parent', currentPath);
+  files.forEach((f) => form.append('files', f));
+  try {
+    const res = await fetch(`${apiBase}/api/raw-files/upload`, { method: 'POST', body: form });
+    if (!res.ok) {
+      let message = await res.text();
+      try {
+        message = JSON.parse(message).detail ?? message;
+      } catch {
+        /* plain text */
+      }
+      throw new Error(message || `Upload failed (${res.status})`);
+    }
+    status.textContent = `Uploaded ${files.length} file${files.length === 1 ? '' : 's'}.`;
+    await loadFiles();
+    setTimeout(() => status.classList.add('hidden'), 2500);
+  } catch (err: any) {
+    status.textContent = `Upload failed: ${err.message}`;
+  }
+}
+
+function initUpload() {
+  const toggle = el('upload-files-toggle');
+  const input = el('upload-files-input') as HTMLInputElement;
+  toggle.addEventListener('click', () => input.click());
+  input.addEventListener('change', () => {
+    if (input.files) uploadFilesToCurrentFolder(input.files);
+    input.value = '';
+  });
+
+  const dropzone = el('file-grid');
+  let dragDepth = 0;
+  dropzone.addEventListener('dragover', (event) => {
+    event.preventDefault();
+  });
+  dropzone.addEventListener('dragenter', (event) => {
+    event.preventDefault();
+    dragDepth += 1;
+    dropzone.classList.add('bg-source-bg/60', 'ring-2', 'ring-source-border');
+  });
+  dropzone.addEventListener('dragleave', () => {
+    dragDepth = Math.max(0, dragDepth - 1);
+    if (dragDepth === 0) dropzone.classList.remove('bg-source-bg/60', 'ring-2', 'ring-source-border');
+  });
+  dropzone.addEventListener('drop', (event) => {
+    event.preventDefault();
+    dragDepth = 0;
+    dropzone.classList.remove('bg-source-bg/60', 'ring-2', 'ring-source-border');
+    if (event.dataTransfer?.files?.length) uploadFilesToCurrentFolder(event.dataTransfer.files);
+  });
 }
 
 function initExplorer() {
@@ -499,8 +731,11 @@ function initExplorer() {
 }
 
 initBuild();
+initSourcesPicker();
+initRunOptions();
 initSources();
 initExplorer();
+initUpload();
 loadStatCards();
 loadSources();
 loadFiles();

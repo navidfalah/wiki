@@ -1,0 +1,80 @@
+{
+  "id": "llm-wiki-pipeline",
+  "title": "LLM Wiki Pipeline",
+  "description": "",
+  "source": "@site/docs/llm-wiki-pipeline.md",
+  "sourceDirName": ".",
+  "slug": "/llm-wiki-pipeline",
+  "permalink": "/docs/llm-wiki-pipeline",
+  "draft": false,
+  "unlisted": false,
+  "tags": [
+    {
+      "inline": true,
+      "label": "contradictions-surfaced",
+      "permalink": "/docs/tags/contradictions-surfaced"
+    },
+    {
+      "inline": true,
+      "label": "cross-linking",
+      "permalink": "/docs/tags/cross-linking"
+    },
+    {
+      "inline": true,
+      "label": "docusaurus",
+      "permalink": "/docs/tags/docusaurus"
+    },
+    {
+      "inline": true,
+      "label": "heuristic-mode",
+      "permalink": "/docs/tags/heuristic-mode"
+    },
+    {
+      "inline": true,
+      "label": "karpathy-pattern",
+      "permalink": "/docs/tags/karpathy-pattern"
+    },
+    {
+      "inline": true,
+      "label": "llm-api-key",
+      "permalink": "/docs/tags/llm-api-key"
+    },
+    {
+      "inline": true,
+      "label": "llm-wiki-pipeline",
+      "permalink": "/docs/tags/llm-wiki-pipeline"
+    },
+    {
+      "inline": true,
+      "label": "meshsync",
+      "permalink": "/docs/tags/meshsync"
+    }
+  ],
+  "version": "current",
+  "frontMatter": {
+    "id": "llm-wiki-pipeline",
+    "title": "LLM Wiki Pipeline",
+    "tags": [
+      "contradictions-surfaced",
+      "cross-linking",
+      "docusaurus",
+      "heuristic-mode",
+      "karpathy-pattern",
+      "llm-api-key",
+      "llm-wiki-pipeline",
+      "meshsync"
+    ],
+    "last_updated": "2026-06-25T07:33:39.701557+00:00",
+    "sidebar_label": "LLM Wiki Pipeline",
+    "slug": "/llm-wiki-pipeline"
+  },
+  "sidebar": "wikiSidebar",
+  "previous": {
+    "title": "LLM Applications",
+    "permalink": "/docs/llm-applications"
+  },
+  "next": {
+    "title": "Local-first Gadgets",
+    "permalink": "/docs/local-first-gadgets"
+  }
+}

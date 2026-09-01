@@ -1,0 +1,80 @@
+{
+  "id": "branding-strategy",
+  "title": "Branding Strategy",
+  "description": "Overview",
+  "source": "@site/docs/branding-strategy.md",
+  "sourceDirName": ".",
+  "slug": "/branding-strategy",
+  "permalink": "/docs/branding-strategy",
+  "draft": false,
+  "unlisted": false,
+  "tags": [
+    {
+      "inline": true,
+      "label": "aurora-labs",
+      "permalink": "/docs/tags/aurora-labs"
+    },
+    {
+      "inline": true,
+      "label": "branding-strategy",
+      "permalink": "/docs/tags/branding-strategy"
+    },
+    {
+      "inline": true,
+      "label": "cloudfree-sensor",
+      "permalink": "/docs/tags/cloudfree-sensor"
+    },
+    {
+      "inline": true,
+      "label": "gritnode",
+      "permalink": "/docs/tags/gritnode"
+    },
+    {
+      "inline": true,
+      "label": "jonah",
+      "permalink": "/docs/tags/jonah"
+    },
+    {
+      "inline": true,
+      "label": "karpathygarden",
+      "permalink": "/docs/tags/karpathygarden"
+    },
+    {
+      "inline": true,
+      "label": "mira",
+      "permalink": "/docs/tags/mira"
+    },
+    {
+      "inline": true,
+      "label": "nova-widget",
+      "permalink": "/docs/tags/nova-widget"
+    }
+  ],
+  "version": "current",
+  "frontMatter": {
+    "id": "branding-strategy",
+    "title": "Branding Strategy",
+    "tags": [
+      "aurora-labs",
+      "branding-strategy",
+      "cloudfree-sensor",
+      "gritnode",
+      "jonah",
+      "karpathygarden",
+      "mira",
+      "nova-widget"
+    ],
+    "last_updated": "2026-06-25T07:14:05.236050+00:00",
+    "sidebar_label": "Branding Strategy",
+    "slug": "/branding-strategy"
+  },
+  "sidebar": "wikiSidebar",
+  "previous": {
+    "title": "Bluetooth Low Energy (BLE)",
+    "permalink": "/docs/bluetooth-low-energy-ble"
+  },
+  "next": {
+    "title": "Bug Tracking",
+    "permalink": "/docs/bug-tracking"
+  }
+}

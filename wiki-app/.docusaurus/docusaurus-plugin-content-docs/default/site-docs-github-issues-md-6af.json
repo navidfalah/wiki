@@ -1,0 +1,80 @@
+{
+  "id": "github-issues",
+  "title": "GitHub Issues",
+  "description": "Overview",
+  "source": "@site/docs/github-issues.md",
+  "sourceDirName": ".",
+  "slug": "/github-issues",
+  "permalink": "/docs/github-issues",
+  "draft": false,
+  "unlisted": false,
+  "tags": [
+    {
+      "inline": true,
+      "label": "aurora-labs",
+      "permalink": "/docs/tags/aurora-labs"
+    },
+    {
+      "inline": true,
+      "label": "beta-release",
+      "permalink": "/docs/tags/beta-release"
+    },
+    {
+      "inline": true,
+      "label": "github-issue",
+      "permalink": "/docs/tags/github-issue"
+    },
+    {
+      "inline": true,
+      "label": "github-issues",
+      "permalink": "/docs/tags/github-issues"
+    },
+    {
+      "inline": true,
+      "label": "meshfan",
+      "permalink": "/docs/tags/meshfan"
+    },
+    {
+      "inline": true,
+      "label": "meshsync",
+      "permalink": "/docs/tags/meshsync"
+    },
+    {
+      "inline": true,
+      "label": "mira-chen",
+      "permalink": "/docs/tags/mira-chen"
+    },
+    {
+      "inline": true,
+      "label": "node-cap",
+      "permalink": "/docs/tags/node-cap"
+    }
+  ],
+  "version": "current",
+  "frontMatter": {
+    "id": "github-issues",
+    "title": "GitHub Issues",
+    "tags": [
+      "aurora-labs",
+      "beta-release",
+      "github-issue",
+      "github-issues",
+      "meshfan",
+      "meshsync",
+      "mira-chen",
+      "node-cap"
+    ],
+    "last_updated": "2026-06-25T07:24:04.909087+00:00",
+    "sidebar_label": "GitHub Issues",
+    "slug": "/github-issues"
+  },
+  "sidebar": "wikiSidebar",
+  "previous": {
+    "title": "Garden Sensors",
+    "permalink": "/docs/garden-sensors"
+  },
+  "next": {
+    "title": "Grocery List",
+    "permalink": "/docs/grocery-list"
+  }
+}

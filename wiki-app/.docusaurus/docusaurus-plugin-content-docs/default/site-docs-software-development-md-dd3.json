@@ -1,0 +1,80 @@
+{
+  "id": "software-development",
+  "title": "Software Development",
+  "description": "Overview",
+  "source": "@site/docs/software-development.md",
+  "sourceDirName": ".",
+  "slug": "/software-development",
+  "permalink": "/docs/software-development",
+  "draft": false,
+  "unlisted": false,
+  "tags": [
+    {
+      "inline": true,
+      "label": "software development",
+      "permalink": "/docs/tags/software-development"
+    },
+    {
+      "inline": true,
+      "label": "backlog grooming",
+      "permalink": "/docs/tags/backlog-grooming"
+    },
+    {
+      "inline": true,
+      "label": "wiki management",
+      "permalink": "/docs/tags/wiki-management"
+    },
+    {
+      "inline": true,
+      "label": "meshsync",
+      "permalink": "/docs/tags/meshsync"
+    },
+    {
+      "inline": true,
+      "label": "aurora labs",
+      "permalink": "/docs/tags/aurora-labs"
+    },
+    {
+      "inline": true,
+      "label": "beta testing",
+      "permalink": "/docs/tags/beta-testing"
+    },
+    {
+      "inline": true,
+      "label": "power management",
+      "permalink": "/docs/tags/power-management"
+    },
+    {
+      "inline": true,
+      "label": "contradictions",
+      "permalink": "/docs/tags/contradictions"
+    }
+  ],
+  "version": "current",
+  "frontMatter": {
+    "id": "software-development",
+    "title": "Software Development",
+    "tags": [
+      "software development",
+      "backlog grooming",
+      "wiki management",
+      "meshsync",
+      "aurora labs",
+      "beta testing",
+      "power management",
+      "contradictions"
+    ],
+    "last_updated": "2026-06-25T07:58:04.710692+00:00",
+    "sidebar_label": "Software Development",
+    "slug": "/software-development"
+  },
+  "sidebar": "wikiSidebar",
+  "previous": {
+    "title": "Software Bugs",
+    "permalink": "/docs/software-bugs"
+  },
+  "next": {
+    "title": "Software Engineering",
+    "permalink": "/docs/software-engineering"
+  }
+}

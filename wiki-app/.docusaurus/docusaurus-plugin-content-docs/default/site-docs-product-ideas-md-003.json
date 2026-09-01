@@ -1,0 +1,80 @@
+{
+  "id": "product-ideas",
+  "title": "Product Ideas",
+  "description": "Overview",
+  "source": "@site/docs/product-ideas.md",
+  "sourceDirName": ".",
+  "slug": "/product-ideas",
+  "permalink": "/docs/product-ideas",
+  "draft": false,
+  "unlisted": false,
+  "tags": [
+    {
+      "inline": true,
+      "label": "color-coded-led-battery-state",
+      "permalink": "/docs/tags/color-coded-led-battery-state"
+    },
+    {
+      "inline": true,
+      "label": "community-garden-network",
+      "permalink": "/docs/tags/community-garden-network"
+    },
+    {
+      "inline": true,
+      "label": "document-contradictions-explicitly",
+      "permalink": "/docs/tags/document-contradictions-explicitly"
+    },
+    {
+      "inline": true,
+      "label": "documentation-pipeline",
+      "permalink": "/docs/tags/documentation-pipeline"
+    },
+    {
+      "inline": true,
+      "label": "docusaurus",
+      "permalink": "/docs/tags/docusaurus"
+    },
+    {
+      "inline": true,
+      "label": "fake-competitor-name-generator",
+      "permalink": "/docs/tags/fake-competitor-name-generator"
+    },
+    {
+      "inline": true,
+      "label": "meshsink",
+      "permalink": "/docs/tags/meshsink"
+    },
+    {
+      "inline": true,
+      "label": "meshsync",
+      "permalink": "/docs/tags/meshsync"
+    }
+  ],
+  "version": "current",
+  "frontMatter": {
+    "id": "product-ideas",
+    "title": "Product Ideas",
+    "tags": [
+      "color-coded-led-battery-state",
+      "community-garden-network",
+      "document-contradictions-explicitly",
+      "documentation-pipeline",
+      "docusaurus",
+      "fake-competitor-name-generator",
+      "meshsink",
+      "meshsync"
+    ],
+    "last_updated": "2026-06-25T07:49:28.970095+00:00",
+    "sidebar_label": "Product Ideas",
+    "slug": "/product-ideas"
+  },
+  "sidebar": "wikiSidebar",
+  "previous": {
+    "title": "Product Features",
+    "permalink": "/docs/product-features"
+  },
+  "next": {
+    "title": "Product Information",
+    "permalink": "/docs/product-information"
+  }
+}

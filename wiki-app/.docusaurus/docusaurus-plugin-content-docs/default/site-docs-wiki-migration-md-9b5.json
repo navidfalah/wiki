@@ -1,0 +1,80 @@
+{
+  "id": "wiki-migration",
+  "title": "Wiki Migration",
+  "description": "Overview",
+  "source": "@site/docs/wiki-migration.md",
+  "sourceDirName": ".",
+  "slug": "/wiki-migration",
+  "permalink": "/docs/wiki-migration",
+  "draft": false,
+  "unlisted": false,
+  "tags": [
+    {
+      "inline": true,
+      "label": "wiki migration",
+      "permalink": "/docs/tags/wiki-migration"
+    },
+    {
+      "inline": true,
+      "label": "notion export",
+      "permalink": "/docs/tags/notion-export"
+    },
+    {
+      "inline": true,
+      "label": "markdown export",
+      "permalink": "/docs/tags/markdown-export"
+    },
+    {
+      "inline": true,
+      "label": "codebase merging",
+      "permalink": "/docs/tags/codebase-merging"
+    },
+    {
+      "inline": true,
+      "label": "meshsync",
+      "permalink": "/docs/tags/meshsync"
+    },
+    {
+      "inline": true,
+      "label": "ble",
+      "permalink": "/docs/tags/ble"
+    },
+    {
+      "inline": true,
+      "label": "nova widget",
+      "permalink": "/docs/tags/nova-widget"
+    },
+    {
+      "inline": true,
+      "label": "teabuddy",
+      "permalink": "/docs/tags/teabuddy"
+    }
+  ],
+  "version": "current",
+  "frontMatter": {
+    "id": "wiki-migration",
+    "title": "Wiki Migration",
+    "tags": [
+      "wiki migration",
+      "notion export",
+      "markdown export",
+      "codebase merging",
+      "meshsync",
+      "ble",
+      "nova widget",
+      "teabuddy"
+    ],
+    "last_updated": "2026-06-25T08:05:42.455669+00:00",
+    "sidebar_label": "Wiki Migration",
+    "slug": "/wiki-migration"
+  },
+  "sidebar": "wikiSidebar",
+  "previous": {
+    "title": "Wiki Management",
+    "permalink": "/docs/wiki-management"
+  },
+  "next": {
+    "title": "Wireless Communication Protocols",
+    "permalink": "/docs/wireless-communication-protocols"
+  }
+}

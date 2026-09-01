@@ -1,0 +1,80 @@
+{
+  "id": "documentation-management",
+  "title": "Documentation Management",
+  "description": "",
+  "source": "@site/docs/documentation-management.md",
+  "sourceDirName": ".",
+  "slug": "/documentation-management",
+  "permalink": "/docs/documentation-management",
+  "draft": false,
+  "unlisted": false,
+  "tags": [
+    {
+      "inline": true,
+      "label": "alexkim",
+      "permalink": "/docs/tags/alexkim"
+    },
+    {
+      "inline": true,
+      "label": "aurora-mira",
+      "permalink": "/docs/tags/aurora-mira"
+    },
+    {
+      "inline": true,
+      "label": "compile-run",
+      "permalink": "/docs/tags/compile-run"
+    },
+    {
+      "inline": true,
+      "label": "contradiction-flag",
+      "permalink": "/docs/tags/contradiction-flag"
+    },
+    {
+      "inline": true,
+      "label": "documentation-management",
+      "permalink": "/docs/tags/documentation-management"
+    },
+    {
+      "inline": true,
+      "label": "firmware",
+      "permalink": "/docs/tags/firmware"
+    },
+    {
+      "inline": true,
+      "label": "herbal-box-copy",
+      "permalink": "/docs/tags/herbal-box-copy"
+    },
+    {
+      "inline": true,
+      "label": "jamieqa",
+      "permalink": "/docs/tags/jamieqa"
+    }
+  ],
+  "version": "current",
+  "frontMatter": {
+    "id": "documentation-management",
+    "title": "Documentation Management",
+    "tags": [
+      "alexkim",
+      "aurora-mira",
+      "compile-run",
+      "contradiction-flag",
+      "documentation-management",
+      "firmware",
+      "herbal-box-copy",
+      "jamieqa"
+    ],
+    "last_updated": "2026-06-25T07:20:47.970437+00:00",
+    "sidebar_label": "Documentation Management",
+    "slug": "/documentation-management"
+  },
+  "sidebar": "wikiSidebar",
+  "previous": {
+    "title": "Development Tools",
+    "permalink": "/docs/development-tools"
+  },
+  "next": {
+    "title": "Documentation",
+    "permalink": "/docs/documentation"
+  }
+}

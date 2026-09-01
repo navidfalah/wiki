@@ -1,0 +1,29 @@
+<%- include('partials/head', { title, apiBase, active }) %>
+
+<h1 class="text-2xl font-semibold tracking-tight text-gray-900">Logs</h1>
+<p class="mt-1 max-w-2xl text-sm text-gray-600">
+  Every change made in this app — files added or removed, folders created, the compiler
+  started or stopped, settings updated — with who did it and when. Read-only browsing
+  (previewing a file, asking chat a question) isn't logged here.
+</p>
+
+<div class="mt-4 flex items-center gap-2">
+  <span id="logs-status" class="text-xs text-gray-500"></span>
+  <button id="logs-refresh" type="button" class="ml-auto inline-flex items-center justify-center gap-2 rounded-lg border border-gray-300 bg-white px-3 py-1.5 text-sm font-medium text-gray-700 hover:bg-gray-50">Refresh</button>
+</div>
+
+<div class="mt-3 overflow-hidden rounded-xl border border-gray-200 bg-white shadow-card">
+  <table class="w-full text-left text-sm">
+    <thead class="border-b border-gray-100 bg-gray-50 text-xs uppercase tracking-wide text-gray-500">
+      <tr>
+        <th class="px-4 py-2.5 font-medium">When</th>
+        <th class="px-4 py-2.5 font-medium">User</th>
+        <th class="px-4 py-2.5 font-medium">Action</th>
+        <th class="px-4 py-2.5 font-medium">Detail</th>
+      </tr>
+    </thead>
+    <tbody id="logs-body" class="divide-y divide-gray-100"></tbody>
+  </table>
+</div>
+
+<%- include('partials/foot', { clientScript }) %>

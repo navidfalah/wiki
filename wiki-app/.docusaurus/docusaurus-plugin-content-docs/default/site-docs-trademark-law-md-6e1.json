@@ -1,0 +1,104 @@
+{
+  "id": "trademark-law",
+  "title": "Trademark Law",
+  "description": "Overview",
+  "source": "@site/docs/trademark-law.md",
+  "sourceDirName": ".",
+  "slug": "/trademark-law",
+  "permalink": "/docs/trademark-law",
+  "draft": false,
+  "unlisted": false,
+  "tags": [
+    {
+      "inline": true,
+      "label": "trademark",
+      "permalink": "/docs/tags/trademark"
+    },
+    {
+      "inline": true,
+      "label": "legal",
+      "permalink": "/docs/tags/legal"
+    },
+    {
+      "inline": true,
+      "label": "trademark-clearance",
+      "permalink": "/docs/tags/trademark-clearance"
+    },
+    {
+      "inline": true,
+      "label": "trademark-conflict",
+      "permalink": "/docs/tags/trademark-conflict"
+    },
+    {
+      "inline": true,
+      "label": "crowded-mark",
+      "permalink": "/docs/tags/crowded-mark"
+    },
+    {
+      "inline": true,
+      "label": "co-marketing-guidelines",
+      "permalink": "/docs/tags/co-marketing-guidelines"
+    },
+    {
+      "inline": true,
+      "label": "class-21-kitchen-gadgets",
+      "permalink": "/docs/tags/class-21-kitchen-gadgets"
+    },
+    {
+      "inline": true,
+      "label": "meshsync",
+      "permalink": "/docs/tags/meshsync"
+    },
+    {
+      "inline": true,
+      "label": "teabuddy",
+      "permalink": "/docs/tags/teabuddy"
+    },
+    {
+      "inline": true,
+      "label": "aurora-labs",
+      "permalink": "/docs/tags/aurora-labs"
+    },
+    {
+      "inline": true,
+      "label": "mira-chen",
+      "permalink": "/docs/tags/mira-chen"
+    },
+    {
+      "inline": true,
+      "label": "alex-kim",
+      "permalink": "/docs/tags/alex-kim"
+    }
+  ],
+  "version": "current",
+  "frontMatter": {
+    "id": "trademark-law",
+    "title": "Trademark Law",
+    "tags": [
+      "trademark",
+      "legal",
+      "trademark-clearance",
+      "trademark-conflict",
+      "crowded-mark",
+      "co-marketing-guidelines",
+      "class-21-kitchen-gadgets",
+      "meshsync",
+      "teabuddy",
+      "aurora-labs",
+      "mira-chen",
+      "alex-kim"
+    ],
+    "last_updated": "2026-06-25T08:03:55.387186+00:00",
+    "sidebar_label": "Trademark Law",
+    "slug": "/trademark-law"
+  },
+  "sidebar": "wikiSidebar",
+  "previous": {
+    "title": "Testing",
+    "permalink": "/docs/testing"
+  },
+  "next": {
+    "title": "Training",
+    "permalink": "/docs/training"
+  }
+}

@@ -1,0 +1,80 @@
+{
+  "id": "project-management",
+  "title": "Project Management",
+  "description": "Overview",
+  "source": "@site/docs/project-management.md",
+  "sourceDirName": ".",
+  "slug": "/project-management",
+  "permalink": "/docs/project-management",
+  "draft": false,
+  "unlisted": false,
+  "tags": [
+    {
+      "inline": true,
+      "label": "aurora-labs",
+      "permalink": "/docs/tags/aurora-labs"
+    },
+    {
+      "inline": true,
+      "label": "teabuddy",
+      "permalink": "/docs/tags/teabuddy"
+    },
+    {
+      "inline": true,
+      "label": "sprint-management",
+      "permalink": "/docs/tags/sprint-management"
+    },
+    {
+      "inline": true,
+      "label": "backlog",
+      "permalink": "/docs/tags/backlog"
+    },
+    {
+      "inline": true,
+      "label": "action-items",
+      "permalink": "/docs/tags/action-items"
+    },
+    {
+      "inline": true,
+      "label": "meshsync",
+      "permalink": "/docs/tags/meshsync"
+    },
+    {
+      "inline": true,
+      "label": "battery-management",
+      "permalink": "/docs/tags/battery-management"
+    },
+    {
+      "inline": true,
+      "label": "documentation",
+      "permalink": "/docs/tags/documentation"
+    }
+  ],
+  "version": "current",
+  "frontMatter": {
+    "id": "project-management",
+    "title": "Project Management",
+    "tags": [
+      "aurora-labs",
+      "teabuddy",
+      "sprint-management",
+      "backlog",
+      "action-items",
+      "meshsync",
+      "battery-management",
+      "documentation"
+    ],
+    "last_updated": "2026-06-25T07:54:02.344927+00:00",
+    "sidebar_label": "Project Management",
+    "slug": "/project-management"
+  },
+  "sidebar": "wikiSidebar",
+  "previous": {
+    "title": "Project Ideas",
+    "permalink": "/docs/project-ideas"
+  },
+  "next": {
+    "title": "Protocol Design",
+    "permalink": "/docs/protocol-design"
+  }
+}

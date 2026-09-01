@@ -1,0 +1,80 @@
+{
+  "id": "software-releases",
+  "title": "Software Releases",
+  "description": "",
+  "source": "@site/docs/software-releases.md",
+  "sourceDirName": ".",
+  "slug": "/software-releases",
+  "permalink": "/docs/software-releases",
+  "draft": false,
+  "unlisted": false,
+  "tags": [
+    {
+      "inline": true,
+      "label": "auroralabs",
+      "permalink": "/docs/tags/auroralabs"
+    },
+    {
+      "inline": true,
+      "label": "beta",
+      "permalink": "/docs/tags/beta"
+    },
+    {
+      "inline": true,
+      "label": "cr2032",
+      "permalink": "/docs/tags/cr-2032"
+    },
+    {
+      "inline": true,
+      "label": "cr2450",
+      "permalink": "/docs/tags/cr-2450"
+    },
+    {
+      "inline": true,
+      "label": "maker-faire",
+      "permalink": "/docs/tags/maker-faire"
+    },
+    {
+      "inline": true,
+      "label": "meshsync",
+      "permalink": "/docs/tags/meshsync"
+    },
+    {
+      "inline": true,
+      "label": "mqtt-schema-v2",
+      "permalink": "/docs/tags/mqtt-schema-v-2"
+    },
+    {
+      "inline": true,
+      "label": "nodes-max",
+      "permalink": "/docs/tags/nodes-max"
+    }
+  ],
+  "version": "current",
+  "frontMatter": {
+    "id": "software-releases",
+    "title": "Software Releases",
+    "tags": [
+      "auroralabs",
+      "beta",
+      "cr2032",
+      "cr2450",
+      "maker-faire",
+      "meshsync",
+      "mqtt-schema-v2",
+      "nodes-max"
+    ],
+    "last_updated": "2026-06-25T07:58:25.421462+00:00",
+    "sidebar_label": "Software Releases",
+    "slug": "/software-releases"
+  },
+  "sidebar": "wikiSidebar",
+  "previous": {
+    "title": "Software Engineering",
+    "permalink": "/docs/software-engineering"
+  },
+  "next": {
+    "title": "Software Updates",
+    "permalink": "/docs/software-updates"
+  }
+}

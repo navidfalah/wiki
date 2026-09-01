@@ -1,0 +1,80 @@
+{
+  "id": "meeting-notes",
+  "title": "Meeting Notes",
+  "description": "Overview",
+  "source": "@site/docs/meeting-notes.md",
+  "sourceDirName": ".",
+  "slug": "/meeting-notes",
+  "permalink": "/docs/meeting-notes",
+  "draft": false,
+  "unlisted": false,
+  "tags": [
+    {
+      "inline": true,
+      "label": "meeting-notes",
+      "permalink": "/docs/tags/meeting-notes"
+    },
+    {
+      "inline": true,
+      "label": "mira",
+      "permalink": "/docs/tags/mira"
+    },
+    {
+      "inline": true,
+      "label": "jonah",
+      "permalink": "/docs/tags/jonah"
+    },
+    {
+      "inline": true,
+      "label": "competitor-teardown-blog",
+      "permalink": "/docs/tags/competitor-teardown-blog"
+    },
+    {
+      "inline": true,
+      "label": "ip54-beta",
+      "permalink": "/docs/tags/ip-54-beta"
+    },
+    {
+      "inline": true,
+      "label": "beta-tester-list",
+      "permalink": "/docs/tags/beta-tester-list"
+    },
+    {
+      "inline": true,
+      "label": "obsidian",
+      "permalink": "/docs/tags/obsidian"
+    },
+    {
+      "inline": true,
+      "label": "mesh-stability",
+      "permalink": "/docs/tags/mesh-stability"
+    }
+  ],
+  "version": "current",
+  "frontMatter": {
+    "id": "meeting-notes",
+    "title": "Meeting Notes",
+    "tags": [
+      "meeting-notes",
+      "mira",
+      "jonah",
+      "competitor-teardown-blog",
+      "ip54-beta",
+      "beta-tester-list",
+      "obsidian",
+      "mesh-stability"
+    ],
+    "last_updated": "2026-06-25T07:40:16.637156+00:00",
+    "sidebar_label": "Meeting Notes",
+    "slug": "/meeting-notes"
+  },
+  "sidebar": "wikiSidebar",
+  "previous": {
+    "title": "Mechanical Design",
+    "permalink": "/docs/mechanical-design"
+  },
+  "next": {
+    "title": "Mesh Networking",
+    "permalink": "/docs/mesh-networking"
+  }
+}

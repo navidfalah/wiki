@@ -1,0 +1,80 @@
+{
+  "id": "meshsync",
+  "title": "Meshsync",
+  "description": "Overview",
+  "source": "@site/docs/meshsync.md",
+  "sourceDirName": ".",
+  "slug": "/meshsync",
+  "permalink": "/docs/meshsync",
+  "draft": false,
+  "unlisted": false,
+  "tags": [
+    {
+      "inline": true,
+      "label": "aurora-labs",
+      "permalink": "/docs/tags/aurora-labs"
+    },
+    {
+      "inline": true,
+      "label": "beta-release",
+      "permalink": "/docs/tags/beta-release"
+    },
+    {
+      "inline": true,
+      "label": "github-issue",
+      "permalink": "/docs/tags/github-issue"
+    },
+    {
+      "inline": true,
+      "label": "meshfan",
+      "permalink": "/docs/tags/meshfan"
+    },
+    {
+      "inline": true,
+      "label": "meshsync",
+      "permalink": "/docs/tags/meshsync"
+    },
+    {
+      "inline": true,
+      "label": "mira-chen",
+      "permalink": "/docs/tags/mira-chen"
+    },
+    {
+      "inline": true,
+      "label": "node-cap",
+      "permalink": "/docs/tags/node-cap"
+    },
+    {
+      "inline": true,
+      "label": "parent-election-rewrite",
+      "permalink": "/docs/tags/parent-election-rewrite"
+    }
+  ],
+  "version": "current",
+  "frontMatter": {
+    "id": "meshsync",
+    "title": "Meshsync",
+    "tags": [
+      "aurora-labs",
+      "beta-release",
+      "github-issue",
+      "meshfan",
+      "meshsync",
+      "mira-chen",
+      "node-cap",
+      "parent-election-rewrite"
+    ],
+    "last_updated": "2026-06-25T07:41:34.102522+00:00",
+    "sidebar_label": "Meshsync",
+    "slug": "/meshsync"
+  },
+  "sidebar": "wikiSidebar",
+  "previous": {
+    "title": "MeshSync Protocol",
+    "permalink": "/docs/meshsync-protocol"
+  },
+  "next": {
+    "title": "Mobile App Development",
+    "permalink": "/docs/mobile-app-development"
+  }
+}

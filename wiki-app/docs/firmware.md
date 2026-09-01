@@ -3,54 +3,46 @@ id: firmware
 title: Firmware
 tags:
   - firmware
+  - ip54-splash-resistance
+  - jonah
   - meshsync
-  - ota
-  - 15-min-interval
-  - nrf52840
   - nova-widget
-  - hardware-revision-c
-  - hobbyist-market
-last_updated: "2026-06-25T07:23:19.111446+00:00"
+  - wiki
+last_updated: "2026-09-01T19:18:46.960628+00:00"
 sidebar_label: Firmware
 slug: /firmware
 ---
+
+<!-- AUTO-GENERATED — compiled by the LLM Wiki compiler from data/raw/ sources into compiler/temp_output/, then linked here. Edits to this file are overwritten on the next compile: edit sources under data/raw/, or manual cross-links in data/link_overrides.json, instead. -->
 
 # Firmware
 
 ## Overview
 
-Firmware refers to the embedded software that provides low-level control for a device's specific hardware. In the context of the Nova Widget, the firmware is built around the MeshSync protocol, managing device operations, data collection, and communication. It is designed to run on an nRF52840 microcontroller and interfaces with components like the capacitive soil probe.
+This page details specifications and requirements associated with the [Nova Widget](./nova-widget.md) [hardware](./hardware.md) revision C, with a specific focus on its [firmware](./firmware.md) baseline, [mechanical design](./mechanical-design.md), and electrical components.
 
 ## Key Details
 
-*   **Core Protocol**: The firmware primarily utilizes **MeshSync**.
-    *   The baseline version specified for hardware revision C is **MeshSync 0.3.8**.
-*   **Default Interval**: The default operational interval for data transmission or reporting is **15 minutes**.
-*   **Over-The-Air (OTA) Updates**: OTA firmware updates are currently **deferred**, indicating they are planned for future implementation but not active.
-*   **Hardware Platform**: The firmware operates on an **nRF52840** microcontroller unit (MCU).
-*   **Sensor Integration**: It is designed to interface with a **capacitive soil probe** (30mm length).
-*   **Product Context**: This firmware is integral to the Nova Widget, including variants targeted at the **hobbyist market**.
+- **Firmware Baseline:** MeshSync 0.3.8 operating on a 15-minute default interval.
+- **Mechanical Enclosure:** PETG beta, pebble shape (designated as Jonah).
+- **Gasket and Water Resistance:** Silicone 50A gasket providing IP54 splash resistance (an IP65 tooled variant was deferred following a $7,850 quote).
+- **Electrical Components:** Powered by an nRF52840 MCU and a CR2032 [battery](./battery-life.md) with a revision C holder designed to fix previous rattling issues. It also includes a 30mm capacitive [soil probes](./soil-probes.md).
+- **Labeling Instructions:** Explicitly prohibits printing CR2450 to prevent a recurrence of ticket #2201 caused by a previous misprint.
 
 ## Related Entities
 
-*   **Nova Widget**: The primary product line utilizing this firmware.
-*   **nRF52840**: The microcontroller unit (MCU) on which the firmware runs.
-*   **Capacitive Soil Probe**: A key sensor managed by the firmware.
-*   **CR2032 Battery**: The power source for devices running this firmware.
-*   **Hardware Revision C**: A specific hardware iteration that defines the firmware baseline.
+- **Jonah:** Code name or design reference for the pebble-shaped PETG beta enclosure.
+- **MeshSync:** The [firmware architecture](./firmware-architecture.md) protocol/system utilized at baseline version 0.3.8.
+- **Nova Widget:** The hardware device (Revision C) utilizing these specifications.
 
 ## Related Concepts
 
-*   **MeshSync**: The underlying communication and synchronization protocol used by the firmware.
-*   **Over-The-Air (OTA) Updates**: A method for wirelessly updating firmware, currently deferred for this implementation.
-*   **Embedded Systems**: The broader field of computer systems designed for specific control functions within a larger mechanical or electrical system.
-*   **Hobbyist Market**: The target audience for some Nova Widget variants, influencing design and cost considerations.
+- **IP54 Splash Resistance:** The ingress protection rating provided by the silicone 50A gasket.
+- **Capacitive Soil Probing:** The sensing mechanism utilizing a 30mm length probe.
+- **[Battery Management](./battery-management.md):** The use of a CR2032 cell with a revised holder to secure the battery and eliminate rattling.
 
-## Contradictions
+## References & Trust
 
-No contradictions were found in the provided source material.
-
-## Sources
-
-*   `articles/TEST-product-brief.md`
-*   `samples/specs/[SAMPLE]-2026-07-03-nova-widget-hardware-rev-C.md`
+| # | Source | Type | Trust |
+|---|--------|------|-------|
+| 1 | `samples/specs/[SAMPLE]-2026-07-03-nova-widget-hardware-rev-C.md` | text | Unverified |

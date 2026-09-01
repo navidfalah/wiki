@@ -2,71 +2,60 @@
 id: podcast-planning
 title: Podcast Planning
 tags:
-  - podcast-planning
-  - podcast-outline
-  - local-first-gadgets
   - alex-kim
-  - mira-chen
   - aurora-labs
-  - battery-myths
-  - ble-vs-mesh
-last_updated: "2026-06-25T07:45:24.073539+00:00"
+  - local-first-architecture
+  - mesh-networking-vs-ble
+  - mira-chen
+  - podcast-planning
+  - sensenode
+  - subscription-fatigue
+last_updated: "2026-09-01T19:20:31.354374+00:00"
 sidebar_label: Podcast Planning
 slug: /podcast-planning
 ---
 
+<!-- AUTO-GENERATED — compiled by the LLM Wiki compiler from data/raw/ sources into compiler/temp_output/, then linked here. Edits to this file are overwritten on the next compile: edit sources under data/raw/, or manual cross-links in data/link_overrides.json, instead. -->
+
 # Podcast Planning
 
 ## Overview
-This page details the planning and outline for a podcast episode titled "Local-first gadgets," which was scheduled for July 11, 2026, but subsequently cancelled due to travel. The outline covers various technical and product-related topics, including cloud-less design, battery performance, wireless communication protocols, and product challenges. The episode remains unrecorded, with rescheduling pending.
+This wiki page outlines the planned episode of the "Local-first gadgets" podcast featuring hosts Alex Kim (from [TeaBuddy](./teabuddy.md)) and Mira Chen (from [Aurora Labs](./aurora-labs.md)). The episode was originally scheduled for July 11, 2026, but was ultimately cancelled due to travel and remains unrecorded with a reschedule date TBD.
 
 ## Key Details
-The planned podcast episode, "Local-first gadgets," aimed to discuss the benefits and challenges of designing devices that prioritize local data processing over cloud reliance.
+The planned outline for the episode covered four major segments alongside a call to action:
 
-*   **Podcast Title**: "Local-first gadgets"
-*   **Hosts**:
-    *   Alex Kim (representing TeaBuddy)
-    *   Mira Chen (representing Aurora Labs)
-*   **Planned Date**: 2026-07-11 (cancelled due to travel)
-*   **Status**: Unrecorded; reschedule TBD.
-
-### Planned Segments
-1.  **Why no cloud account for v1?**
-    *   **TeaBuddy's perspective**: Discussed the "steep timer privacy theater" versus actual user needs for privacy.
-    *   **Aurora's perspective**: Highlighted that mesh data remains on the local area network (LAN).
-2.  **Battery myths**
-    *   Focused on CR2032 batteries used in both products, emphasizing different duty cycles.
-3.  **When mesh beats BLE (Bluetooth Low Energy)**
-    *   **Mesh advantages**: Suitable for garden-scale applications with multiple sensors.
-    *   **BLE advantages**: Preferred for single-device setups in environments like a kitchen.
-4.  **SenseNode elephant in the room**
-    *   Addressed concerns regarding subscription fatigue.
-    *   Discussed the desire for IP67 environmental protection ("IP67 envy").
-
-### Call to Action (CTA)
-The planned CTA for the episode was to link to a wiki demo featuring a graph view.
+- **Segment 1: Why no cloud account for v1?**
+  - *TeaBuddy:* Discusses steep timer privacy theater versus actual user need.
+  - *Aurora Labs:* Focuses on how mesh data stays strictly on the local area network (LAN).
+- **Segment 2: Battery myths**
+  - Explores the use of CR2032 coin cell batteries in both products despite different duty cycles.
+- **Segment 3: When mesh beats [BLE](./ble.md)**
+  - *Garden scale:* Multiple [sensors](./sensors.md) favor [mesh networking](./mesh-networking.md).
+  - *Kitchen single-device:* [Bluetooth Low Energy](./bluetooth-low-energy.md) (BLE) wins for isolated single devices.
+- **Segment 4: [SenseNode SN-400](./sensenode-sn-400.md) elephant in room**
+  - Tackles issues surrounding subscription fatigue and IP67 [hardware](./hardware.md) envy.
+- **Call to Action (CTA):**
+  - Link the wiki demo featuring the graph view.
 
 ## Related Entities
-*   **Alex Kim**: One of the planned hosts, representing TeaBuddy.
-*   **Mira Chen**: One of the planned hosts, representing Aurora Labs.
-*   **TeaBuddy**: A product or company represented by Alex Kim.
-*   **Aurora Labs**: A company represented by Mira Chen.
-*   **SenseNode**: A product mentioned in the context of market challenges.
+- **Alex Kim:** Host representing TeaBuddy.
+- **Mira Chen:** Host representing Aurora Labs.
+- **TeaBuddy:** Company/product associated with Alex Kim, focusing on tea timers and local privacy.
+- **Aurora Labs:** Company/product associated with Mira Chen, focusing on mesh data retention on LAN.
+- **SenseNode:** Competitor or industry product noted for subscription fatigue and IP67 durability.
 
 ## Related Concepts
-*   **Local-first gadgets**: The core theme of the podcast, focusing on devices that operate without mandatory cloud accounts.
-*   **Cloud accounts**: Discussed in the context of privacy and necessity for v1 products.
-*   **Privacy**: A key driver for local-first design, particularly for devices like TeaBuddy's steep timer.
-*   **Mesh networking**: A communication protocol highlighted for its suitability in multi-sensor, wider-area applications.
-*   **Bluetooth Low Energy (BLE)**: Another communication protocol, noted for its efficiency in single-device scenarios.
-*   **Battery life / Battery myths**: A segment dedicated to common misconceptions and realities of battery performance, specifically with CR2032 cells.
-*   **Duty cycles**: The operational pattern of a device, impacting battery life, especially for CR2032 batteries.
-*   **IP67 rating**: A standard for ingress protection, indicating dust-tightness and water resistance, mentioned as a desired feature ("IP67 envy").
-*   **Subscription fatigue**: A market challenge discussed in relation to the SenseNode product, referring to consumer reluctance towards multiple subscriptions.
+- **Local-first Architecture:** Designing software and gadgets that function without mandatory cloud accounts or cloud infrastructure.
+- **Mesh Networking vs. BLE:** Evaluating when to use local mesh topologies versus Bluetooth Low Energy based on scale and environment.
+- **[Battery Life](./battery-life.md) & Duty Cycles:** Managing [power consumption](./power-consumption.md) constraints across devices using similar hardware cells (CR2032).
+- **Subscription Fatigue:** User exhaustion regarding recurring software-as-a-service fees for hardware products.
 
 ## Contradictions
-*   **Battery Life Marketing**:
-    *   **Contradiction:** Marketing claims for CR2032 battery life in products varied, with one stating 2 years and another 18 months, despite using the same battery type but different duty cycles.
+&gt; **Contradiction:** There is an internal conflict regarding device battery longevity, specifically a discrepancy between a 2-year versus an 18-month marketing claim for devices utilizing the CR2032 battery.
 
-## Sources
-*   `samples/transcripts/[SAMPLE]-2026-07-11-podcast-outline-unrecorded.txt`
+## References & Trust
+
+| # | Source | Type | Trust |
+|---|--------|------|-------|
+| 1 | `samples/transcripts/[SAMPLE]-2026-07-11-podcast-outline-unrecorded.txt` | text | Unverified |

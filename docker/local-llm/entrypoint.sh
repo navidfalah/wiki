@@ -16,11 +16,15 @@ if [ ! -f "${MODEL_PATH}" ]; then
   # HF_TOKEN is only required for gated repos (the official google/gemma-*
   # weights on Hugging Face require accepting a license and passing a
   # token; many community GGUF re-uploads don't). Left unset here if the
-  # caller didn't provide one — huggingface-cli will fail with a clear
+  # caller didn't provide one — `hf download` will fail with a clear
   # "gated repo" error in that case rather than hanging.
-  huggingface-cli download "${MODEL_REPO}" "${MODEL_FILE}" \
-    --local-dir /models \
-    --local-dir-use-symlinks False
+  #
+  # `huggingface-cli` (and its `--local-dir-use-symlinks` flag) were
+  # removed from huggingface_hub's CLI in favor of the `hf` command, which
+  # always writes real files into --local-dir (no symlink mode to opt out
+  # of anymore).
+  hf download "${MODEL_REPO}" "${MODEL_FILE}" \
+    --local-dir /models
 else
   echo "[local-llm] ${MODEL_FILE} already present in the model volume — skipping download."
 fi

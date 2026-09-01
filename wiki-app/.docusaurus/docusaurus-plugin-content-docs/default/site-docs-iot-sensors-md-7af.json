@@ -1,0 +1,80 @@
+{
+  "id": "iot-sensors",
+  "title": "IoT Sensors",
+  "description": "Overview",
+  "source": "@site/docs/iot-sensors.md",
+  "sourceDirName": ".",
+  "slug": "/iot-sensors",
+  "permalink": "/docs/iot-sensors",
+  "draft": false,
+  "unlisted": false,
+  "tags": [
+    {
+      "inline": true,
+      "label": "iot-sensors",
+      "permalink": "/docs/tags/iot-sensors"
+    },
+    {
+      "inline": true,
+      "label": "mesh-networking",
+      "permalink": "/docs/tags/mesh-networking"
+    },
+    {
+      "inline": true,
+      "label": "mqtt",
+      "permalink": "/docs/tags/mqtt"
+    },
+    {
+      "inline": true,
+      "label": "local-control",
+      "permalink": "/docs/tags/local-control"
+    },
+    {
+      "inline": true,
+      "label": "battery-life",
+      "permalink": "/docs/tags/battery-life"
+    },
+    {
+      "inline": true,
+      "label": "duty-cycle",
+      "permalink": "/docs/tags/duty-cycle"
+    },
+    {
+      "inline": true,
+      "label": "ip-ratings",
+      "permalink": "/docs/tags/ip-ratings"
+    },
+    {
+      "inline": true,
+      "label": "durability",
+      "permalink": "/docs/tags/durability"
+    }
+  ],
+  "version": "current",
+  "frontMatter": {
+    "id": "iot-sensors",
+    "title": "IoT Sensors",
+    "tags": [
+      "iot-sensors",
+      "mesh-networking",
+      "mqtt",
+      "local-control",
+      "battery-life",
+      "duty-cycle",
+      "ip-ratings",
+      "durability"
+    ],
+    "last_updated": "2026-06-25T07:31:33.423385+00:00",
+    "sidebar_label": "IoT Sensors",
+    "slug": "/iot-sensors"
+  },
+  "sidebar": "wikiSidebar",
+  "previous": {
+    "title": "IoT Product Development",
+    "permalink": "/docs/iot-product-development"
+  },
+  "next": {
+    "title": "Issue Reporting",
+    "permalink": "/docs/issue-reporting"
+  }
+}

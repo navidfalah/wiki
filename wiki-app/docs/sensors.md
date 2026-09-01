@@ -2,53 +2,45 @@
 id: sensors
 title: Sensors
 tags:
-  - acidic-soil
-  - aurora
-  - capacitive-soil-probe-corrosion
-  - coated-probe
-  - gold-flashed-pcb
-  - jonah
-  - mira
+  - ip67-rating
+  - lan-first-architecture
+  - meshsync
+  - mirachen
   - nova-widget
-last_updated: "2026-06-25T07:57:33.122280+00:00"
+  - sensors
+  - wiki
+last_updated: "2026-09-01T19:21:27.146848+00:00"
 sidebar_label: Sensors
 slug: /sensors
 ---
 
+<!-- AUTO-GENERATED — compiled by the LLM Wiki compiler from data/raw/ sources into compiler/temp_output/, then linked here. Edits to this file are overwritten on the next compile: edit sources under data/raw/, or manual cross-links in data/link_overrides.json, instead. -->
+
 # Sensors
 
 ## Overview
-
-Sensors are critical components in various monitoring systems, particularly for environmental data collection. A common challenge, especially with soil moisture sensors, is corrosion, which significantly impacts their lifespan and reliability. This page focuses on issues related to capacitive soil probes, specifically their susceptibility to corrosion in acidic environments and various approaches to mitigate this problem.
+The discussion around modern local sensor development highlights the **[Nova Widget](./nova-widget.md)** beta, a local mesh soil sensor presented by creator **[mirachen](./aurora-labs.md)** on Hacker News in July 2026. The project emphasizes local-first communication [protocols](./protocols.md), avoiding mandatory cloud dependencies in favor of a LAN-first architecture with MeshSync and optional [MQTT](./mqtt.md) support.
 
 ## Key Details
-
-*   **Capacitive Soil Probe Corrosion**: Capacitive soil probes are prone to corrosion, particularly when exposed to acidic soil conditions.
-*   **Lifespan Issues**: Cheap, standard capacitive soil probes have been observed to fail within 6–9 months when deployed in acidic soil.
-*   **Corrosion Mitigation Strategies**:
-    *   **Coated Probes**: The SenseNode SN-400 utilizes a coated probe design to enhance durability and resist corrosion. Replacement probes for the SN-400 cost approximately $12.
-    *   **Gold-Flashed PCBs**: The Aurora beta probe incorporates a gold-flashed Printed Circuit Board (PCB) as a potential solution for corrosion resistance. However, its long-term performance in various soil conditions remains untested.
-*   **Total Cost of Ownership**: The frequent failure of inexpensive probes due to corrosion necessitates replacements, which can significantly increase the total cost of ownership over time. This factor should be considered in product comparisons.
-*   **Development Notes**:
-    *   **Jonah's Note**: The impact of probe durability on total cost of ownership should be highlighted in comparison documentation.
-    *   **Mira's Note**: While important, this corrosion issue is not considered a blocker for the initial version (v1) of related hardware but should be thoroughly documented in hardware specifications.
+- **[Hardware](./hardware.md) & Power:** Powered by a CR2032 coin cell battery executing 15-minute read intervals. Battery math details are planned for release via spreadsheet by the creator.
+- **Architecture & Connectivity:** Designed with a LAN-first approach and lower duty cycles rather than relying solely on Wi-Fi, which reduces power overhead and maintains local control via MeshSync and optional MQTT.
+- **Durability:** Features robust environmental ratings, sparking discussions within the community regarding the superiority of IP67 over IP54 ratings, particularly for submersion use cases.
+- **Ecosystem Connections:** The team behind the Nova Widget is separate from, though friendly with, the creators of "[teabuddy](./teabuddy.md)" seen at a recent faire.
 
 ## Related Entities
-
-*   **Nova Widget**: A hardware system that likely utilizes sensors, possibly including soil probes.
-*   **SenseNode SN-400**: A specific sensor product known for using a coated probe design.
-*   **Aurora**: A project or product line, currently in beta, experimenting with gold-flashed PCB probes.
+- **mirachen:** Original poster (OP) and creator of the Nova Widget beta.
+- **Nova Widget:** The local mesh soil sensor project in beta.
 
 ## Related Concepts
-
-*   **Acidic Soil**: A primary environmental factor contributing to sensor corrosion.
-*   **Hardware Durability**: The ability of sensor components to withstand environmental stressors over time.
-*   **Total Cost of Ownership (TCO)**: An economic calculation that includes the initial purchase cost plus the costs of operation, maintenance, and replacement over the product's lifespan.
+- **LAN-First Architecture:** Network design prioritizing local network communication over cloud-dependent setups.
+- **MeshSync:** The synchronization protocol used within the mesh sensor network.
+- **IP67 Rating:** Enclosure rating discussed for its suitability in submersion scenarios compared to lower standards like IP54.
 
 ## Contradictions
+*No contradictions were identified in the provided sources regarding this topic.*
 
-No contradictions were identified in the provided source material.
+## References & Trust
 
-## Sources
-
-*   `samples/research/[SAMPLE]-2026-07-04-soil-probe-corrosion-study.txt`
+| # | Source | Type | Trust |
+|---|--------|------|-------|
+| 1 | `samples/forums/[SAMPLE]-2026-07-10-hackernews-thread-scrape.txt` | text | Unverified |

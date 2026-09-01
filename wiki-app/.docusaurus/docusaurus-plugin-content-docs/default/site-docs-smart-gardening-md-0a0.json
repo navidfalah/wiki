@@ -1,0 +1,80 @@
+{
+  "id": "smart-gardening",
+  "title": "Smart Gardening",
+  "description": "Overview",
+  "source": "@site/docs/smart-gardening.md",
+  "sourceDirName": ".",
+  "slug": "/smart-gardening",
+  "permalink": "/docs/smart-gardening",
+  "draft": false,
+  "unlisted": false,
+  "tags": [
+    {
+      "inline": true,
+      "label": "battery-target",
+      "permalink": "/docs/tags/battery-target"
+    },
+    {
+      "inline": true,
+      "label": "data-ownership",
+      "permalink": "/docs/tags/data-ownership"
+    },
+    {
+      "inline": true,
+      "label": "jonah-park",
+      "permalink": "/docs/tags/jonah-park"
+    },
+    {
+      "inline": true,
+      "label": "mesh-networking",
+      "permalink": "/docs/tags/mesh-networking"
+    },
+    {
+      "inline": true,
+      "label": "meshsync",
+      "permalink": "/docs/tags/meshsync"
+    },
+    {
+      "inline": true,
+      "label": "mira-chen",
+      "permalink": "/docs/tags/mira-chen"
+    },
+    {
+      "inline": true,
+      "label": "nova-widget",
+      "permalink": "/docs/tags/nova-widget"
+    },
+    {
+      "inline": true,
+      "label": "nrf52840",
+      "permalink": "/docs/tags/nrf-52840"
+    }
+  ],
+  "version": "current",
+  "frontMatter": {
+    "id": "smart-gardening",
+    "title": "Smart Gardening",
+    "tags": [
+      "battery-target",
+      "data-ownership",
+      "jonah-park",
+      "mesh-networking",
+      "meshsync",
+      "mira-chen",
+      "nova-widget",
+      "nrf52840"
+    ],
+    "last_updated": "2026-06-25T07:57:40.571563+00:00",
+    "sidebar_label": "Smart Gardening",
+    "slug": "/smart-gardening"
+  },
+  "sidebar": "wikiSidebar",
+  "previous": {
+    "title": "Sensors",
+    "permalink": "/docs/sensors"
+  },
+  "next": {
+    "title": "Social Media Interaction",
+    "permalink": "/docs/social-media-interaction"
+  }
+}

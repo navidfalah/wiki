@@ -2,66 +2,60 @@
 id: product-management
 title: Product Management
 tags:
+  - alex-kim
   - aurora
+  - aurora-mira
   - backlog-grooming
-  - beta-release
-  - box-copy-audit
-  - bug-verification
-  - compiler-stress-test
-  - contradiction-linter
+  - beta-nps
+  - contradiction-flagging
   - icebox
-last_updated: "2026-06-25T07:50:19.929278+00:00"
+  - jamie-qa
+last_updated: "2026-09-01T19:20:47.107664+00:00"
 sidebar_label: Product Management
 slug: /product-management
 ---
 
-```markdown
+<!-- AUTO-GENERATED — compiled by the LLM Wiki compiler from data/raw/ sources into compiler/temp_output/, then linked here. Edits to this file are overwritten on the next compile: edit sources under data/raw/, or manual cross-links in data/link_overrides.json, instead. -->
+
 # Product Management
 
 ## Overview
-
-Product Management is a discipline focused on the strategy, roadmap, and feature definition for a product or product line. It encompasses activities such as understanding market needs, prioritizing development tasks, and overseeing the product lifecycle from conception to launch and beyond. A key aspect of product management is **[Backlog Grooming](./backlog-grooming.md)**, where tasks and features are organized, prioritized, and refined to ensure alignment with strategic goals and efficient resource allocation.
+This wiki page covers product management operations, ongoing product lines (such as [TeaBuddy](./teabuddy.md) and [Aurora Labs](./aurora-labs.md)), [Backlog Grooming](./backlog-grooming.md) priorities, and cross-functional updates within the organization. It compiles information from Slack discussions and backlog grooming snippets from July 2026.
 
 ## Key Details
-
-Product management activities often involve categorizing tasks based on urgency, impact, and strategic fit. Common categories observed during backlog grooming include:
-
-*   **P0 (Priority 0)**: These are critical tasks requiring immediate attention, often essential for current product stability, core functionality, or high-impact features.
-    *   For **AURORA**, P0 tasks include publishing a power budget spreadsheet, hardening the 0.3.9 rejoin functionality, and developing a comparison page for the SenseNode SN-400.
-    *   For **[TEABUDDY](./teabuddy.md)**, P0 tasks involve the Android v1.1 Beta Release, verification of the TB-142 cancel bug, and a comprehensive Box Copy Audit for all presets.
-*   **Shared Icebox**: This category holds ideas, features, or projects that are not prioritized for immediate development but are considered valuable for future exploration. Items in the icebox are typically deferred due to lower current priority, resource constraints, or a need for further research.
-    *   Examples include the "Plant Whisperer app" (#47), a "Contradiction Linter" for content consistency, and an "Wiki index auto-refresh" feature.
-*   **Quick Wins**: These are tasks that offer a high return on investment for relatively low effort. They are often small improvements or fixes that can be implemented rapidly to provide immediate value.
-    *   Examples include adding 40 extended dummy raw files for a Compiler Stress Test and fixing a specific forum scrape thread (#9102).
-*   **Stale**: This category includes items that have been repeatedly reviewed and rejected, or are no longer considered relevant or viable for the product roadmap.
-    *   Examples include the proposed rename of "[MeshSync](./meshsync.md)" to "MeshSink" and the "KarpathyGarden" product name, both of which have been rejected multiple times.
+- **TeaBuddy Product Status**: 
+  - Android v1.1 beta and TB-142 cancel bug verification are marked as P0 priorities.
+  - A box copy audit is underway for all presets. Alex Kim noted frustration that the herbal box copy print proof v3 still states 5 minutes. Sam Rivera ruled out using a sticker overlay and insisted the print must be fixed.
+  - Beta NPS raw score stands at 42, with pairing complaints decreasing following release 0.9.3.
+- **Aurora Priorities**: P0 items include publishing the [Power Budget](./power-budget.md) spreadsheet, 0.3.9 rejoin hardening, and creating a comparison page for the [SenseNode SN-400](./sensenode-sn-400.md).
+- **Shared Icebox & Quick Wins**: 
+  - The shared icebox includes the Plant Whisperer app (#47), a contradiction linter, and wiki index auto-refresh.
+  - Quick wins feature adding 40 extended dummy raw files for compiler stress testing and fixing the forum scrape thread #9102.
+  - Stale items include repeated rejections to rename MeshSync to MeshSink and to use the KarpathyGarden product name.
+- **External & Team Interactions**: Sam Rivera declined a shared booth request from [Aurora Labs](./aurora-labs.md) unless they pay half.
 
 ## Related Entities
-
-*   **AURORA**: A product with ongoing development tasks, including hardware-related documentation and feature comparisons.
-*   **TEABUDDY**: A product with active software development, including mobile application betas and quality assurance.
-*   **Plant Whisperer app**: A concept or project currently in the shared icebox.
-*   **MeshSync / MeshSink**: A product or concept where a proposed name change was rejected.
-*   **KarpathyGarden**: A product or concept where a proposed name was rejected.
-*   **SenseNode SN-400**: A specific hardware component or product related to AURORA.
+- **TeaBuddy**
+- **Aurora**
+- **Alex Kim**
+- **Jamie QA**
+- **Sam Rivera**
+- **Aurora Mira**
+- **SenseNode SN-400**
 
 ## Related Concepts
-
-*   **Backlog Grooming**: The process of regularly reviewing, refining, and prioritizing items in the product backlog.
-*   **Prioritization**: The act of determining the order of importance for tasks and features.
-*   **Beta Release**: A pre-release version of software given to a group of users for testing and feedback before general availability.
-*   **Bug Verification**: The process of confirming that a reported software defect has been successfully fixed.
-*   **Box Copy Audit**: A review of all text and content associated with a product, often for consistency, accuracy, and branding.
-*   **Compiler Stress Test**: A type of software testing designed to evaluate the robustness and performance of a compiler under heavy load or unusual conditions.
-*   **Contradiction Linter**: A tool or process designed to identify inconsistencies or contradictions within a body of text or code.
-*   **Icebox**: A holding area for product ideas or features that are not currently prioritized for development but may be revisited in the future.
-*   **Quick Wins**: Tasks that provide significant value for minimal effort.
+- **Backlog Grooming**
+- **Beta NPS**
+- **Contradiction Flagging**
+- **Icebox**
+- **Rejoin Hardening**
 
 ## Contradictions
+&gt; **Contradiction:** There is a discrepancy regarding brew/steep times for TeaBuddy: the [Firmware](./firmware.md) specifies 7 minutes, the marketing PDF states 5 minutes, and the print proof v3 copy says 5 minutes, whereas the wiki lists 7 minutes following the last compile.
 
-No direct factual contradictions were identified in the provided source material. The "Stale" items represent decisions to reject proposed changes, rather than conflicting information.
+## References & Trust
 
-## Sources
-
-*   `samples/ideas/[SAMPLE]-2026-07-10-backlog-grooming-snippet.txt`
-```
+| # | Source | Type | Trust |
+|---|--------|------|-------|
+| 1 | `dummy-test/2026-07-06-slack-dump-product.txt` | text | Unverified |
+| 2 | `samples/ideas/[SAMPLE]-2026-07-10-backlog-grooming-snippet.txt` | text | Unverified |

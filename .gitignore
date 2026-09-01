@@ -18,6 +18,11 @@ data/user_study_results.json
 data/_archive_non_aurora/
 data/last-compile.log
 data/connectors/
+data/pipeline_runs/
+data/llm_settings.json
+data/users.json
+data/sessions.json
+data/activity_log.json
 compiler/temp_output/*
 !compiler/temp_output/.gitkeep
 wiki-app/static/media/*

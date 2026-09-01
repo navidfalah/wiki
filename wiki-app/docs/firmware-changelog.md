@@ -5,63 +5,51 @@ tags:
   - alex-kim
   - aurora-nova-widget
   - ble-pairing-timeout
-  - box-qr-pairing-path
-  - corebluetooth
-  - corebluetooth-permission-prompt-order
-  - cr2032
   - firmware-changelog
-last_updated: "2026-06-25T07:22:17.439082+00:00"
+  - haptic-motor-duty-cycle
+  - herbal-preset
+  - sam-rivera
+  - teabuddy
+last_updated: "2026-09-01T19:18:38.313015+00:00"
 sidebar_label: Firmware Changelog
 slug: /firmware-changelog
 ---
 
+<!-- AUTO-GENERATED — compiled by the LLM Wiki compiler from data/raw/ sources into compiler/temp_output/, then linked here. Edits to this file are overwritten on the next compile: edit sources under data/raw/, or manual cross-links in data/link_overrides.json, instead. -->
+
 # Firmware Changelog
 
 ## Overview
-
-This page details the changelog for the [TeaBuddy](./teabuddy.md) firmware, specifically covering the v0.9.x series. It outlines various bug fixes, performance improvements, and feature adjustments implemented across different versions.
+This wiki page documents the version history and updates for the [TeaBuddy](./teabuddy.md) v0.9.x [firmware](./firmware.md) series, capturing critical [bug fixes](./bug-fixes.md), [hardware](./hardware.md) optimizations, and feature adjustments across various release builds.
 
 ## Key Details
-
-### Version 0.9.4 (Released 2026-07-01)
-
-*   **Timer Fix**: Resolved issue TB-142, where the timer continued to run after being canceled in the application. (Credit: Sam Rivera)
-*   **BLE Pairing Timeout**: Increased the Bluetooth Low Energy (BLE) Pairing timeout to 45 seconds to improve compatibility with iOS 18 beta.
-*   **Herbal Preset Alignment**: Adjusted the "Herbal" preset constant to 7:00.
-
-### Version 0.9.3 (Released 2026-06-28)
-
-*   **CoreBluetooth Permissions**: Fixed the permission prompt order for CoreBluetooth interactions (ticket #2156).
-*   **Haptic Motor Duty Cycle**: Capped the Haptic Motor duty cycle at 70% following a UX review conducted by Alex Kim.
-
-### Version 0.9.2 (Released 2026-06-20)
-
-*   **QR Pairing Path**: Introduced a box QR Pairing path, primarily for TestFlight builds.
-*   **CR2032 Sleep Draw**: Reduced the CR2032 battery's Sleep Draw from 12µA to 9µA, improving battery life.
+- **v0.9.4 (2026-07-01):**
+  - Resolved TB-142: fixed an issue where the timer continued running after being cancelled in the app (contributed by Sam Rivera).
+  - Increased the [BLE](./ble.md) pairing timeout to 45 seconds to accommodate iOS 18 beta requirements.
+  - Aligned the Herbal preset constant to 7:00.
+- **v0.9.3 (2026-06-28):**
+  - Fixed the CoreBluetooth permission prompt order (ticket #2156).
+  - Capped the haptic motor duty cycle at 70% following an UX review by Alex Kim.
+- **v0.9.2 (2026-06-20):**
+  - Released TestFlight build featuring the box QR pairing path.
+  - Reduced CR2032 sleep draw from 12µA to 9µA.
 
 ## Related Entities
-
-*   **TeaBuddy**: The product whose firmware is being updated.
-*   **Sam Rivera**: Contributed to fixing the timer issue (TB-142).
-*   **Alex Kim**: Performed a UX review that led to the haptic motor duty cycle adjustment.
-*   **iOS 18 beta**: A specific operating system version that required an adjustment to the BLE pairing timeout.
-*   **CoreBluetooth**: Apple's framework for interacting with Bluetooth Low Energy devices.
-*   **Aurora Nova Widget**: A separate product that utilizes [MeshSync](./meshsync.md) and does not share codebase with TeaBuddy.
+- **TeaBuddy:** The primary hardware device and product line associated with the [firmware updates](./firmware-updates.md).
+- **Sam Rivera:** Team member credited with fixing the TB-142 timer bug.
+- **Alex Kim:** UX reviewer responsible for requesting the haptic motor duty cycle cap.
+- **[Aurora Nova Widget](./aurora-nova-widget.md):** External widget utilized in cross-references.
 
 ## Related Concepts
-
-*   **Bluetooth Low Energy (BLE) Pairing**: The process of establishing a connection between two BLE devices.
-*   **Haptic Motor**: A component that provides tactile feedback through vibrations.
-*   **CR2032**: A common type of coin cell lithium battery.
-*   **Sleep Draw**: The amount of electrical current consumed by a device when it is in a low-power sleep state.
-*   **TestFlight**: Apple's platform for distributing beta versions of applications to testers.
-*   **QR Pairing**: A method of initiating device pairing by scanning a Quick Response (QR) code.
-*   **MeshSync**: A synchronization technology used by the Aurora Nova Widget.
+- **BLE Pairing Timeout:** [Bluetooth Low Energy](./bluetooth-low-energy.md) connection window adjustments made for compatibility (specifically iOS 18 beta).
+- **Haptic Motor Duty Cycle:** Power limitation put in place for user experience and hardware preservation.
+- **MeshSync:** Communication protocol used by the Aurora Nova Widget.
 
 ## Contradictions
+&gt; **Contradiction:** The Herbal preset duration was previously listed as 5:00 in marketing copy, but the firmware has aligned it to 7:00 (fixed in firmware only).
 
-*   **Contradiction:** The "Herbal" preset constant was documented as 5:00 in marketing copy but was actually 7:00 in the firmware prior to v0.9.4. This discrepancy was resolved in firmware v0.9.4 by aligning the firmware value to 7:00.
+## References & Trust
 
-## Sources
-
-*   `dummy-test/2026-07-01-firmware-changelog.md`
+| # | Source | Type | Trust |
+|---|--------|------|-------|
+| 1 | `dummy-test/2026-07-01-firmware-changelog.md` | text | Unverified |

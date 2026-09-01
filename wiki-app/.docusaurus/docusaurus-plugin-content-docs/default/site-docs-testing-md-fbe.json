@@ -1,0 +1,74 @@
+{
+  "id": "testing",
+  "title": "Testing",
+  "description": "Overview",
+  "source": "@site/docs/testing.md",
+  "sourceDirName": ".",
+  "slug": "/testing",
+  "permalink": "/docs/testing",
+  "draft": false,
+  "unlisted": false,
+  "tags": [
+    {
+      "inline": true,
+      "label": "beta-product-phase",
+      "permalink": "/docs/tags/beta-product-phase"
+    },
+    {
+      "inline": true,
+      "label": "incremental-test",
+      "permalink": "/docs/tags/incremental-test"
+    },
+    {
+      "inline": true,
+      "label": "ip54",
+      "permalink": "/docs/tags/ip-54"
+    },
+    {
+      "inline": true,
+      "label": "ip65",
+      "permalink": "/docs/tags/ip-65"
+    },
+    {
+      "inline": true,
+      "label": "jonah",
+      "permalink": "/docs/tags/jonah"
+    },
+    {
+      "inline": true,
+      "label": "mesh-network",
+      "permalink": "/docs/tags/mesh-network"
+    },
+    {
+      "inline": true,
+      "label": "product-testing",
+      "permalink": "/docs/tags/product-testing"
+    }
+  ],
+  "version": "current",
+  "frontMatter": {
+    "id": "testing",
+    "title": "Testing",
+    "tags": [
+      "beta-product-phase",
+      "incremental-test",
+      "ip54",
+      "ip65",
+      "jonah",
+      "mesh-network",
+      "product-testing"
+    ],
+    "last_updated": "2026-06-25T08:03:43.574304+00:00",
+    "sidebar_label": "Testing",
+    "slug": "/testing"
+  },
+  "sidebar": "wikiSidebar",
+  "previous": {
+    "title": "Technical Specifications",
+    "permalink": "/docs/technical-specifications"
+  },
+  "next": {
+    "title": "Trademark Law",
+    "permalink": "/docs/trademark-law"
+  }
+}

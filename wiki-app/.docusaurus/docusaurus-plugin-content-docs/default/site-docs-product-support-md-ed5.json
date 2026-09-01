@@ -1,0 +1,80 @@
+{
+  "id": "product-support",
+  "title": "Product Support",
+  "description": "This page synthesizes common issues, solutions, and product information derived from customer support interactions, primarily focusing on the Aurora Nova Widget v2 beta and related products.",
+  "source": "@site/docs/product-support.md",
+  "sourceDirName": ".",
+  "slug": "/product-support",
+  "permalink": "/docs/product-support",
+  "draft": false,
+  "unlisted": false,
+  "tags": [
+    {
+      "inline": true,
+      "label": "aurora-nova-widget-v2-beta",
+      "permalink": "/docs/tags/aurora-nova-widget-v-2-beta"
+    },
+    {
+      "inline": true,
+      "label": "meshsync",
+      "permalink": "/docs/tags/meshsync"
+    },
+    {
+      "inline": true,
+      "label": "firmware-upgrade",
+      "permalink": "/docs/tags/firmware-upgrade"
+    },
+    {
+      "inline": true,
+      "label": "mqtt",
+      "permalink": "/docs/tags/mqtt"
+    },
+    {
+      "inline": true,
+      "label": "home-assistant",
+      "permalink": "/docs/tags/home-assistant"
+    },
+    {
+      "inline": true,
+      "label": "scalability",
+      "permalink": "/docs/tags/scalability"
+    },
+    {
+      "inline": true,
+      "label": "ble-app-only",
+      "permalink": "/docs/tags/ble-app-only"
+    },
+    {
+      "inline": true,
+      "label": "duplicate-messages",
+      "permalink": "/docs/tags/duplicate-messages"
+    }
+  ],
+  "version": "current",
+  "frontMatter": {
+    "id": "product-support",
+    "title": "Product Support",
+    "tags": [
+      "aurora-nova-widget-v2-beta",
+      "meshsync",
+      "firmware-upgrade",
+      "mqtt",
+      "home-assistant",
+      "scalability",
+      "ble-app-only",
+      "duplicate-messages"
+    ],
+    "last_updated": "2026-06-25T07:52:38.926001+00:00",
+    "sidebar_label": "Product Support",
+    "slug": "/product-support"
+  },
+  "sidebar": "wikiSidebar",
+  "previous": {
+    "title": "Product Strategy",
+    "permalink": "/docs/product-strategy"
+  },
+  "next": {
+    "title": "Product Troubleshooting",
+    "permalink": "/docs/product-troubleshooting"
+  }
+}

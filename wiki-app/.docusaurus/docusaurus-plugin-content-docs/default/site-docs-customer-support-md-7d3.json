@@ -1,0 +1,80 @@
+{
+  "id": "customer-support",
+  "title": "Customer Support",
+  "description": "",
+  "source": "@site/docs/customer-support.md",
+  "sourceDirName": ".",
+  "slug": "/customer-support",
+  "permalink": "/docs/customer-support",
+  "draft": false,
+  "unlisted": false,
+  "tags": [
+    {
+      "inline": true,
+      "label": "customer support",
+      "permalink": "/docs/tags/customer-support"
+    },
+    {
+      "inline": true,
+      "label": "aurora nova widget",
+      "permalink": "/docs/tags/aurora-nova-widget"
+    },
+    {
+      "inline": true,
+      "label": "teabuddy",
+      "permalink": "/docs/tags/teabuddy"
+    },
+    {
+      "inline": true,
+      "label": "product specifications",
+      "permalink": "/docs/tags/product-specifications"
+    },
+    {
+      "inline": true,
+      "label": "battery",
+      "permalink": "/docs/tags/battery"
+    },
+    {
+      "inline": true,
+      "label": "waterproofing",
+      "permalink": "/docs/tags/waterproofing"
+    },
+    {
+      "inline": true,
+      "label": "app compatibility",
+      "permalink": "/docs/tags/app-compatibility"
+    },
+    {
+      "inline": true,
+      "label": "firmware updates",
+      "permalink": "/docs/tags/firmware-updates"
+    }
+  ],
+  "version": "current",
+  "frontMatter": {
+    "id": "customer-support",
+    "title": "Customer Support",
+    "tags": [
+      "customer support",
+      "aurora nova widget",
+      "teabuddy",
+      "product specifications",
+      "battery",
+      "waterproofing",
+      "app compatibility",
+      "firmware updates"
+    ],
+    "last_updated": "2026-06-25T07:18:22.250314+00:00",
+    "sidebar_label": "Customer Support",
+    "slug": "/customer-support"
+  },
+  "sidebar": "wikiSidebar",
+  "previous": {
+    "title": "Customer Support FAQ",
+    "permalink": "/docs/customer-support-faq"
+  },
+  "next": {
+    "title": "Data Ingestion",
+    "permalink": "/docs/data-ingestion"
+  }
+}

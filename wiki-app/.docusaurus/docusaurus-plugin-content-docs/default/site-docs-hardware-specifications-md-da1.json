@@ -1,0 +1,80 @@
+{
+  "id": "hardware-specifications",
+  "title": "Hardware Specifications",
+  "description": "Overview",
+  "source": "@site/docs/hardware-specifications.md",
+  "sourceDirName": ".",
+  "slug": "/hardware-specifications",
+  "permalink": "/docs/hardware-specifications",
+  "draft": false,
+  "unlisted": false,
+  "tags": [
+    {
+      "inline": true,
+      "label": "15-min-default-interval",
+      "permalink": "/docs/tags/15-min-default-interval"
+    },
+    {
+      "inline": true,
+      "label": "auroralabs",
+      "permalink": "/docs/tags/auroralabs"
+    },
+    {
+      "inline": true,
+      "label": "beta",
+      "permalink": "/docs/tags/beta"
+    },
+    {
+      "inline": true,
+      "label": "capacitive-soil-probe",
+      "permalink": "/docs/tags/capacitive-soil-probe"
+    },
+    {
+      "inline": true,
+      "label": "cr2032",
+      "permalink": "/docs/tags/cr-2032"
+    },
+    {
+      "inline": true,
+      "label": "cr2450",
+      "permalink": "/docs/tags/cr-2450"
+    },
+    {
+      "inline": true,
+      "label": "hardware-revision-c",
+      "permalink": "/docs/tags/hardware-revision-c"
+    },
+    {
+      "inline": true,
+      "label": "hardware-specifications",
+      "permalink": "/docs/tags/hardware-specifications"
+    }
+  ],
+  "version": "current",
+  "frontMatter": {
+    "id": "hardware-specifications",
+    "title": "Hardware Specifications",
+    "tags": [
+      "15-min-default-interval",
+      "auroralabs",
+      "beta",
+      "capacitive-soil-probe",
+      "cr2032",
+      "cr2450",
+      "hardware-revision-c",
+      "hardware-specifications"
+    ],
+    "last_updated": "2026-06-25T07:26:47.264896+00:00",
+    "sidebar_label": "Hardware Specifications",
+    "slug": "/hardware-specifications"
+  },
+  "sidebar": "wikiSidebar",
+  "previous": {
+    "title": "Hardware Specification",
+    "permalink": "/docs/hardware-specification"
+  },
+  "next": {
+    "title": "Hardware",
+    "permalink": "/docs/hardware"
+  }
+}

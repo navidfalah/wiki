@@ -1,0 +1,80 @@
+{
+  "id": "wireless-connectivity",
+  "title": "Wireless Connectivity",
+  "description": "Overview",
+  "source": "@site/docs/wireless-connectivity.md",
+  "sourceDirName": ".",
+  "slug": "/wireless-connectivity",
+  "permalink": "/docs/wireless-connectivity",
+  "draft": false,
+  "unlisted": false,
+  "tags": [
+    {
+      "inline": true,
+      "label": "lorawan",
+      "permalink": "/docs/tags/lorawan"
+    },
+    {
+      "inline": true,
+      "label": "meshsync",
+      "permalink": "/docs/tags/meshsync"
+    },
+    {
+      "inline": true,
+      "label": "ble",
+      "permalink": "/docs/tags/ble"
+    },
+    {
+      "inline": true,
+      "label": "cloud-lock-in",
+      "permalink": "/docs/tags/cloud-lock-in"
+    },
+    {
+      "inline": true,
+      "label": "ip67",
+      "permalink": "/docs/tags/ip-67"
+    },
+    {
+      "inline": true,
+      "label": "ip54",
+      "permalink": "/docs/tags/ip-54"
+    },
+    {
+      "inline": true,
+      "label": "battery-life",
+      "permalink": "/docs/tags/battery-life"
+    },
+    {
+      "inline": true,
+      "label": "sensor-connectivity",
+      "permalink": "/docs/tags/sensor-connectivity"
+    }
+  ],
+  "version": "current",
+  "frontMatter": {
+    "id": "wireless-connectivity",
+    "title": "Wireless Connectivity",
+    "tags": [
+      "lorawan",
+      "meshsync",
+      "ble",
+      "cloud-lock-in",
+      "ip67",
+      "ip54",
+      "battery-life",
+      "sensor-connectivity"
+    ],
+    "last_updated": "2026-06-25T08:06:42.637698+00:00",
+    "sidebar_label": "Wireless Connectivity",
+    "slug": "/wireless-connectivity"
+  },
+  "sidebar": "wikiSidebar",
+  "previous": {
+    "title": "Wireless Communication",
+    "permalink": "/docs/wireless-communication"
+  },
+  "next": {
+    "title": "Wireless Mesh Networking",
+    "permalink": "/docs/wireless-mesh-networking"
+  }
+}

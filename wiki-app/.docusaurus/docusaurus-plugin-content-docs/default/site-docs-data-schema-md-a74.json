@@ -1,0 +1,80 @@
+{
+  "id": "data-schema",
+  "title": "Data Schema",
+  "description": "Overview",
+  "source": "@site/docs/data-schema.md",
+  "sourceDirName": ".",
+  "slug": "/data-schema",
+  "permalink": "/docs/data-schema",
+  "draft": false,
+  "unlisted": false,
+  "tags": [
+    {
+      "inline": true,
+      "label": "aurora-labs",
+      "permalink": "/docs/tags/aurora-labs"
+    },
+    {
+      "inline": true,
+      "label": "data-schema",
+      "permalink": "/docs/tags/data-schema"
+    },
+    {
+      "inline": true,
+      "label": "home-assistant",
+      "permalink": "/docs/tags/home-assistant"
+    },
+    {
+      "inline": true,
+      "label": "hourly-export-batching",
+      "permalink": "/docs/tags/hourly-export-batching"
+    },
+    {
+      "inline": true,
+      "label": "local-mqtt-export",
+      "permalink": "/docs/tags/local-mqtt-export"
+    },
+    {
+      "inline": true,
+      "label": "mira-chen",
+      "permalink": "/docs/tags/mira-chen"
+    },
+    {
+      "inline": true,
+      "label": "mqtt-export-schema",
+      "permalink": "/docs/tags/mqtt-export-schema"
+    },
+    {
+      "inline": true,
+      "label": "non-goals",
+      "permalink": "/docs/tags/non-goals"
+    }
+  ],
+  "version": "current",
+  "frontMatter": {
+    "id": "data-schema",
+    "title": "Data Schema",
+    "tags": [
+      "aurora-labs",
+      "data-schema",
+      "home-assistant",
+      "hourly-export-batching",
+      "local-mqtt-export",
+      "mira-chen",
+      "mqtt-export-schema",
+      "non-goals"
+    ],
+    "last_updated": "2026-06-25T07:19:48.581019+00:00",
+    "sidebar_label": "Data Schema",
+    "slug": "/data-schema"
+  },
+  "sidebar": "wikiSidebar",
+  "previous": {
+    "title": "Data Privacy",
+    "permalink": "/docs/data-privacy"
+  },
+  "next": {
+    "title": "Development Tools",
+    "permalink": "/docs/development-tools"
+  }
+}

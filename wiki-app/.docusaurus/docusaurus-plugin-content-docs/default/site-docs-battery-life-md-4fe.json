@@ -1,0 +1,80 @@
+{
+  "id": "battery-life",
+  "title": "Battery Life",
+  "description": "Overview",
+  "source": "@site/docs/battery-life.md",
+  "sourceDirName": ".",
+  "slug": "/battery-life",
+  "permalink": "/docs/battery-life",
+  "draft": false,
+  "unlisted": false,
+  "tags": [
+    {
+      "inline": true,
+      "label": "battery life",
+      "permalink": "/docs/tags/battery-life"
+    },
+    {
+      "inline": true,
+      "label": "aurora labs",
+      "permalink": "/docs/tags/aurora-labs"
+    },
+    {
+      "inline": true,
+      "label": "nova widget v2",
+      "permalink": "/docs/tags/nova-widget-v-2"
+    },
+    {
+      "inline": true,
+      "label": "sensenode sn-400",
+      "permalink": "/docs/tags/sensenode-sn-400"
+    },
+    {
+      "inline": true,
+      "label": "cr2032",
+      "permalink": "/docs/tags/cr-2032"
+    },
+    {
+      "inline": true,
+      "label": "average current",
+      "permalink": "/docs/tags/average-current"
+    },
+    {
+      "inline": true,
+      "label": "meshsync",
+      "permalink": "/docs/tags/meshsync"
+    },
+    {
+      "inline": true,
+      "label": "product specifications",
+      "permalink": "/docs/tags/product-specifications"
+    }
+  ],
+  "version": "current",
+  "frontMatter": {
+    "id": "battery-life",
+    "title": "Battery Life",
+    "tags": [
+      "battery life",
+      "aurora labs",
+      "nova widget v2",
+      "sensenode sn-400",
+      "cr2032",
+      "average current",
+      "meshsync",
+      "product specifications"
+    ],
+    "last_updated": "2026-06-25T07:12:46.525729+00:00",
+    "sidebar_label": "Battery Life",
+    "slug": "/battery-life"
+  },
+  "sidebar": "wikiSidebar",
+  "previous": {
+    "title": "Backlog Grooming",
+    "permalink": "/docs/backlog-grooming"
+  },
+  "next": {
+    "title": "Battery Specifications",
+    "permalink": "/docs/battery-specifications"
+  }
+}

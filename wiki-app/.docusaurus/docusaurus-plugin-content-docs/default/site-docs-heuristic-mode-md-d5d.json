@@ -1,0 +1,80 @@
+{
+  "id": "heuristic-mode",
+  "title": "Heuristic Mode",
+  "description": "Overview",
+  "source": "@site/docs/heuristic-mode.md",
+  "sourceDirName": ".",
+  "slug": "/heuristic-mode",
+  "permalink": "/docs/heuristic-mode",
+  "draft": false,
+  "unlisted": false,
+  "tags": [
+    {
+      "inline": true,
+      "label": "contradictions-surfaced",
+      "permalink": "/docs/tags/contradictions-surfaced"
+    },
+    {
+      "inline": true,
+      "label": "cross-linking",
+      "permalink": "/docs/tags/cross-linking"
+    },
+    {
+      "inline": true,
+      "label": "docusaurus",
+      "permalink": "/docs/tags/docusaurus"
+    },
+    {
+      "inline": true,
+      "label": "heuristic-mode",
+      "permalink": "/docs/tags/heuristic-mode"
+    },
+    {
+      "inline": true,
+      "label": "karpathy-pattern",
+      "permalink": "/docs/tags/karpathy-pattern"
+    },
+    {
+      "inline": true,
+      "label": "llm-api-key",
+      "permalink": "/docs/tags/llm-api-key"
+    },
+    {
+      "inline": true,
+      "label": "meshsync",
+      "permalink": "/docs/tags/meshsync"
+    },
+    {
+      "inline": true,
+      "label": "nova-widget",
+      "permalink": "/docs/tags/nova-widget"
+    }
+  ],
+  "version": "current",
+  "frontMatter": {
+    "id": "heuristic-mode",
+    "title": "Heuristic Mode",
+    "tags": [
+      "contradictions-surfaced",
+      "cross-linking",
+      "docusaurus",
+      "heuristic-mode",
+      "karpathy-pattern",
+      "llm-api-key",
+      "meshsync",
+      "nova-widget"
+    ],
+    "last_updated": "2026-06-25T07:27:17.344280+00:00",
+    "sidebar_label": "Heuristic Mode",
+    "slug": "/heuristic-mode"
+  },
+  "sidebar": "wikiSidebar",
+  "previous": {
+    "title": "Hardware",
+    "permalink": "/docs/hardware"
+  },
+  "next": {
+    "title": "Home Assistant Integration",
+    "permalink": "/docs/home-assistant-integration"
+  }
+}

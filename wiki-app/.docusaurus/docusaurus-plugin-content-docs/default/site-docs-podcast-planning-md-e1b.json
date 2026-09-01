@@ -1,0 +1,80 @@
+{
+  "id": "podcast-planning",
+  "title": "Podcast Planning",
+  "description": "Overview",
+  "source": "@site/docs/podcast-planning.md",
+  "sourceDirName": ".",
+  "slug": "/podcast-planning",
+  "permalink": "/docs/podcast-planning",
+  "draft": false,
+  "unlisted": false,
+  "tags": [
+    {
+      "inline": true,
+      "label": "podcast-planning",
+      "permalink": "/docs/tags/podcast-planning"
+    },
+    {
+      "inline": true,
+      "label": "podcast-outline",
+      "permalink": "/docs/tags/podcast-outline"
+    },
+    {
+      "inline": true,
+      "label": "local-first-gadgets",
+      "permalink": "/docs/tags/local-first-gadgets"
+    },
+    {
+      "inline": true,
+      "label": "alex-kim",
+      "permalink": "/docs/tags/alex-kim"
+    },
+    {
+      "inline": true,
+      "label": "mira-chen",
+      "permalink": "/docs/tags/mira-chen"
+    },
+    {
+      "inline": true,
+      "label": "aurora-labs",
+      "permalink": "/docs/tags/aurora-labs"
+    },
+    {
+      "inline": true,
+      "label": "battery-myths",
+      "permalink": "/docs/tags/battery-myths"
+    },
+    {
+      "inline": true,
+      "label": "ble-vs-mesh",
+      "permalink": "/docs/tags/ble-vs-mesh"
+    }
+  ],
+  "version": "current",
+  "frontMatter": {
+    "id": "podcast-planning",
+    "title": "Podcast Planning",
+    "tags": [
+      "podcast-planning",
+      "podcast-outline",
+      "local-first-gadgets",
+      "alex-kim",
+      "mira-chen",
+      "aurora-labs",
+      "battery-myths",
+      "ble-vs-mesh"
+    ],
+    "last_updated": "2026-06-25T07:45:24.073539+00:00",
+    "sidebar_label": "Podcast Planning",
+    "slug": "/podcast-planning"
+  },
+  "sidebar": "wikiSidebar",
+  "previous": {
+    "title": "Personal Notes",
+    "permalink": "/docs/personal-notes"
+  },
+  "next": {
+    "title": "Power Budgeting",
+    "permalink": "/docs/power-budgeting"
+  }
+}

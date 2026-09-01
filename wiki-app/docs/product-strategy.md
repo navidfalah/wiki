@@ -2,53 +2,47 @@
 id: product-strategy
 title: Product Strategy
 tags:
+  - beta-testing-program
+  - competitor-teardown
+  - implied-decisions
+  - jonah
+  - mira
   - product-strategy
-  - cross-product
-  - rejection
-  - local-first
-  - aurora
-  - teabuddy
-  - ceos
-  - cr2032
-last_updated: "2026-06-25T07:52:19.531426+00:00"
+  - wiki
+last_updated: "2026-09-01T19:20:54.784340+00:00"
 sidebar_label: Product Strategy
 slug: /product-strategy
 ---
 
+<!-- AUTO-GENERATED — compiled by the LLM Wiki compiler from data/raw/ sources into compiler/temp_output/, then linked here. Edits to this file are overwritten on the next compile: edit sources under data/raw/, or manual cross-links in data/link_overrides.json, instead. -->
+
 # Product Strategy
 
 ## Overview
-Product strategy encompasses the decisions and plans that guide the development, positioning, and evolution of products or product lines. This page outlines various strategic considerations, including cross-product initiatives and specific product ideas that have been rejected.
+This page captures the evolving product strategy discussion based on recent informal syncs between the team (specifically [Mira](./aurora-labs.md), Jonah, and the note-taker). Although meetings often wander without a rigid agenda, key strategic directions continue to emerge from open-ended topics like [competitor analysis](./competitor-analysis.md), [hardware specifications](./hardware-specifications.md), and community testing.
 
 ## Key Details
-
-*   **Rejected Product Strategies:**
-    *   **Single Unified Application:** A proposal to develop a single application that would serve both existing products was explicitly rejected by the CEOs. This indicates a strategic decision to maintain distinct product identities or platforms rather than pursuing unification.
-    *   **Mesh Tea Timer:** The concept of a "Mesh tea timer" product was definitively rejected by Jonah, suggesting it did not align with current strategic priorities or product roadmap.
-
-*   **Cross-Product Strategic Initiatives:**
-    *   **Shared Glossary:** A strategic effort is underway to establish a common glossary across different products. This glossary includes terms such as CR2032, BLE (Bluetooth Low Energy), MeshSync, and steep preset, aiming to ensure consistent terminology and understanding.
-    *   **Unified "Local-First Manifesto":** A strategic initiative involves creating a unified "local-first manifesto" page. This page is intended to incorporate quotes and principles from both the Aurora and TeaBuddy products, signifying a shared philosophical approach or core value across these offerings.
+- **Competitor Teardown Blog:** The team reviewed a recent competitor teardown blog post. The analysis was deemed mostly fair, though an error regarding [battery specifications](./battery-specifications.md) had to be fixed.
+- **Power Numbers:** A discussion was raised regarding whether to publish power numbers publicly. Mira expressed caution on this matter.
+- **Beta Tester List:** The current [beta testing](./beta-testing.md) group consists of 12 individuals: 3 farmers and the rest hobbyists. 
+- **Tooling & Inspiration:** A brief mention of the Obsidian graph view was met with universal agreement from all attendees.
 
 ## Related Entities
-
-*   **Aurora:** A product referenced in the context of the "local-first manifesto."
-*   **TeaBuddy:** Another product mentioned alongside Aurora for the "local-first manifesto."
-*   **CEOs:** Key decision-makers who rejected the strategy of a single application for both products.
-*   **Jonah:** An individual who rejected the "Mesh tea timer" product idea.
-*   **CR2032:** A specific component or standard included in the shared glossary initiative.
-*   **BLE (Bluetooth Low Energy):** A technology term part of the shared glossary.
-*   **MeshSync:** A concept or technology term designated for the shared glossary.
-*   **Steep Preset:** A term to be included in the shared glossary.
+- **Mira:** Team member who adopted a cautious stance regarding the publication of power numbers.
+- **Jonah:** Attendee of the strategic syncs and contributor to the product discussions.
+- **Beta Testers:** A cohort of 12 users (3 farmers, 9 hobbyists) providing initial product feedback.
 
 ## Related Concepts
-
-*   **Local-First Manifesto:** A guiding principle or philosophy for product development, often emphasizing local data storage, processing, and user control.
-*   **Cross-Product Consistency:** The strategic goal of maintaining uniformity in terminology, philosophy, or user experience across different product offerings.
-*   **Product Unification:** The concept of merging multiple distinct products into a single, integrated offering.
+- **Competitor Teardown:** Public analysis of competing products used to benchmark features, [battery life](./battery-life.md), and market positioning.
+- **Hardware Specifications:** Decisions surrounding the public disclosure of technical details such as power numbers and IP ratings.
+- **Implied Decisions:** Operational directions taken by consensus or momentum rather than formal voting.
+- **[Knowledge Management](./knowledge-management.md):** Internal [documentation](./documentation.md) maintenance, specifically concerning the state of project wikis.
 
 ## Contradictions
-No direct contradictions regarding product strategy were identified in the provided source material.
+*(No direct contradictions were noted in the current source material.)*
 
-## Sources
-*   `samples/ideas/[SAMPLE]-2026-07-04-wiki-automation-ideas.txt`
+## References & Trust
+
+| # | Source | Type | Trust |
+|---|--------|------|-------|
+| 1 | `notes/2026-06-08-meeting-no-agenda.txt` | text | Medium |

@@ -1,0 +1,80 @@
+{
+  "id": "backlog-grooming",
+  "title": "Backlog Grooming",
+  "description": "Overview",
+  "source": "@site/docs/backlog-grooming.md",
+  "sourceDirName": ".",
+  "slug": "/backlog-grooming",
+  "permalink": "/docs/backlog-grooming",
+  "draft": false,
+  "unlisted": false,
+  "tags": [
+    {
+      "inline": true,
+      "label": "aurora",
+      "permalink": "/docs/tags/aurora"
+    },
+    {
+      "inline": true,
+      "label": "backlog-grooming",
+      "permalink": "/docs/tags/backlog-grooming"
+    },
+    {
+      "inline": true,
+      "label": "beta-release",
+      "permalink": "/docs/tags/beta-release"
+    },
+    {
+      "inline": true,
+      "label": "box-copy-audit",
+      "permalink": "/docs/tags/box-copy-audit"
+    },
+    {
+      "inline": true,
+      "label": "bug-verification",
+      "permalink": "/docs/tags/bug-verification"
+    },
+    {
+      "inline": true,
+      "label": "compiler-stress-test",
+      "permalink": "/docs/tags/compiler-stress-test"
+    },
+    {
+      "inline": true,
+      "label": "contradiction-linter",
+      "permalink": "/docs/tags/contradiction-linter"
+    },
+    {
+      "inline": true,
+      "label": "icebox",
+      "permalink": "/docs/tags/icebox"
+    }
+  ],
+  "version": "current",
+  "frontMatter": {
+    "id": "backlog-grooming",
+    "title": "Backlog Grooming",
+    "tags": [
+      "aurora",
+      "backlog-grooming",
+      "beta-release",
+      "box-copy-audit",
+      "bug-verification",
+      "compiler-stress-test",
+      "contradiction-linter",
+      "icebox"
+    ],
+    "last_updated": "2026-06-25T07:12:32.867991+00:00",
+    "sidebar_label": "Backlog Grooming",
+    "slug": "/backlog-grooming"
+  },
+  "sidebar": "wikiSidebar",
+  "previous": {
+    "title": "Aurora Nova",
+    "permalink": "/docs/aurora-nova"
+  },
+  "next": {
+    "title": "Battery Life",
+    "permalink": "/docs/battery-life"
+  }
+}

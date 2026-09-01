@@ -1,0 +1,80 @@
+{
+  "id": "product-naming",
+  "title": "Product Naming",
+  "description": "Overview",
+  "source": "@site/docs/product-naming.md",
+  "sourceDirName": ".",
+  "slug": "/product-naming",
+  "permalink": "/docs/product-naming",
+  "draft": false,
+  "unlisted": false,
+  "tags": [
+    {
+      "inline": true,
+      "label": "alex-kim",
+      "permalink": "/docs/tags/alex-kim"
+    },
+    {
+      "inline": true,
+      "label": "aurora-labs",
+      "permalink": "/docs/tags/aurora-labs"
+    },
+    {
+      "inline": true,
+      "label": "class-21-kitchen-gadgets",
+      "permalink": "/docs/tags/class-21-kitchen-gadgets"
+    },
+    {
+      "inline": true,
+      "label": "cloudfree-sensor",
+      "permalink": "/docs/tags/cloudfree-sensor"
+    },
+    {
+      "inline": true,
+      "label": "co-marketing-guidelines",
+      "permalink": "/docs/tags/co-marketing-guidelines"
+    },
+    {
+      "inline": true,
+      "label": "crowded-mark",
+      "permalink": "/docs/tags/crowded-mark"
+    },
+    {
+      "inline": true,
+      "label": "gritnode",
+      "permalink": "/docs/tags/gritnode"
+    },
+    {
+      "inline": true,
+      "label": "jonah",
+      "permalink": "/docs/tags/jonah"
+    }
+  ],
+  "version": "current",
+  "frontMatter": {
+    "id": "product-naming",
+    "title": "Product Naming",
+    "tags": [
+      "alex-kim",
+      "aurora-labs",
+      "class-21-kitchen-gadgets",
+      "cloudfree-sensor",
+      "co-marketing-guidelines",
+      "crowded-mark",
+      "gritnode",
+      "jonah"
+    ],
+    "last_updated": "2026-06-25T07:50:26.104857+00:00",
+    "sidebar_label": "Product Naming",
+    "slug": "/product-naming"
+  },
+  "sidebar": "wikiSidebar",
+  "previous": {
+    "title": "Product Management",
+    "permalink": "/docs/product-management"
+  },
+  "next": {
+    "title": "Product Roadmap",
+    "permalink": "/docs/product-roadmap"
+  }
+}

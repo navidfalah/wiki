@@ -1,0 +1,80 @@
+{
+  "id": "hardware-development",
+  "title": "Hardware Development",
+  "description": "Overview",
+  "source": "@site/docs/hardware-development.md",
+  "sourceDirName": ".",
+  "slug": "/hardware-development",
+  "permalink": "/docs/hardware-development",
+  "draft": false,
+  "unlisted": false,
+  "tags": [
+    {
+      "inline": true,
+      "label": "alex",
+      "permalink": "/docs/tags/alex"
+    },
+    {
+      "inline": true,
+      "label": "aurora-labs",
+      "permalink": "/docs/tags/aurora-labs"
+    },
+    {
+      "inline": true,
+      "label": "beta-testing",
+      "permalink": "/docs/tags/beta-testing"
+    },
+    {
+      "inline": true,
+      "label": "board",
+      "permalink": "/docs/tags/board"
+    },
+    {
+      "inline": true,
+      "label": "cr2450",
+      "permalink": "/docs/tags/cr-2450"
+    },
+    {
+      "inline": true,
+      "label": "dummy-data-generation",
+      "permalink": "/docs/tags/dummy-data-generation"
+    },
+    {
+      "inline": true,
+      "label": "forum-scraper",
+      "permalink": "/docs/tags/forum-scraper"
+    },
+    {
+      "inline": true,
+      "label": "github",
+      "permalink": "/docs/tags/github"
+    }
+  ],
+  "version": "current",
+  "frontMatter": {
+    "id": "hardware-development",
+    "title": "Hardware Development",
+    "tags": [
+      "alex",
+      "aurora-labs",
+      "beta-testing",
+      "board",
+      "cr2450",
+      "dummy-data-generation",
+      "forum-scraper",
+      "github"
+    ],
+    "last_updated": "2026-06-25T07:25:35.612033+00:00",
+    "sidebar_label": "Hardware Development",
+    "slug": "/hardware-development"
+  },
+  "sidebar": "wikiSidebar",
+  "previous": {
+    "title": "Hardware Design",
+    "permalink": "/docs/hardware-design"
+  },
+  "next": {
+    "title": "Hardware Engineering",
+    "permalink": "/docs/hardware-engineering"
+  }
+}

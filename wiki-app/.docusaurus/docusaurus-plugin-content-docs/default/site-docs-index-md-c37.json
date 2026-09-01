@@ -1,0 +1,46 @@
+{
+  "id": "index",
+  "title": "Wiki Map of Content",
+  "description": "Auto-generated index of 173 pages, organized by topic and tags.",
+  "source": "@site/docs/index.md",
+  "sourceDirName": ".",
+  "slug": "/index",
+  "permalink": "/docs/index",
+  "draft": false,
+  "unlisted": false,
+  "tags": [
+    {
+      "inline": true,
+      "label": "index",
+      "permalink": "/docs/tags/index"
+    },
+    {
+      "inline": true,
+      "label": "moc",
+      "permalink": "/docs/tags/moc"
+    },
+    {
+      "inline": true,
+      "label": "wiki",
+      "permalink": "/docs/tags/wiki"
+    }
+  ],
+  "version": "current",
+  "frontMatter": {
+    "id": "index",
+    "title": "Wiki Map of Content",
+    "tags": [
+      "index",
+      "moc",
+      "wiki"
+    ],
+    "last_updated": "2026-06-25T08:06:50.154903+00:00",
+    "sidebar_label": "Wiki Index",
+    "slug": "/index"
+  },
+  "sidebar": "wikiSidebar",
+  "next": {
+    "title": "AI & LLMs",
+    "permalink": "/docs/ai-llms"
+  }
+}

@@ -1,0 +1,80 @@
+{
+  "id": "software-bugs",
+  "title": "Software Bugs",
+  "description": "Overview",
+  "source": "@site/docs/software-bugs.md",
+  "sourceDirName": ".",
+  "slug": "/software-bugs",
+  "permalink": "/docs/software-bugs",
+  "draft": false,
+  "unlisted": false,
+  "tags": [
+    {
+      "inline": true,
+      "label": "software-bugs",
+      "permalink": "/docs/tags/software-bugs"
+    },
+    {
+      "inline": true,
+      "label": "beta-release",
+      "permalink": "/docs/tags/beta-release"
+    },
+    {
+      "inline": true,
+      "label": "mesh-networking",
+      "permalink": "/docs/tags/mesh-networking"
+    },
+    {
+      "inline": true,
+      "label": "ble-pairing",
+      "permalink": "/docs/tags/ble-pairing"
+    },
+    {
+      "inline": true,
+      "label": "ios-18",
+      "permalink": "/docs/tags/ios-18"
+    },
+    {
+      "inline": true,
+      "label": "android-development",
+      "permalink": "/docs/tags/android-development"
+    },
+    {
+      "inline": true,
+      "label": "background-processes",
+      "permalink": "/docs/tags/background-processes"
+    },
+    {
+      "inline": true,
+      "label": "firmware-updates",
+      "permalink": "/docs/tags/firmware-updates"
+    }
+  ],
+  "version": "current",
+  "frontMatter": {
+    "id": "software-bugs",
+    "title": "Software Bugs",
+    "tags": [
+      "software-bugs",
+      "beta-release",
+      "mesh-networking",
+      "ble-pairing",
+      "ios-18",
+      "android-development",
+      "background-processes",
+      "firmware-updates"
+    ],
+    "last_updated": "2026-06-25T07:57:55.743246+00:00",
+    "sidebar_label": "Software Bugs",
+    "slug": "/software-bugs"
+  },
+  "sidebar": "wikiSidebar",
+  "previous": {
+    "title": "Social Media Interaction",
+    "permalink": "/docs/social-media-interaction"
+  },
+  "next": {
+    "title": "Software Development",
+    "permalink": "/docs/software-development"
+  }
+}

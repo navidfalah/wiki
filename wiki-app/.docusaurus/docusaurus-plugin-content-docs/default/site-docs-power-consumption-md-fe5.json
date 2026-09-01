@@ -1,0 +1,80 @@
+{
+  "id": "power-consumption",
+  "title": "Power Consumption",
+  "description": "Overview",
+  "source": "@site/docs/power-consumption.md",
+  "sourceDirName": ".",
+  "slug": "/power-consumption",
+  "permalink": "/docs/power-consumption",
+  "draft": false,
+  "unlisted": false,
+  "tags": [
+    {
+      "inline": true,
+      "label": "aurora",
+      "permalink": "/docs/tags/aurora"
+    },
+    {
+      "inline": true,
+      "label": "cr2032",
+      "permalink": "/docs/tags/cr-2032"
+    },
+    {
+      "inline": true,
+      "label": "duty-cycle-limits",
+      "permalink": "/docs/tags/duty-cycle-limits"
+    },
+    {
+      "inline": true,
+      "label": "gateway",
+      "permalink": "/docs/tags/gateway"
+    },
+    {
+      "inline": true,
+      "label": "lorawan",
+      "permalink": "/docs/tags/lorawan"
+    },
+    {
+      "inline": true,
+      "label": "meshsync",
+      "permalink": "/docs/tags/meshsync"
+    },
+    {
+      "inline": true,
+      "label": "mira-chen",
+      "permalink": "/docs/tags/mira-chen"
+    },
+    {
+      "inline": true,
+      "label": "power-consumption",
+      "permalink": "/docs/tags/power-consumption"
+    }
+  ],
+  "version": "current",
+  "frontMatter": {
+    "id": "power-consumption",
+    "title": "Power Consumption",
+    "tags": [
+      "aurora",
+      "cr2032",
+      "duty-cycle-limits",
+      "gateway",
+      "lorawan",
+      "meshsync",
+      "mira-chen",
+      "power-consumption"
+    ],
+    "last_updated": "2026-06-25T07:46:15.480992+00:00",
+    "sidebar_label": "Power Consumption",
+    "slug": "/power-consumption"
+  },
+  "sidebar": "wikiSidebar",
+  "previous": {
+    "title": "Power Budgeting",
+    "permalink": "/docs/power-budgeting"
+  },
+  "next": {
+    "title": "Power Management",
+    "permalink": "/docs/power-management"
+  }
+}

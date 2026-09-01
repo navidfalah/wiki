@@ -3,53 +3,55 @@ id: lorawan
 title: LoRaWAN
 tags:
   - aurora
-  - cr2032
   - duty-cycle-limits
-  - gateway
   - lorawan
-  - meshsync
   - mira-chen
   - rejoin-spikes
-last_updated: "2026-06-25T07:34:13.345585+00:00"
+  - sensenode
+  - total-cost-of-ownership-tco
+  - wiki
+last_updated: "2026-09-01T19:19:45.849582+00:00"
 sidebar_label: LoRaWAN
 slug: /lorawan
 ---
+
+<!-- AUTO-GENERATED — compiled by the LLM Wiki compiler from data/raw/ sources into compiler/temp_output/, then linked here. Edits to this file are overwritten on the next compile: edit sources under data/raw/, or manual cross-links in data/link_overrides.json, instead. -->
 
 # LoRaWAN
 
 ## Overview
 
-LoRaWAN is a Low Power Wide Area Network (LPWAN) specification for wireless battery-operated "things" in a regional, national or global network. This page synthesizes research comparing LoRaWAN's [Power Consumption](./power-consumption.md) characteristics, particularly for SenseNode-class devices, against MeshSync (Aurora) in a specific deployment scenario. The research, conducted by Mira Chen on 2026-07-06, focused on a setup with 10 sensor nodes, one Gateway, and a 15-minute sample interval.
+LoRaWAN is a low-power, wide-area [networking](./networking.md) protocol used to connect battery-operated devices to the internet. A comparative analysis by [Mira Chen](./aurora-labs.md) on July 6, 2026, evaluates the [power consumption](./power-consumption.md) and operational characteristics of LoRaWAN (using [SenseNode SN-400](./sensenode-sn-400.md)-class [hardware](./hardware.md)) against MeshSync (Aurora) based on a network of 10 sensor nodes, one gateway, and a 15-minute sample interval.
 
 ## Key Details
 
-*   **Power Consumption:**
-    *   LoRaWAN gateways typically require always-on wall power, estimated at ~2W for the scenario studied.
-    *   For SenseNode-class devices operating on LoRaWAN, Duty Cycle Limits (e.g., in the EU) can necessitate longer effective intervals or higher peak power consumption to comply with regulations.
-*   **Comparison Context:**
-    *   The research assumed a deployment of 10 sensor nodes and a single gateway, with data sampled every 15 minutes.
-    *   In a direct comparison, MeshSync (Aurora) nodes utilize CR2032 batteries per node.
-*   **Total Cost of Ownership (TCO):**
-    *   Preliminary conclusions suggest that MeshSync may offer advantages in Total Cost of Ownership (TCO) due to the absence of subscription fees and the elimination of a gateway wall wart, which is typically required for LoRaWAN.
+- **Network Scale & Interval:** Evaluated with 10 sensor nodes, one gateway, and a 15-minute sample interval.
+- **LoRaWAN Characteristics:** 
+  - Subject to duty cycle limits in the EU, which results in either a longer effective interval or higher peak power usage.
+  - Requires an always-on gateway consuming approximately 2W of wall power.
+- **Comparison to MeshSync (Aurora):**
+  - MeshSync utilizes a CR2032 battery per node.
+  - Rejoin spikes negatively impact MeshSync at scale; although version 0.3.8 improved the issue, it remains unsolved.
+- **TCO Conclusion:** Mesh-based architectures are noted to win on Total Cost of Ownership (TCO) due to the absence of subscription costs and the elimination of gateway wall power requirements.
 
 ## Related Entities
 
-*   **Mira Chen:** Author of the research comparing LoRaWAN and MeshSync power consumption.
-*   **SenseNode-class:** A type of sensor node device considered in the power comparison for LoRaWAN.
-*   **Gateway:** A central component in a LoRaWAN network, responsible for receiving data from nodes and forwarding it to a network server. Requires continuous power.
-*   **MeshSync (Aurora):** A mesh networking technology used as a point of comparison for LoRaWAN, particularly regarding power efficiency.
+- **Mira Chen:** Author of the comparative research between LoRaWAN and MeshSync power profiles.
+- **SenseNode:** Class of hardware used for the LoRaWAN evaluation.
+- **Aurora:** System utilizing the [MeshSync protocol](./meshsync-protocol.md).
 
 ## Related Concepts
 
-*   **Duty Cycle Limits:** Regulatory restrictions on the proportion of time a radio transmitter can be active within a given period, impacting LoRaWAN device operation, especially in regions like the EU.
-*   **Power Consumption:** A critical factor in IoT device design, especially for battery-powered nodes, influencing battery life and operational costs.
-*   **Total Cost of Ownership (TCO):** A financial estimate intended to help consumers and enterprise managers determine the direct and indirect costs of a product or system.
-*   **Rejoin Spikes:** A phenomenon observed in mesh networks (like MeshSync) where nodes consume significant power when Rejoin Spikes the network, especially at scale.
+- **Duty Cycle Limits:** Regulatory restrictions in the EU affecting transmission intervals and peak power for LoRaWAN devices.
+- **Total Cost of Ownership (TCO):** Financial metric favoring subscription-free, gateway-free mesh topologies in the studied configuration.
+- **Rejoin Spikes:** Network reconnection overhead that impacts power efficiency in mesh networks at scale.
 
 ## Contradictions
 
-*   **Contradiction:** Older research or bookmarks suggested that mesh networks always had lower power consumption. However, current findings from the 2026-07-06 research indicate this is **false at 8+ nodes today**, implying that LoRaWAN or other solutions might be more power-efficient in certain larger-scale mesh deployments.
+&gt; **Contradiction:** An old research tab bookmark previously asserted that mesh networks always exhibit lower power consumption; however, current data shows this is **false at 8+ nodes today**.
 
-## Sources
+## References & Trust
 
-*   `samples/research/[SAMPLE]-2026-07-06-lorawan-vs-mesh-power.md`
+| # | Source | Type | Trust |
+|---|--------|------|-------|
+| 1 | `samples/research/[SAMPLE]-2026-07-06-lorawan-vs-mesh-power.md` | text | Unverified |

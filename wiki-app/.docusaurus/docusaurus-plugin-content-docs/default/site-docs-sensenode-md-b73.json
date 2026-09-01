@@ -1,0 +1,80 @@
+{
+  "id": "sensenode",
+  "title": "SenseNode",
+  "description": "",
+  "source": "@site/docs/sensenode.md",
+  "sourceDirName": ".",
+  "slug": "/sensenode",
+  "permalink": "/docs/sensenode",
+  "draft": false,
+  "unlisted": false,
+  "tags": [
+    {
+      "inline": true,
+      "label": "alex",
+      "permalink": "/docs/tags/alex"
+    },
+    {
+      "inline": true,
+      "label": "aurora-nova",
+      "permalink": "/docs/tags/aurora-nova"
+    },
+    {
+      "inline": true,
+      "label": "battery-life",
+      "permalink": "/docs/tags/battery-life"
+    },
+    {
+      "inline": true,
+      "label": "cr2450-cr2032",
+      "permalink": "/docs/tags/cr-2450-cr-2032"
+    },
+    {
+      "inline": true,
+      "label": "ip67",
+      "permalink": "/docs/tags/ip-67"
+    },
+    {
+      "inline": true,
+      "label": "meshsync",
+      "permalink": "/docs/tags/meshsync"
+    },
+    {
+      "inline": true,
+      "label": "mira",
+      "permalink": "/docs/tags/mira"
+    },
+    {
+      "inline": true,
+      "label": "rejoin-issues",
+      "permalink": "/docs/tags/rejoin-issues"
+    }
+  ],
+  "version": "current",
+  "frontMatter": {
+    "id": "sensenode",
+    "title": "SenseNode",
+    "tags": [
+      "alex",
+      "aurora-nova",
+      "battery-life",
+      "cr2450-cr2032",
+      "ip67",
+      "meshsync",
+      "mira",
+      "rejoin-issues"
+    ],
+    "last_updated": "2026-06-25T07:55:01.978425+00:00",
+    "sidebar_label": "SenseNode",
+    "slug": "/sensenode"
+  },
+  "sidebar": "wikiSidebar",
+  "previous": {
+    "title": "Release Notes",
+    "permalink": "/docs/release-notes"
+  },
+  "next": {
+    "title": "Sensor Networks",
+    "permalink": "/docs/sensor-networks"
+  }
+}

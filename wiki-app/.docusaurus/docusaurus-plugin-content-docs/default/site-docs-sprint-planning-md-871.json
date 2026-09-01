@@ -1,0 +1,80 @@
+{
+  "id": "sprint-planning",
+  "title": "Sprint Planning",
+  "description": "",
+  "source": "@site/docs/sprint-planning.md",
+  "sourceDirName": ".",
+  "slug": "/sprint-planning",
+  "permalink": "/docs/sprint-planning",
+  "draft": false,
+  "unlisted": false,
+  "tags": [
+    {
+      "inline": true,
+      "label": "aurora-labs",
+      "permalink": "/docs/tags/aurora-labs"
+    },
+    {
+      "inline": true,
+      "label": "co-marketing",
+      "permalink": "/docs/tags/co-marketing"
+    },
+    {
+      "inline": true,
+      "label": "contradiction-linter",
+      "permalink": "/docs/tags/contradiction-linter"
+    },
+    {
+      "inline": true,
+      "label": "investor-demo",
+      "permalink": "/docs/tags/investor-demo"
+    },
+    {
+      "inline": true,
+      "label": "jonah",
+      "permalink": "/docs/tags/jonah"
+    },
+    {
+      "inline": true,
+      "label": "mesh-network",
+      "permalink": "/docs/tags/mesh-network"
+    },
+    {
+      "inline": true,
+      "label": "meshsink",
+      "permalink": "/docs/tags/meshsink"
+    },
+    {
+      "inline": true,
+      "label": "meshsync",
+      "permalink": "/docs/tags/meshsync"
+    }
+  ],
+  "version": "current",
+  "frontMatter": {
+    "id": "sprint-planning",
+    "title": "Sprint Planning",
+    "tags": [
+      "aurora-labs",
+      "co-marketing",
+      "contradiction-linter",
+      "investor-demo",
+      "jonah",
+      "mesh-network",
+      "meshsink",
+      "meshsync"
+    ],
+    "last_updated": "2026-06-25T08:00:03.476635+00:00",
+    "sidebar_label": "Sprint Planning",
+    "slug": "/sprint-planning"
+  },
+  "sidebar": "wikiSidebar",
+  "previous": {
+    "title": "Specifications",
+    "permalink": "/docs/specifications"
+  },
+  "next": {
+    "title": "Sprint Retrospective",
+    "permalink": "/docs/sprint-retrospective"
+  }
+}

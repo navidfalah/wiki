@@ -1,0 +1,80 @@
+{
+  "id": "ai-llms",
+  "title": "AI & LLMs",
+  "description": "Overview",
+  "source": "@site/docs/ai-llms.md",
+  "sourceDirName": ".",
+  "slug": "/ai-llms",
+  "permalink": "/docs/ai-llms",
+  "draft": false,
+  "unlisted": false,
+  "tags": [
+    {
+      "inline": true,
+      "label": "ai-llms",
+      "permalink": "/docs/tags/ai-llms"
+    },
+    {
+      "inline": true,
+      "label": "dentist",
+      "permalink": "/docs/tags/dentist"
+    },
+    {
+      "inline": true,
+      "label": "enclosure-design",
+      "permalink": "/docs/tags/enclosure-design"
+    },
+    {
+      "inline": true,
+      "label": "karpathy",
+      "permalink": "/docs/tags/karpathy"
+    },
+    {
+      "inline": true,
+      "label": "llm-wiki-pattern",
+      "permalink": "/docs/tags/llm-wiki-pattern"
+    },
+    {
+      "inline": true,
+      "label": "nova-prototypes",
+      "permalink": "/docs/tags/nova-prototypes"
+    },
+    {
+      "inline": true,
+      "label": "nova-widget",
+      "permalink": "/docs/tags/nova-widget"
+    },
+    {
+      "inline": true,
+      "label": "plant-whisperer",
+      "permalink": "/docs/tags/plant-whisperer"
+    }
+  ],
+  "version": "current",
+  "frontMatter": {
+    "id": "ai-llms",
+    "title": "AI & LLMs",
+    "tags": [
+      "ai-llms",
+      "dentist",
+      "enclosure-design",
+      "karpathy",
+      "llm-wiki-pattern",
+      "nova-prototypes",
+      "nova-widget",
+      "plant-whisperer"
+    ],
+    "last_updated": "2026-06-25T07:10:42.584103+00:00",
+    "sidebar_label": "AI & LLMs",
+    "slug": "/ai-llms"
+  },
+  "sidebar": "wikiSidebar",
+  "previous": {
+    "title": "Wiki Index",
+    "permalink": "/docs/index"
+  },
+  "next": {
+    "title": "Aurora Labs",
+    "permalink": "/docs/aurora-labs"
+  }
+}

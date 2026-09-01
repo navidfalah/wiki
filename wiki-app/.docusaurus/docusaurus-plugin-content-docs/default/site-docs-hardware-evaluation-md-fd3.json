@@ -1,0 +1,80 @@
+{
+  "id": "hardware-evaluation",
+  "title": "Hardware Evaluation",
+  "description": "Overview",
+  "source": "@site/docs/hardware-evaluation.md",
+  "sourceDirName": ".",
+  "slug": "/hardware-evaluation",
+  "permalink": "/docs/hardware-evaluation",
+  "draft": false,
+  "unlisted": false,
+  "tags": [
+    {
+      "inline": true,
+      "label": "hardware-evaluation",
+      "permalink": "/docs/tags/hardware-evaluation"
+    },
+    {
+      "inline": true,
+      "label": "hop-count",
+      "permalink": "/docs/tags/hop-count"
+    },
+    {
+      "inline": true,
+      "label": "jonah",
+      "permalink": "/docs/tags/jonah"
+    },
+    {
+      "inline": true,
+      "label": "mesh-quirks",
+      "permalink": "/docs/tags/mesh-quirks"
+    },
+    {
+      "inline": true,
+      "label": "meshsync",
+      "permalink": "/docs/tags/meshsync"
+    },
+    {
+      "inline": true,
+      "label": "mira",
+      "permalink": "/docs/tags/mira"
+    },
+    {
+      "inline": true,
+      "label": "nrf52840",
+      "permalink": "/docs/tags/nrf-52840"
+    },
+    {
+      "inline": true,
+      "label": "nrf5340",
+      "permalink": "/docs/tags/nrf-5340"
+    }
+  ],
+  "version": "current",
+  "frontMatter": {
+    "id": "hardware-evaluation",
+    "title": "Hardware Evaluation",
+    "tags": [
+      "hardware-evaluation",
+      "hop-count",
+      "jonah",
+      "mesh-quirks",
+      "meshsync",
+      "mira",
+      "nrf52840",
+      "nrf5340"
+    ],
+    "last_updated": "2026-06-25T07:26:00.150951+00:00",
+    "sidebar_label": "Hardware Evaluation",
+    "slug": "/hardware-evaluation"
+  },
+  "sidebar": "wikiSidebar",
+  "previous": {
+    "title": "Hardware Engineering",
+    "permalink": "/docs/hardware-engineering"
+  },
+  "next": {
+    "title": "Hardware Failure",
+    "permalink": "/docs/hardware-failure"
+  }
+}

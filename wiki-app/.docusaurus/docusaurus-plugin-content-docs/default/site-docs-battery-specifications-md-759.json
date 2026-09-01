@@ -1,0 +1,80 @@
+{
+  "id": "battery-specifications",
+  "title": "Battery Specifications",
+  "description": "Overview",
+  "source": "@site/docs/battery-specifications.md",
+  "sourceDirName": ".",
+  "slug": "/battery-specifications",
+  "permalink": "/docs/battery-specifications",
+  "draft": false,
+  "unlisted": false,
+  "tags": [
+    {
+      "inline": true,
+      "label": "cr2032",
+      "permalink": "/docs/tags/cr-2032"
+    },
+    {
+      "inline": true,
+      "label": "battery life",
+      "permalink": "/docs/tags/battery-life"
+    },
+    {
+      "inline": true,
+      "label": "power consumption",
+      "permalink": "/docs/tags/power-consumption"
+    },
+    {
+      "inline": true,
+      "label": "aurora nova widget",
+      "permalink": "/docs/tags/aurora-nova-widget"
+    },
+    {
+      "inline": true,
+      "label": "documentation",
+      "permalink": "/docs/tags/documentation"
+    },
+    {
+      "inline": true,
+      "label": "specifications",
+      "permalink": "/docs/tags/specifications"
+    },
+    {
+      "inline": true,
+      "label": "battery calculator",
+      "permalink": "/docs/tags/battery-calculator"
+    },
+    {
+      "inline": true,
+      "label": "cr2450",
+      "permalink": "/docs/tags/cr-2450"
+    }
+  ],
+  "version": "current",
+  "frontMatter": {
+    "id": "battery-specifications",
+    "title": "Battery Specifications",
+    "tags": [
+      "cr2032",
+      "battery life",
+      "power consumption",
+      "aurora nova widget",
+      "documentation",
+      "specifications",
+      "battery calculator",
+      "cr2450"
+    ],
+    "last_updated": "2026-06-25T07:12:58.854122+00:00",
+    "sidebar_label": "Battery Specifications",
+    "slug": "/battery-specifications"
+  },
+  "sidebar": "wikiSidebar",
+  "previous": {
+    "title": "Battery Life",
+    "permalink": "/docs/battery-life"
+  },
+  "next": {
+    "title": "Battery Technology",
+    "permalink": "/docs/battery-technology"
+  }
+}

@@ -12,6 +12,29 @@ function escapeHtml(text: string): string {
   return div.innerHTML;
 }
 
+// Minimal, dependency-free renderer for the light markdown LLM answers
+// come back in: **bold**, `code`, and "* "/"- " bullet lists. Escapes
+// first so nothing in the model's output can inject markup.
+function renderMarkdownLite(text: string): string {
+  const inline = (s: string) =>
+    escapeHtml(s)
+      .replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>')
+      .replace(/`([^`]+)`/g, '<code class="rounded bg-gray-200 px-1 py-0.5 text-[0.85em]">$1</code>');
+
+  const blocks = text.split(/\n{2,}/);
+  return blocks
+    .map((block) => {
+      const lines = block.split('\n').filter((l) => l.trim().length > 0);
+      const isList = lines.length > 0 && lines.every((l) => /^\s*[*-]\s+/.test(l));
+      if (isList) {
+        const items = lines.map((l) => `<li>${inline(l.replace(/^\s*[*-]\s+/, ''))}</li>`).join('');
+        return `<ul class="list-disc space-y-0.5 pl-4">${items}</ul>`;
+      }
+      return `<p>${block.split('\n').map(inline).join('<br>')}</p>`;
+    })
+    .join('<div class="h-2"></div>');
+}
+
 interface HistoryItem {
   role: 'user' | 'assistant';
   content: string;
@@ -25,15 +48,45 @@ function renderMessages() {
         .map(
           (m) => `
       <div class="flex ${m.role === 'user' ? 'justify-end' : 'justify-start'}">
-        <div class="max-w-[80%] whitespace-pre-wrap rounded-xl px-3 py-2 text-sm ${
-          m.role === 'user' ? 'bg-accent text-white' : 'bg-gray-100 text-gray-800'
-        }">${escapeHtml(m.content)}</div>
+        <div class="max-w-[80%] rounded-xl px-3 py-2 text-sm ${
+          m.role === 'user' ? 'whitespace-pre-wrap bg-accent text-white' : 'bg-gray-100 text-gray-800'
+        }">${m.role === 'user' ? escapeHtml(m.content) : renderMarkdownLite(m.content)}</div>
       </div>`,
         )
         .join('')
     : '<p class="text-sm text-gray-400">Ask something to get started.</p>';
   el('chat-messages').scrollTop = el('chat-messages').scrollHeight;
 }
+
+async function loadHistory() {
+  try {
+    const res = await fetch(`${apiBase}/api/chat/history`);
+    if (!res.ok) return;
+    const data = await res.json();
+    const messages: { role: 'user' | 'assistant'; content: string; sources?: { title: string }[] }[] = data.messages ?? [];
+    history.length = 0;
+    for (const m of messages) {
+      let content = m.content;
+      if (m.role === 'assistant' && m.sources?.length) {
+        content += `\n\nSources: ${m.sources.map((s) => s.title).join(', ')}`;
+      }
+      history.push({ role: m.role, content });
+    }
+    renderMessages();
+  } catch {
+    /* stored history is best-effort */
+  }
+}
+
+el('chat-clear').addEventListener('click', async () => {
+  try {
+    await fetch(`${apiBase}/api/chat/history`, { method: 'DELETE' });
+  } catch {
+    /* ignore */
+  }
+  history.length = 0;
+  renderMessages();
+});
 
 async function loadStatus() {
   try {
@@ -77,3 +130,4 @@ el('chat-form').addEventListener('submit', async (event) => {
 
 renderMessages();
 loadStatus();
+loadHistory();

@@ -2,65 +2,42 @@
 id: mechanical-design
 title: Mechanical Design
 tags:
-  - hardware-revision-c
-  - nova-widget
-  - mechanical-design
-  - enclosure
-  - ip-rating
-  - cr2032
+  - ip54-splash-resistance
   - jonah
-  - capacitive-soil-probe
-last_updated: "2026-06-25T07:40:04.245137+00:00"
+  - mechanical-design
+  - meshsync
+  - nova-widget
+  - wiki
+last_updated: "2026-09-01T19:19:49.676967+00:00"
 sidebar_label: Mechanical Design
 slug: /mechanical-design
 ---
 
+<!-- AUTO-GENERATED — compiled by the LLM Wiki compiler from data/raw/ sources into compiler/temp_output/, then linked here. Edits to this file are overwritten on the next compile: edit sources under data/raw/, or manual cross-links in data/link_overrides.json, instead. -->
+
 # Mechanical Design
 
 ## Overview
-
-The mechanical design for the Nova Widget, specifically for hardware revision C, focuses on a durable and functional enclosure with specific environmental protection. Key elements include a PETG enclosure, a silicone gasket for splash resistance, and a refined battery holder.
+Mechanical design specifications for [hardware](./hardware.md) revision C of the [Nova Widget](./nova-widget.md) outline the physical enclosure, sealing mechanisms, and structural considerations for production. The design emphasizes splash resistance and addresses previous hardware feedback such as battery rattle.
 
 ## Key Details
-
-*   **Enclosure**:
-    *   Material: PETG beta.
-    *   Shape: Pebble-shaped, designed by Jonah.
-    *   Environmental Protection: Achieves IP54 splash resistance with a silicone gasket.
-    *   IP65 Variant: A more robust IP65-rated variant was quoted at $7,850 but has been deferred.
-*   **Gasket**:
-    *   Material: Silicone 50A.
-    *   Function: Provides IP54 splash protection.
-*   **Battery Holder**:
-    *   Type: Designed for a CR2032 battery.
-    *   Improvement: Hardware revision C includes a fix for a previous rattle issue in the CR2032 holder.
-*   **Probe**:
-    *   Type: Capacitive soil probe.
-    *   Length: 30mm.
-*   **Labeling Note**: It is critical to avoid printing "CR2450" on labels, as a previous misprint led to ticket #2201. The correct battery type is CR2032.
+- **Enclosure:** Constructed from PETG beta material featuring a pebble shape, designed by Jonah.
+- **Gasket:** Utilizes a silicone 50A gasket providing IP54 splash resistance.
+- **Variants:** An IP65 tooled variant was evaluated but ultimately deferred following a $7,850 cost quote.
+- **Battery Compartment:** The CR2032 battery holder (revision C) specifically incorporates fixes to eliminate battery rattle observed in previous iterations.
+- **Labels:** Strict instructions dictate that "CR2450" must NOT be printed, preventing a recurrence of the misprint that triggered ticket #2201.
 
 ## Related Entities
-
-*   **Nova Widget**: The product for which this mechanical design is specified.
-*   **Jonah**: The designer credited with the pebble shape of the enclosure.
-*   **nRF52840**: The MCU used in the Nova Widget, influencing internal mechanical layout.
+- **Jonah:** The designer responsible for the pebble-shaped PETG beta enclosure.
+- **Nova Widget:** The primary hardware device utilizing these mechanical and electrical specifications (hardware revision C).
 
 ## Related Concepts
+- **IP54 Splash Resistance:** The ingress protection rating achieved via the silicone 50A gasket.
+- **MeshSync:** The [firmware](./firmware.md) baseline running version 0.3.8 with a 15-minute default interval.
+- **Capacitive Soil Probe:** A 30mm electrical component integrated alongside the hardware assembly.
 
-*   **Hardware Revision C**: The specific iteration of the Nova Widget hardware to which these mechanical specifications apply.
-*   **IP54**: An Ingress Protection rating indicating protection against dust ingress (limited) and water splashes from any direction.
-*   **IP65**: A higher Ingress Protection rating indicating protection against dust ingress (total) and low-pressure water jets from any direction.
-*   **PETG**: Polyethylene terephthalate glycol, a thermoplastic polyester used for the enclosure.
-*   **Silicone 50A**: A type of silicone rubber with a Shore A hardness of 50, used for the gasket.
-*   **CR2032**: A common lithium coin cell battery type.
-*   **CR2450**: Another lithium coin cell battery type, which was incorrectly referenced in past labeling.
-*   **Capacitive Soil Probe**: A sensor component with specific mechanical dimensions and integration requirements.
-*   **15-min default interval**: The default data reporting interval for the device's firmware, a functional aspect influenced by power consumption and mechanical design constraints.
+## References & Trust
 
-## Contradictions
-
-No direct contradictions were found in the provided source material. The note regarding the CR2450 misprint is a correction of a past error, not a contradiction in the current design specification.
-
-## Sources
-
-*   `samples/specs/[SAMPLE]-2026-07-03-nova-widget-hardware-rev-C.md`
+| # | Source | Type | Trust |
+|---|--------|------|-------|
+| 1 | `samples/specs/[SAMPLE]-2026-07-03-nova-widget-hardware-rev-C.md` | text | Unverified |

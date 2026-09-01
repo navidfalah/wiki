@@ -2,81 +2,69 @@
 id: customer-support
 title: Customer Support
 tags:
-  - customer support
-  - aurora nova widget
-  - teabuddy
-  - product specifications
-  - battery
-  - waterproofing
-  - app compatibility
-  - firmware updates
-last_updated: "2026-06-25T07:18:22.250314+00:00"
+  - alex
+  - aurora-labs
+  - aurora-labs-support
+  - aurora-nova-widget
+  - aurora-nova-widget-v2-beta
+  - battery-specification
+  - customer-support
+  - data-loss-on-factory-reset
+last_updated: "2026-09-01T19:18:22.411335+00:00"
 sidebar_label: Customer Support
 slug: /customer-support
 ---
 
-```markdown
+<!-- AUTO-GENERATED — compiled by the LLM Wiki compiler from data/raw/ sources into compiler/temp_output/, then linked here. Edits to this file are overwritten on the next compile: edit sources under data/raw/, or manual cross-links in data/link_overrides.json, instead. -->
+
 # Customer Support
 
 ## Overview
-
-Customer Support addresses inquiries and issues related to product specifications, functionality, and compatibility for products like the [Aurora Nova Widget](./aurora-nova-widget.md) and [TeaBuddy](./teabuddy.md). Common support topics include [Battery Specifications](./battery-specifications.md), waterproofing, app integration, and known software issues.
+Customer support at [Aurora Labs](./aurora-labs.md) handles inquiries, [bug reports](./bug-reports.md), and technical [troubleshooting](./troubleshooting.md) for products such as the [Aurora Nova Widget v2 beta](./aurora-labs.md). Support operations involve triage between support agents, [firmware](./firmware.md) engineers (such as Jonah), and management, addressing issues ranging from Wi-Fi reconnection bugs and [mesh networking](./mesh-networking.md) limits to [hardware](./hardware.md) [documentation](./documentation.md) discrepancies.
 
 ## Key Details
 
-### Aurora Nova Widget
+### Wi-Fi Reconnection and Power Outages (NOVA-59)
+* **Issue:** Beta testers running firmware version 0.3.8 have reported that the Aurora Nova Widget gets stuck blinking blue and fails to reconnect to Wi-Fi after unclean power losses or power outages.
+* **Impact:** Factory resetting the device to resolve the connection failure results in the loss of stored sensor history (e.g., 3 weeks of data).
+* **Troubleshooting & Workarounds:**
+  * **Soft Reset:** Instead of a factory reset, hold the side button for 3 seconds to perform a soft Wi-Fi-only reset, which preserves sensor history.
+  * **Static IP:** Setting a static DHCP reservation for the widget's MAC address in the home router configuration can mitigate reconnection failures tied to IP address changes.
+  * **Diagnostics:** Router logs, particularly DHCP lease renewal timestamps, help debug state-corruption bugs (tracked internally alongside similar state-corruption classes like [MESH-118](./mesh-118.md)).
 
-*   **Battery Specification**:
-    *   The correct battery type for the Aurora Nova Widget is CR2032.
-    *   An earlier blog post by "Alex" incorrectly listed CR2450, but this has since been corrected (as of 2026-06-20), and the official wiki page has been updated.
-    *   Battery Life Factors estimates vary: marketing materials state 2 years, while forum discussions suggest 18 months. The actual battery life depends on factors such as node count and the read interval (defaulting to 15 minutes). A detailed power budget document is expected to be published soon.
-*   **Waterproofing**:
-    *   The Aurora Nova Widget has an IP54 rating, meaning it is protected from dust and splashing water, but it is not fully waterproof.
-    *   It is not comparable to devices with an IP67 rating, such as the [SenseNode](./sensenode.md), which can withstand immersion.
-    *   Customers are advised to use a cover for units installed in outdoor environments prone to rain.
-    *   The decision for IP54 was a Cost/Tooling Tradeoffs, with a beta focus on local mesh and open export features. An upgrade to IP65 is on the roadmap.
-    *   A comparison page detailing waterproofing differences is scheduled for update in Sprint 15.
-*   **Known Issues & Fixes**:
-    *   **Rejoin Loop**: For ticket #2099, a known issue with rejoin loops can be resolved by [updating to version 0.3.8](./firmware-updates.md) and maintaining a maximum of six nodes.
+### MeshSync Rejoin Loop (Ticket #2099)
+* **Issue:** Adding an 8th node to the mesh can cause the entire mesh network to stop reporting for hours. 
+* **Workaround:** Support recommends limiting deployments to a maximum of 6 nodes until a permanent patch is released in firmware version 0.3.8.
+* **Tradeoffs:** MeshSync allows users to avoid cloud subscription fees, though it introduces complexity at scale compared to alternative products like the [SenseNode SN-400](./sensenode-sn-400.md).
 
-### TeaBuddy
-
-*   **App Compatibility**:
-    *   The TeaBuddy puck uses a separate BLE kitchen app and does not share an app with the Aurora Nova Widget (which uses the [MeshSync](./meshsync.md) garden app).
-    *   TeaBuddy is a different Product Differentiation from a different company.
-*   **Waterproofing**:
-    *   The TeaBuddy puck is splash-resistant, designed for kitchen use, but is not fully waterproof.
-*   **Known Issues & Fixes**:
-    *   **iOS 18 Pairing**: Pairing issues with iOS 18 have been fixed in version 0.9.3.
-    *   **TB-142 Cancel Bug**: A long-press reset can resolve the TB-142 cancel bug.
+### Battery Specifications and Documentation (Ticket #2201)
+* **Battery Type:** The correct battery specification for the Aurora Nova Widget is the **CR2032** coin cell. 
+* **Documentation Corrections:** Early confusion arose when a teardown blog by Alex mistakenly listed the battery as a CR2450. The blog was corrected on June 20, 2026, and the wiki and support documentation have been updated accordingly.
+* **[Battery Life](./battery-life.md):** Marketing materials typically state a 2-year battery life, while forums suggest 18 months. Actual longevity depends on node count and read intervals (with a 15-minute default interval), and a comprehensive [power budget](./power-budget.md) document is slated for release.
 
 ## Related Entities
-
-*   **Aurora Nova Widget**: A product for which customer support is provided, often used in garden settings.
-*   **TeaBuddy**: A separate kitchen-focused product with its own app and specifications.
-*   **SenseNode (SN-400)**: A competitor product, often referenced for its IP67 waterproofing.
-*   **Alex**: Author of a blog that initially contained an incorrect battery specification for the Aurora Nova Widget.
+* **Aurora Labs:** Creator of the Aurora Nova Widget and MeshSync technology.
+* **Kevin Ostrander:** Beta tester (batch 4) who reported the Nova Widget Wi-Fi reconnection issue.
+* **Sam Okafor & Jonah Park:** Aurora Labs team members involved in support triage and firmware engineering.
+* **[Mira](./aurora-labs.md):** Support agent handling customer tickets.
+* **SenseNode (SN-400):** A competing product often compared for its simpler topology, cloud subscription model, and waterproof rating.
+* **[TeaBuddy](./teabuddy.md):** An unrelated [BLE](./ble.md) kitchen app and product by a different company; it does not share the Aurora Nova app.
 
 ## Related Concepts
-
-*   **[Battery Specifications](./battery-specifications.md)**: CR2032, CR2450.
-*   **Battery Life Factors**: Node count, read interval, power budget.
-*   **IP Ratings**: Industry standards for ingress protection (e.g., IP54, IP65, IP67).
-*   **App Compatibility**: Differentiation between [MeshSync](./meshsync.md) garden app and BLE kitchen app.
-*   **Product Differentiation**: Understanding the distinct features and limitations of different products (e.g., [Aurora Nova Widget](./aurora-nova-widget.md) vs. [TeaBuddy](./teabuddy.md)).
-*   **Cost/Tooling Tradeoffs**: Business decisions influencing product specifications and features.
-*   **[Firmware Updates](./firmware-updates.md)**: Solutions for known software issues (e.g., versions 0.3.8, 0.9.3).
+* **MeshSync:** A local mesh networking protocol used by Aurora products to avoid cloud subscription fees.
+* **IP Rating:** Comparison of environmental protection ratings (Aurora Nova Widget features an IP54 rating, whereas competing devices like the SenseNode feature IP67).
+* **Firmware Version 0.3.8:** Target release for fixes concerning the MeshSync rejoin loop and Wi-Fi state handling.
 
 ## Contradictions
+&gt; **Contradiction:** Customer support documentation and marketing materials contain conflicting battery life estimates. While marketing materials cite a **2-year battery life**, customer forums and field reports frequently estimate battery longevity closer to **18 months**. Actual performance varies based on node count and read intervals.
 
-*   **Battery Type**:
-    > **Contradiction:** Alex's teardown blog initially listed CR2450 as the battery type for the Aurora Nova Widget, while the official specification stated CR2032. This contradiction has been resolved; CR2032 is correct, and the blog and wiki have been updated.
-*   **Battery Life Expectancy**:
-    > **Contradiction:** Marketing materials for the Aurora Nova Widget claim a 2-year battery life, whereas forum discussions suggest 18 months. This discrepancy is explained by varying usage patterns, specifically node count and read interval, which significantly impact power consumption.
+## References & Trust
 
-## Sources
-
-*   `samples/support/[SAMPLE]-2026-07-01-ticket-2201-battery-docs.txt`
-*   `samples/support/[SAMPLE]-2026-07-08-ticket-2222-waterproof-confusion.txt`
-*   `samples/transcripts/[SAMPLE]-2026-07-09-support-training-roleplay.txt`
-```
+| # | Source | Type | Trust |
+|---|--------|------|-------|
+| 1 | `emails/2026-06-11-nova-59-customer-wifi-complaint.eml` | email | Medium |
+| 2 | `emails/2026-06-11-nova-59-support-triage.eml` | email | Medium |
+| 3 | `samples/support/[SAMPLE]-2026-06-27-ticket-2099-mesh-rejoin.txt` | text | Unverified |
+| 4 | `samples/support/[SAMPLE]-2026-07-01-ticket-2201-battery-docs.txt` | text | Unverified |
+| 5 | `samples/transcripts/[SAMPLE]-2026-07-09-support-training-roleplay.txt` | text | Unverified |
+| 6 | `transcripts/TEST-support-ticket.txt` | text | Medium |

@@ -1,0 +1,80 @@
+{
+  "id": "legal-review",
+  "title": "Legal Review",
+  "description": "Overview",
+  "source": "@site/docs/legal-review.md",
+  "sourceDirName": ".",
+  "slug": "/legal-review",
+  "permalink": "/docs/legal-review",
+  "draft": false,
+  "unlisted": false,
+  "tags": [
+    {
+      "inline": true,
+      "label": "alex-kim",
+      "permalink": "/docs/tags/alex-kim"
+    },
+    {
+      "inline": true,
+      "label": "aurora-labs",
+      "permalink": "/docs/tags/aurora-labs"
+    },
+    {
+      "inline": true,
+      "label": "class-21-kitchen-gadgets",
+      "permalink": "/docs/tags/class-21-kitchen-gadgets"
+    },
+    {
+      "inline": true,
+      "label": "co-marketing-guidelines",
+      "permalink": "/docs/tags/co-marketing-guidelines"
+    },
+    {
+      "inline": true,
+      "label": "crowded-mark",
+      "permalink": "/docs/tags/crowded-mark"
+    },
+    {
+      "inline": true,
+      "label": "legal-review",
+      "permalink": "/docs/tags/legal-review"
+    },
+    {
+      "inline": true,
+      "label": "logo-separation-minimum",
+      "permalink": "/docs/tags/logo-separation-minimum"
+    },
+    {
+      "inline": true,
+      "label": "meshsync",
+      "permalink": "/docs/tags/meshsync"
+    }
+  ],
+  "version": "current",
+  "frontMatter": {
+    "id": "legal-review",
+    "title": "Legal Review",
+    "tags": [
+      "alex-kim",
+      "aurora-labs",
+      "class-21-kitchen-gadgets",
+      "co-marketing-guidelines",
+      "crowded-mark",
+      "legal-review",
+      "logo-separation-minimum",
+      "meshsync"
+    ],
+    "last_updated": "2026-06-25T07:32:51.823184+00:00",
+    "sidebar_label": "Legal Review",
+    "slug": "/legal-review"
+  },
+  "sidebar": "wikiSidebar",
+  "previous": {
+    "title": "Legal Disclaimers",
+    "permalink": "/docs/legal-disclaimers"
+  },
+  "next": {
+    "title": "LLM Applications",
+    "permalink": "/docs/llm-applications"
+  }
+}

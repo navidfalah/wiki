@@ -15,16 +15,49 @@
         <span id="build-status-badge" class="inline-flex items-center gap-1 rounded-full bg-gray-100 px-2 py-0.5 text-xs font-medium text-gray-600">Ready</span>
       </div>
       <div class="flex flex-wrap items-center gap-3">
-        <label class="flex items-center gap-2 text-sm text-gray-600">
+        <button id="sources-picker-toggle" type="button" class="inline-flex items-center justify-center gap-2 rounded-lg border border-gray-300 bg-white px-3 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50">Sources to include <span id="sources-picker-count" class="text-xs text-gray-400"></span></button>
+        <button id="run-options-toggle" type="button" class="inline-flex items-center justify-center gap-2 rounded-lg border border-gray-300 bg-white px-3 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50">Run options <span id="run-options-count" class="text-xs text-gray-400"></span></button>
+        <label class="flex items-center gap-2 text-sm text-gray-600" title="Off: only new/changed files are (re)processed, resuming where the last run left off. On: every file is reprocessed from scratch.">
           <input id="force-rebuild" type="checkbox" class="rounded border-gray-300 text-accent focus:ring-accent/30" />
           Rebuild all files
         </label>
         <button id="clear-log" type="button" class="inline-flex items-center justify-center gap-2 rounded-lg border border-gray-300 bg-white px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50">Clear log</button>
+        <button id="stop-build" type="button" class="hidden inline-flex items-center justify-center gap-2 rounded-lg border border-red-300 bg-white px-4 py-2 text-sm font-medium text-red-600 hover:bg-red-50">Stop</button>
         <button id="run-build" type="button" class="inline-flex items-center justify-center gap-2 rounded-lg bg-accent px-4 py-2 text-sm font-medium text-white hover:bg-accent-dark">Run compiler</button>
+      </div>
+    </div>
+    <div id="sources-picker" class="hidden border-b border-gray-100 bg-gray-50 px-5 py-3">
+      <p class="mb-2 text-xs text-gray-500">Only checked top-level folders under <code class="rounded bg-white px-1 py-0.5">data/raw/</code> are read into this run. Unchecked folders are left as-is — nothing is deleted, and re-checking them later picks their topics back up without needing a forced rebuild.</p>
+      <div id="sources-picker-list" class="flex flex-wrap gap-3 text-sm"></div>
+    </div>
+    <div id="run-options" class="hidden border-b border-gray-100 bg-gray-50 px-5 py-3">
+      <p class="mb-2 text-xs text-gray-500">Extra compiler passes. These roughly increase LLM cost per run — see the <code class="rounded bg-white px-1 py-0.5">--critic-pass</code>, <code class="rounded bg-white px-1 py-0.5">--use-corrections</code>, and <code class="rounded bg-white px-1 py-0.5">--redact-pii</code> flags in <code class="rounded bg-white px-1 py-0.5">compiler/main.py</code>.</p>
+      <div class="flex flex-wrap items-start gap-4 text-sm">
+        <label class="flex items-center gap-2 text-gray-600" title="Run a second LLM pass over each synthesized page, stripping sentences it can't ground in the source chunks. Roughly doubles per-page LLM cost.">
+          <input id="run-opt-critic-pass" type="checkbox" class="rounded border-gray-300 text-accent focus:ring-accent/30" />
+          Critic pass
+        </label>
+        <label id="run-opt-critic-samples-label" class="hidden flex items-center gap-2 text-gray-600" title="Run the critic pass this many times per page and only strip a sentence a majority flagged (reduces judge flakiness).">
+          Samples
+          <input id="run-opt-critic-samples" type="number" min="1" max="9" value="1" class="w-14 rounded-md border border-gray-300 px-1.5 py-0.5 text-sm" />
+        </label>
+        <label id="run-opt-critic-regenerate-label" class="hidden flex items-center gap-2 text-gray-600" title="When the critic strips more than 20% of a page, regenerate it once with the critic's findings fed back into the prompt, instead of shipping a heavily-stripped draft.">
+          <input id="run-opt-critic-regenerate" type="checkbox" class="rounded border-gray-300 text-accent focus:ring-accent/30" />
+          Regenerate stripped pages
+        </label>
+        <label class="flex items-center gap-2 text-gray-600" title="Feed human review corrections (data/review_corrections.json) into the extraction prompt as few-shot examples.">
+          <input id="run-opt-use-corrections" type="checkbox" class="rounded border-gray-300 text-accent focus:ring-accent/30" />
+          Use review corrections
+        </label>
+        <label class="flex items-center gap-2 text-gray-600" title="Redact SSNs, credit cards, API keys, phone numbers, and IPv4 addresses from chunk text before it's sent to the LLM for extraction. Does not redact email addresses or names.">
+          <input id="run-opt-redact-pii" type="checkbox" class="rounded border-gray-300 text-accent focus:ring-accent/30" />
+          Redact PII before extraction
+        </label>
       </div>
     </div>
     <div class="p-4">
       <pre id="build-log" class="h-64 overflow-auto rounded-lg bg-gray-900 p-3 font-mono text-xs text-gray-100">Ready. Click "Run compiler" to start.</pre>
+      <p class="mt-2 text-xs text-gray-500">Stopping (or a crash) is safe to resume from — the next non-forced run only reprocesses what didn't finish, it doesn't start over.</p>
     </div>
   </section>
 
@@ -50,10 +83,13 @@
       <div class="flex items-center gap-2">
         <input id="file-search" type="search" placeholder="Search this folder…" class="w-40 rounded-lg border border-gray-300 px-2.5 py-1 text-sm focus:border-accent focus:outline-none focus:ring-2 focus:ring-accent/20" />
         <button id="new-folder-toggle" type="button" class="inline-flex items-center justify-center gap-2 rounded-lg border border-gray-300 bg-white px-3 py-1 text-xs font-medium text-gray-700 hover:bg-gray-50">+ New folder</button>
+        <button id="upload-files-toggle" type="button" class="inline-flex items-center justify-center gap-2 rounded-lg bg-accent px-3 py-1 text-xs font-medium text-white hover:bg-accent-dark">⬆ Upload files</button>
+        <input id="upload-files-input" type="file" multiple class="hidden" />
       </div>
     </div>
     <div id="new-folder-form" class="hidden mx-5 mt-4 rounded-lg border border-dashed border-gray-300 bg-gray-50 px-3 py-2"></div>
-    <div id="file-grid" class="grid grid-cols-3 gap-1 p-4 sm:grid-cols-4 md:grid-cols-6 lg:grid-cols-8"></div>
+    <div id="upload-status" class="hidden mx-5 mt-4 rounded-lg border border-dashed border-source-border bg-source-bg/60 px-3 py-2 text-xs text-source"></div>
+    <div id="file-grid" data-dropzone class="grid grid-cols-3 gap-1 p-4 transition-colors sm:grid-cols-4 md:grid-cols-6 lg:grid-cols-8"></div>
   </section>
 </div>
 

@@ -1,0 +1,80 @@
+{
+  "id": "power-management",
+  "title": "Power Management",
+  "description": "",
+  "source": "@site/docs/power-management.md",
+  "sourceDirName": ".",
+  "slug": "/power-management",
+  "permalink": "/docs/power-management",
+  "draft": false,
+  "unlisted": false,
+  "tags": [
+    {
+      "inline": true,
+      "label": "cr2032",
+      "permalink": "/docs/tags/cr-2032"
+    },
+    {
+      "inline": true,
+      "label": "battery life",
+      "permalink": "/docs/tags/battery-life"
+    },
+    {
+      "inline": true,
+      "label": "meshsync",
+      "permalink": "/docs/tags/meshsync"
+    },
+    {
+      "inline": true,
+      "label": "aurora nova widget",
+      "permalink": "/docs/tags/aurora-nova-widget"
+    },
+    {
+      "inline": true,
+      "label": "teabuddy",
+      "permalink": "/docs/tags/teabuddy"
+    },
+    {
+      "inline": true,
+      "label": "firmware",
+      "permalink": "/docs/tags/firmware"
+    },
+    {
+      "inline": true,
+      "label": "power budget",
+      "permalink": "/docs/tags/power-budget"
+    },
+    {
+      "inline": true,
+      "label": "sleep modes",
+      "permalink": "/docs/tags/sleep-modes"
+    }
+  ],
+  "version": "current",
+  "frontMatter": {
+    "id": "power-management",
+    "title": "Power Management",
+    "tags": [
+      "cr2032",
+      "battery life",
+      "meshsync",
+      "aurora nova widget",
+      "teabuddy",
+      "firmware",
+      "power budget",
+      "sleep modes"
+    ],
+    "last_updated": "2026-06-25T07:46:55.164128+00:00",
+    "sidebar_label": "Power Management",
+    "slug": "/power-management"
+  },
+  "sidebar": "wikiSidebar",
+  "previous": {
+    "title": "Power Consumption",
+    "permalink": "/docs/power-consumption"
+  },
+  "next": {
+    "title": "Product Announcements",
+    "permalink": "/docs/product-announcements"
+  }
+}

@@ -1,0 +1,68 @@
+{
+  "id": "llm-applications",
+  "title": "LLM Applications",
+  "description": "Overview",
+  "source": "@site/docs/llm-applications.md",
+  "sourceDirName": ".",
+  "slug": "/llm-applications",
+  "permalink": "/docs/llm-applications",
+  "draft": false,
+  "unlisted": false,
+  "tags": [
+    {
+      "inline": true,
+      "label": "llm applications",
+      "permalink": "/docs/tags/llm-applications"
+    },
+    {
+      "inline": true,
+      "label": "faq generation",
+      "permalink": "/docs/tags/faq-generation"
+    },
+    {
+      "inline": true,
+      "label": "support tickets",
+      "permalink": "/docs/tags/support-tickets"
+    },
+    {
+      "inline": true,
+      "label": "wiki automation",
+      "permalink": "/docs/tags/wiki-automation"
+    },
+    {
+      "inline": true,
+      "label": "karpathy pattern",
+      "permalink": "/docs/tags/karpathy-pattern"
+    },
+    {
+      "inline": true,
+      "label": "docusaurus",
+      "permalink": "/docs/tags/docusaurus"
+    }
+  ],
+  "version": "current",
+  "frontMatter": {
+    "id": "llm-applications",
+    "title": "LLM Applications",
+    "tags": [
+      "llm applications",
+      "faq generation",
+      "support tickets",
+      "wiki automation",
+      "karpathy pattern",
+      "docusaurus"
+    ],
+    "last_updated": "2026-06-25T07:33:06.842212+00:00",
+    "sidebar_label": "LLM Applications",
+    "slug": "/llm-applications"
+  },
+  "sidebar": "wikiSidebar",
+  "previous": {
+    "title": "Legal Review",
+    "permalink": "/docs/legal-review"
+  },
+  "next": {
+    "title": "LLM Wiki Pipeline",
+    "permalink": "/docs/llm-wiki-pipeline"
+  }
+}

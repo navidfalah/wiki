@@ -1,0 +1,80 @@
+{
+  "id": "home-assistant",
+  "title": "Home Assistant",
+  "description": "Overview",
+  "source": "@site/docs/home-assistant.md",
+  "sourceDirName": ".",
+  "slug": "/home-assistant",
+  "permalink": "/docs/home-assistant",
+  "draft": false,
+  "unlisted": false,
+  "tags": [
+    {
+      "inline": true,
+      "label": "aurora-mqtt-schema-v2",
+      "permalink": "/docs/tags/aurora-mqtt-schema-v-2"
+    },
+    {
+      "inline": true,
+      "label": "default-interval-15-min",
+      "permalink": "/docs/tags/default-interval-15-min"
+    },
+    {
+      "inline": true,
+      "label": "filter-meshneighbors-topic",
+      "permalink": "/docs/tags/filter-meshneighbors-topic"
+    },
+    {
+      "inline": true,
+      "label": "home-assistant",
+      "permalink": "/docs/tags/home-assistant"
+    },
+    {
+      "inline": true,
+      "label": "hourly-automation-templates",
+      "permalink": "/docs/tags/hourly-automation-templates"
+    },
+    {
+      "inline": true,
+      "label": "local-mqtt-broker",
+      "permalink": "/docs/tags/local-mqtt-broker"
+    },
+    {
+      "inline": true,
+      "label": "map-soil-moisture-to-entity",
+      "permalink": "/docs/tags/map-soil-moisture-to-entity"
+    },
+    {
+      "inline": true,
+      "label": "meshsync-038",
+      "permalink": "/docs/tags/meshsync-038"
+    }
+  ],
+  "version": "current",
+  "frontMatter": {
+    "id": "home-assistant",
+    "title": "Home Assistant",
+    "tags": [
+      "aurora-mqtt-schema-v2",
+      "default-interval-15-min",
+      "filter-meshneighbors-topic",
+      "home-assistant",
+      "hourly-automation-templates",
+      "local-mqtt-broker",
+      "map-soil-moisture-to-entity",
+      "meshsync-038"
+    ],
+    "last_updated": "2026-06-25T07:27:47.750855+00:00",
+    "sidebar_label": "Home Assistant",
+    "slug": "/home-assistant"
+  },
+  "sidebar": "wikiSidebar",
+  "previous": {
+    "title": "Home Assistant Integration",
+    "permalink": "/docs/home-assistant-integration"
+  },
+  "next": {
+    "title": "Homelab Integration",
+    "permalink": "/docs/homelab-integration"
+  }
+}

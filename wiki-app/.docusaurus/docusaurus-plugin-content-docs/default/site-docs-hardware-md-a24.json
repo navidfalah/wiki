@@ -1,0 +1,80 @@
+{
+  "id": "hardware",
+  "title": "Hardware",
+  "description": "Overview",
+  "source": "@site/docs/hardware.md",
+  "sourceDirName": ".",
+  "slug": "/hardware",
+  "permalink": "/docs/hardware",
+  "draft": false,
+  "unlisted": false,
+  "tags": [
+    {
+      "inline": true,
+      "label": "alex",
+      "permalink": "/docs/tags/alex"
+    },
+    {
+      "inline": true,
+      "label": "battery-math-revalidation",
+      "permalink": "/docs/tags/battery-math-revalidation"
+    },
+    {
+      "inline": true,
+      "label": "cr2032",
+      "permalink": "/docs/tags/cr-2032"
+    },
+    {
+      "inline": true,
+      "label": "cr2450",
+      "permalink": "/docs/tags/cr-2450"
+    },
+    {
+      "inline": true,
+      "label": "engineering-requirements",
+      "permalink": "/docs/tags/engineering-requirements"
+    },
+    {
+      "inline": true,
+      "label": "fifteen-minute-default",
+      "permalink": "/docs/tags/fifteen-minute-default"
+    },
+    {
+      "inline": true,
+      "label": "hardware",
+      "permalink": "/docs/tags/hardware"
+    },
+    {
+      "inline": true,
+      "label": "hardware-habit",
+      "permalink": "/docs/tags/hardware-habit"
+    }
+  ],
+  "version": "current",
+  "frontMatter": {
+    "id": "hardware",
+    "title": "Hardware",
+    "tags": [
+      "alex",
+      "battery-math-revalidation",
+      "cr2032",
+      "cr2450",
+      "engineering-requirements",
+      "fifteen-minute-default",
+      "hardware",
+      "hardware-habit"
+    ],
+    "last_updated": "2026-06-25T07:26:54.967264+00:00",
+    "sidebar_label": "Hardware",
+    "slug": "/hardware"
+  },
+  "sidebar": "wikiSidebar",
+  "previous": {
+    "title": "Hardware Specifications",
+    "permalink": "/docs/hardware-specifications"
+  },
+  "next": {
+    "title": "Heuristic Mode",
+    "permalink": "/docs/heuristic-mode"
+  }
+}

@@ -1,0 +1,80 @@
+{
+  "id": "investor-relations",
+  "title": "Investor Relations",
+  "description": "",
+  "source": "@site/docs/investor-relations.md",
+  "sourceDirName": ".",
+  "slug": "/investor-relations",
+  "permalink": "/docs/investor-relations",
+  "draft": false,
+  "unlisted": false,
+  "tags": [
+    {
+      "inline": true,
+      "label": "alex-kim",
+      "permalink": "/docs/tags/alex-kim"
+    },
+    {
+      "inline": true,
+      "label": "aurora-labs",
+      "permalink": "/docs/tags/aurora-labs"
+    },
+    {
+      "inline": true,
+      "label": "bridge-funding",
+      "permalink": "/docs/tags/bridge-funding"
+    },
+    {
+      "inline": true,
+      "label": "co-marketing",
+      "permalink": "/docs/tags/co-marketing"
+    },
+    {
+      "inline": true,
+      "label": "fte-firmware",
+      "permalink": "/docs/tags/fte-firmware"
+    },
+    {
+      "inline": true,
+      "label": "injection-mold",
+      "permalink": "/docs/tags/injection-mold"
+    },
+    {
+      "inline": true,
+      "label": "investor-relations",
+      "permalink": "/docs/tags/investor-relations"
+    },
+    {
+      "inline": true,
+      "label": "ip65ip54ip67",
+      "permalink": "/docs/tags/ip-65-ip-54-ip-67"
+    }
+  ],
+  "version": "current",
+  "frontMatter": {
+    "id": "investor-relations",
+    "title": "Investor Relations",
+    "tags": [
+      "alex-kim",
+      "aurora-labs",
+      "bridge-funding",
+      "co-marketing",
+      "fte-firmware",
+      "injection-mold",
+      "investor-relations",
+      "ip65ip54ip67"
+    ],
+    "last_updated": "2026-06-25T07:30:16.359061+00:00",
+    "sidebar_label": "Investor Relations",
+    "slug": "/investor-relations"
+  },
+  "sidebar": "wikiSidebar",
+  "previous": {
+    "title": "Internal Tools",
+    "permalink": "/docs/internal-tools"
+  },
+  "next": {
+    "title": "iOS 18",
+    "permalink": "/docs/ios-18"
+  }
+}

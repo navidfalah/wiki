@@ -1,0 +1,39 @@
+Message-ID: <e6a1b5f4-ac7e-4d2f-b150-5e6c0a1b2345@auroralabs.example>
+In-Reply-To: <d5f0a4e3-9b6d-4c1e-a04f-4d5b9e0f1234@gmail.example>
+References: <d5f0a4e3-9b6d-4c1e-a04f-4d5b9e0f1234@gmail.example>
+Subject: Re: Nova Widget won't reconnect to wifi after power outage
+From: Aurora Labs Support <support@auroralabs.example>
+To: Kevin Ostrander <kevin.ostrander@gmail.example>
+Cc: sam.okafor@auroralabs.example, jonah.park@auroralabs.example
+Date: Thu, 11 Jun 2026 09:15:00 -0700
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 8bit
+MIME-Version: 1.0
+
+[DUMMY TEST DATA — fictional]
+
+Hi Kevin,
+
+Sorry about the lost history — that's not expected behavior. Logging this
+as NOVA-59: wifi credentials/state not surviving an unclean power loss on
+0.3.8.
+
+Router logs would help a lot, especially the DHCP lease renewal timestamps
+around the outage. You can attach them to this thread.
+
+In the meantime, two things that might reduce the chance of it recurring:
+1. Set a static DHCP reservation for the widget's MAC in your router if
+   possible — some of our other reports correlate with a *changed* IP after
+   reconnect, not just a dropped connection.
+2. Avoid factory-resetting next time if it happens again — try holding the
+   side button for 3 seconds first (soft wifi-only reset), which keeps
+   sensor history intact.
+
+Sam is looping in Jonah on the firmware side since this sounds like it could
+be the same state-corruption class of bug as MESH-118, just a different
+subsystem (wifi supplicant state vs. relay radio).
+
+Thanks for your patience — batch 4 feedback like this is exactly what the
+beta is for.
+
+— Aurora Labs Support

@@ -1,0 +1,80 @@
+{
+  "id": "sensor-networks",
+  "title": "Sensor Networks",
+  "description": "",
+  "source": "@site/docs/sensor-networks.md",
+  "sourceDirName": ".",
+  "slug": "/sensor-networks",
+  "permalink": "/docs/sensor-networks",
+  "draft": false,
+  "unlisted": false,
+  "tags": [
+    {
+      "inline": true,
+      "label": "aurora",
+      "permalink": "/docs/tags/aurora"
+    },
+    {
+      "inline": true,
+      "label": "cr2032",
+      "permalink": "/docs/tags/cr-2032"
+    },
+    {
+      "inline": true,
+      "label": "duty-cycle-limits",
+      "permalink": "/docs/tags/duty-cycle-limits"
+    },
+    {
+      "inline": true,
+      "label": "gateway",
+      "permalink": "/docs/tags/gateway"
+    },
+    {
+      "inline": true,
+      "label": "lorawan",
+      "permalink": "/docs/tags/lorawan"
+    },
+    {
+      "inline": true,
+      "label": "meshsync",
+      "permalink": "/docs/tags/meshsync"
+    },
+    {
+      "inline": true,
+      "label": "mira-chen",
+      "permalink": "/docs/tags/mira-chen"
+    },
+    {
+      "inline": true,
+      "label": "rejoin-spikes",
+      "permalink": "/docs/tags/rejoin-spikes"
+    }
+  ],
+  "version": "current",
+  "frontMatter": {
+    "id": "sensor-networks",
+    "title": "Sensor Networks",
+    "tags": [
+      "aurora",
+      "cr2032",
+      "duty-cycle-limits",
+      "gateway",
+      "lorawan",
+      "meshsync",
+      "mira-chen",
+      "rejoin-spikes"
+    ],
+    "last_updated": "2026-06-25T07:55:57.684210+00:00",
+    "sidebar_label": "Sensor Networks",
+    "slug": "/sensor-networks"
+  },
+  "sidebar": "wikiSidebar",
+  "previous": {
+    "title": "SenseNode",
+    "permalink": "/docs/sensenode"
+  },
+  "next": {
+    "title": "Sensor Products",
+    "permalink": "/docs/sensor-products"
+  }
+}

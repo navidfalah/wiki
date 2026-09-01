@@ -4,89 +4,66 @@ title: Backlog Grooming
 tags:
   - aurora
   - backlog-grooming
-  - beta-release
-  - box-copy-audit
-  - bug-verification
-  - compiler-stress-test
-  - contradiction-linter
   - icebox
-last_updated: "2026-06-25T07:12:32.867991+00:00"
+  - karpathygarden
+  - meshsync
+  - p0-prioritization
+  - plant-whisperer
+  - quick-wins
+last_updated: "2026-09-01T19:17:50.772598+00:00"
 sidebar_label: Backlog Grooming
 slug: /backlog-grooming
 ---
 
+<!-- AUTO-GENERATED — compiled by the LLM Wiki compiler from data/raw/ sources into compiler/temp_output/, then linked here. Edits to this file are overwritten on the next compile: edit sources under data/raw/, or manual cross-links in data/link_overrides.json, instead. -->
+
 # Backlog Grooming
 
 ## Overview
-
-Backlog grooming is a continuous process in agile development where the product backlog is refined, reviewed, and prioritized. This involves adding details, estimates, and order to items, as well as removing items that are no longer relevant. The goal is to ensure the backlog is well-organized, understood by the team, and ready for upcoming sprints.
+This wiki page captures the results of the backlog grooming session covering mixed products, detailing high-priority P0 items, shared icebox initiatives, quick wins, and rejected stale ideas.
 
 ## Key Details
 
-A recent backlog grooming session highlighted tasks across multiple products and categories, including high-priority items, future considerations, quick wins, and stale items.
+### Aurora P0
+- Publish [power budget](./power-budget.md) spreadsheet
+- 0.3.9 rejoin hardening
+- Comparison page [SenseNode SN-400](./sensenode-sn-400.md)
 
-### Aurora Product Backlog (P0 Priority)
-
-High-priority tasks for the Aurora product include:
-
-*   Publishing the power budget spreadsheet.
-*   Implementing 0.3.9 rejoin hardening.
-*   Developing the comparison page for SenseNode SN-400.
-
-### TeaBuddy Product Backlog (P0 Priority)
-
-High-priority tasks for the TeaBuddy product include:
-
-*   Releasing the Android v1.1 beta.
-*   Verifying the fix for the TB-142 cancel bug.
-*   Conducting a box copy audit for all presets.
+### TeaBuddy P0
+- Android v1.1 beta
+- TB-142 cancel bug verification
+- Box copy audit all presets
 
 ### Shared Icebox
-
-Items placed in the shared icebox are those considered for future development but not prioritized for immediate action. These include:
-
-*   Plant Whisperer app (#47).
-*   Development of a contradiction linter.
-*   Implementing a wiki index auto-refresh feature.
+- Plant Whisperer app (#47)
+- Contradiction linter
+- Wiki index auto-refresh
 
 ### Quick Wins
+- Add 40 extended dummy raw files for compiler stress test
+- Forum scrape fix thread #9102
 
-These are tasks identified as having a high impact for a relatively low effort:
-
-*   Adding 40 extended dummy raw files to support compiler stress tests.
-*   Fixing forum scrape issue thread #9102.
-
-### Stale Items
-
-Items categorized as "stale" have been previously rejected or deprioritized multiple times:
-
-*   The proposal to rename MeshSync to MeshSink was rejected again.
-*   The KarpathyGarden product name proposal was rejected again.
+### Stale / Rejected
+- Rename MeshSync → MeshSink (rejected again)
+- KarpathyGarden product name (rejected again)
 
 ## Related Entities
-
-*   **Aurora**: A product with specific development tasks.
-*   **TeaBuddy**: A product with specific development tasks, including a beta release.
-*   **SenseNode SN-400**: A specific product model requiring a comparison page.
-*   **Plant Whisperer**: An app concept in the icebox.
-*   **MeshSync / MeshSink**: Product names, with a renaming proposal repeatedly rejected.
-*   **KarpathyGarden**: A product name proposal repeatedly rejected.
+- [Aurora](./aurora-labs.md)
+- [TeaBuddy](./teabuddy.md)
+- [SenseNode SN-400](./sensenode-sn-400.md)
+- Plant Whisperer app
 
 ## Related Concepts
-
-*   **Power Budget**: A technical specification or resource allocation.
-*   **Rejoin Hardening**: Enhancements to improve system stability during reconnections.
-*   **Beta Release**: An early version of software released for testing before general availability.
-*   **Bug Verification**: The process of confirming that a reported software defect has been fixed.
-*   **Box Copy Audit**: A review of product packaging or documentation content.
-*   **Compiler Stress Test**: A test designed to push a compiler to its limits to identify performance or stability issues.
-*   **Contradiction Linter**: A tool designed to identify logical inconsistencies or contradictions in code or text.
-*   **Wiki Index Auto-refresh**: An automated feature to update a wiki's index.
+- P0 Prioritization
+- Icebox
+- Quick Wins
+- Backlog Management
 
 ## Contradictions
+*(None noted in this grooming session)*
 
-No explicit contradictions were found within the provided information.
+## References & Trust
 
-## Sources
-
-*   `samples/ideas/[SAMPLE]-2026-07-10-backlog-grooming-snippet.txt`
+| # | Source | Type | Trust |
+|---|--------|------|-------|
+| 1 | `samples/ideas/[SAMPLE]-2026-07-10-backlog-grooming-snippet.txt` | text | Unverified |

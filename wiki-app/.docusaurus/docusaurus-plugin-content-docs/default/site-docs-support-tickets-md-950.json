@@ -1,0 +1,80 @@
+{
+  "id": "support-tickets",
+  "title": "Support Tickets",
+  "description": "Overview",
+  "source": "@site/docs/support-tickets.md",
+  "sourceDirName": ".",
+  "slug": "/support-tickets",
+  "permalink": "/docs/support-tickets",
+  "draft": false,
+  "unlisted": false,
+  "tags": [
+    {
+      "inline": true,
+      "label": "cloud-fee",
+      "permalink": "/docs/tags/cloud-fee"
+    },
+    {
+      "inline": true,
+      "label": "ip54",
+      "permalink": "/docs/tags/ip-54"
+    },
+    {
+      "inline": true,
+      "label": "ip67",
+      "permalink": "/docs/tags/ip-67"
+    },
+    {
+      "inline": true,
+      "label": "meshsync",
+      "permalink": "/docs/tags/meshsync"
+    },
+    {
+      "inline": true,
+      "label": "nova-widget",
+      "permalink": "/docs/tags/nova-widget"
+    },
+    {
+      "inline": true,
+      "label": "sensenode-sn-400",
+      "permalink": "/docs/tags/sensenode-sn-400"
+    },
+    {
+      "inline": true,
+      "label": "support-tickets",
+      "permalink": "/docs/tags/support-tickets"
+    },
+    {
+      "inline": true,
+      "label": "wiki",
+      "permalink": "/docs/tags/wiki"
+    }
+  ],
+  "version": "current",
+  "frontMatter": {
+    "id": "support-tickets",
+    "title": "Support Tickets",
+    "tags": [
+      "cloud-fee",
+      "ip54",
+      "ip67",
+      "meshsync",
+      "nova-widget",
+      "sensenode-sn-400",
+      "support-tickets",
+      "wiki"
+    ],
+    "last_updated": "2026-06-25T08:01:10.694095+00:00",
+    "sidebar_label": "Support Tickets",
+    "slug": "/support-tickets"
+  },
+  "sidebar": "wikiSidebar",
+  "previous": {
+    "title": "Startup Kickoff",
+    "permalink": "/docs/startup-kickoff"
+  },
+  "next": {
+    "title": "System Design",
+    "permalink": "/docs/system-design"
+  }
+}

@@ -1,0 +1,80 @@
+{
+  "id": "customer-support-faq",
+  "title": "Customer Support FAQ",
+  "description": "Overview",
+  "source": "@site/docs/customer-support-faq.md",
+  "sourceDirName": ".",
+  "slug": "/customer-support-faq",
+  "permalink": "/docs/customer-support-faq",
+  "draft": false,
+  "unlisted": false,
+  "tags": [
+    {
+      "inline": true,
+      "label": "aurora-nova-widget",
+      "permalink": "/docs/tags/aurora-nova-widget"
+    },
+    {
+      "inline": true,
+      "label": "beta-recommendation",
+      "permalink": "/docs/tags/beta-recommendation"
+    },
+    {
+      "inline": true,
+      "label": "customer-support-faq",
+      "permalink": "/docs/tags/customer-support-faq"
+    },
+    {
+      "inline": true,
+      "label": "default-reading-interval",
+      "permalink": "/docs/tags/default-reading-interval"
+    },
+    {
+      "inline": true,
+      "label": "ip54",
+      "permalink": "/docs/tags/ip-54"
+    },
+    {
+      "inline": true,
+      "label": "ip67",
+      "permalink": "/docs/tags/ip-67"
+    },
+    {
+      "inline": true,
+      "label": "local-first",
+      "permalink": "/docs/tags/local-first"
+    },
+    {
+      "inline": true,
+      "label": "meshsync",
+      "permalink": "/docs/tags/meshsync"
+    }
+  ],
+  "version": "current",
+  "frontMatter": {
+    "id": "customer-support-faq",
+    "title": "Customer Support FAQ",
+    "tags": [
+      "aurora-nova-widget",
+      "beta-recommendation",
+      "customer-support-faq",
+      "default-reading-interval",
+      "ip54",
+      "ip67",
+      "local-first",
+      "meshsync"
+    ],
+    "last_updated": "2026-06-25T07:17:55.115261+00:00",
+    "sidebar_label": "Customer Support FAQ",
+    "slug": "/customer-support-faq"
+  },
+  "sidebar": "wikiSidebar",
+  "previous": {
+    "title": "CR2032 Battery",
+    "permalink": "/docs/cr2032-battery"
+  },
+  "next": {
+    "title": "Customer Support",
+    "permalink": "/docs/customer-support"
+  }
+}

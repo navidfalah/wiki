@@ -1,0 +1,80 @@
+{
+  "id": "beta-testing",
+  "title": "Beta Testing",
+  "description": "Overview",
+  "source": "@site/docs/beta-testing.md",
+  "sourceDirName": ".",
+  "slug": "/beta-testing",
+  "permalink": "/docs/beta-testing",
+  "draft": false,
+  "unlisted": false,
+  "tags": [
+    {
+      "inline": true,
+      "label": "beta testing",
+      "permalink": "/docs/tags/beta-testing"
+    },
+    {
+      "inline": true,
+      "label": "ip54",
+      "permalink": "/docs/tags/ip-54"
+    },
+    {
+      "inline": true,
+      "label": "ip65",
+      "permalink": "/docs/tags/ip-65"
+    },
+    {
+      "inline": true,
+      "label": "cr2032 battery",
+      "permalink": "/docs/tags/cr-2032-battery"
+    },
+    {
+      "inline": true,
+      "label": "cr2450 battery",
+      "permalink": "/docs/tags/cr-2450-battery"
+    },
+    {
+      "inline": true,
+      "label": "meshsync",
+      "permalink": "/docs/tags/meshsync"
+    },
+    {
+      "inline": true,
+      "label": "aurora labs",
+      "permalink": "/docs/tags/aurora-labs"
+    },
+    {
+      "inline": true,
+      "label": "wiki maintenance",
+      "permalink": "/docs/tags/wiki-maintenance"
+    }
+  ],
+  "version": "current",
+  "frontMatter": {
+    "id": "beta-testing",
+    "title": "Beta Testing",
+    "tags": [
+      "beta testing",
+      "ip54",
+      "ip65",
+      "cr2032 battery",
+      "cr2450 battery",
+      "meshsync",
+      "aurora labs",
+      "wiki maintenance"
+    ],
+    "last_updated": "2026-06-25T07:13:27.451065+00:00",
+    "sidebar_label": "Beta Testing",
+    "slug": "/beta-testing"
+  },
+  "sidebar": "wikiSidebar",
+  "previous": {
+    "title": "Beta Testing Agreements",
+    "permalink": "/docs/beta-testing-agreements"
+  },
+  "next": {
+    "title": "Bluetooth Low Energy (BLE)",
+    "permalink": "/docs/bluetooth-low-energy-ble"
+  }
+}

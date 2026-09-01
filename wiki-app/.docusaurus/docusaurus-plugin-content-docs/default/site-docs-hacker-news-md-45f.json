@@ -1,0 +1,80 @@
+{
+  "id": "hacker-news",
+  "title": "Hacker News",
+  "description": "",
+  "source": "@site/docs/hacker-news.md",
+  "sourceDirName": ".",
+  "slug": "/hacker-news",
+  "permalink": "/docs/hacker-news",
+  "draft": false,
+  "unlisted": false,
+  "tags": [
+    {
+      "inline": true,
+      "label": "battery-math",
+      "permalink": "/docs/tags/battery-math"
+    },
+    {
+      "inline": true,
+      "label": "cloudbro",
+      "permalink": "/docs/tags/cloudbro"
+    },
+    {
+      "inline": true,
+      "label": "dang",
+      "permalink": "/docs/tags/dang"
+    },
+    {
+      "inline": true,
+      "label": "duty-cycle",
+      "permalink": "/docs/tags/duty-cycle"
+    },
+    {
+      "inline": true,
+      "label": "hacker-news",
+      "permalink": "/docs/tags/hacker-news"
+    },
+    {
+      "inline": true,
+      "label": "hardwarefan",
+      "permalink": "/docs/tags/hardwarefan"
+    },
+    {
+      "inline": true,
+      "label": "ip54",
+      "permalink": "/docs/tags/ip-54"
+    },
+    {
+      "inline": true,
+      "label": "ip67",
+      "permalink": "/docs/tags/ip-67"
+    }
+  ],
+  "version": "current",
+  "frontMatter": {
+    "id": "hacker-news",
+    "title": "Hacker News",
+    "tags": [
+      "battery-math",
+      "cloudbro",
+      "dang",
+      "duty-cycle",
+      "hacker-news",
+      "hardwarefan",
+      "ip54",
+      "ip67"
+    ],
+    "last_updated": "2026-06-25T07:24:46.647510+00:00",
+    "sidebar_label": "Hacker News",
+    "slug": "/hacker-news"
+  },
+  "sidebar": "wikiSidebar",
+  "previous": {
+    "title": "Grocery List",
+    "permalink": "/docs/grocery-list"
+  },
+  "next": {
+    "title": "Hardware Design",
+    "permalink": "/docs/hardware-design"
+  }
+}

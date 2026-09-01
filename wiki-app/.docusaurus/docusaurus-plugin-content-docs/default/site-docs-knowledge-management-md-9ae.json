@@ -1,0 +1,68 @@
+{
+  "id": "knowledge-management",
+  "title": "Knowledge Management",
+  "description": "Knowledge Management (KM) encompasses the processes and strategies used to identify, create, represent, distribute, and enable the adoption of insights and experiences. Effective KM aims to prevent Information Fragmentation, facilitate synthesis, and ensure that valuable knowledge is accessible and actionable. The process often involves organizing disparate research, capturing fleeting thoughts, and structuring information for future use.",
+  "source": "@site/docs/knowledge-management.md",
+  "sourceDirName": ".",
+  "slug": "/knowledge-management",
+  "permalink": "/docs/knowledge-management",
+  "draft": false,
+  "unlisted": false,
+  "tags": [
+    {
+      "inline": true,
+      "label": "knowledge-management",
+      "permalink": "/docs/tags/knowledge-management"
+    },
+    {
+      "inline": true,
+      "label": "research",
+      "permalink": "/docs/tags/research"
+    },
+    {
+      "inline": true,
+      "label": "information-fragmentation",
+      "permalink": "/docs/tags/information-fragmentation"
+    },
+    {
+      "inline": true,
+      "label": "note-taking",
+      "permalink": "/docs/tags/note-taking"
+    },
+    {
+      "inline": true,
+      "label": "personal-knowledge-management",
+      "permalink": "/docs/tags/personal-knowledge-management"
+    },
+    {
+      "inline": true,
+      "label": "information-synthesis",
+      "permalink": "/docs/tags/information-synthesis"
+    }
+  ],
+  "version": "current",
+  "frontMatter": {
+    "id": "knowledge-management",
+    "title": "Knowledge Management",
+    "tags": [
+      "knowledge-management",
+      "research",
+      "information-fragmentation",
+      "note-taking",
+      "personal-knowledge-management",
+      "information-synthesis"
+    ],
+    "last_updated": "2026-06-25T07:32:28.226070+00:00",
+    "sidebar_label": "Knowledge Management",
+    "slug": "/knowledge-management"
+  },
+  "sidebar": "wikiSidebar",
+  "previous": {
+    "title": "Kickoff Meeting",
+    "permalink": "/docs/kickoff-meeting"
+  },
+  "next": {
+    "title": "Known Issues",
+    "permalink": "/docs/known-issues"
+  }
+}

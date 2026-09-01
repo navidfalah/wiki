@@ -1,0 +1,80 @@
+{
+  "id": "product-specification",
+  "title": "Product Specification",
+  "description": "Overview",
+  "source": "@site/docs/product-specification.md",
+  "sourceDirName": ".",
+  "slug": "/product-specification",
+  "permalink": "/docs/product-specification",
+  "draft": false,
+  "unlisted": false,
+  "tags": [
+    {
+      "inline": true,
+      "label": "aurora-labs",
+      "permalink": "/docs/tags/aurora-labs"
+    },
+    {
+      "inline": true,
+      "label": "nova-widget-v2",
+      "permalink": "/docs/tags/nova-widget-v-2"
+    },
+    {
+      "inline": true,
+      "label": "soil-sensor",
+      "permalink": "/docs/tags/soil-sensor"
+    },
+    {
+      "inline": true,
+      "label": "meshsync",
+      "permalink": "/docs/tags/meshsync"
+    },
+    {
+      "inline": true,
+      "label": "nrf52840",
+      "permalink": "/docs/tags/nrf-52840"
+    },
+    {
+      "inline": true,
+      "label": "cr2032",
+      "permalink": "/docs/tags/cr-2032"
+    },
+    {
+      "inline": true,
+      "label": "battery-life",
+      "permalink": "/docs/tags/battery-life"
+    },
+    {
+      "inline": true,
+      "label": "product-specification",
+      "permalink": "/docs/tags/product-specification"
+    }
+  ],
+  "version": "current",
+  "frontMatter": {
+    "id": "product-specification",
+    "title": "Product Specification",
+    "tags": [
+      "aurora-labs",
+      "nova-widget-v2",
+      "soil-sensor",
+      "meshsync",
+      "nrf52840",
+      "cr2032",
+      "battery-life",
+      "product-specification"
+    ],
+    "last_updated": "2026-06-25T07:51:59.799243+00:00",
+    "sidebar_label": "Product Specification",
+    "slug": "/product-specification"
+  },
+  "sidebar": "wikiSidebar",
+  "previous": {
+    "title": "Product Safety",
+    "permalink": "/docs/product-safety"
+  },
+  "next": {
+    "title": "Product Specifications",
+    "permalink": "/docs/product-specifications"
+  }
+}

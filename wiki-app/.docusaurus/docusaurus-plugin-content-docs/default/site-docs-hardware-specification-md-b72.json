@@ -1,0 +1,80 @@
+{
+  "id": "hardware-specification",
+  "title": "Hardware Specification",
+  "description": "",
+  "source": "@site/docs/hardware-specification.md",
+  "sourceDirName": ".",
+  "slug": "/hardware-specification",
+  "permalink": "/docs/hardware-specification",
+  "draft": false,
+  "unlisted": false,
+  "tags": [
+    {
+      "inline": true,
+      "label": "aurora-labs",
+      "permalink": "/docs/tags/aurora-labs"
+    },
+    {
+      "inline": true,
+      "label": "average-current-target",
+      "permalink": "/docs/tags/average-current-target"
+    },
+    {
+      "inline": true,
+      "label": "battery-life-claim",
+      "permalink": "/docs/tags/battery-life-claim"
+    },
+    {
+      "inline": true,
+      "label": "bom-bill-of-materials",
+      "permalink": "/docs/tags/bom-bill-of-materials"
+    },
+    {
+      "inline": true,
+      "label": "capacitive-soil-moisture-sensor",
+      "permalink": "/docs/tags/capacitive-soil-moisture-sensor"
+    },
+    {
+      "inline": true,
+      "label": "cr2032",
+      "permalink": "/docs/tags/cr-2032"
+    },
+    {
+      "inline": true,
+      "label": "draft-status",
+      "permalink": "/docs/tags/draft-status"
+    },
+    {
+      "inline": true,
+      "label": "gasket-tooling-budget",
+      "permalink": "/docs/tags/gasket-tooling-budget"
+    }
+  ],
+  "version": "current",
+  "frontMatter": {
+    "id": "hardware-specification",
+    "title": "Hardware Specification",
+    "tags": [
+      "aurora-labs",
+      "average-current-target",
+      "battery-life-claim",
+      "bom-bill-of-materials",
+      "capacitive-soil-moisture-sensor",
+      "cr2032",
+      "draft-status",
+      "gasket-tooling-budget"
+    ],
+    "last_updated": "2026-06-25T07:26:38.571608+00:00",
+    "sidebar_label": "Hardware Specification",
+    "slug": "/hardware-specification"
+  },
+  "sidebar": "wikiSidebar",
+  "previous": {
+    "title": "Hardware Failure",
+    "permalink": "/docs/hardware-failure"
+  },
+  "next": {
+    "title": "Hardware Specifications",
+    "permalink": "/docs/hardware-specifications"
+  }
+}

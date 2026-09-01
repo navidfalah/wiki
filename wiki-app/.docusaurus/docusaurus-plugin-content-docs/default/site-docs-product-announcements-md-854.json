@@ -1,0 +1,80 @@
+{
+  "id": "product-announcements",
+  "title": "Product Announcements",
+  "description": "",
+  "source": "@site/docs/product-announcements.md",
+  "sourceDirName": ".",
+  "slug": "/product-announcements",
+  "permalink": "/docs/product-announcements",
+  "draft": false,
+  "unlisted": false,
+  "tags": [
+    {
+      "inline": true,
+      "label": "aurora-labs",
+      "permalink": "/docs/tags/aurora-labs"
+    },
+    {
+      "inline": true,
+      "label": "aurora-nova-widget",
+      "permalink": "/docs/tags/aurora-nova-widget"
+    },
+    {
+      "inline": true,
+      "label": "beta-invite-batch",
+      "permalink": "/docs/tags/beta-invite-batch"
+    },
+    {
+      "inline": true,
+      "label": "docs-refresh",
+      "permalink": "/docs/tags/docs-refresh"
+    },
+    {
+      "inline": true,
+      "label": "firmware-flashing",
+      "permalink": "/docs/tags/firmware-flashing"
+    },
+    {
+      "inline": true,
+      "label": "github",
+      "permalink": "/docs/tags/github"
+    },
+    {
+      "inline": true,
+      "label": "issue-reporting",
+      "permalink": "/docs/tags/issue-reporting"
+    },
+    {
+      "inline": true,
+      "label": "maker-faire",
+      "permalink": "/docs/tags/maker-faire"
+    }
+  ],
+  "version": "current",
+  "frontMatter": {
+    "id": "product-announcements",
+    "title": "Product Announcements",
+    "tags": [
+      "aurora-labs",
+      "aurora-nova-widget",
+      "beta-invite-batch",
+      "docs-refresh",
+      "firmware-flashing",
+      "github",
+      "issue-reporting",
+      "maker-faire"
+    ],
+    "last_updated": "2026-06-25T07:47:10.405800+00:00",
+    "sidebar_label": "Product Announcements",
+    "slug": "/product-announcements"
+  },
+  "sidebar": "wikiSidebar",
+  "previous": {
+    "title": "Power Management",
+    "permalink": "/docs/power-management"
+  },
+  "next": {
+    "title": "Product Briefs",
+    "permalink": "/docs/product-briefs"
+  }
+}

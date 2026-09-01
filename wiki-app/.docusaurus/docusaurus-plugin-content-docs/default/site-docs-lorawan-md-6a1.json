@@ -1,0 +1,80 @@
+{
+  "id": "lorawan",
+  "title": "LoRaWAN",
+  "description": "Overview",
+  "source": "@site/docs/lorawan.md",
+  "sourceDirName": ".",
+  "slug": "/lorawan",
+  "permalink": "/docs/lorawan",
+  "draft": false,
+  "unlisted": false,
+  "tags": [
+    {
+      "inline": true,
+      "label": "aurora",
+      "permalink": "/docs/tags/aurora"
+    },
+    {
+      "inline": true,
+      "label": "cr2032",
+      "permalink": "/docs/tags/cr-2032"
+    },
+    {
+      "inline": true,
+      "label": "duty-cycle-limits",
+      "permalink": "/docs/tags/duty-cycle-limits"
+    },
+    {
+      "inline": true,
+      "label": "gateway",
+      "permalink": "/docs/tags/gateway"
+    },
+    {
+      "inline": true,
+      "label": "lorawan",
+      "permalink": "/docs/tags/lorawan"
+    },
+    {
+      "inline": true,
+      "label": "meshsync",
+      "permalink": "/docs/tags/meshsync"
+    },
+    {
+      "inline": true,
+      "label": "mira-chen",
+      "permalink": "/docs/tags/mira-chen"
+    },
+    {
+      "inline": true,
+      "label": "rejoin-spikes",
+      "permalink": "/docs/tags/rejoin-spikes"
+    }
+  ],
+  "version": "current",
+  "frontMatter": {
+    "id": "lorawan",
+    "title": "LoRaWAN",
+    "tags": [
+      "aurora",
+      "cr2032",
+      "duty-cycle-limits",
+      "gateway",
+      "lorawan",
+      "meshsync",
+      "mira-chen",
+      "rejoin-spikes"
+    ],
+    "last_updated": "2026-06-25T07:34:13.345585+00:00",
+    "sidebar_label": "LoRaWAN",
+    "slug": "/lorawan"
+  },
+  "sidebar": "wikiSidebar",
+  "previous": {
+    "title": "Local-first IoT",
+    "permalink": "/docs/local-first-iot"
+  },
+  "next": {
+    "title": "Maker Faire",
+    "permalink": "/docs/maker-faire"
+  }
+}

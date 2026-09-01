@@ -1,0 +1,80 @@
+{
+  "id": "sensors",
+  "title": "Sensors",
+  "description": "Overview",
+  "source": "@site/docs/sensors.md",
+  "sourceDirName": ".",
+  "slug": "/sensors",
+  "permalink": "/docs/sensors",
+  "draft": false,
+  "unlisted": false,
+  "tags": [
+    {
+      "inline": true,
+      "label": "acidic-soil",
+      "permalink": "/docs/tags/acidic-soil"
+    },
+    {
+      "inline": true,
+      "label": "aurora",
+      "permalink": "/docs/tags/aurora"
+    },
+    {
+      "inline": true,
+      "label": "capacitive-soil-probe-corrosion",
+      "permalink": "/docs/tags/capacitive-soil-probe-corrosion"
+    },
+    {
+      "inline": true,
+      "label": "coated-probe",
+      "permalink": "/docs/tags/coated-probe"
+    },
+    {
+      "inline": true,
+      "label": "gold-flashed-pcb",
+      "permalink": "/docs/tags/gold-flashed-pcb"
+    },
+    {
+      "inline": true,
+      "label": "jonah",
+      "permalink": "/docs/tags/jonah"
+    },
+    {
+      "inline": true,
+      "label": "mira",
+      "permalink": "/docs/tags/mira"
+    },
+    {
+      "inline": true,
+      "label": "nova-widget",
+      "permalink": "/docs/tags/nova-widget"
+    }
+  ],
+  "version": "current",
+  "frontMatter": {
+    "id": "sensors",
+    "title": "Sensors",
+    "tags": [
+      "acidic-soil",
+      "aurora",
+      "capacitive-soil-probe-corrosion",
+      "coated-probe",
+      "gold-flashed-pcb",
+      "jonah",
+      "mira",
+      "nova-widget"
+    ],
+    "last_updated": "2026-06-25T07:57:33.122280+00:00",
+    "sidebar_label": "Sensors",
+    "slug": "/sensors"
+  },
+  "sidebar": "wikiSidebar",
+  "previous": {
+    "title": "Sensor Technology",
+    "permalink": "/docs/sensor-technology"
+  },
+  "next": {
+    "title": "Smart Gardening",
+    "permalink": "/docs/smart-gardening"
+  }
+}

@@ -1,0 +1,80 @@
+{
+  "id": "product-specifications",
+  "title": "Product Specifications",
+  "description": "Overview",
+  "source": "@site/docs/product-specifications.md",
+  "sourceDirName": ".",
+  "slug": "/product-specifications",
+  "permalink": "/docs/product-specifications",
+  "draft": false,
+  "unlisted": false,
+  "tags": [
+    {
+      "inline": true,
+      "label": "alex",
+      "permalink": "/docs/tags/alex"
+    },
+    {
+      "inline": true,
+      "label": "aurora-labs",
+      "permalink": "/docs/tags/aurora-labs"
+    },
+    {
+      "inline": true,
+      "label": "aurora-nova-widget",
+      "permalink": "/docs/tags/aurora-nova-widget"
+    },
+    {
+      "inline": true,
+      "label": "beta-recommendation",
+      "permalink": "/docs/tags/beta-recommendation"
+    },
+    {
+      "inline": true,
+      "label": "beta-tester-defaults",
+      "permalink": "/docs/tags/beta-tester-defaults"
+    },
+    {
+      "inline": true,
+      "label": "cloud-fee",
+      "permalink": "/docs/tags/cloud-fee"
+    },
+    {
+      "inline": true,
+      "label": "cr2032-battery",
+      "permalink": "/docs/tags/cr-2032-battery"
+    },
+    {
+      "inline": true,
+      "label": "cr2450-battery",
+      "permalink": "/docs/tags/cr-2450-battery"
+    }
+  ],
+  "version": "current",
+  "frontMatter": {
+    "id": "product-specifications",
+    "title": "Product Specifications",
+    "tags": [
+      "alex",
+      "aurora-labs",
+      "aurora-nova-widget",
+      "beta-recommendation",
+      "beta-tester-defaults",
+      "cloud-fee",
+      "cr2032-battery",
+      "cr2450-battery"
+    ],
+    "last_updated": "2026-06-25T07:52:14.108986+00:00",
+    "sidebar_label": "Product Specifications",
+    "slug": "/product-specifications"
+  },
+  "sidebar": "wikiSidebar",
+  "previous": {
+    "title": "Product Specification",
+    "permalink": "/docs/product-specification"
+  },
+  "next": {
+    "title": "Product Strategy",
+    "permalink": "/docs/product-strategy"
+  }
+}

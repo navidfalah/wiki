@@ -1,0 +1,80 @@
+{
+  "id": "mechanical-design",
+  "title": "Mechanical Design",
+  "description": "Overview",
+  "source": "@site/docs/mechanical-design.md",
+  "sourceDirName": ".",
+  "slug": "/mechanical-design",
+  "permalink": "/docs/mechanical-design",
+  "draft": false,
+  "unlisted": false,
+  "tags": [
+    {
+      "inline": true,
+      "label": "hardware-revision-c",
+      "permalink": "/docs/tags/hardware-revision-c"
+    },
+    {
+      "inline": true,
+      "label": "nova-widget",
+      "permalink": "/docs/tags/nova-widget"
+    },
+    {
+      "inline": true,
+      "label": "mechanical-design",
+      "permalink": "/docs/tags/mechanical-design"
+    },
+    {
+      "inline": true,
+      "label": "enclosure",
+      "permalink": "/docs/tags/enclosure"
+    },
+    {
+      "inline": true,
+      "label": "ip-rating",
+      "permalink": "/docs/tags/ip-rating"
+    },
+    {
+      "inline": true,
+      "label": "cr2032",
+      "permalink": "/docs/tags/cr-2032"
+    },
+    {
+      "inline": true,
+      "label": "jonah",
+      "permalink": "/docs/tags/jonah"
+    },
+    {
+      "inline": true,
+      "label": "capacitive-soil-probe",
+      "permalink": "/docs/tags/capacitive-soil-probe"
+    }
+  ],
+  "version": "current",
+  "frontMatter": {
+    "id": "mechanical-design",
+    "title": "Mechanical Design",
+    "tags": [
+      "hardware-revision-c",
+      "nova-widget",
+      "mechanical-design",
+      "enclosure",
+      "ip-rating",
+      "cr2032",
+      "jonah",
+      "capacitive-soil-probe"
+    ],
+    "last_updated": "2026-06-25T07:40:04.245137+00:00",
+    "sidebar_label": "Mechanical Design",
+    "slug": "/mechanical-design"
+  },
+  "sidebar": "wikiSidebar",
+  "previous": {
+    "title": "Marketing Copy",
+    "permalink": "/docs/marketing-copy"
+  },
+  "next": {
+    "title": "Meeting Notes",
+    "permalink": "/docs/meeting-notes"
+  }
+}

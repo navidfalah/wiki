@@ -1,0 +1,80 @@
+{
+  "id": "team-communication",
+  "title": "Team Communication",
+  "description": "Overview",
+  "source": "@site/docs/team-communication.md",
+  "sourceDirName": ".",
+  "slug": "/team-communication",
+  "permalink": "/docs/team-communication",
+  "draft": false,
+  "unlisted": false,
+  "tags": [
+    {
+      "inline": true,
+      "label": "aurora-labs",
+      "permalink": "/docs/tags/aurora-labs"
+    },
+    {
+      "inline": true,
+      "label": "standup",
+      "permalink": "/docs/tags/standup"
+    },
+    {
+      "inline": true,
+      "label": "github",
+      "permalink": "/docs/tags/github"
+    },
+    {
+      "inline": true,
+      "label": "beta-testing",
+      "permalink": "/docs/tags/beta-testing"
+    },
+    {
+      "inline": true,
+      "label": "blockers",
+      "permalink": "/docs/tags/blockers"
+    },
+    {
+      "inline": true,
+      "label": "wins",
+      "permalink": "/docs/tags/wins"
+    },
+    {
+      "inline": true,
+      "label": "cr2450",
+      "permalink": "/docs/tags/cr-2450"
+    },
+    {
+      "inline": true,
+      "label": "dummy-data-generation",
+      "permalink": "/docs/tags/dummy-data-generation"
+    }
+  ],
+  "version": "current",
+  "frontMatter": {
+    "id": "team-communication",
+    "title": "Team Communication",
+    "tags": [
+      "aurora-labs",
+      "standup",
+      "github",
+      "beta-testing",
+      "blockers",
+      "wins",
+      "cr2450",
+      "dummy-data-generation"
+    ],
+    "last_updated": "2026-06-25T08:02:22.431340+00:00",
+    "sidebar_label": "Team Communication",
+    "slug": "/team-communication"
+  },
+  "sidebar": "wikiSidebar",
+  "previous": {
+    "title": "Team Collaboration",
+    "permalink": "/docs/team-collaboration"
+  },
+  "next": {
+    "title": "Technical Specifications",
+    "permalink": "/docs/technical-specifications"
+  }
+}

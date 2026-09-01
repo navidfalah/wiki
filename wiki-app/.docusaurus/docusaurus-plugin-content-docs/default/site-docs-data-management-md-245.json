@@ -1,0 +1,80 @@
+{
+  "id": "data-management",
+  "title": "Data Management",
+  "description": "Overview",
+  "source": "@site/docs/data-management.md",
+  "sourceDirName": ".",
+  "slug": "/data-management",
+  "permalink": "/docs/data-management",
+  "draft": false,
+  "unlisted": false,
+  "tags": [
+    {
+      "inline": true,
+      "label": "data management",
+      "permalink": "/docs/tags/data-management"
+    },
+    {
+      "inline": true,
+      "label": "data consistency",
+      "permalink": "/docs/tags/data-consistency"
+    },
+    {
+      "inline": true,
+      "label": "data export",
+      "permalink": "/docs/tags/data-export"
+    },
+    {
+      "inline": true,
+      "label": "data visualization",
+      "permalink": "/docs/tags/data-visualization"
+    },
+    {
+      "inline": true,
+      "label": "mqtt",
+      "permalink": "/docs/tags/mqtt"
+    },
+    {
+      "inline": true,
+      "label": "csv",
+      "permalink": "/docs/tags/csv"
+    },
+    {
+      "inline": true,
+      "label": "beta testing",
+      "permalink": "/docs/tags/beta-testing"
+    },
+    {
+      "inline": true,
+      "label": "mesh sync",
+      "permalink": "/docs/tags/mesh-sync"
+    }
+  ],
+  "version": "current",
+  "frontMatter": {
+    "id": "data-management",
+    "title": "Data Management",
+    "tags": [
+      "data management",
+      "data consistency",
+      "data export",
+      "data visualization",
+      "mqtt",
+      "csv",
+      "beta testing",
+      "mesh sync"
+    ],
+    "last_updated": "2026-06-25T07:18:57.390441+00:00",
+    "sidebar_label": "Data Management",
+    "slug": "/data-management"
+  },
+  "sidebar": "wikiSidebar",
+  "previous": {
+    "title": "Data Ingestion",
+    "permalink": "/docs/data-ingestion"
+  },
+  "next": {
+    "title": "Data Ownership",
+    "permalink": "/docs/data-ownership"
+  }
+}

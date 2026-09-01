@@ -1,0 +1,80 @@
+{
+  "id": "firmware-specification",
+  "title": "Firmware Specification",
+  "description": "Overview",
+  "source": "@site/docs/firmware-specification.md",
+  "sourceDirName": ".",
+  "slug": "/firmware-specification",
+  "permalink": "/docs/firmware-specification",
+  "draft": false,
+  "unlisted": false,
+  "tags": [
+    {
+      "inline": true,
+      "label": "aurora-labs",
+      "permalink": "/docs/tags/aurora-labs"
+    },
+    {
+      "inline": true,
+      "label": "nova-widget-v2",
+      "permalink": "/docs/tags/nova-widget-v-2"
+    },
+    {
+      "inline": true,
+      "label": "nrf52840",
+      "permalink": "/docs/tags/nrf-52840"
+    },
+    {
+      "inline": true,
+      "label": "mesh-networking",
+      "permalink": "/docs/tags/mesh-networking"
+    },
+    {
+      "inline": true,
+      "label": "firmware",
+      "permalink": "/docs/tags/firmware"
+    },
+    {
+      "inline": true,
+      "label": "battery-life",
+      "permalink": "/docs/tags/battery-life"
+    },
+    {
+      "inline": true,
+      "label": "ota-updates",
+      "permalink": "/docs/tags/ota-updates"
+    },
+    {
+      "inline": true,
+      "label": "product-spec",
+      "permalink": "/docs/tags/product-spec"
+    }
+  ],
+  "version": "current",
+  "frontMatter": {
+    "id": "firmware-specification",
+    "title": "Firmware Specification",
+    "tags": [
+      "aurora-labs",
+      "nova-widget-v2",
+      "nrf52840",
+      "mesh-networking",
+      "firmware",
+      "battery-life",
+      "ota-updates",
+      "product-spec"
+    ],
+    "last_updated": "2026-06-25T07:22:23.907416+00:00",
+    "sidebar_label": "Firmware Specification",
+    "slug": "/firmware-specification"
+  },
+  "sidebar": "wikiSidebar",
+  "previous": {
+    "title": "Firmware Changelog",
+    "permalink": "/docs/firmware-changelog"
+  },
+  "next": {
+    "title": "Firmware Updates",
+    "permalink": "/docs/firmware-updates"
+  }
+}

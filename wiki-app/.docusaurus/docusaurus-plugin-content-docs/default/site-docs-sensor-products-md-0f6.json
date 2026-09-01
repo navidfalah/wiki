@@ -1,0 +1,80 @@
+{
+  "id": "sensor-products",
+  "title": "Sensor Products",
+  "description": "",
+  "source": "@site/docs/sensor-products.md",
+  "sourceDirName": ".",
+  "slug": "/sensor-products",
+  "permalink": "/docs/sensor-products",
+  "draft": false,
+  "unlisted": false,
+  "tags": [
+    {
+      "inline": true,
+      "label": "aurora-labs",
+      "permalink": "/docs/tags/aurora-labs"
+    },
+    {
+      "inline": true,
+      "label": "aurora-labs-nova",
+      "permalink": "/docs/tags/aurora-labs-nova"
+    },
+    {
+      "inline": true,
+      "label": "battery-life",
+      "permalink": "/docs/tags/battery-life"
+    },
+    {
+      "inline": true,
+      "label": "beta-invite",
+      "permalink": "/docs/tags/beta-invite"
+    },
+    {
+      "inline": true,
+      "label": "ip67-waterproof-rating",
+      "permalink": "/docs/tags/ip-67-waterproof-rating"
+    },
+    {
+      "inline": true,
+      "label": "meshsync",
+      "permalink": "/docs/tags/meshsync"
+    },
+    {
+      "inline": true,
+      "label": "no-cloud-operation",
+      "permalink": "/docs/tags/no-cloud-operation"
+    },
+    {
+      "inline": true,
+      "label": "sensenode",
+      "permalink": "/docs/tags/sensenode"
+    }
+  ],
+  "version": "current",
+  "frontMatter": {
+    "id": "sensor-products",
+    "title": "Sensor Products",
+    "tags": [
+      "aurora-labs",
+      "aurora-labs-nova",
+      "battery-life",
+      "beta-invite",
+      "ip67-waterproof-rating",
+      "meshsync",
+      "no-cloud-operation",
+      "sensenode"
+    ],
+    "last_updated": "2026-06-25T07:56:22.529968+00:00",
+    "sidebar_label": "Sensor Products",
+    "slug": "/sensor-products"
+  },
+  "sidebar": "wikiSidebar",
+  "previous": {
+    "title": "Sensor Networks",
+    "permalink": "/docs/sensor-networks"
+  },
+  "next": {
+    "title": "Sensor Technology",
+    "permalink": "/docs/sensor-technology"
+  }
+}

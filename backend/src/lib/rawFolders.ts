@@ -10,6 +10,7 @@
 import fs from 'node:fs';
 import path from 'node:path';
 import { walkEntries } from './fsWalk';
+import { ALL_SOURCE_EXTENSIONS } from './rawFiles';
 
 export class FolderError extends Error {}
 
@@ -90,6 +91,65 @@ export function deleteFolder(rawDir: string, relPath: string, managedNames: Set<
   }
   if (fs.readdirSync(target).length > 0) throw new FolderError('Folder is not empty');
   fs.rmdirSync(target);
+}
+
+export interface UploadCandidate {
+  originalName: string;
+  buffer: Buffer;
+}
+
+function sanitizeUploadName(originalName: string): string {
+  const name = path.basename(originalName || '').trim();
+  if (!name || name === '.' || name === '..' || name.startsWith('.')) {
+    throw new FolderError(`Invalid file name: ${originalName}`);
+  }
+  const ext = path.extname(name).toLowerCase();
+  if (!ALL_SOURCE_EXTENSIONS.has(ext)) {
+    throw new FolderError(`Unsupported file type "${ext || '(none)'}" for ${name}`);
+  }
+  return name;
+}
+
+export function uploadFiles(
+  rawDir: string,
+  parent: string,
+  files: UploadCandidate[],
+  managedNames: Set<string>,
+): string[] {
+  if (!files.length) throw new FolderError('No files provided');
+  parent = (parent || '').trim().replace(/^\/+|\/+$/g, '');
+  checkNotManaged(parent, managedNames);
+  const destDir = parent ? path.join(rawDir, parent) : rawDir;
+  assertWithin(rawDir, destDir);
+  if (!(fs.existsSync(destDir) && fs.statSync(destDir).isDirectory())) {
+    throw new FolderError(`Destination folder not found: ${parent}`);
+  }
+
+  const saved: string[] = [];
+  for (const file of files) {
+    const name = sanitizeUploadName(file.originalName);
+    const destination = path.join(destDir, name);
+    assertWithin(rawDir, path.dirname(destination));
+    if (fs.existsSync(destination)) {
+      throw new FolderError(`A file named ${name} already exists there`);
+    }
+    fs.writeFileSync(destination, file.buffer);
+    saved.push(parent ? `${parent}/${name}` : name);
+  }
+  return saved;
+}
+
+export function deleteFile(rawDir: string, relPath: string, managedNames: Set<string>): void {
+  relPath = (relPath || '').trim().replace(/^\/+|\/+$/g, '');
+  if (!relPath) throw new FolderError('File path is required');
+  checkNotManaged(relPath, managedNames);
+  const target = path.join(rawDir, relPath);
+  assertWithin(rawDir, path.dirname(target));
+  const stat = fs.existsSync(target) ? fs.lstatSync(target) : null;
+  if (!stat || stat.isSymbolicLink() || !stat.isFile()) {
+    throw new FolderError(`File not found: ${relPath}`);
+  }
+  fs.unlinkSync(target);
 }
 
 export function moveFile(

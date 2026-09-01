@@ -1,0 +1,74 @@
+{
+  "id": "sprint-retrospective",
+  "title": "Sprint Retrospective",
+  "description": "Overview",
+  "source": "@site/docs/sprint-retrospective.md",
+  "sourceDirName": ".",
+  "slug": "/sprint-retrospective",
+  "permalink": "/docs/sprint-retrospective",
+  "draft": false,
+  "unlisted": false,
+  "tags": [
+    {
+      "inline": true,
+      "label": "sprint retrospective",
+      "permalink": "/docs/tags/sprint-retrospective"
+    },
+    {
+      "inline": true,
+      "label": "aurora labs",
+      "permalink": "/docs/tags/aurora-labs"
+    },
+    {
+      "inline": true,
+      "label": "sprint review",
+      "permalink": "/docs/tags/sprint-review"
+    },
+    {
+      "inline": true,
+      "label": "action items",
+      "permalink": "/docs/tags/action-items"
+    },
+    {
+      "inline": true,
+      "label": "team performance",
+      "permalink": "/docs/tags/team-performance"
+    },
+    {
+      "inline": true,
+      "label": "agile development",
+      "permalink": "/docs/tags/agile-development"
+    },
+    {
+      "inline": true,
+      "label": "project management",
+      "permalink": "/docs/tags/project-management"
+    }
+  ],
+  "version": "current",
+  "frontMatter": {
+    "id": "sprint-retrospective",
+    "title": "Sprint Retrospective",
+    "tags": [
+      "sprint retrospective",
+      "aurora labs",
+      "sprint review",
+      "action items",
+      "team performance",
+      "agile development",
+      "project management"
+    ],
+    "last_updated": "2026-06-25T08:00:09.987925+00:00",
+    "sidebar_label": "Sprint Retrospective",
+    "slug": "/sprint-retrospective"
+  },
+  "sidebar": "wikiSidebar",
+  "previous": {
+    "title": "Sprint Planning",
+    "permalink": "/docs/sprint-planning"
+  },
+  "next": {
+    "title": "Standup Meeting",
+    "permalink": "/docs/standup-meeting"
+  }
+}

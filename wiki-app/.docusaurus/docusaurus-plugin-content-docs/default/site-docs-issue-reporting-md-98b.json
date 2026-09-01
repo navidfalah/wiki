@@ -1,0 +1,68 @@
+{
+  "id": "issue-reporting",
+  "title": "Issue Reporting",
+  "description": "Overview",
+  "source": "@site/docs/issue-reporting.md",
+  "sourceDirName": ".",
+  "slug": "/issue-reporting",
+  "permalink": "/docs/issue-reporting",
+  "draft": false,
+  "unlisted": false,
+  "tags": [
+    {
+      "inline": true,
+      "label": "aurora-labs",
+      "permalink": "/docs/tags/aurora-labs"
+    },
+    {
+      "inline": true,
+      "label": "aurora-nova-widget",
+      "permalink": "/docs/tags/aurora-nova-widget"
+    },
+    {
+      "inline": true,
+      "label": "beta-testing",
+      "permalink": "/docs/tags/beta-testing"
+    },
+    {
+      "inline": true,
+      "label": "github",
+      "permalink": "/docs/tags/github"
+    },
+    {
+      "inline": true,
+      "label": "issue-reporting",
+      "permalink": "/docs/tags/issue-reporting"
+    },
+    {
+      "inline": true,
+      "label": "support",
+      "permalink": "/docs/tags/support"
+    }
+  ],
+  "version": "current",
+  "frontMatter": {
+    "id": "issue-reporting",
+    "title": "Issue Reporting",
+    "tags": [
+      "aurora-labs",
+      "aurora-nova-widget",
+      "beta-testing",
+      "github",
+      "issue-reporting",
+      "support"
+    ],
+    "last_updated": "2026-06-25T07:31:44.391882+00:00",
+    "sidebar_label": "Issue Reporting",
+    "slug": "/issue-reporting"
+  },
+  "sidebar": "wikiSidebar",
+  "previous": {
+    "title": "IoT Sensors",
+    "permalink": "/docs/iot-sensors"
+  },
+  "next": {
+    "title": "Kickoff Meeting",
+    "permalink": "/docs/kickoff-meeting"
+  }
+}

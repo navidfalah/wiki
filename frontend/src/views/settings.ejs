@@ -1,0 +1,79 @@
+<%- include('partials/head', { title, apiBase, active }) %>
+
+<h1 class="text-2xl font-semibold tracking-tight text-gray-900">Settings</h1>
+<p class="mt-1 max-w-2xl text-sm text-gray-600">
+  Configure LLM providers, API keys, and the local Gemma model used by the compiler pipeline.
+</p>
+
+<div class="mt-6 grid gap-6 lg:grid-cols-[minmax(0,1.3fr)_minmax(0,1fr)]">
+  <section class="rounded-xl border border-gray-200 bg-white shadow-card">
+    <div class="flex items-center justify-between border-b border-gray-100 px-5 py-4">
+      <div>
+        <h2 class="text-base font-semibold text-gray-900">API providers</h2>
+        <p class="mt-0.5 text-xs text-gray-500">Add as many keys as you use -- OpenAI, Gemini, local Gemma, or any OpenAI-compatible endpoint.</p>
+      </div>
+      <button id="add-profile-btn" type="button" class="shrink-0 rounded-lg bg-gray-900 px-3 py-1.5 text-xs font-medium text-white hover:bg-gray-700">
+        + Add provider
+      </button>
+    </div>
+    <div id="profiles-list" class="divide-y divide-gray-100">
+      <p class="p-5 text-sm text-gray-500">Loading…</p>
+    </div>
+  </section>
+
+  <div class="flex flex-col gap-6">
+    <section class="rounded-xl border border-gray-200 bg-white shadow-card">
+      <div class="border-b border-gray-100 px-5 py-4">
+        <h2 class="text-base font-semibold text-gray-900">Assignments</h2>
+        <p class="mt-0.5 text-xs text-gray-500">Which provider handles each part of the pipeline.</p>
+      </div>
+      <div id="assignments-form" class="flex flex-col gap-3 p-5">
+        <p class="text-sm text-gray-500">Loading…</p>
+      </div>
+    </section>
+
+    <section class="rounded-xl border border-gray-200 bg-white shadow-card">
+      <div class="flex items-center justify-between border-b border-gray-100 px-5 py-4">
+        <div>
+          <h2 class="text-base font-semibold text-gray-900">Local Gemma (Docker)</h2>
+          <p class="mt-0.5 text-xs text-gray-500">
+            Settings for the <code class="rounded bg-gray-100 px-1 py-0.5">local-llm</code> container --
+            <code class="rounded bg-gray-100 px-1 py-0.5">docker compose --profile local-llm up -d --build</code>
+            to apply changes.
+          </p>
+        </div>
+        <span id="local-llm-status" class="shrink-0 rounded-full bg-gray-100 px-2 py-0.5 text-xs font-medium text-gray-500">Checking…</span>
+      </div>
+      <div id="local-llm-form" class="flex flex-col gap-3 p-5">
+        <p class="text-sm text-gray-500">Loading…</p>
+      </div>
+    </section>
+
+    <button id="save-settings-btn" type="button" class="rounded-lg bg-generated px-4 py-2 text-sm font-medium text-white hover:opacity-90">
+      Save settings
+    </button>
+  </div>
+</div>
+
+<template id="profile-row-template">
+  <div class="profile-row px-5 py-4" data-id="">
+    <div class="flex flex-wrap items-center gap-2">
+      <input type="text" data-field="label" placeholder="Label (e.g. Gemini prod)" class="min-w-0 flex-1 rounded-lg border border-gray-300 px-2.5 py-1.5 text-sm focus:border-accent focus:outline-none focus:ring-2 focus:ring-accent/20" />
+      <select data-field="provider" class="rounded-lg border border-gray-300 px-2 py-1.5 text-sm focus:border-accent focus:outline-none focus:ring-2 focus:ring-accent/20">
+        <option value="openai">OpenAI</option>
+        <option value="gemini">Gemini</option>
+        <option value="local">Local Gemma</option>
+        <option value="custom">Custom</option>
+      </select>
+      <button type="button" data-action="remove" class="rounded-lg px-2 py-1.5 text-xs font-medium text-red-600 hover:bg-red-50">Remove</button>
+    </div>
+    <div class="mt-2 grid gap-2 sm:grid-cols-2">
+      <input type="text" data-field="base_url" placeholder="Base URL" class="rounded-lg border border-gray-300 px-2.5 py-1.5 text-sm focus:border-accent focus:outline-none focus:ring-2 focus:ring-accent/20" />
+      <input type="text" data-field="model" placeholder="Model" class="rounded-lg border border-gray-300 px-2.5 py-1.5 text-sm focus:border-accent focus:outline-none focus:ring-2 focus:ring-accent/20" />
+    </div>
+    <input type="password" data-field="api_key" placeholder="API key" autocomplete="off" class="mt-2 w-full rounded-lg border border-gray-300 px-2.5 py-1.5 text-sm focus:border-accent focus:outline-none focus:ring-2 focus:ring-accent/20" />
+    <p data-field="key-hint" class="mt-1 text-xs text-gray-400"></p>
+  </div>
+</template>
+
+<%- include('partials/foot', { clientScript }) %>

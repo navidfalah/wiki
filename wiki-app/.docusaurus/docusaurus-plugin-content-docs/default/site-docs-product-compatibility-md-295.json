@@ -1,0 +1,80 @@
+{
+  "id": "product-compatibility",
+  "title": "Product Compatibility",
+  "description": "",
+  "source": "@site/docs/product-compatibility.md",
+  "sourceDirName": ".",
+  "slug": "/product-compatibility",
+  "permalink": "/docs/product-compatibility",
+  "draft": false,
+  "unlisted": false,
+  "tags": [
+    {
+      "inline": true,
+      "label": "aurora-nova-widget",
+      "permalink": "/docs/tags/aurora-nova-widget"
+    },
+    {
+      "inline": true,
+      "label": "beta-recommendation",
+      "permalink": "/docs/tags/beta-recommendation"
+    },
+    {
+      "inline": true,
+      "label": "default-reading-interval",
+      "permalink": "/docs/tags/default-reading-interval"
+    },
+    {
+      "inline": true,
+      "label": "ip54",
+      "permalink": "/docs/tags/ip-54"
+    },
+    {
+      "inline": true,
+      "label": "ip67",
+      "permalink": "/docs/tags/ip-67"
+    },
+    {
+      "inline": true,
+      "label": "local-first",
+      "permalink": "/docs/tags/local-first"
+    },
+    {
+      "inline": true,
+      "label": "meshsync",
+      "permalink": "/docs/tags/meshsync"
+    },
+    {
+      "inline": true,
+      "label": "product-compatibility",
+      "permalink": "/docs/tags/product-compatibility"
+    }
+  ],
+  "version": "current",
+  "frontMatter": {
+    "id": "product-compatibility",
+    "title": "Product Compatibility",
+    "tags": [
+      "aurora-nova-widget",
+      "beta-recommendation",
+      "default-reading-interval",
+      "ip54",
+      "ip67",
+      "local-first",
+      "meshsync",
+      "product-compatibility"
+    ],
+    "last_updated": "2026-06-25T07:48:09.023580+00:00",
+    "sidebar_label": "Product Compatibility",
+    "slug": "/product-compatibility"
+  },
+  "sidebar": "wikiSidebar",
+  "previous": {
+    "title": "Product Comparison",
+    "permalink": "/docs/product-comparison"
+  },
+  "next": {
+    "title": "Product Design",
+    "permalink": "/docs/product-design"
+  }
+}

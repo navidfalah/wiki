@@ -1,0 +1,80 @@
+{
+  "id": "bug-tracking",
+  "title": "Bug Tracking",
+  "description": "Overview",
+  "source": "@site/docs/bug-tracking.md",
+  "sourceDirName": ".",
+  "slug": "/bug-tracking",
+  "permalink": "/docs/bug-tracking",
+  "draft": false,
+  "unlisted": false,
+  "tags": [
+    {
+      "inline": true,
+      "label": "alex",
+      "permalink": "/docs/tags/alex"
+    },
+    {
+      "inline": true,
+      "label": "aurora-labs",
+      "permalink": "/docs/tags/aurora-labs"
+    },
+    {
+      "inline": true,
+      "label": "beta-testing",
+      "permalink": "/docs/tags/beta-testing"
+    },
+    {
+      "inline": true,
+      "label": "board",
+      "permalink": "/docs/tags/board"
+    },
+    {
+      "inline": true,
+      "label": "bug-tracking",
+      "permalink": "/docs/tags/bug-tracking"
+    },
+    {
+      "inline": true,
+      "label": "cr2450",
+      "permalink": "/docs/tags/cr-2450"
+    },
+    {
+      "inline": true,
+      "label": "dummy-data-generation",
+      "permalink": "/docs/tags/dummy-data-generation"
+    },
+    {
+      "inline": true,
+      "label": "forum-scraper",
+      "permalink": "/docs/tags/forum-scraper"
+    }
+  ],
+  "version": "current",
+  "frontMatter": {
+    "id": "bug-tracking",
+    "title": "Bug Tracking",
+    "tags": [
+      "alex",
+      "aurora-labs",
+      "beta-testing",
+      "board",
+      "bug-tracking",
+      "cr2450",
+      "dummy-data-generation",
+      "forum-scraper"
+    ],
+    "last_updated": "2026-06-25T07:14:24.790831+00:00",
+    "sidebar_label": "Bug Tracking",
+    "slug": "/bug-tracking"
+  },
+  "sidebar": "wikiSidebar",
+  "previous": {
+    "title": "Branding Strategy",
+    "permalink": "/docs/branding-strategy"
+  },
+  "next": {
+    "title": "Business Operations",
+    "permalink": "/docs/business-operations"
+  }
+}

@@ -2,102 +2,46 @@
 id: product-comparison
 title: Product Comparison
 tags:
-  - alex-rivera
-  - amazon
-  - aurora-labs
-  - aurora-nova-widget
-  - aurora-nova-widget-v2-beta
-  - battlecard
-  - cheapoco
+  - ip-rating
+  - meshsync
+  - nova-widget
+  - product-comparison
   - sensenode-sn-400
-  - garden-sensors
-  - iot-sensors
-  - competitive-analysis
-last_updated: "2026-06-25T07:47:56.849066+00:00"
+  - wiki
+last_updated: "2026-09-01T19:20:39.857998+00:00"
 sidebar_label: Product Comparison
 slug: /product-comparison
 ---
 
-```markdown
+<!-- AUTO-GENERATED — compiled by the LLM Wiki compiler from data/raw/ sources into compiler/temp_output/, then linked here. Edits to this file are overwritten on the next compile: edit sources under data/raw/, or manual cross-links in data/link_overrides.json, instead. -->
+
 # Product Comparison
 
 ## Overview
-
-This page provides a comparative analysis of various smart sensor products, primarily focusing on [Garden Sensors](./garden-sensors.md) like the **Aurora Nova Widget v2** (beta) and the **SenseNode SN-400**. It also includes brief details on other adjacent products such as the CheapoCo SoilStick and TeaBuddy Puck. The comparison highlights key features such as weather sealing, connectivity, cloud integration, and battery performance.
+This wiki page provides a product comparison based on support ticket inquiries regarding outdoor usage specifications, weatherproofing ratings, and pricing models for [hardware](./hardware.md) and software ecosystems.
 
 ## Key Details
-
-### Aurora Nova Widget v2 (beta)
-
-*   **Status**: Beta unit, not yet commercially available.
-*   **Enclosure & Weather Sealing**: IP54 plastic, offering moderate sealing. This is visibly less sealed than the SenseNode SN-400. There is a roadmap for IP65.
-*   **Connectivity**: Utilizes an nRF52840 module with a custom **[MeshSync](./meshsync.md)** mesh protocol (BLE + MeshSync).
-    *   **Advantages**: Avoids [LoRaWAN](./lorawan.md) fees and cloud subscriptions, offering mesh flexibility. Features an open [MQTT](./mqtt.md) export, requiring no account.
-    *   **Disadvantages**: Can exhibit complexity at scale, with a known issue of a "rejoin spike" when adding an 8th node, causing the mesh to stop reporting. A fix is anticipated in 0.3.8 firmware. It is recommended to stay at 6 nodes until the patch is released.
-*   **Battery**: Uses a CR2032 cell. [Aurora Labs](./aurora-labs.md) claims 2 years of battery life at 15-minute readings. Independent testing by Alex Rivera estimated approximately 20 months, with an average power consumption of ~92 µA (slightly above the 85 µA target) in a 3-node mesh.
-*   **Cloud Integration**: Optional cloud integration; no account is required for data export.
-*   **Target Use**: Garden/soil sensing.
-
-### SenseNode SN-400
-
-*   **Price**: $49.
-*   **Enclosure & Weather Sealing**: Features a solid IP67 enclosure, providing excellent sealing and superior weather resistance compared to the Aurora Nova Widget v2.
-*   **Connectivity**: Uses an STM32WL module with **[LoRaWAN](./lorawan.md)** protocol (not mesh).
-    *   **Advantages**: Offers a simpler topology and can handle up to 10 devices without issues, as reported by users.
-*   **Battery**: Claims a 3-year battery life. Independent testing by Alex Rivera estimated approximately 22 months at a default 30-minute interval. The device uses a CR2450 battery.
-*   **Cloud Integration**: Requires a cloud dashboard for alerts, with a limited free tier. Emphasizes subscription costs over a 3-year period.
-*   **Target Use**: Serious outdoor deployment, [Garden Sensors](./garden-sensors.md).
-
-### CheapoCo SoilStick
-
-*   **Connectivity**: WiFi.
-*   **Cloud Integration**: Requires cloud access.
-*   **Weather Sealing**: None.
-*   **Battery**: USB powered.
-*   **Target Use**: [Garden Sensors](./garden-sensors.md).
-
-### TeaBuddy Puck
-
-*   **Product Type**: Kitchen/lifestyle adjacent product, specifically a local-only tea timer.
-*   **Connectivity**: BLE.
-*   **Cloud Integration**: Local-only.
-*   **Weather Sealing**: Splash-resistant, suitable for kitchen use.
-*   **Relationship**: Not considered a direct competitor; rather, it's a potential partnership or co-marketing opportunity.
-
-### TimerCap
-
-*   **Product Type**: Mechanical timer, not a smart device.
-*   **Status**: TimerCap Kickstarter campaign failed in 2024.
+- **Outdoor Use & Weatherproofing:** 
+  - The **[SenseNode SN-400](./sensenode-sn-400.md)** features an **IP67** rating, making it highly dust-tight and capable of surviving immersion in water up to 1 meter, suitable for harsh outdoor environments.
+  - The **[Nova Widget](./nova-widget.md)** currently operates at an **IP54 beta** rating, offering limited protection against dust splashing and water spray, indicating it is still in a developmental or testing phase for outdoor resilience.
+- **Software & Fees:** 
+  - **MeshSync** operates under a zero-cloud-fee pricing model, meaning users do not incur recurring subscription costs for cloud connectivity or data synchronization features.
 
 ## Related Entities
-
-*   **[Aurora Labs](./aurora-labs.md)**: Developer of the Nova Widget.
-*   **[SenseNode](./sensenode.md)**: Manufacturer of the SenseNode SN-400 sensor.
-*   **CheapoCo**: Manufacturer of the CheapoCo SoilStick.
-*   **[TeaBuddy](./teabuddy.md)**: Manufacturer of the TeaBuddy Puck tea timer.
-*   **Alex Rivera**: Author of the "Teardown: SenseNode SN-400 vs the indie sensor crowd" blog post.
-*   **Jonah Park**: Author of the "Competitive landscape Q3 2026 — Aurora internal" report and internal notes on support tickets.
+- **Nova Widget**: An emerging hardware device currently in [beta testing](./beta-testing.md) with an IP54-rated enclosure.
+- **SenseNode SN-400**: A competing or alternative hardware device boasting robust IP67 outdoor protection.
+- **MeshSync**: A software or synchronization utility noted for lacking cloud fees.
 
 ## Related Concepts
-
-*   **IP67 / IP54 / IP65**: Ingress Protection ratings indicating levels of dust and water resistance.
-*   **[LoRaWAN](./lorawan.md)**: A Low Power Wide Area Network (LPWAN) specification for wireless battery-operated "things" in a regional, national or global network.
-*   **[MeshSync](./meshsync.md)**: A custom mesh networking protocol used by [Aurora Labs](./aurora-labs.md), leveraging BLE.
-*   **Cloud Lock-in**: Dependence on a specific vendor's cloud services, often involving subscription fees.
-*   **Battlecard**: A competitive analysis tool used internally to highlight strengths and weaknesses against competitors.
-*   **[Garden Sensors](./garden-sensors.md)**: Devices designed to monitor environmental conditions relevant to gardening, such as soil moisture, temperature, and light.
+- **IP Rating (Ingress Protection):** Standards used to define levels of sealing effectiveness of electrical enclosures against intrusion from foreign bodies (tools, dirt) and moisture.
+- **Cloud Fees:** Recurring subscription models associated with remote data storage, device management, and software-as-a-service (SaaS) offerings.
+- **Outdoor Deployment:** The physical implementation of hardware in external environments requiring weather-resistant engineering.
 
 ## Contradictions
+*(No contradictions present in the provided source material.)*
 
-*   **Aurora Nova Widget Battery Type**:
-    *   **Contradiction:** An internal Amazon draft and an earlier version of Alex Rivera's blog post incorrectly stated the Aurora Nova Widget v2 used a CR2450 battery.
-    *   **Resolution:** The beta unit of the Aurora Nova Widget v2 uses a **CR2032** battery. This was corrected in Alex Rivera's blog post and is reflected in [Aurora Labs](./aurora-labs.md)'s internal competitive landscape document. The Amazon draft requires correction before publication.
+## References & Trust
 
-## Sources
-
-*   `articles/2026-05-20-competitor-teardown-blog.md`
-*   `samples/articles/[SAMPLE]-2026-07-09-competitive-landscape-q3.md`
-*   `samples/support/[SAMPLE]-2026-06-27-ticket-2099-mesh-rejoin.txt`
-*   `samples/support/[SAMPLE]-2026-07-08-ticket-2222-waterproof-confusion.txt`
-*   `transcripts/TEST-support-ticket.txt`
-```
+| # | Source | Type | Trust |
+|---|--------|------|-------|
+| 1 | `transcripts/TEST-support-ticket.txt` | text | Medium |

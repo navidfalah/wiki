@@ -1,0 +1,80 @@
+{
+  "id": "teabuddy",
+  "title": "TeaBuddy",
+  "description": "Overview",
+  "source": "@site/docs/teabuddy.md",
+  "sourceDirName": ".",
+  "slug": "/teabuddy",
+  "permalink": "/docs/teabuddy",
+  "draft": false,
+  "unlisted": false,
+  "tags": [
+    {
+      "inline": true,
+      "label": "teabuddy",
+      "permalink": "/docs/tags/teabuddy"
+    },
+    {
+      "inline": true,
+      "label": "ble",
+      "permalink": "/docs/tags/ble"
+    },
+    {
+      "inline": true,
+      "label": "firmware",
+      "permalink": "/docs/tags/firmware"
+    },
+    {
+      "inline": true,
+      "label": "ios-18",
+      "permalink": "/docs/tags/ios-18"
+    },
+    {
+      "inline": true,
+      "label": "corebluetooth",
+      "permalink": "/docs/tags/corebluetooth"
+    },
+    {
+      "inline": true,
+      "label": "battery",
+      "permalink": "/docs/tags/battery"
+    },
+    {
+      "inline": true,
+      "label": "codebase-merging",
+      "permalink": "/docs/tags/codebase-merging"
+    },
+    {
+      "inline": true,
+      "label": "ux",
+      "permalink": "/docs/tags/ux"
+    }
+  ],
+  "version": "current",
+  "frontMatter": {
+    "id": "teabuddy",
+    "title": "TeaBuddy",
+    "tags": [
+      "teabuddy",
+      "ble",
+      "firmware",
+      "ios-18",
+      "corebluetooth",
+      "battery",
+      "codebase-merging",
+      "ux"
+    ],
+    "last_updated": "2026-06-25T08:01:56.994847+00:00",
+    "sidebar_label": "TeaBuddy",
+    "slug": "/teabuddy"
+  },
+  "sidebar": "wikiSidebar",
+  "previous": {
+    "title": "System Design",
+    "permalink": "/docs/system-design"
+  },
+  "next": {
+    "title": "Team Collaboration",
+    "permalink": "/docs/team-collaboration"
+  }
+}

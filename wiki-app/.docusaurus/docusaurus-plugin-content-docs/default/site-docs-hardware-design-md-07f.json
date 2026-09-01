@@ -1,0 +1,80 @@
+{
+  "id": "hardware-design",
+  "title": "Hardware Design",
+  "description": "",
+  "source": "@site/docs/hardware-design.md",
+  "sourceDirName": ".",
+  "slug": "/hardware-design",
+  "permalink": "/docs/hardware-design",
+  "draft": false,
+  "unlisted": false,
+  "tags": [
+    {
+      "inline": true,
+      "label": "battery-math",
+      "permalink": "/docs/tags/battery-math"
+    },
+    {
+      "inline": true,
+      "label": "cloudbro",
+      "permalink": "/docs/tags/cloudbro"
+    },
+    {
+      "inline": true,
+      "label": "dang",
+      "permalink": "/docs/tags/dang"
+    },
+    {
+      "inline": true,
+      "label": "duty-cycle",
+      "permalink": "/docs/tags/duty-cycle"
+    },
+    {
+      "inline": true,
+      "label": "hardware-design",
+      "permalink": "/docs/tags/hardware-design"
+    },
+    {
+      "inline": true,
+      "label": "hardwarefan",
+      "permalink": "/docs/tags/hardwarefan"
+    },
+    {
+      "inline": true,
+      "label": "ip54",
+      "permalink": "/docs/tags/ip-54"
+    },
+    {
+      "inline": true,
+      "label": "ip67",
+      "permalink": "/docs/tags/ip-67"
+    }
+  ],
+  "version": "current",
+  "frontMatter": {
+    "id": "hardware-design",
+    "title": "Hardware Design",
+    "tags": [
+      "battery-math",
+      "cloudbro",
+      "dang",
+      "duty-cycle",
+      "hardware-design",
+      "hardwarefan",
+      "ip54",
+      "ip67"
+    ],
+    "last_updated": "2026-06-25T07:25:29.660230+00:00",
+    "sidebar_label": "Hardware Design",
+    "slug": "/hardware-design"
+  },
+  "sidebar": "wikiSidebar",
+  "previous": {
+    "title": "Hacker News",
+    "permalink": "/docs/hacker-news"
+  },
+  "next": {
+    "title": "Hardware Development",
+    "permalink": "/docs/hardware-development"
+  }
+}

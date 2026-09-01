@@ -1,0 +1,80 @@
+{
+  "id": "battery-technology",
+  "title": "Battery Technology",
+  "description": "Overview",
+  "source": "@site/docs/battery-technology.md",
+  "sourceDirName": ".",
+  "slug": "/battery-technology",
+  "permalink": "/docs/battery-technology",
+  "draft": false,
+  "unlisted": false,
+  "tags": [
+    {
+      "inline": true,
+      "label": "alex-kim",
+      "permalink": "/docs/tags/alex-kim"
+    },
+    {
+      "inline": true,
+      "label": "aurora",
+      "permalink": "/docs/tags/aurora"
+    },
+    {
+      "inline": true,
+      "label": "aurora-labs",
+      "permalink": "/docs/tags/aurora-labs"
+    },
+    {
+      "inline": true,
+      "label": "battery-myths",
+      "permalink": "/docs/tags/battery-myths"
+    },
+    {
+      "inline": true,
+      "label": "battery-technology",
+      "permalink": "/docs/tags/battery-technology"
+    },
+    {
+      "inline": true,
+      "label": "bluetooth-low-energy-ble",
+      "permalink": "/docs/tags/bluetooth-low-energy-ble"
+    },
+    {
+      "inline": true,
+      "label": "duty-cycles",
+      "permalink": "/docs/tags/duty-cycles"
+    },
+    {
+      "inline": true,
+      "label": "ip67-envy",
+      "permalink": "/docs/tags/ip-67-envy"
+    }
+  ],
+  "version": "current",
+  "frontMatter": {
+    "id": "battery-technology",
+    "title": "Battery Technology",
+    "tags": [
+      "alex-kim",
+      "aurora",
+      "aurora-labs",
+      "battery-myths",
+      "battery-technology",
+      "bluetooth-low-energy-ble",
+      "duty-cycles",
+      "ip67-envy"
+    ],
+    "last_updated": "2026-06-25T07:13:06.458749+00:00",
+    "sidebar_label": "Battery Technology",
+    "slug": "/battery-technology"
+  },
+  "sidebar": "wikiSidebar",
+  "previous": {
+    "title": "Battery Specifications",
+    "permalink": "/docs/battery-specifications"
+  },
+  "next": {
+    "title": "Beta Programs",
+    "permalink": "/docs/beta-programs"
+  }
+}

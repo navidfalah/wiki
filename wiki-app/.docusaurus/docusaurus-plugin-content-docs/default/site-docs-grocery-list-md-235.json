@@ -1,0 +1,80 @@
+{
+  "id": "grocery-list",
+  "title": "Grocery List",
+  "description": "Overview",
+  "source": "@site/docs/grocery-list.md",
+  "sourceDirName": ".",
+  "slug": "/grocery-list",
+  "permalink": "/docs/grocery-list",
+  "draft": false,
+  "unlisted": false,
+  "tags": [
+    {
+      "inline": true,
+      "label": "dentist",
+      "permalink": "/docs/tags/dentist"
+    },
+    {
+      "inline": true,
+      "label": "enclosure-design",
+      "permalink": "/docs/tags/enclosure-design"
+    },
+    {
+      "inline": true,
+      "label": "grocery-list",
+      "permalink": "/docs/tags/grocery-list"
+    },
+    {
+      "inline": true,
+      "label": "karpathy",
+      "permalink": "/docs/tags/karpathy"
+    },
+    {
+      "inline": true,
+      "label": "llm-wiki-pattern",
+      "permalink": "/docs/tags/llm-wiki-pattern"
+    },
+    {
+      "inline": true,
+      "label": "nova-prototypes",
+      "permalink": "/docs/tags/nova-prototypes"
+    },
+    {
+      "inline": true,
+      "label": "nova-widget",
+      "permalink": "/docs/tags/nova-widget"
+    },
+    {
+      "inline": true,
+      "label": "plant-whisperer",
+      "permalink": "/docs/tags/plant-whisperer"
+    }
+  ],
+  "version": "current",
+  "frontMatter": {
+    "id": "grocery-list",
+    "title": "Grocery List",
+    "tags": [
+      "dentist",
+      "enclosure-design",
+      "grocery-list",
+      "karpathy",
+      "llm-wiki-pattern",
+      "nova-prototypes",
+      "nova-widget",
+      "plant-whisperer"
+    ],
+    "last_updated": "2026-06-25T07:24:10.151186+00:00",
+    "sidebar_label": "Grocery List",
+    "slug": "/grocery-list"
+  },
+  "sidebar": "wikiSidebar",
+  "previous": {
+    "title": "GitHub Issues",
+    "permalink": "/docs/github-issues"
+  },
+  "next": {
+    "title": "Hacker News",
+    "permalink": "/docs/hacker-news"
+  }
+}

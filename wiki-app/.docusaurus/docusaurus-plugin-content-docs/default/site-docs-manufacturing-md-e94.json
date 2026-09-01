@@ -1,0 +1,80 @@
+{
+  "id": "manufacturing",
+  "title": "Manufacturing",
+  "description": "Overview",
+  "source": "@site/docs/manufacturing.md",
+  "sourceDirName": ".",
+  "slug": "/manufacturing",
+  "permalink": "/docs/manufacturing",
+  "draft": false,
+  "unlisted": false,
+  "tags": [
+    {
+      "inline": true,
+      "label": "beta-injection-mold",
+      "permalink": "/docs/tags/beta-injection-mold"
+    },
+    {
+      "inline": true,
+      "label": "contradiction-flag-consistency",
+      "permalink": "/docs/tags/contradiction-flag-consistency"
+    },
+    {
+      "inline": true,
+      "label": "csv-optional-dashboard",
+      "permalink": "/docs/tags/csv-optional-dashboard"
+    },
+    {
+      "inline": true,
+      "label": "garden-equipment-aesthetic",
+      "permalink": "/docs/tags/garden-equipment-aesthetic"
+    },
+    {
+      "inline": true,
+      "label": "jonah",
+      "permalink": "/docs/tags/jonah"
+    },
+    {
+      "inline": true,
+      "label": "manufacturing",
+      "permalink": "/docs/tags/manufacturing"
+    },
+    {
+      "inline": true,
+      "label": "mesh-sync",
+      "permalink": "/docs/tags/mesh-sync"
+    },
+    {
+      "inline": true,
+      "label": "mira",
+      "permalink": "/docs/tags/mira"
+    }
+  ],
+  "version": "current",
+  "frontMatter": {
+    "id": "manufacturing",
+    "title": "Manufacturing",
+    "tags": [
+      "beta-injection-mold",
+      "contradiction-flag-consistency",
+      "csv-optional-dashboard",
+      "garden-equipment-aesthetic",
+      "jonah",
+      "manufacturing",
+      "mesh-sync",
+      "mira"
+    ],
+    "last_updated": "2026-06-25T07:38:34.359762+00:00",
+    "sidebar_label": "Manufacturing",
+    "slug": "/manufacturing"
+  },
+  "sidebar": "wikiSidebar",
+  "previous": {
+    "title": "Maker Faire",
+    "permalink": "/docs/maker-faire"
+  },
+  "next": {
+    "title": "Markdown Export Issues",
+    "permalink": "/docs/markdown-export-issues"
+  }
+}

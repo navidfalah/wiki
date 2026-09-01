@@ -1,0 +1,74 @@
+{
+  "id": "data-privacy",
+  "title": "Data Privacy",
+  "description": "Overview",
+  "source": "@site/docs/data-privacy.md",
+  "sourceDirName": ".",
+  "slug": "/data-privacy",
+  "permalink": "/docs/data-privacy",
+  "draft": false,
+  "unlisted": false,
+  "tags": [
+    {
+      "inline": true,
+      "label": "aurora-nova-widget",
+      "permalink": "/docs/tags/aurora-nova-widget"
+    },
+    {
+      "inline": true,
+      "label": "beta-firmware",
+      "permalink": "/docs/tags/beta-firmware"
+    },
+    {
+      "inline": true,
+      "label": "beta-tester",
+      "permalink": "/docs/tags/beta-tester"
+    },
+    {
+      "inline": true,
+      "label": "confidentiality",
+      "permalink": "/docs/tags/confidentiality"
+    },
+    {
+      "inline": true,
+      "label": "data-privacy",
+      "permalink": "/docs/tags/data-privacy"
+    },
+    {
+      "inline": true,
+      "label": "data-telemetry",
+      "permalink": "/docs/tags/data-telemetry"
+    },
+    {
+      "inline": true,
+      "label": "meshsync-source-partial",
+      "permalink": "/docs/tags/meshsync-source-partial"
+    }
+  ],
+  "version": "current",
+  "frontMatter": {
+    "id": "data-privacy",
+    "title": "Data Privacy",
+    "tags": [
+      "aurora-nova-widget",
+      "beta-firmware",
+      "beta-tester",
+      "confidentiality",
+      "data-privacy",
+      "data-telemetry",
+      "meshsync-source-partial"
+    ],
+    "last_updated": "2026-06-25T07:19:28.362968+00:00",
+    "sidebar_label": "Data Privacy",
+    "slug": "/data-privacy"
+  },
+  "sidebar": "wikiSidebar",
+  "previous": {
+    "title": "Data Ownership",
+    "permalink": "/docs/data-ownership"
+  },
+  "next": {
+    "title": "Data Schema",
+    "permalink": "/docs/data-schema"
+  }
+}

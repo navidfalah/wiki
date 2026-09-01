@@ -1,0 +1,80 @@
+{
+  "id": "documentation",
+  "title": "Documentation",
+  "description": "Overview",
+  "source": "@site/docs/documentation.md",
+  "sourceDirName": ".",
+  "slug": "/documentation",
+  "permalink": "/docs/documentation",
+  "draft": false,
+  "unlisted": false,
+  "tags": [
+    {
+      "inline": true,
+      "label": "documentation",
+      "permalink": "/docs/tags/documentation"
+    },
+    {
+      "inline": true,
+      "label": "wiki",
+      "permalink": "/docs/tags/wiki"
+    },
+    {
+      "inline": true,
+      "label": "linter",
+      "permalink": "/docs/tags/linter"
+    },
+    {
+      "inline": true,
+      "label": "battery-management",
+      "permalink": "/docs/tags/battery-management"
+    },
+    {
+      "inline": true,
+      "label": "aurora-labs",
+      "permalink": "/docs/tags/aurora-labs"
+    },
+    {
+      "inline": true,
+      "label": "beta-testing",
+      "permalink": "/docs/tags/beta-testing"
+    },
+    {
+      "inline": true,
+      "label": "process-improvement",
+      "permalink": "/docs/tags/process-improvement"
+    },
+    {
+      "inline": true,
+      "label": "contradiction-linter",
+      "permalink": "/docs/tags/contradiction-linter"
+    }
+  ],
+  "version": "current",
+  "frontMatter": {
+    "id": "documentation",
+    "title": "Documentation",
+    "tags": [
+      "documentation",
+      "wiki",
+      "linter",
+      "battery-management",
+      "aurora-labs",
+      "beta-testing",
+      "process-improvement",
+      "contradiction-linter"
+    ],
+    "last_updated": "2026-06-25T07:21:14.592959+00:00",
+    "sidebar_label": "Documentation",
+    "slug": "/documentation"
+  },
+  "sidebar": "wikiSidebar",
+  "previous": {
+    "title": "Documentation Management",
+    "permalink": "/docs/documentation-management"
+  },
+  "next": {
+    "title": "Electrical Design",
+    "permalink": "/docs/electrical-design"
+  }
+}

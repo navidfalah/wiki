@@ -1,0 +1,80 @@
+{
+  "id": "beta-programs",
+  "title": "Beta Programs",
+  "description": "Overview",
+  "source": "@site/docs/beta-programs.md",
+  "sourceDirName": ".",
+  "slug": "/beta-programs",
+  "permalink": "/docs/beta-programs",
+  "draft": false,
+  "unlisted": false,
+  "tags": [
+    {
+      "inline": true,
+      "label": "aurora-labs",
+      "permalink": "/docs/tags/aurora-labs"
+    },
+    {
+      "inline": true,
+      "label": "aurora-nova-widget",
+      "permalink": "/docs/tags/aurora-nova-widget"
+    },
+    {
+      "inline": true,
+      "label": "beta-invite-batch",
+      "permalink": "/docs/tags/beta-invite-batch"
+    },
+    {
+      "inline": true,
+      "label": "beta-programs",
+      "permalink": "/docs/tags/beta-programs"
+    },
+    {
+      "inline": true,
+      "label": "docs-refresh",
+      "permalink": "/docs/tags/docs-refresh"
+    },
+    {
+      "inline": true,
+      "label": "firmware-flashing",
+      "permalink": "/docs/tags/firmware-flashing"
+    },
+    {
+      "inline": true,
+      "label": "github",
+      "permalink": "/docs/tags/github"
+    },
+    {
+      "inline": true,
+      "label": "issue-reporting",
+      "permalink": "/docs/tags/issue-reporting"
+    }
+  ],
+  "version": "current",
+  "frontMatter": {
+    "id": "beta-programs",
+    "title": "Beta Programs",
+    "tags": [
+      "aurora-labs",
+      "aurora-nova-widget",
+      "beta-invite-batch",
+      "beta-programs",
+      "docs-refresh",
+      "firmware-flashing",
+      "github",
+      "issue-reporting"
+    ],
+    "last_updated": "2026-06-25T07:13:18.507433+00:00",
+    "sidebar_label": "Beta Programs",
+    "slug": "/beta-programs"
+  },
+  "sidebar": "wikiSidebar",
+  "previous": {
+    "title": "Battery Technology",
+    "permalink": "/docs/battery-technology"
+  },
+  "next": {
+    "title": "Beta Testing Agreements",
+    "permalink": "/docs/beta-testing-agreements"
+  }
+}

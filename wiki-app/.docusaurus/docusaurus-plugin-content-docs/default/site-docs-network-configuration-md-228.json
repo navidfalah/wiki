@@ -1,0 +1,80 @@
+{
+  "id": "network-configuration",
+  "title": "Network Configuration",
+  "description": "Overview",
+  "source": "@site/docs/network-configuration.md",
+  "sourceDirName": ".",
+  "slug": "/network-configuration",
+  "permalink": "/docs/network-configuration",
+  "draft": false,
+  "unlisted": false,
+  "tags": [
+    {
+      "inline": true,
+      "label": "aurora",
+      "permalink": "/docs/tags/aurora"
+    },
+    {
+      "inline": true,
+      "label": "deprecated-feature",
+      "permalink": "/docs/tags/deprecated-feature"
+    },
+    {
+      "inline": true,
+      "label": "integration-request",
+      "permalink": "/docs/tags/integration-request"
+    },
+    {
+      "inline": true,
+      "label": "meshsync-beta-safe-nodes",
+      "permalink": "/docs/tags/meshsync-beta-safe-nodes"
+    },
+    {
+      "inline": true,
+      "label": "meshsync-default-interval-min",
+      "permalink": "/docs/tags/meshsync-default-interval-min"
+    },
+    {
+      "inline": true,
+      "label": "meshsync-max-nodes",
+      "permalink": "/docs/tags/meshsync-max-nodes"
+    },
+    {
+      "inline": true,
+      "label": "meshsync-role-child",
+      "permalink": "/docs/tags/meshsync-role-child"
+    },
+    {
+      "inline": true,
+      "label": "meshsync-role-lost",
+      "permalink": "/docs/tags/meshsync-role-lost"
+    }
+  ],
+  "version": "current",
+  "frontMatter": {
+    "id": "network-configuration",
+    "title": "Network Configuration",
+    "tags": [
+      "aurora",
+      "deprecated-feature",
+      "integration-request",
+      "meshsync-beta-safe-nodes",
+      "meshsync-default-interval-min",
+      "meshsync-max-nodes",
+      "meshsync-role-child",
+      "meshsync-role-lost"
+    ],
+    "last_updated": "2026-06-25T07:43:00.793634+00:00",
+    "sidebar_label": "Network Configuration",
+    "slug": "/network-configuration"
+  },
+  "sidebar": "wikiSidebar",
+  "previous": {
+    "title": "MQTT",
+    "permalink": "/docs/mqtt"
+  },
+  "next": {
+    "title": "Network Engineering",
+    "permalink": "/docs/network-engineering"
+  }
+}

@@ -1,0 +1,80 @@
+{
+  "id": "product-briefs",
+  "title": "Product Briefs",
+  "description": "Overview",
+  "source": "@site/docs/product-briefs.md",
+  "sourceDirName": ".",
+  "slug": "/product-briefs",
+  "permalink": "/docs/product-briefs",
+  "draft": false,
+  "unlisted": false,
+  "tags": [
+    {
+      "inline": true,
+      "label": "capacitive-soil-probe",
+      "permalink": "/docs/tags/capacitive-soil-probe"
+    },
+    {
+      "inline": true,
+      "label": "cr2032",
+      "permalink": "/docs/tags/cr-2032"
+    },
+    {
+      "inline": true,
+      "label": "hobbyist-market",
+      "permalink": "/docs/tags/hobbyist-market"
+    },
+    {
+      "inline": true,
+      "label": "meshsync",
+      "permalink": "/docs/tags/meshsync"
+    },
+    {
+      "inline": true,
+      "label": "nova-widget",
+      "permalink": "/docs/tags/nova-widget"
+    },
+    {
+      "inline": true,
+      "label": "nrf52840",
+      "permalink": "/docs/tags/nrf-52840"
+    },
+    {
+      "inline": true,
+      "label": "ota-deferred",
+      "permalink": "/docs/tags/ota-deferred"
+    },
+    {
+      "inline": true,
+      "label": "product-briefs",
+      "permalink": "/docs/tags/product-briefs"
+    }
+  ],
+  "version": "current",
+  "frontMatter": {
+    "id": "product-briefs",
+    "title": "Product Briefs",
+    "tags": [
+      "capacitive-soil-probe",
+      "cr2032",
+      "hobbyist-market",
+      "meshsync",
+      "nova-widget",
+      "nrf52840",
+      "ota-deferred",
+      "product-briefs"
+    ],
+    "last_updated": "2026-06-25T07:47:15.566814+00:00",
+    "sidebar_label": "Product Briefs",
+    "slug": "/product-briefs"
+  },
+  "sidebar": "wikiSidebar",
+  "previous": {
+    "title": "Product Announcements",
+    "permalink": "/docs/product-announcements"
+  },
+  "next": {
+    "title": "Product Comparison",
+    "permalink": "/docs/product-comparison"
+  }
+}

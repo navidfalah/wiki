@@ -1,0 +1,80 @@
+{
+  "id": "release-notes",
+  "title": "Release Notes",
+  "description": "This page details the release notes for MeshSync firmware version 0.3.8, a fictional release from Aurora Labs. These notes highlight key updates, breaking changes, and known issues associated with this firmware version.",
+  "source": "@site/docs/release-notes.md",
+  "sourceDirName": ".",
+  "slug": "/release-notes",
+  "permalink": "/docs/release-notes",
+  "draft": false,
+  "unlisted": false,
+  "tags": [
+    {
+      "inline": true,
+      "label": "aurora-labs",
+      "permalink": "/docs/tags/aurora-labs"
+    },
+    {
+      "inline": true,
+      "label": "default-read-interval",
+      "permalink": "/docs/tags/default-read-interval"
+    },
+    {
+      "inline": true,
+      "label": "jonah-park",
+      "permalink": "/docs/tags/jonah-park"
+    },
+    {
+      "inline": true,
+      "label": "known-issues",
+      "permalink": "/docs/tags/known-issues"
+    },
+    {
+      "inline": true,
+      "label": "meshsync",
+      "permalink": "/docs/tags/meshsync"
+    },
+    {
+      "inline": true,
+      "label": "mira-chen",
+      "permalink": "/docs/tags/mira-chen"
+    },
+    {
+      "inline": true,
+      "label": "mqtt-export-schema-v2",
+      "permalink": "/docs/tags/mqtt-export-schema-v-2"
+    },
+    {
+      "inline": true,
+      "label": "nova-widget",
+      "permalink": "/docs/tags/nova-widget"
+    }
+  ],
+  "version": "current",
+  "frontMatter": {
+    "id": "release-notes",
+    "title": "Release Notes",
+    "tags": [
+      "aurora-labs",
+      "default-read-interval",
+      "jonah-park",
+      "known-issues",
+      "meshsync",
+      "mira-chen",
+      "mqtt-export-schema-v2",
+      "nova-widget"
+    ],
+    "last_updated": "2026-06-25T07:54:43.216776+00:00",
+    "sidebar_label": "Release Notes",
+    "slug": "/release-notes"
+  },
+  "sidebar": "wikiSidebar",
+  "previous": {
+    "title": "Quality Assurance",
+    "permalink": "/docs/quality-assurance"
+  },
+  "next": {
+    "title": "SenseNode",
+    "permalink": "/docs/sensenode"
+  }
+}

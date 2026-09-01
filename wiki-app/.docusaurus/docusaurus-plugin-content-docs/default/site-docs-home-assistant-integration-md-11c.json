@@ -1,0 +1,80 @@
+{
+  "id": "home-assistant-integration",
+  "title": "Home Assistant Integration",
+  "description": "&#123;",
+  "source": "@site/docs/home-assistant-integration.md",
+  "sourceDirName": ".",
+  "slug": "/home-assistant-integration",
+  "permalink": "/docs/home-assistant-integration",
+  "draft": false,
+  "unlisted": false,
+  "tags": [
+    {
+      "inline": true,
+      "label": "home-assistant",
+      "permalink": "/docs/tags/home-assistant"
+    },
+    {
+      "inline": true,
+      "label": "mqtt",
+      "permalink": "/docs/tags/mqtt"
+    },
+    {
+      "inline": true,
+      "label": "nova-widget",
+      "permalink": "/docs/tags/nova-widget"
+    },
+    {
+      "inline": true,
+      "label": "homelab",
+      "permalink": "/docs/tags/homelab"
+    },
+    {
+      "inline": true,
+      "label": "firmware-upgrade",
+      "permalink": "/docs/tags/firmware-upgrade"
+    },
+    {
+      "inline": true,
+      "label": "telemetry",
+      "permalink": "/docs/tags/telemetry"
+    },
+    {
+      "inline": true,
+      "label": "mesh-networking",
+      "permalink": "/docs/tags/mesh-networking"
+    },
+    {
+      "inline": true,
+      "label": "aurora-labs",
+      "permalink": "/docs/tags/aurora-labs"
+    }
+  ],
+  "version": "current",
+  "frontMatter": {
+    "id": "home-assistant-integration",
+    "title": "Home Assistant Integration",
+    "tags": [
+      "home-assistant",
+      "mqtt",
+      "nova-widget",
+      "homelab",
+      "firmware-upgrade",
+      "telemetry",
+      "mesh-networking",
+      "aurora-labs"
+    ],
+    "last_updated": "2026-06-25T07:27:39.868509+00:00",
+    "sidebar_label": "Home Assistant Integration",
+    "slug": "/home-assistant-integration"
+  },
+  "sidebar": "wikiSidebar",
+  "previous": {
+    "title": "Heuristic Mode",
+    "permalink": "/docs/heuristic-mode"
+  },
+  "next": {
+    "title": "Home Assistant",
+    "permalink": "/docs/home-assistant"
+  }
+}

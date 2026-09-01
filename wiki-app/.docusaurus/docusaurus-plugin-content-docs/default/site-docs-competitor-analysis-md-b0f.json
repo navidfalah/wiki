@@ -1,0 +1,80 @@
+{
+  "id": "competitor-analysis",
+  "title": "Competitor Analysis",
+  "description": "Overview",
+  "source": "@site/docs/competitor-analysis.md",
+  "sourceDirName": ".",
+  "slug": "/competitor-analysis",
+  "permalink": "/docs/competitor-analysis",
+  "draft": false,
+  "unlisted": false,
+  "tags": [
+    {
+      "inline": true,
+      "label": "competitor-analysis",
+      "permalink": "/docs/tags/competitor-analysis"
+    },
+    {
+      "inline": true,
+      "label": "sensenode",
+      "permalink": "/docs/tags/sensenode"
+    },
+    {
+      "inline": true,
+      "label": "battery-life",
+      "permalink": "/docs/tags/battery-life"
+    },
+    {
+      "inline": true,
+      "label": "ip-ratings",
+      "permalink": "/docs/tags/ip-ratings"
+    },
+    {
+      "inline": true,
+      "label": "open-firmware",
+      "permalink": "/docs/tags/open-firmware"
+    },
+    {
+      "inline": true,
+      "label": "local-mesh",
+      "permalink": "/docs/tags/local-mesh"
+    },
+    {
+      "inline": true,
+      "label": "community-integrations",
+      "permalink": "/docs/tags/community-integrations"
+    },
+    {
+      "inline": true,
+      "label": "co-marketing",
+      "permalink": "/docs/tags/co-marketing"
+    }
+  ],
+  "version": "current",
+  "frontMatter": {
+    "id": "competitor-analysis",
+    "title": "Competitor Analysis",
+    "tags": [
+      "competitor-analysis",
+      "sensenode",
+      "battery-life",
+      "ip-ratings",
+      "open-firmware",
+      "local-mesh",
+      "community-integrations",
+      "co-marketing"
+    ],
+    "last_updated": "2026-06-25T07:16:34.628349+00:00",
+    "sidebar_label": "Competitor Analysis",
+    "slug": "/competitor-analysis"
+  },
+  "sidebar": "wikiSidebar",
+  "previous": {
+    "title": "Competitive Analysis",
+    "permalink": "/docs/competitive-analysis"
+  },
+  "next": {
+    "title": "Confidentiality",
+    "permalink": "/docs/confidentiality"
+  }
+}

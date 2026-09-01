@@ -1,0 +1,80 @@
+{
+  "id": "consumer-electronics-strategy",
+  "title": "Consumer Electronics Strategy",
+  "description": "Overview",
+  "source": "@site/docs/consumer-electronics-strategy.md",
+  "sourceDirName": ".",
+  "slug": "/consumer-electronics-strategy",
+  "permalink": "/docs/consumer-electronics-strategy",
+  "draft": false,
+  "unlisted": false,
+  "tags": [
+    {
+      "inline": true,
+      "label": "alex-kim",
+      "permalink": "/docs/tags/alex-kim"
+    },
+    {
+      "inline": true,
+      "label": "aurora-office",
+      "permalink": "/docs/tags/aurora-office"
+    },
+    {
+      "inline": true,
+      "label": "ble-bluetooth-low-energy",
+      "permalink": "/docs/tags/ble-bluetooth-low-energy"
+    },
+    {
+      "inline": true,
+      "label": "cloud-accounts",
+      "permalink": "/docs/tags/cloud-accounts"
+    },
+    {
+      "inline": true,
+      "label": "consumer-electronics-strategy",
+      "permalink": "/docs/tags/consumer-electronics-strategy"
+    },
+    {
+      "inline": true,
+      "label": "jonah",
+      "permalink": "/docs/tags/jonah"
+    },
+    {
+      "inline": true,
+      "label": "local-first-iot",
+      "permalink": "/docs/tags/local-first-iot"
+    },
+    {
+      "inline": true,
+      "label": "mesh-networking",
+      "permalink": "/docs/tags/mesh-networking"
+    }
+  ],
+  "version": "current",
+  "frontMatter": {
+    "id": "consumer-electronics-strategy",
+    "title": "Consumer Electronics Strategy",
+    "tags": [
+      "alex-kim",
+      "aurora-office",
+      "ble-bluetooth-low-energy",
+      "cloud-accounts",
+      "consumer-electronics-strategy",
+      "jonah",
+      "local-first-iot",
+      "mesh-networking"
+    ],
+    "last_updated": "2026-06-25T07:17:07.055251+00:00",
+    "sidebar_label": "Consumer Electronics Strategy",
+    "slug": "/consumer-electronics-strategy"
+  },
+  "sidebar": "wikiSidebar",
+  "previous": {
+    "title": "Confidentiality",
+    "permalink": "/docs/confidentiality"
+  },
+  "next": {
+    "title": "Content Management",
+    "permalink": "/docs/content-management"
+  }
+}

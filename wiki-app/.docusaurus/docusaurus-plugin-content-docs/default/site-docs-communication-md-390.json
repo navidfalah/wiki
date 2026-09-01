@@ -1,0 +1,80 @@
+{
+  "id": "communication",
+  "title": "Communication",
+  "description": "Overview",
+  "source": "@site/docs/communication.md",
+  "sourceDirName": ".",
+  "slug": "/communication",
+  "permalink": "/docs/communication",
+  "draft": false,
+  "unlisted": false,
+  "tags": [
+    {
+      "inline": true,
+      "label": "alex",
+      "permalink": "/docs/tags/alex"
+    },
+    {
+      "inline": true,
+      "label": "battery-math-revalidation",
+      "permalink": "/docs/tags/battery-math-revalidation"
+    },
+    {
+      "inline": true,
+      "label": "communication",
+      "permalink": "/docs/tags/communication"
+    },
+    {
+      "inline": true,
+      "label": "cr2032",
+      "permalink": "/docs/tags/cr-2032"
+    },
+    {
+      "inline": true,
+      "label": "cr2450",
+      "permalink": "/docs/tags/cr-2450"
+    },
+    {
+      "inline": true,
+      "label": "engineering-requirements",
+      "permalink": "/docs/tags/engineering-requirements"
+    },
+    {
+      "inline": true,
+      "label": "fifteen-minute-default",
+      "permalink": "/docs/tags/fifteen-minute-default"
+    },
+    {
+      "inline": true,
+      "label": "hardware-habit",
+      "permalink": "/docs/tags/hardware-habit"
+    }
+  ],
+  "version": "current",
+  "frontMatter": {
+    "id": "communication",
+    "title": "Communication",
+    "tags": [
+      "alex",
+      "battery-math-revalidation",
+      "communication",
+      "cr2032",
+      "cr2450",
+      "engineering-requirements",
+      "fifteen-minute-default",
+      "hardware-habit"
+    ],
+    "last_updated": "2026-06-25T07:15:56.900550+00:00",
+    "sidebar_label": "Communication",
+    "slug": "/communication"
+  },
+  "sidebar": "wikiSidebar",
+  "previous": {
+    "title": "Co-marketing",
+    "permalink": "/docs/co-marketing"
+  },
+  "next": {
+    "title": "Competitive Analysis",
+    "permalink": "/docs/competitive-analysis"
+  }
+}

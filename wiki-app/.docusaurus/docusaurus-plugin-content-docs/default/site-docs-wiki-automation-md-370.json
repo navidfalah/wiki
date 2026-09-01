@@ -1,0 +1,80 @@
+{
+  "id": "wiki-automation",
+  "title": "Wiki Automation",
+  "description": "Overview",
+  "source": "@site/docs/wiki-automation.md",
+  "sourceDirName": ".",
+  "slug": "/wiki-automation",
+  "permalink": "/docs/wiki-automation",
+  "draft": false,
+  "unlisted": false,
+  "tags": [
+    {
+      "inline": true,
+      "label": "aurora",
+      "permalink": "/docs/tags/aurora"
+    },
+    {
+      "inline": true,
+      "label": "auto-ingest",
+      "permalink": "/docs/tags/auto-ingest"
+    },
+    {
+      "inline": true,
+      "label": "ble",
+      "permalink": "/docs/tags/ble"
+    },
+    {
+      "inline": true,
+      "label": "ceos",
+      "permalink": "/docs/tags/ceos"
+    },
+    {
+      "inline": true,
+      "label": "contradiction-marker",
+      "permalink": "/docs/tags/contradiction-marker"
+    },
+    {
+      "inline": true,
+      "label": "cr2032",
+      "permalink": "/docs/tags/cr-2032"
+    },
+    {
+      "inline": true,
+      "label": "docusaurus",
+      "permalink": "/docs/tags/docusaurus"
+    },
+    {
+      "inline": true,
+      "label": "docusaurus-graph-plugin",
+      "permalink": "/docs/tags/docusaurus-graph-plugin"
+    }
+  ],
+  "version": "current",
+  "frontMatter": {
+    "id": "wiki-automation",
+    "title": "Wiki Automation",
+    "tags": [
+      "aurora",
+      "auto-ingest",
+      "ble",
+      "ceos",
+      "contradiction-marker",
+      "cr2032",
+      "docusaurus",
+      "docusaurus-graph-plugin"
+    ],
+    "last_updated": "2026-06-25T08:05:02.458818+00:00",
+    "sidebar_label": "Wiki Automation",
+    "slug": "/wiki-automation"
+  },
+  "sidebar": "wikiSidebar",
+  "previous": {
+    "title": "Weekly Sync",
+    "permalink": "/docs/weekly-sync"
+  },
+  "next": {
+    "title": "Wiki Compiler",
+    "permalink": "/docs/wiki-compiler"
+  }
+}

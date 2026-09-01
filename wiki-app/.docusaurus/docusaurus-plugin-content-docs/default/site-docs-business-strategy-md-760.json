@@ -1,0 +1,80 @@
+{
+  "id": "business-strategy",
+  "title": "Business Strategy",
+  "description": "Overview",
+  "source": "@site/docs/business-strategy.md",
+  "sourceDirName": ".",
+  "slug": "/business-strategy",
+  "permalink": "/docs/business-strategy",
+  "draft": false,
+  "unlisted": false,
+  "tags": [
+    {
+      "inline": true,
+      "label": "alex",
+      "permalink": "/docs/tags/alex"
+    },
+    {
+      "inline": true,
+      "label": "aurora-labs",
+      "permalink": "/docs/tags/aurora-labs"
+    },
+    {
+      "inline": true,
+      "label": "battery-life",
+      "permalink": "/docs/tags/battery-life"
+    },
+    {
+      "inline": true,
+      "label": "beta-customers",
+      "permalink": "/docs/tags/beta-customers"
+    },
+    {
+      "inline": true,
+      "label": "business-strategy",
+      "permalink": "/docs/tags/business-strategy"
+    },
+    {
+      "inline": true,
+      "label": "co-marketing",
+      "permalink": "/docs/tags/co-marketing"
+    },
+    {
+      "inline": true,
+      "label": "community-integrations",
+      "permalink": "/docs/tags/community-integrations"
+    },
+    {
+      "inline": true,
+      "label": "ip54",
+      "permalink": "/docs/tags/ip-54"
+    }
+  ],
+  "version": "current",
+  "frontMatter": {
+    "id": "business-strategy",
+    "title": "Business Strategy",
+    "tags": [
+      "alex",
+      "aurora-labs",
+      "battery-life",
+      "beta-customers",
+      "business-strategy",
+      "co-marketing",
+      "community-integrations",
+      "ip54"
+    ],
+    "last_updated": "2026-06-25T07:15:40.759030+00:00",
+    "sidebar_label": "Business Strategy",
+    "slug": "/business-strategy"
+  },
+  "sidebar": "wikiSidebar",
+  "previous": {
+    "title": "Business Operations",
+    "permalink": "/docs/business-operations"
+  },
+  "next": {
+    "title": "Co-marketing",
+    "permalink": "/docs/co-marketing"
+  }
+}

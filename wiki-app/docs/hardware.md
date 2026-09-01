@@ -2,63 +2,45 @@
 id: hardware
 title: Hardware
 tags:
-  - alex
-  - battery-math-revalidation
-  - cr2032
-  - cr2450
-  - engineering-requirements
-  - fifteen-minute-default
   - hardware
-  - hardware-habit
-last_updated: "2026-06-25T07:26:54.967264+00:00"
+  - ip67-rating
+  - lan-first-architecture
+  - meshsync
+  - mirachen
+  - nova-widget
+  - wiki
+last_updated: "2026-09-01T19:19:15.640298+00:00"
 sidebar_label: Hardware
 slug: /hardware
 ---
 
+<!-- AUTO-GENERATED — compiled by the LLM Wiki compiler from data/raw/ sources into compiler/temp_output/, then linked here. Edits to this file are overwritten on the next compile: edit sources under data/raw/, or manual cross-links in data/link_overrides.json, instead. -->
+
 # Hardware
 
 ## Overview
-
-This page compiles information regarding hardware specifications, default operational settings, battery requirements, and identified discrepancies in documentation. It highlights the importance of accurate specifications and ongoing validation.
+The hardware discussion centers around the [Nova Widget](./nova-widget.md) beta, a local mesh soil sensor introduced by user *[mirachen](./aurora-labs.md)* on Hacker News in July 2026. The device emphasizes local-first [networking](./networking.md), low [power consumption](./power-consumption.md), and environmental durability, distinguishing itself from standard cloud-dependent [IoT](./iot.md) solutions.
 
 ## Key Details
-
-*   **Default Settings**: The hardware specification mandates a "fifteen minute default" for a particular operation.
-*   **Engineering Requirements**:
-    *   Engineering requires a minimum battery life of eighteen months when operating at ten nodes.
-    *   This requirement contrasts with a marketing claim of two years for battery life.
-*   **Battery Specifications**:
-    *   The correct battery type used in the hardware is CR2032.
-    *   A blog post authored by Alex incorrectly stated the battery type as CR2450.
-    *   This correction needs to be ingested into the wiki to ensure accurate documentation.
-*   **Action Items**:
-    *   Revalidate the battery math to confirm specifications.
-    *   Reply to a comment related to "Hardware Habit".
+- **Power Source:** Powered by a CR2032 coin cell battery, configured for 15-minute read intervals. A dedicated battery math spreadsheet was promised by the creator.
+- **Architecture & Connectivity:** Features a LAN-first architecture utilizing MeshSync with optional [MQTT](./mqtt.md) support, avoiding any mandatory cloud dependency to ensure a lower duty cycle and improved local reliability.
+- **Environmental Rating:** Built with an IP67 rating, prioritizing superior dust and water protection over lesser standards like IP54, making it suitable for demanding outdoor and submersion use cases.
 
 ## Related Entities
-
-*   **Alex**: Author of a blog post that contained incorrect battery information (CR2450 instead of CR2032).
-*   **Marketing**: Department that made a two-year battery life claim, which differs from engineering's eighteen-month minimum requirement.
-*   **Engineering**: Department responsible for setting and validating hardware requirements, including the eighteen-month minimum battery life at ten nodes.
-*   **Hardware Habit**: A context or platform where a comment requires a reply.
+- **Nova Widget:** The core beta product being discussed, developed by OP (*mirachen*).
+- **mirachen:** The project creator and original poster of the Hacker News thread.
+- **[TeaBuddy](./teabuddy.md):** A related product seen at a faire by community members; confirmed by the OP to be from a different company founded by friends.
 
 ## Related Concepts
-
-*   **Battery Specifications**: Details regarding the type, capacity, and expected lifespan of batteries used in hardware.
-*   **Default Settings**: Pre-configured operational parameters for hardware.
-*   **Engineering Requirements**: Technical specifications and performance targets set by the engineering team.
-*   **Product Documentation**: Materials that describe product features, specifications, and usage, which must be accurate and consistent.
-*   **Specification Discrepancies**: Inconsistencies or errors found between different sources of product information (e.g., engineering specs, marketing claims, blog posts).
+- **MeshSync:** The local mesh protocol utilized by the hardware for communication.
+- **LAN-First Architecture:** A design philosophy emphasizing local network communication over cloud routing.
+- **IP67 Rating:** An ingress protection standard providing robust resistance against dust and water immersion.
 
 ## Contradictions
+*There are no direct contradictions present in the provided source material.*
 
-*   **Default Operation**:
-    &gt; **Contradiction:** The "fifteen minute default" specified in the hardware documentation contrasts with an "hourly kickoff" that was also mentioned.
-*   **Battery Life Claims**:
-    &gt; **Contradiction:** Marketing's claim of "two years" for battery life differs from Engineering's requirement of "eighteen months minimum at ten nodes."
-*   **Battery Type Documentation**:
-    &gt; **Contradiction:** Alex's blog incorrectly listed CR2450 as the battery type, while the actual battery used in the hardware is CR2032.
+## References & Trust
 
-## Sources
-
-*   `transcripts/2026-06-05-sync-fragment.txt`
+| # | Source | Type | Trust |
+|---|--------|------|-------|
+| 1 | `samples/forums/[SAMPLE]-2026-07-10-hackernews-thread-scrape.txt` | text | Unverified |

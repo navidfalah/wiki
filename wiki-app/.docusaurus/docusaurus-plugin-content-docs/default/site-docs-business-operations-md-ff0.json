@@ -1,0 +1,80 @@
+{
+  "id": "business-operations",
+  "title": "Business Operations",
+  "description": "",
+  "source": "@site/docs/business-operations.md",
+  "sourceDirName": ".",
+  "slug": "/business-operations",
+  "permalink": "/docs/business-operations",
+  "draft": false,
+  "unlisted": false,
+  "tags": [
+    {
+      "inline": true,
+      "label": "aurora-labs",
+      "permalink": "/docs/tags/aurora-labs"
+    },
+    {
+      "inline": true,
+      "label": "tea-buddy",
+      "permalink": "/docs/tags/tea-buddy"
+    },
+    {
+      "inline": true,
+      "label": "co-marketing",
+      "permalink": "/docs/tags/co-marketing"
+    },
+    {
+      "inline": true,
+      "label": "bridge-funding",
+      "permalink": "/docs/tags/bridge-funding"
+    },
+    {
+      "inline": true,
+      "label": "product-development",
+      "permalink": "/docs/tags/product-development"
+    },
+    {
+      "inline": true,
+      "label": "quality-assurance",
+      "permalink": "/docs/tags/quality-assurance"
+    },
+    {
+      "inline": true,
+      "label": "documentation",
+      "permalink": "/docs/tags/documentation"
+    },
+    {
+      "inline": true,
+      "label": "ip-ratings",
+      "permalink": "/docs/tags/ip-ratings"
+    }
+  ],
+  "version": "current",
+  "frontMatter": {
+    "id": "business-operations",
+    "title": "Business Operations",
+    "tags": [
+      "aurora-labs",
+      "tea-buddy",
+      "co-marketing",
+      "bridge-funding",
+      "product-development",
+      "quality-assurance",
+      "documentation",
+      "ip-ratings"
+    ],
+    "last_updated": "2026-06-25T07:15:05.447360+00:00",
+    "sidebar_label": "Business Operations",
+    "slug": "/business-operations"
+  },
+  "sidebar": "wikiSidebar",
+  "previous": {
+    "title": "Bug Tracking",
+    "permalink": "/docs/bug-tracking"
+  },
+  "next": {
+    "title": "Business Strategy",
+    "permalink": "/docs/business-strategy"
+  }
+}

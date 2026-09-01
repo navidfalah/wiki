@@ -4,9 +4,10 @@
  * for chat (rag_engine.py) and email parsing (email_engine.py) -- kept in
  * Python deliberately, see cli.py's module docstring.
  */
-import { spawn } from 'node:child_process';
+import { spawn, ChildProcess } from 'node:child_process';
 import type { Response } from 'express';
 import { COMPILER_DIR, PYTHON_BIN } from '../paths';
+import { envOverridesForSpawn } from './llmSettings';
 
 // eslint-disable-next-line no-control-regex
 const ANSI_ESCAPE_RE = /\x1B(?:[@-Z\\-_]|\[[0-?]*[ -/]*[@-~])/g;
@@ -20,17 +21,37 @@ function sseEvent(res: Response, type: string, payload: Record<string, unknown>)
 }
 
 let buildRunning = false;
+let currentChild: ChildProcess | null = null;
+let stopRequested = false;
 
 export function isBuildRunning(): boolean {
   return buildRunning;
 }
 
-export function streamCompilerBuild(res: Response, force: boolean): void {
+export function stopBuild(): boolean {
+  if (!buildRunning || !currentChild) return false;
+  stopRequested = true;
+  currentChild.kill('SIGTERM');
+  return true;
+}
+
+export interface CompilerBuildOptions {
+  force?: boolean;
+  excludeFolders?: string[];
+  criticPass?: boolean;
+  criticSamples?: number;
+  criticRegenerate?: boolean;
+  useCorrections?: boolean;
+  redactPii?: boolean;
+}
+
+export function streamCompilerBuild(res: Response, options: CompilerBuildOptions): void {
   if (buildRunning) {
     res.status(409).json({ detail: 'A build is already running' });
     return;
   }
   buildRunning = true;
+  stopRequested = false;
 
   res.writeHead(200, {
     'Content-Type': 'text/event-stream',
@@ -39,13 +60,25 @@ export function streamCompilerBuild(res: Response, force: boolean): void {
     'X-Accel-Buffering': 'no',
   });
 
-  const args = ['-u', 'main.py', ...(force ? ['--force'] : [])];
+  const { force, excludeFolders, criticPass, criticSamples, criticRegenerate, useCorrections, redactPii } = options;
+  const args = [
+    '-u',
+    'main.py',
+    ...(force ? ['--force'] : []),
+    ...(excludeFolders?.length ? [`--exclude-folders=${excludeFolders.join(',')}`] : []),
+    ...(criticPass ? ['--critic-pass'] : []),
+    ...(criticPass && criticSamples && criticSamples > 1 ? [`--critic-samples=${criticSamples}`] : []),
+    ...(criticPass && criticRegenerate ? ['--critic-regenerate'] : []),
+    ...(useCorrections ? ['--use-corrections'] : []),
+    ...(redactPii ? ['--redact-pii'] : []),
+  ];
   sseEvent(res, 'start', { message: 'Starting compiler pipeline…', command: `${PYTHON_BIN} ${args.join(' ')}` });
 
   const child = spawn(PYTHON_BIN, args, {
     cwd: COMPILER_DIR,
-    env: { ...process.env, PYTHONUNBUFFERED: '1' },
+    env: { ...process.env, ...envOverridesForSpawn(), PYTHONUNBUFFERED: '1' },
   });
+  currentChild = child;
 
   let buffer = '';
   const handleChunk = (chunk: Buffer) => {
@@ -62,13 +95,17 @@ export function streamCompilerBuild(res: Response, force: boolean): void {
 
   child.on('close', (code) => {
     if (buffer.trim()) sseEvent(res, 'log', { message: stripAnsi(buffer).replace(/\r$/, '') });
+    const wasStopped = stopRequested;
     const success = code === 0;
     sseEvent(res, 'done', {
       code,
       success,
-      message: success ? 'Build complete.' : `Build failed (exit ${code}).`,
+      stopped: wasStopped,
+      message: wasStopped ? 'Build stopped by user.' : success ? 'Build complete.' : `Build failed (exit ${code}).`,
     });
     buildRunning = false;
+    currentChild = null;
+    stopRequested = false;
     res.end();
   });
 
@@ -76,6 +113,8 @@ export function streamCompilerBuild(res: Response, force: boolean): void {
     sseEvent(res, 'error', { message: `Failed to start compiler: ${err.message}` });
     sseEvent(res, 'done', { code: 1, success: false });
     buildRunning = false;
+    currentChild = null;
+    stopRequested = false;
     res.end();
   });
 }
@@ -86,7 +125,10 @@ export class PythonCliError extends Error {
 
 export function runCli<T = any>(command: string, input?: unknown): Promise<T> {
   return new Promise((resolve, reject) => {
-    const child = spawn(PYTHON_BIN, ['cli.py', command], { cwd: COMPILER_DIR });
+    const child = spawn(PYTHON_BIN, ['cli.py', command], {
+      cwd: COMPILER_DIR,
+      env: { ...process.env, ...envOverridesForSpawn() },
+    });
     let stdout = '';
     let stderr = '';
     child.stdout.on('data', (chunk) => (stdout += chunk));

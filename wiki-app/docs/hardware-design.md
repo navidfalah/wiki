@@ -2,69 +2,70 @@
 id: hardware-design
 title: Hardware Design
 tags:
-  - battery-math
-  - cloudbro
-  - dang
-  - duty-cycle
+  - aurora-labs
+  - battery-life-target
   - hardware-design
-  - hardwarefan
-  - ip54
-  - ip67
-last_updated: "2026-06-25T07:25:29.660230+00:00"
+  - jonah
+  - meshsync
+  - mira-chen
+  - nordic-nrf52840
+  - nova-widget-v2
+last_updated: "2026-09-01T19:18:54.188206+00:00"
 sidebar_label: Hardware Design
 slug: /hardware-design
 ---
 
-```markdown
+<!-- AUTO-GENERATED — compiled by the LLM Wiki compiler from data/raw/ sources into compiler/temp_output/, then linked here. Edits to this file are overwritten on the next compile: edit sources under data/raw/, or manual cross-links in data/link_overrides.json, instead. -->
+
 # Hardware Design
 
 ## Overview
 
-Hardware design encompasses the process of creating physical electronic systems, from component selection and circuit layout to enclosure design and power management. Key considerations often include power efficiency, connectivity options, environmental protection, and integration with software or cloud services. Discussions around hardware design frequently involve trade-offs between cost, performance, durability, and user experience.
+The [hardware](./hardware.md) design for the [Nova Widget v2](./nova-widget-v2.md)—a second-generation soil and environment sensor developed by [Aurora Labs](./aurora-labs.md)—encompasses its core microcontroller, integrated environmental [sensors](./sensors.md), power systems, [mesh networking](./mesh-networking.md) architecture, and physical enclosure specifications. This design supersedes informal v1 notes where conflicts arise and serves as the [product specification](./product-specification.md) for beta development.
 
 ## Key Details
 
-*   **Product Example: Nova Widget Beta**
-    *   A local mesh soil sensor, developed by mirachen.
-    *   Features MeshSync for connectivity, with optional MQTT support.
-    *   Emphasizes a LAN-first approach, avoiding mandatory cloud integration.
-*   **Power Management**
-    *   Utilizes a CR2032 coin cell battery.
-    *   Designed for low power consumption, achieving a low duty cycle.
-    *   Aims for 15-minute read intervals, with detailed "battery math" expected to be provided in a spreadsheet.
-*   **Connectivity Choices**
-    *   Prioritizes MeshSync and a LAN-first strategy over Wi-Fi, citing lower duty cycle as a benefit.
-    *   Offers optional MQTT for integration, but does not mandate cloud services.
-*   **Environmental Protection**
-    *   The Nova Widget's ingress protection (IP) rating is implied to be around IP54.
-    *   Discussions highlight the importance of higher ratings like IP67 for specific use cases, particularly submersion, acknowledging its superiority for such applications.
-*   **Design Philosophy**
-    *   Focuses on local control and optional cloud integration, giving users more autonomy.
-    *   The choice of components and protocols reflects a deliberate effort to optimize for battery life and local network performance.
+### Core Hardware Components
+* **Microcontroller Unit (MCU):** Nordic nRF52840.
+* **Sensors:** Capacitive soil moisture sensor, SHT41 temperature and humidity sensor, and VEML7700 light sensor.
+* **Power Supply:** CR2032 primary coin cell battery.
+* **Antenna:** 2.4 GHz PCB trace antenna.
+
+### Firmware & Networking
+* **Reading Interval:** Defaulted to every 15 minutes when the mesh is active. It is configurable between 5 minutes and 24 hours via the companion app.
+* **MeshSync:** Devices organize into a self-healing mesh supporting a maximum hop count of 4. A USB-powered gateway node bridges the mesh data to [MQTT](./mqtt.md).
+* **Current Consumption Target:** Target average current is &lt; 85 µA, which includes mesh overhead in a 10-node deployment.
+
+### [Battery Life](./battery-life.md) Targets
+* **Marketing Target:** 24 months at 15-minute intervals in a moderate mesh network (≤ 5 nodes).
+* **Internal Engineering Target:** 18 months minimum at 10 nodes (revalidated following the reading interval change to 15 minutes).
+
+### Enclosure Specifications
+* **Rating:** IP54 rating designated for beta units, with an upgrade to IP65 planned for General Availability (GA) if the gasket tooling budget (~$8k) allows.
+
+### Open Design Issues
+* **Solar Trickle Charger:** Jonah advocates for an optional solar module, while [Mira](./aurora-labs.md) raises concerns regarding the Bill of Materials (BOM) cost.
+* **[OTA Updates](./ota-updates.md):** Over-the-air update capabilities are deferred to version 2.1.
 
 ## Related Entities
 
-*   **Nova Widget**: A beta local mesh soil sensor, central to the hardware design discussion.
-*   **Teabuddy**: Another hardware product, developed by friends of the Nova Widget team, but by a different company.
-*   **@mirachen**: The developer (OP) of the Nova Widget.
-*   **@hardwarefan**: A user interested in the battery life calculations ("battery math").
-*   **@cloudbro**: A user questioning the choice against Wi-Fi connectivity.
-*   **@sensenode**: A user advocating for higher IP ratings (IP67).
+* **Aurora Labs:** The organization developing the Nova Widget v2.
+* **[Mira Chen](./aurora-labs.md):** Author of the product spec draft and stakeholder concerned with BOM costs regarding the solar trickle charger.
+* **Jonah:** Team member advocating for an optional solar trickle charger module.
+* **Nova Widget v2:** The second-generation soil/environment sensor product being designed.
 
 ## Related Concepts
 
-*   **Mesh Networking**: A network topology where devices connect directly, often used for robust local communication.
-*   **MQTT**: A lightweight messaging protocol often used for IoT devices, enabling optional cloud or local server integration.
-*   **Duty Cycle**: The proportion of time a device or system is active, critical for battery-powered hardware to maximize lifespan.
-*   **IP Rating (Ingress Protection)**: A standard defining the sealing effectiveness of electrical enclosures against intrusion from foreign bodies (dust, water, etc.).
-*   **Battery Math**: The calculation and estimation of battery life based on component power consumption, duty cycle, and battery capacity.
-*   **LAN-first Design**: A design philosophy prioritizing local area network communication over wide area network (e.g., cloud) communication.
+* **Nordic nRF52840:** The primary MCU powering the sensor and its 2.4 GHz communication.
+* **MeshSync:** The self-healing mesh networking protocol utilized by the devices to bridge data via a gateway node.
+* **IP54 / IP65:** Ingress Protection ratings established for the physical casing of beta and GA units respectively.
 
 ## Contradictions
 
-No direct contradictions were found in the provided source material. Discussions around IP ratings (IP54 vs. IP67) and connectivity choices (Wi-Fi vs. Mesh/LAN-first) represent design trade-offs and preferences rather than factual contradictions.
+&gt; **Contradiction:** Kickoff notes previously mentioned an hourly default reading interval, whereas the current product spec draft updates the default to 15 minutes for beta feedback, necessitating the revalidation of [battery life](./battery-life.md) calculations.
 
-## Sources
+## References & Trust
 
-*   `samples/forums/[SAMPLE]-2026-07-10-hackernews-thread-scrape.txt`
-```
+| # | Source | Type | Trust |
+|---|--------|------|-------|
+| 1 | `articles/2026-05-15-product-spec-draft.md` | text | Medium |

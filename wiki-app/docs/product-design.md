@@ -2,96 +2,47 @@
 id: product-design
 title: Product Design
 tags:
-  - nova-widget
-  - aurora-labs
-  - local-first
-  - mesh-networking
-  - ble
-  - product-design-philosophy
-  - data-privacy
-  - manufacturing
-last_updated: "2026-06-25T07:48:25.157263+00:00"
+  - data-sync-frequency-contradiction
+  - export-and-dashboard-requirements
+  - jonah
+  - mesh-sync
+  - mira
+  - product-design
+  - widget-design-philosophy
+  - wiki
+last_updated: "2026-09-01T19:20:41.509269+00:00"
 sidebar_label: Product Design
 slug: /product-design
 ---
 
+<!-- AUTO-GENERATED — compiled by the LLM Wiki compiler from data/raw/ sources into compiler/temp_output/, then linked here. Edits to this file are overwritten on the next compile: edit sources under data/raw/, or manual cross-links in data/link_overrides.json, instead. -->
+
 # Product Design
 
 ## Overview
-
-Product design at [Aurora Labs](./aurora-labs.md) focuses on creating devices that prioritize [Data Ownership](./data-ownership.md) and a "local-first" approach, aiming for a feel of "garden equipment, not surveillance." Key products include the [Nova Widget](./nova-widget.md), designed for environmental sensing, and other devices utilizing [Mesh Networking](./mesh-networking.md) and [Bluetooth Low Energy (BLE)](./bluetooth-low-energy-ble.md) for data transmission. The design philosophy emphasizes open sensors and user control over data, avoiding mandatory cloud accounts.
+This wiki page outlines key product design notes, aesthetic directions, architectural naming decisions, and functional requirements captured from team voice memos regarding [hardware](./hardware.md) and software development phases leading up to [beta testing](./beta-testing.md).
 
 ## Key Details
-
-### Design Philosophy & Principles
-
-*   **User Experience**: Products should feel like "garden equipment, not surveillance."
-*   **Data Ownership**: A core principle is "Open sensors for people who own their data."
-*   **Local-First**: The initial version (v1) of products, including Aurora's offerings, will not require a cloud account. Mesh data is designed to stay on the local area network (LAN).
-*   **Privacy**: Taglines like "Sense without surrender" and "Your data, your dirt" reflect a commitment to privacy. [TeaBuddy](./teabuddy.md)'s approach to "steep timer privacy theater vs real need" is also considered.
-
-### Product Naming
-
-*   **Approved Names**:
-    *   Nova Widget
-    *   Aurora Labs
-    *   Mesh Sync (name is considered fine, no further renaming)
-*   **Rejected Names**:
-    *   SoilPal
-    *   GritNode
-    *   PetalPing
-    *   CloudFree Sensor (deemed "too on the nose")
-    *   KarpathyGarden
-
-### Form Factor & Materials
-
-*   **Enclosure**: There is an ongoing discussion regarding the ideal shape for product enclosures. Jonah prefers a "pebble shape," while Mira Chen advocates for a "hex" shape. The general consensus is that the enclosure needs to be "more like a pebble" and less like an unspecified alternative.
-*   **Beta Injection Molding**: PETG plastic is planned for beta injection molds, contingent on future fundraising.
-
-### Technical Specifications & Features
-
-*   **Power**: Nova prototypes and other products utilize CR2032 batteries.
-*   **Connectivity**:
-    *   **Mesh Networking**: Preferred for "garden scale" applications involving multiple sensors.
-    *   **Bluetooth Low Energy (BLE)**: Considered superior for single-device applications, such as in a kitchen setting.
-    *   **Reverse Mesh**: An idea for phones acting as nodes was considered but deemed a "bad idea."
-*   **Data Export**: Mira Chen advocates for an [MQTT](./mqtt.md) export CSV option for dashboards, emphasizing that it should be optional and never mandatory.
-*   **Durability**: There is an aspiration for IP67 Rating, drawing comparison to [SenseNode](./sensenode.md).
-
-### Project Ideas
-
-*   **"Plant Whisperer"**: An app concept that alerts users when soil is dry, designed to connect with the Nova Widget. Monetization ideas include stickers.
+* **Widget Design Philosophy:** The physical widget should evoke the feeling of "garden equipment" rather than "surveillance."
+* **Materials & Manufacturing:** Jonah noted that PETG should be used for the beta phase, with injection molding planned for later stages if additional funding is raised.
+* **[Product Naming](./product-naming.md):** The working name "Mesh Sync" is confirmed and finalized; the team agreed not to rename it further.
+* **Export and Dashboard Requirements:** [Mira](./aurora-labs.md) requested [MQTT export](./mqtt-export.md) capabilities, optional CSV exports, and ensured that the dashboard remains entirely optional rather than mandatory.
 
 ## Related Entities
-
-*   **Alex Kim**: Host from TeaBuddy, involved in discussions about local-first gadgets and privacy.
-*   **Mira Chen**: From Aurora Labs, involved in product design discussions, advocating for hex shapes and optional MQTT export.
-*   **Jonah**: Involved in product design discussions, advocating for pebble shapes and PETG for beta molds.
-*   **Nova Widget**: A key product under development, utilizing CR2032 batteries and potentially connecting to the "Plant Whisperer" app.
-*   **Aurora Labs**: The company developing these products, co-hosting discussions on local-first gadgets.
-*   **TeaBuddy**: A company or product mentioned in context of privacy and local-first design.
-*   **SenseNode**: A competitor or benchmark product, noted for its IP67 Rating and contributing to Subscription Fatigue.
+* **Jonah:** Team member responsible for hardware/manufacturing specifications (PETG for beta, injection molding).
+* **Mira:** Team member defining software export and dashboard requirements (MQTT, optional CSV, non-mandatory dashboard).
+* **Mesh Sync:** The confirmed, finalized name for the product or core feature.
 
 ## Related Concepts
-
-*   **[Local-First Gadgets](./local-first-gadgets.md)**: A design paradigm where devices prioritize local data processing and storage over cloud reliance.
-*   **Data Ownership**: The principle that users should have control over their personal data generated by devices.
-*   **Mesh Networking**: A network topology where devices connect directly to each other, forming a mesh, often used for wider coverage or redundancy.
-*   **Bluetooth Low Energy (BLE)**: A wireless personal area network technology designed for low power consumption.
-*   **Injection Molding**: A manufacturing process for producing parts by injecting molten material into a mold.
-*   **MQTT**: A lightweight messaging protocol for small sensors and mobile devices, optimized for high-latency or unreliable networks.
-*   **IP67 Rating**: An international standard for ingress protection, indicating resistance to dust and water.
-*   **Subscription Fatigue**: A phenomenon where consumers become overwhelmed or resistant to managing multiple subscription services.
+* **Beta Preparation:** Planning hardware materials (PETG) and resolving configuration discrepancies prior to opening the product to beta testers.
+* **Device Aesthetics:** Balancing utilitarian design aesthetics (garden equipment style) against intrusive form factors (surveillance device perception).
+* **Data Interoperability:** Providing flexible export [protocols](./protocols.md) (MQTT, CSV) and user-controlled dashboard utilization.
 
 ## Contradictions
+&gt; **Contradiction:** There is a discrepancy regarding data synchronization frequency, specifically between hourly syncs versus fifteen-minute syncs. This must be resolved before releasing the product to beta testers.
 
-*   **Data Reporting Frequency**: A contradiction was noted regarding whether data should be reported hourly versus every fifteen minutes, requiring a fix before beta testers receive the product.
-*   **Battery Life Marketing**: There is a contradiction in marketing claims for CR2032 batteries life, with figures of "2yr vs 18mo" being cited.
-*   **Enclosure Shape**: Jonah prefers a "pebble shape" for the enclosure, while Mira Chen prefers a "hex" shape, indicating an unresolved design decision.
+## References & Trust
 
-## Sources
-
-*   `articles/voice-memo-transcription.txt`
-*   `ideas/2026-06-07-product-naming-brainstorm.txt`
-*   `notes/2026-06-03-grocery-and-ideas.txt`
-*   `samples/transcripts/[SAMPLE]-2026-07-11-podcast-outline-unrecorded.txt`
+| # | Source | Type | Trust |
+|---|--------|------|-------|
+| 1 | `articles/voice-memo-transcription.txt` | text | Medium |

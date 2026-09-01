@@ -1,0 +1,80 @@
+{
+  "id": "wiki-compiler",
+  "title": "Wiki Compiler",
+  "description": "Overview",
+  "source": "@site/docs/wiki-compiler.md",
+  "sourceDirName": ".",
+  "slug": "/wiki-compiler",
+  "permalink": "/docs/wiki-compiler",
+  "draft": false,
+  "unlisted": false,
+  "tags": [
+    {
+      "inline": true,
+      "label": "contradictions-surfaced",
+      "permalink": "/docs/tags/contradictions-surfaced"
+    },
+    {
+      "inline": true,
+      "label": "cross-linking",
+      "permalink": "/docs/tags/cross-linking"
+    },
+    {
+      "inline": true,
+      "label": "docusaurus",
+      "permalink": "/docs/tags/docusaurus"
+    },
+    {
+      "inline": true,
+      "label": "heuristic-mode",
+      "permalink": "/docs/tags/heuristic-mode"
+    },
+    {
+      "inline": true,
+      "label": "karpathy-pattern",
+      "permalink": "/docs/tags/karpathy-pattern"
+    },
+    {
+      "inline": true,
+      "label": "llm-api-key",
+      "permalink": "/docs/tags/llm-api-key"
+    },
+    {
+      "inline": true,
+      "label": "meshsync",
+      "permalink": "/docs/tags/meshsync"
+    },
+    {
+      "inline": true,
+      "label": "nova-widget",
+      "permalink": "/docs/tags/nova-widget"
+    }
+  ],
+  "version": "current",
+  "frontMatter": {
+    "id": "wiki-compiler",
+    "title": "Wiki Compiler",
+    "tags": [
+      "contradictions-surfaced",
+      "cross-linking",
+      "docusaurus",
+      "heuristic-mode",
+      "karpathy-pattern",
+      "llm-api-key",
+      "meshsync",
+      "nova-widget"
+    ],
+    "last_updated": "2026-06-25T08:05:13.201948+00:00",
+    "sidebar_label": "Wiki Compiler",
+    "slug": "/wiki-compiler"
+  },
+  "sidebar": "wikiSidebar",
+  "previous": {
+    "title": "Wiki Automation",
+    "permalink": "/docs/wiki-automation"
+  },
+  "next": {
+    "title": "Wiki Management",
+    "permalink": "/docs/wiki-management"
+  }
+}

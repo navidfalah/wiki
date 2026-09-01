@@ -1,0 +1,80 @@
+{
+  "id": "bluetooth-low-energy-ble",
+  "title": "Bluetooth Low Energy (BLE)",
+  "description": "Overview",
+  "source": "@site/docs/bluetooth-low-energy-ble.md",
+  "sourceDirName": ".",
+  "slug": "/bluetooth-low-energy-ble",
+  "permalink": "/docs/bluetooth-low-energy-ble",
+  "draft": false,
+  "unlisted": false,
+  "tags": [
+    {
+      "inline": true,
+      "label": "bluetooth-low-energy",
+      "permalink": "/docs/tags/bluetooth-low-energy"
+    },
+    {
+      "inline": true,
+      "label": "ble-pairing",
+      "permalink": "/docs/tags/ble-pairing"
+    },
+    {
+      "inline": true,
+      "label": "ios-18",
+      "permalink": "/docs/tags/ios-18"
+    },
+    {
+      "inline": true,
+      "label": "teabuddy",
+      "permalink": "/docs/tags/teabuddy"
+    },
+    {
+      "inline": true,
+      "label": "firmware",
+      "permalink": "/docs/tags/firmware"
+    },
+    {
+      "inline": true,
+      "label": "corebluetooth",
+      "permalink": "/docs/tags/corebluetooth"
+    },
+    {
+      "inline": true,
+      "label": "android",
+      "permalink": "/docs/tags/android"
+    },
+    {
+      "inline": true,
+      "label": "power-management",
+      "permalink": "/docs/tags/power-management"
+    }
+  ],
+  "version": "current",
+  "frontMatter": {
+    "id": "bluetooth-low-energy-ble",
+    "title": "Bluetooth Low Energy (BLE)",
+    "tags": [
+      "bluetooth-low-energy",
+      "ble-pairing",
+      "ios-18",
+      "teabuddy",
+      "firmware",
+      "corebluetooth",
+      "android",
+      "power-management"
+    ],
+    "last_updated": "2026-06-25T07:13:55.993752+00:00",
+    "sidebar_label": "Bluetooth Low Energy (BLE)",
+    "slug": "/bluetooth-low-energy-ble"
+  },
+  "sidebar": "wikiSidebar",
+  "previous": {
+    "title": "Beta Testing",
+    "permalink": "/docs/beta-testing"
+  },
+  "next": {
+    "title": "Branding Strategy",
+    "permalink": "/docs/branding-strategy"
+  }
+}

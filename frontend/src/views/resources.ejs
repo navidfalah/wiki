@@ -1,12 +1,26 @@
 <%- include('partials/head', { title, apiBase, active }) %>
 
 <h1 class="text-2xl font-semibold tracking-tight text-gray-900">Resources</h1>
-<p class="mt-1 max-w-2xl text-sm text-gray-600">Every source cited across the wiki, deduped into one list.</p>
+<p class="mt-1 max-w-2xl text-sm text-gray-600">
+  Browse data/raw/ like a file manager. Files cited by the wiki are badged with what cites them.
+  Drag files onto a folder to move them, or drag files in from outside the browser to upload.
+</p>
 
-<input id="resources-search" type="search" placeholder="Search resources…" class="mt-4 w-full max-w-sm rounded-lg border border-gray-300 px-3 py-1.5 text-sm focus:border-accent focus:outline-none focus:ring-2 focus:ring-accent/20" />
+<section class="mt-4 rounded-xl border border-gray-200 bg-white shadow-card">
+  <div class="flex flex-wrap items-center justify-between gap-2 border-b border-gray-100 px-5 py-2.5">
+    <nav id="breadcrumbs" class="flex min-w-0 flex-wrap items-center gap-1 text-sm"></nav>
+    <div class="flex items-center gap-2">
+      <input id="resource-search" type="search" placeholder="Search this folder…" class="w-44 rounded-lg border border-gray-300 px-2.5 py-1 text-sm focus:border-accent focus:outline-none focus:ring-2 focus:ring-accent/20" />
+      <button id="new-folder-toggle" type="button" class="inline-flex items-center justify-center gap-2 rounded-lg border border-gray-300 bg-white px-3 py-1 text-xs font-medium text-gray-700 hover:bg-gray-50">+ New folder</button>
+      <button id="upload-files-toggle" type="button" class="inline-flex items-center justify-center gap-2 rounded-lg bg-accent px-3 py-1 text-xs font-medium text-white hover:bg-accent-dark">⬆ Upload files</button>
+      <input id="upload-files-input" type="file" multiple class="hidden" />
+    </div>
+  </div>
+  <div id="new-folder-form" class="hidden mx-5 mt-4 rounded-lg border border-dashed border-gray-300 bg-gray-50 px-3 py-2"></div>
+  <div id="upload-status" class="hidden mx-5 mt-4 rounded-lg border border-dashed border-source-border bg-source-bg/60 px-3 py-2 text-xs text-source"></div>
+  <div id="resource-grid" data-dropzone class="grid grid-cols-3 gap-1 p-4 transition-colors sm:grid-cols-4 md:grid-cols-6 lg:grid-cols-8"></div>
+</section>
 
-<div id="resources-list" class="mt-4 grid gap-2">
-  <p class="text-sm text-gray-500">Loading…</p>
-</div>
+<div id="preview-modal" class="hidden"></div>
 
 <%- include('partials/foot', { clientScript }) %>

@@ -1,0 +1,80 @@
+{
+  "id": "ingress-protection-ratings",
+  "title": "Ingress Protection Ratings",
+  "description": "Overview",
+  "source": "@site/docs/ingress-protection-ratings.md",
+  "sourceDirName": ".",
+  "slug": "/ingress-protection-ratings",
+  "permalink": "/docs/ingress-protection-ratings",
+  "draft": false,
+  "unlisted": false,
+  "tags": [
+    {
+      "inline": true,
+      "label": "aurora-nova-widget",
+      "permalink": "/docs/tags/aurora-nova-widget"
+    },
+    {
+      "inline": true,
+      "label": "costtooling-tradeoff",
+      "permalink": "/docs/tags/costtooling-tradeoff"
+    },
+    {
+      "inline": true,
+      "label": "gardener",
+      "permalink": "/docs/tags/gardener"
+    },
+    {
+      "inline": true,
+      "label": "ingress-protection-ratings",
+      "permalink": "/docs/tags/ingress-protection-ratings"
+    },
+    {
+      "inline": true,
+      "label": "ip54",
+      "permalink": "/docs/tags/ip-54"
+    },
+    {
+      "inline": true,
+      "label": "ip65",
+      "permalink": "/docs/tags/ip-65"
+    },
+    {
+      "inline": true,
+      "label": "ip67",
+      "permalink": "/docs/tags/ip-67"
+    },
+    {
+      "inline": true,
+      "label": "jonah",
+      "permalink": "/docs/tags/jonah"
+    }
+  ],
+  "version": "current",
+  "frontMatter": {
+    "id": "ingress-protection-ratings",
+    "title": "Ingress Protection Ratings",
+    "tags": [
+      "aurora-nova-widget",
+      "costtooling-tradeoff",
+      "gardener",
+      "ingress-protection-ratings",
+      "ip54",
+      "ip65",
+      "ip67",
+      "jonah"
+    ],
+    "last_updated": "2026-06-25T07:28:35.781028+00:00",
+    "sidebar_label": "Ingress Protection Ratings",
+    "slug": "/ingress-protection-ratings"
+  },
+  "sidebar": "wikiSidebar",
+  "previous": {
+    "title": "Wiki Index",
+    "permalink": "/docs/index"
+  },
+  "next": {
+    "title": "Internal Documentation",
+    "permalink": "/docs/internal-documentation"
+  }
+}

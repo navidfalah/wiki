@@ -1,0 +1,80 @@
+{
+  "id": "meshsync-firmware",
+  "title": "MeshSync Firmware",
+  "description": "Overview",
+  "source": "@site/docs/meshsync-firmware.md",
+  "sourceDirName": ".",
+  "slug": "/meshsync-firmware",
+  "permalink": "/docs/meshsync-firmware",
+  "draft": false,
+  "unlisted": false,
+  "tags": [
+    {
+      "inline": true,
+      "label": "aurora-labs",
+      "permalink": "/docs/tags/aurora-labs"
+    },
+    {
+      "inline": true,
+      "label": "default-read-interval",
+      "permalink": "/docs/tags/default-read-interval"
+    },
+    {
+      "inline": true,
+      "label": "jonah-park",
+      "permalink": "/docs/tags/jonah-park"
+    },
+    {
+      "inline": true,
+      "label": "known-issues",
+      "permalink": "/docs/tags/known-issues"
+    },
+    {
+      "inline": true,
+      "label": "meshsync",
+      "permalink": "/docs/tags/meshsync"
+    },
+    {
+      "inline": true,
+      "label": "meshsync-firmware",
+      "permalink": "/docs/tags/meshsync-firmware"
+    },
+    {
+      "inline": true,
+      "label": "mira-chen",
+      "permalink": "/docs/tags/mira-chen"
+    },
+    {
+      "inline": true,
+      "label": "mqtt-export-schema-v2",
+      "permalink": "/docs/tags/mqtt-export-schema-v-2"
+    }
+  ],
+  "version": "current",
+  "frontMatter": {
+    "id": "meshsync-firmware",
+    "title": "MeshSync Firmware",
+    "tags": [
+      "aurora-labs",
+      "default-read-interval",
+      "jonah-park",
+      "known-issues",
+      "meshsync",
+      "meshsync-firmware",
+      "mira-chen",
+      "mqtt-export-schema-v2"
+    ],
+    "last_updated": "2026-06-25T07:41:16.960337+00:00",
+    "sidebar_label": "MeshSync Firmware",
+    "slug": "/meshsync-firmware"
+  },
+  "sidebar": "wikiSidebar",
+  "previous": {
+    "title": "MeshSync Debugging",
+    "permalink": "/docs/meshsync-debugging"
+  },
+  "next": {
+    "title": "MeshSync Protocol",
+    "permalink": "/docs/meshsync-protocol"
+  }
+}

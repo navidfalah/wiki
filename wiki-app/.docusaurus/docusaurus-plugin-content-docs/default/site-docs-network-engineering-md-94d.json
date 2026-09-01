@@ -1,0 +1,74 @@
+{
+  "id": "network-engineering",
+  "title": "Network Engineering",
+  "description": "Overview",
+  "source": "@site/docs/network-engineering.md",
+  "sourceDirName": ".",
+  "slug": "/network-engineering",
+  "permalink": "/docs/network-engineering",
+  "draft": false,
+  "unlisted": false,
+  "tags": [
+    {
+      "inline": true,
+      "label": "mesh networks",
+      "permalink": "/docs/tags/mesh-networks"
+    },
+    {
+      "inline": true,
+      "label": "network performance",
+      "permalink": "/docs/tags/network-performance"
+    },
+    {
+      "inline": true,
+      "label": "power management",
+      "permalink": "/docs/tags/power-management"
+    },
+    {
+      "inline": true,
+      "label": "hardware design",
+      "permalink": "/docs/tags/hardware-design"
+    },
+    {
+      "inline": true,
+      "label": "data privacy",
+      "permalink": "/docs/tags/data-privacy"
+    },
+    {
+      "inline": true,
+      "label": "testing",
+      "permalink": "/docs/tags/testing"
+    },
+    {
+      "inline": true,
+      "label": "product development",
+      "permalink": "/docs/tags/product-development"
+    }
+  ],
+  "version": "current",
+  "frontMatter": {
+    "id": "network-engineering",
+    "title": "Network Engineering",
+    "tags": [
+      "mesh networks",
+      "network performance",
+      "power management",
+      "hardware design",
+      "data privacy",
+      "testing",
+      "product development"
+    ],
+    "last_updated": "2026-06-25T07:43:24.105066+00:00",
+    "sidebar_label": "Network Engineering",
+    "slug": "/network-engineering"
+  },
+  "sidebar": "wikiSidebar",
+  "previous": {
+    "title": "Network Configuration",
+    "permalink": "/docs/network-configuration"
+  },
+  "next": {
+    "title": "Node Management",
+    "permalink": "/docs/node-management"
+  }
+}

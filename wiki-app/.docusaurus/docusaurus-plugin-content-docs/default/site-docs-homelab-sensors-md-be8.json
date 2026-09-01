@@ -1,0 +1,80 @@
+{
+  "id": "homelab-sensors",
+  "title": "HomeLab Sensors",
+  "description": "",
+  "source": "@site/docs/homelab-sensors.md",
+  "sourceDirName": ".",
+  "slug": "/homelab-sensors",
+  "permalink": "/docs/homelab-sensors",
+  "draft": false,
+  "unlisted": false,
+  "tags": [
+    {
+      "inline": true,
+      "label": "alex",
+      "permalink": "/docs/tags/alex"
+    },
+    {
+      "inline": true,
+      "label": "aurora-labs",
+      "permalink": "/docs/tags/aurora-labs"
+    },
+    {
+      "inline": true,
+      "label": "aurora-labs-nova",
+      "permalink": "/docs/tags/aurora-labs-nova"
+    },
+    {
+      "inline": true,
+      "label": "aurora-nova",
+      "permalink": "/docs/tags/aurora-nova"
+    },
+    {
+      "inline": true,
+      "label": "battery-life",
+      "permalink": "/docs/tags/battery-life"
+    },
+    {
+      "inline": true,
+      "label": "beta-invite",
+      "permalink": "/docs/tags/beta-invite"
+    },
+    {
+      "inline": true,
+      "label": "cr2450-cr2032",
+      "permalink": "/docs/tags/cr-2450-cr-2032"
+    },
+    {
+      "inline": true,
+      "label": "homelab-sensors",
+      "permalink": "/docs/tags/homelab-sensors"
+    }
+  ],
+  "version": "current",
+  "frontMatter": {
+    "id": "homelab-sensors",
+    "title": "HomeLab Sensors",
+    "tags": [
+      "alex",
+      "aurora-labs",
+      "aurora-labs-nova",
+      "aurora-nova",
+      "battery-life",
+      "beta-invite",
+      "cr2450-cr2032",
+      "homelab-sensors"
+    ],
+    "last_updated": "2026-06-25T07:28:27.296070+00:00",
+    "sidebar_label": "HomeLab Sensors",
+    "slug": "/homelab-sensors"
+  },
+  "sidebar": "wikiSidebar",
+  "previous": {
+    "title": "Homelab Integration",
+    "permalink": "/docs/homelab-integration"
+  },
+  "next": {
+    "title": "Wiki Index",
+    "permalink": "/docs/index"
+  }
+}

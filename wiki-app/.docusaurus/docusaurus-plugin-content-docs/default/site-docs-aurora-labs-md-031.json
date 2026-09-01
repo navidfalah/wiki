@@ -1,0 +1,80 @@
+{
+  "id": "aurora-labs",
+  "title": "Aurora Labs",
+  "description": "",
+  "source": "@site/docs/aurora-labs.md",
+  "sourceDirName": ".",
+  "slug": "/aurora-labs",
+  "permalink": "/docs/aurora-labs",
+  "draft": false,
+  "unlisted": false,
+  "tags": [
+    {
+      "inline": true,
+      "label": "aurora-labs",
+      "permalink": "/docs/tags/aurora-labs"
+    },
+    {
+      "inline": true,
+      "label": "nova-widget",
+      "permalink": "/docs/tags/nova-widget"
+    },
+    {
+      "inline": true,
+      "label": "meshsync",
+      "permalink": "/docs/tags/meshsync"
+    },
+    {
+      "inline": true,
+      "label": "iot-sensors",
+      "permalink": "/docs/tags/iot-sensors"
+    },
+    {
+      "inline": true,
+      "label": "battery-life",
+      "permalink": "/docs/tags/battery-life"
+    },
+    {
+      "inline": true,
+      "label": "beta-program",
+      "permalink": "/docs/tags/beta-program"
+    },
+    {
+      "inline": true,
+      "label": "open-hardware",
+      "permalink": "/docs/tags/open-hardware"
+    },
+    {
+      "inline": true,
+      "label": "contradictions",
+      "permalink": "/docs/tags/contradictions"
+    }
+  ],
+  "version": "current",
+  "frontMatter": {
+    "id": "aurora-labs",
+    "title": "Aurora Labs",
+    "tags": [
+      "aurora-labs",
+      "nova-widget",
+      "meshsync",
+      "iot-sensors",
+      "battery-life",
+      "beta-program",
+      "open-hardware",
+      "contradictions"
+    ],
+    "last_updated": "2026-06-25T07:11:55.697125+00:00",
+    "sidebar_label": "Aurora Labs",
+    "slug": "/aurora-labs"
+  },
+  "sidebar": "wikiSidebar",
+  "previous": {
+    "title": "AI & LLMs",
+    "permalink": "/docs/ai-llms"
+  },
+  "next": {
+    "title": "Aurora Nova Widget",
+    "permalink": "/docs/aurora-nova-widget"
+  }
+}

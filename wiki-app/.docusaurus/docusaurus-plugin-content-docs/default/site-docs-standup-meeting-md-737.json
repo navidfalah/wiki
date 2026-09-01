@@ -1,0 +1,80 @@
+{
+  "id": "standup-meeting",
+  "title": "Standup Meeting",
+  "description": "",
+  "source": "@site/docs/standup-meeting.md",
+  "sourceDirName": ".",
+  "slug": "/standup-meeting",
+  "permalink": "/docs/standup-meeting",
+  "draft": false,
+  "unlisted": false,
+  "tags": [
+    {
+      "inline": true,
+      "label": "beta-product-phase",
+      "permalink": "/docs/tags/beta-product-phase"
+    },
+    {
+      "inline": true,
+      "label": "cr2032-cells",
+      "permalink": "/docs/tags/cr-2032-cells"
+    },
+    {
+      "inline": true,
+      "label": "cron-job",
+      "permalink": "/docs/tags/cron-job"
+    },
+    {
+      "inline": true,
+      "label": "data-ownership",
+      "permalink": "/docs/tags/data-ownership"
+    },
+    {
+      "inline": true,
+      "label": "incremental-test",
+      "permalink": "/docs/tags/incremental-test"
+    },
+    {
+      "inline": true,
+      "label": "ip54",
+      "permalink": "/docs/tags/ip-54"
+    },
+    {
+      "inline": true,
+      "label": "ip65",
+      "permalink": "/docs/tags/ip-65"
+    },
+    {
+      "inline": true,
+      "label": "jonah",
+      "permalink": "/docs/tags/jonah"
+    }
+  ],
+  "version": "current",
+  "frontMatter": {
+    "id": "standup-meeting",
+    "title": "Standup Meeting",
+    "tags": [
+      "beta-product-phase",
+      "cr2032-cells",
+      "cron-job",
+      "data-ownership",
+      "incremental-test",
+      "ip54",
+      "ip65",
+      "jonah"
+    ],
+    "last_updated": "2026-06-25T08:00:22.492961+00:00",
+    "sidebar_label": "Standup Meeting",
+    "slug": "/standup-meeting"
+  },
+  "sidebar": "wikiSidebar",
+  "previous": {
+    "title": "Sprint Retrospective",
+    "permalink": "/docs/sprint-retrospective"
+  },
+  "next": {
+    "title": "Startup Kickoff",
+    "permalink": "/docs/startup-kickoff"
+  }
+}

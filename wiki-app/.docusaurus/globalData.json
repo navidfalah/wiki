@@ -1,0 +1,2654 @@
+{
+  "docusaurus-plugin-content-docs": {
+    "default": {
+      "path": "/docs",
+      "versions": [
+        {
+          "name": "current",
+          "label": "Next",
+          "isLast": true,
+          "path": "/docs",
+          "mainDocId": "index",
+          "docs": [
+            {
+              "id": "ai-llms",
+              "path": "/docs/ai-llms",
+              "sidebar": "wikiSidebar"
+            },
+            {
+              "id": "aurora-labs",
+              "path": "/docs/aurora-labs",
+              "sidebar": "wikiSidebar"
+            },
+            {
+              "id": "aurora-nova",
+              "path": "/docs/aurora-nova",
+              "sidebar": "wikiSidebar"
+            },
+            {
+              "id": "aurora-nova-widget",
+              "path": "/docs/aurora-nova-widget",
+              "sidebar": "wikiSidebar"
+            },
+            {
+              "id": "backlog-grooming",
+              "path": "/docs/backlog-grooming",
+              "sidebar": "wikiSidebar"
+            },
+            {
+              "id": "battery-life",
+              "path": "/docs/battery-life",
+              "sidebar": "wikiSidebar"
+            },
+            {
+              "id": "battery-specifications",
+              "path": "/docs/battery-specifications",
+              "sidebar": "wikiSidebar"
+            },
+            {
+              "id": "battery-technology",
+              "path": "/docs/battery-technology",
+              "sidebar": "wikiSidebar"
+            },
+            {
+              "id": "beta-programs",
+              "path": "/docs/beta-programs",
+              "sidebar": "wikiSidebar"
+            },
+            {
+              "id": "beta-testing",
+              "path": "/docs/beta-testing",
+              "sidebar": "wikiSidebar"
+            },
+            {
+              "id": "beta-testing-agreements",
+              "path": "/docs/beta-testing-agreements",
+              "sidebar": "wikiSidebar"
+            },
+            {
+              "id": "bluetooth-low-energy-ble",
+              "path": "/docs/bluetooth-low-energy-ble",
+              "sidebar": "wikiSidebar"
+            },
+            {
+              "id": "branding-strategy",
+              "path": "/docs/branding-strategy",
+              "sidebar": "wikiSidebar"
+            },
+            {
+              "id": "bug-tracking",
+              "path": "/docs/bug-tracking",
+              "sidebar": "wikiSidebar"
+            },
+            {
+              "id": "business-operations",
+              "path": "/docs/business-operations",
+              "sidebar": "wikiSidebar"
+            },
+            {
+              "id": "business-strategy",
+              "path": "/docs/business-strategy",
+              "sidebar": "wikiSidebar"
+            },
+            {
+              "id": "co-marketing",
+              "path": "/docs/co-marketing",
+              "sidebar": "wikiSidebar"
+            },
+            {
+              "id": "communication",
+              "path": "/docs/communication",
+              "sidebar": "wikiSidebar"
+            },
+            {
+              "id": "competitive-analysis",
+              "path": "/docs/competitive-analysis",
+              "sidebar": "wikiSidebar"
+            },
+            {
+              "id": "competitor-analysis",
+              "path": "/docs/competitor-analysis",
+              "sidebar": "wikiSidebar"
+            },
+            {
+              "id": "confidentiality",
+              "path": "/docs/confidentiality",
+              "sidebar": "wikiSidebar"
+            },
+            {
+              "id": "consumer-electronics-strategy",
+              "path": "/docs/consumer-electronics-strategy",
+              "sidebar": "wikiSidebar"
+            },
+            {
+              "id": "content-management",
+              "path": "/docs/content-management",
+              "sidebar": "wikiSidebar"
+            },
+            {
+              "id": "corrosion",
+              "path": "/docs/corrosion",
+              "sidebar": "wikiSidebar"
+            },
+            {
+              "id": "cr2032-battery",
+              "path": "/docs/cr2032-battery",
+              "sidebar": "wikiSidebar"
+            },
+            {
+              "id": "customer-support",
+              "path": "/docs/customer-support",
+              "sidebar": "wikiSidebar"
+            },
+            {
+              "id": "customer-support-faq",
+              "path": "/docs/customer-support-faq",
+              "sidebar": "wikiSidebar"
+            },
+            {
+              "id": "data-ingestion",
+              "path": "/docs/data-ingestion",
+              "sidebar": "wikiSidebar"
+            },
+            {
+              "id": "data-management",
+              "path": "/docs/data-management",
+              "sidebar": "wikiSidebar"
+            },
+            {
+              "id": "data-ownership",
+              "path": "/docs/data-ownership",
+              "sidebar": "wikiSidebar"
+            },
+            {
+              "id": "data-privacy",
+              "path": "/docs/data-privacy",
+              "sidebar": "wikiSidebar"
+            },
+            {
+              "id": "data-schema",
+              "path": "/docs/data-schema",
+              "sidebar": "wikiSidebar"
+            },
+            {
+              "id": "development-tools",
+              "path": "/docs/development-tools",
+              "sidebar": "wikiSidebar"
+            },
+            {
+              "id": "documentation",
+              "path": "/docs/documentation",
+              "sidebar": "wikiSidebar"
+            },
+            {
+              "id": "documentation-management",
+              "path": "/docs/documentation-management",
+              "sidebar": "wikiSidebar"
+            },
+            {
+              "id": "electrical-design",
+              "path": "/docs/electrical-design",
+              "sidebar": "wikiSidebar"
+            },
+            {
+              "id": "electronics-hardware",
+              "path": "/docs/electronics-hardware",
+              "sidebar": "wikiSidebar"
+            },
+            {
+              "id": "embedded-systems",
+              "path": "/docs/embedded-systems",
+              "sidebar": "wikiSidebar"
+            },
+            {
+              "id": "firmware",
+              "path": "/docs/firmware",
+              "sidebar": "wikiSidebar"
+            },
+            {
+              "id": "firmware-changelog",
+              "path": "/docs/firmware-changelog",
+              "sidebar": "wikiSidebar"
+            },
+            {
+              "id": "firmware-specification",
+              "path": "/docs/firmware-specification",
+              "sidebar": "wikiSidebar"
+            },
+            {
+              "id": "firmware-updates",
+              "path": "/docs/firmware-updates",
+              "sidebar": "wikiSidebar"
+            },
+            {
+              "id": "forum-discussions",
+              "path": "/docs/forum-discussions",
+              "sidebar": "wikiSidebar"
+            },
+            {
+              "id": "funding",
+              "path": "/docs/funding",
+              "sidebar": "wikiSidebar"
+            },
+            {
+              "id": "garden-sensors",
+              "path": "/docs/garden-sensors",
+              "sidebar": "wikiSidebar"
+            },
+            {
+              "id": "github-issues",
+              "path": "/docs/github-issues",
+              "sidebar": "wikiSidebar"
+            },
+            {
+              "id": "grocery-list",
+              "path": "/docs/grocery-list",
+              "sidebar": "wikiSidebar"
+            },
+            {
+              "id": "hacker-news",
+              "path": "/docs/hacker-news",
+              "sidebar": "wikiSidebar"
+            },
+            {
+              "id": "hardware",
+              "path": "/docs/hardware",
+              "sidebar": "wikiSidebar"
+            },
+            {
+              "id": "hardware-design",
+              "path": "/docs/hardware-design",
+              "sidebar": "wikiSidebar"
+            },
+            {
+              "id": "hardware-development",
+              "path": "/docs/hardware-development",
+              "sidebar": "wikiSidebar"
+            },
+            {
+              "id": "hardware-engineering",
+              "path": "/docs/hardware-engineering",
+              "sidebar": "wikiSidebar"
+            },
+            {
+              "id": "hardware-evaluation",
+              "path": "/docs/hardware-evaluation",
+              "sidebar": "wikiSidebar"
+            },
+            {
+              "id": "hardware-failure",
+              "path": "/docs/hardware-failure",
+              "sidebar": "wikiSidebar"
+            },
+            {
+              "id": "hardware-specification",
+              "path": "/docs/hardware-specification",
+              "sidebar": "wikiSidebar"
+            },
+            {
+              "id": "hardware-specifications",
+              "path": "/docs/hardware-specifications",
+              "sidebar": "wikiSidebar"
+            },
+            {
+              "id": "heuristic-mode",
+              "path": "/docs/heuristic-mode",
+              "sidebar": "wikiSidebar"
+            },
+            {
+              "id": "home-assistant",
+              "path": "/docs/home-assistant",
+              "sidebar": "wikiSidebar"
+            },
+            {
+              "id": "home-assistant-integration",
+              "path": "/docs/home-assistant-integration",
+              "sidebar": "wikiSidebar"
+            },
+            {
+              "id": "homelab-integration",
+              "path": "/docs/homelab-integration",
+              "sidebar": "wikiSidebar"
+            },
+            {
+              "id": "homelab-sensors",
+              "path": "/docs/homelab-sensors",
+              "sidebar": "wikiSidebar"
+            },
+            {
+              "id": "index",
+              "path": "/docs/index",
+              "sidebar": "wikiSidebar"
+            },
+            {
+              "id": "ingress-protection-ratings",
+              "path": "/docs/ingress-protection-ratings",
+              "sidebar": "wikiSidebar"
+            },
+            {
+              "id": "internal-documentation",
+              "path": "/docs/internal-documentation",
+              "sidebar": "wikiSidebar"
+            },
+            {
+              "id": "internal-reporting",
+              "path": "/docs/internal-reporting",
+              "sidebar": "wikiSidebar"
+            },
+            {
+              "id": "internal-tools",
+              "path": "/docs/internal-tools",
+              "sidebar": "wikiSidebar"
+            },
+            {
+              "id": "investor-relations",
+              "path": "/docs/investor-relations",
+              "sidebar": "wikiSidebar"
+            },
+            {
+              "id": "ios-18",
+              "path": "/docs/ios-18",
+              "sidebar": "wikiSidebar"
+            },
+            {
+              "id": "ios-development",
+              "path": "/docs/ios-development",
+              "sidebar": "wikiSidebar"
+            },
+            {
+              "id": "iot-device-design",
+              "path": "/docs/iot-device-design",
+              "sidebar": "wikiSidebar"
+            },
+            {
+              "id": "iot-hardware-teardown",
+              "path": "/docs/iot-hardware-teardown",
+              "sidebar": "wikiSidebar"
+            },
+            {
+              "id": "iot-product-development",
+              "path": "/docs/iot-product-development",
+              "sidebar": "wikiSidebar"
+            },
+            {
+              "id": "iot-sensors",
+              "path": "/docs/iot-sensors",
+              "sidebar": "wikiSidebar"
+            },
+            {
+              "id": "issue-reporting",
+              "path": "/docs/issue-reporting",
+              "sidebar": "wikiSidebar"
+            },
+            {
+              "id": "kickoff-meeting",
+              "path": "/docs/kickoff-meeting",
+              "sidebar": "wikiSidebar"
+            },
+            {
+              "id": "knowledge-management",
+              "path": "/docs/knowledge-management",
+              "sidebar": "wikiSidebar"
+            },
+            {
+              "id": "known-issues",
+              "path": "/docs/known-issues",
+              "sidebar": "wikiSidebar"
+            },
+            {
+              "id": "legal-disclaimers",
+              "path": "/docs/legal-disclaimers",
+              "sidebar": "wikiSidebar"
+            },
+            {
+              "id": "legal-review",
+              "path": "/docs/legal-review",
+              "sidebar": "wikiSidebar"
+            },
+            {
+              "id": "llm-applications",
+              "path": "/docs/llm-applications",
+              "sidebar": "wikiSidebar"
+            },
+            {
+              "id": "llm-wiki-pipeline",
+              "path": "/docs/llm-wiki-pipeline",
+              "sidebar": "wikiSidebar"
+            },
+            {
+              "id": "local-first-gadgets",
+              "path": "/docs/local-first-gadgets",
+              "sidebar": "wikiSidebar"
+            },
+            {
+              "id": "local-first-iot",
+              "path": "/docs/local-first-iot",
+              "sidebar": "wikiSidebar"
+            },
+            {
+              "id": "lorawan",
+              "path": "/docs/lorawan",
+              "sidebar": "wikiSidebar"
+            },
+            {
+              "id": "maker-faire",
+              "path": "/docs/maker-faire",
+              "sidebar": "wikiSidebar"
+            },
+            {
+              "id": "manufacturing",
+              "path": "/docs/manufacturing",
+              "sidebar": "wikiSidebar"
+            },
+            {
+              "id": "markdown-export-issues",
+              "path": "/docs/markdown-export-issues",
+              "sidebar": "wikiSidebar"
+            },
+            {
+              "id": "market-research",
+              "path": "/docs/market-research",
+              "sidebar": "wikiSidebar"
+            },
+            {
+              "id": "marketing-branding",
+              "path": "/docs/marketing-branding",
+              "sidebar": "wikiSidebar"
+            },
+            {
+              "id": "marketing-copy",
+              "path": "/docs/marketing-copy",
+              "sidebar": "wikiSidebar"
+            },
+            {
+              "id": "mechanical-design",
+              "path": "/docs/mechanical-design",
+              "sidebar": "wikiSidebar"
+            },
+            {
+              "id": "meeting-notes",
+              "path": "/docs/meeting-notes",
+              "sidebar": "wikiSidebar"
+            },
+            {
+              "id": "mesh-networking",
+              "path": "/docs/mesh-networking",
+              "sidebar": "wikiSidebar"
+            },
+            {
+              "id": "meshsync",
+              "path": "/docs/meshsync",
+              "sidebar": "wikiSidebar"
+            },
+            {
+              "id": "meshsync-debugging",
+              "path": "/docs/meshsync-debugging",
+              "sidebar": "wikiSidebar"
+            },
+            {
+              "id": "meshsync-firmware",
+              "path": "/docs/meshsync-firmware",
+              "sidebar": "wikiSidebar"
+            },
+            {
+              "id": "meshsync-protocol",
+              "path": "/docs/meshsync-protocol",
+              "sidebar": "wikiSidebar"
+            },
+            {
+              "id": "mobile-app-development",
+              "path": "/docs/mobile-app-development",
+              "sidebar": "wikiSidebar"
+            },
+            {
+              "id": "mqtt",
+              "path": "/docs/mqtt",
+              "sidebar": "wikiSidebar"
+            },
+            {
+              "id": "mqtt-export",
+              "path": "/docs/mqtt-export",
+              "sidebar": "wikiSidebar"
+            },
+            {
+              "id": "mqtt-setup",
+              "path": "/docs/mqtt-setup",
+              "sidebar": "wikiSidebar"
+            },
+            {
+              "id": "network-configuration",
+              "path": "/docs/network-configuration",
+              "sidebar": "wikiSidebar"
+            },
+            {
+              "id": "network-engineering",
+              "path": "/docs/network-engineering",
+              "sidebar": "wikiSidebar"
+            },
+            {
+              "id": "node-management",
+              "path": "/docs/node-management",
+              "sidebar": "wikiSidebar"
+            },
+            {
+              "id": "notion-export",
+              "path": "/docs/notion-export",
+              "sidebar": "wikiSidebar"
+            },
+            {
+              "id": "nova-widget",
+              "path": "/docs/nova-widget",
+              "sidebar": "wikiSidebar"
+            },
+            {
+              "id": "ota-updates",
+              "path": "/docs/ota-updates",
+              "sidebar": "wikiSidebar"
+            },
+            {
+              "id": "personal-notes",
+              "path": "/docs/personal-notes",
+              "sidebar": "wikiSidebar"
+            },
+            {
+              "id": "podcast-planning",
+              "path": "/docs/podcast-planning",
+              "sidebar": "wikiSidebar"
+            },
+            {
+              "id": "power-budgeting",
+              "path": "/docs/power-budgeting",
+              "sidebar": "wikiSidebar"
+            },
+            {
+              "id": "power-consumption",
+              "path": "/docs/power-consumption",
+              "sidebar": "wikiSidebar"
+            },
+            {
+              "id": "power-management",
+              "path": "/docs/power-management",
+              "sidebar": "wikiSidebar"
+            },
+            {
+              "id": "product-announcements",
+              "path": "/docs/product-announcements",
+              "sidebar": "wikiSidebar"
+            },
+            {
+              "id": "product-briefs",
+              "path": "/docs/product-briefs",
+              "sidebar": "wikiSidebar"
+            },
+            {
+              "id": "product-comparison",
+              "path": "/docs/product-comparison",
+              "sidebar": "wikiSidebar"
+            },
+            {
+              "id": "product-compatibility",
+              "path": "/docs/product-compatibility",
+              "sidebar": "wikiSidebar"
+            },
+            {
+              "id": "product-design",
+              "path": "/docs/product-design",
+              "sidebar": "wikiSidebar"
+            },
+            {
+              "id": "product-development",
+              "path": "/docs/product-development",
+              "sidebar": "wikiSidebar"
+            },
+            {
+              "id": "product-documentation",
+              "path": "/docs/product-documentation",
+              "sidebar": "wikiSidebar"
+            },
+            {
+              "id": "product-evaluation",
+              "path": "/docs/product-evaluation",
+              "sidebar": "wikiSidebar"
+            },
+            {
+              "id": "product-features",
+              "path": "/docs/product-features",
+              "sidebar": "wikiSidebar"
+            },
+            {
+              "id": "product-ideas",
+              "path": "/docs/product-ideas",
+              "sidebar": "wikiSidebar"
+            },
+            {
+              "id": "product-information",
+              "path": "/docs/product-information",
+              "sidebar": "wikiSidebar"
+            },
+            {
+              "id": "product-management",
+              "path": "/docs/product-management",
+              "sidebar": "wikiSidebar"
+            },
+            {
+              "id": "product-naming",
+              "path": "/docs/product-naming",
+              "sidebar": "wikiSidebar"
+            },
+            {
+              "id": "product-roadmap",
+              "path": "/docs/product-roadmap",
+              "sidebar": "wikiSidebar"
+            },
+            {
+              "id": "product-safety",
+              "path": "/docs/product-safety",
+              "sidebar": "wikiSidebar"
+            },
+            {
+              "id": "product-specification",
+              "path": "/docs/product-specification",
+              "sidebar": "wikiSidebar"
+            },
+            {
+              "id": "product-specifications",
+              "path": "/docs/product-specifications",
+              "sidebar": "wikiSidebar"
+            },
+            {
+              "id": "product-strategy",
+              "path": "/docs/product-strategy",
+              "sidebar": "wikiSidebar"
+            },
+            {
+              "id": "product-support",
+              "path": "/docs/product-support",
+              "sidebar": "wikiSidebar"
+            },
+            {
+              "id": "product-troubleshooting",
+              "path": "/docs/product-troubleshooting",
+              "sidebar": "wikiSidebar"
+            },
+            {
+              "id": "project-ideas",
+              "path": "/docs/project-ideas",
+              "sidebar": "wikiSidebar"
+            },
+            {
+              "id": "project-management",
+              "path": "/docs/project-management",
+              "sidebar": "wikiSidebar"
+            },
+            {
+              "id": "protocol-design",
+              "path": "/docs/protocol-design",
+              "sidebar": "wikiSidebar"
+            },
+            {
+              "id": "quality-assurance",
+              "path": "/docs/quality-assurance",
+              "sidebar": "wikiSidebar"
+            },
+            {
+              "id": "release-notes",
+              "path": "/docs/release-notes",
+              "sidebar": "wikiSidebar"
+            },
+            {
+              "id": "sensenode",
+              "path": "/docs/sensenode",
+              "sidebar": "wikiSidebar"
+            },
+            {
+              "id": "sensor-networks",
+              "path": "/docs/sensor-networks",
+              "sidebar": "wikiSidebar"
+            },
+            {
+              "id": "sensor-products",
+              "path": "/docs/sensor-products",
+              "sidebar": "wikiSidebar"
+            },
+            {
+              "id": "sensor-technology",
+              "path": "/docs/sensor-technology",
+              "sidebar": "wikiSidebar"
+            },
+            {
+              "id": "sensors",
+              "path": "/docs/sensors",
+              "sidebar": "wikiSidebar"
+            },
+            {
+              "id": "smart-gardening",
+              "path": "/docs/smart-gardening",
+              "sidebar": "wikiSidebar"
+            },
+            {
+              "id": "social-media-interaction",
+              "path": "/docs/social-media-interaction",
+              "sidebar": "wikiSidebar"
+            },
+            {
+              "id": "software-bugs",
+              "path": "/docs/software-bugs",
+              "sidebar": "wikiSidebar"
+            },
+            {
+              "id": "software-development",
+              "path": "/docs/software-development",
+              "sidebar": "wikiSidebar"
+            },
+            {
+              "id": "software-engineering",
+              "path": "/docs/software-engineering",
+              "sidebar": "wikiSidebar"
+            },
+            {
+              "id": "software-releases",
+              "path": "/docs/software-releases",
+              "sidebar": "wikiSidebar"
+            },
+            {
+              "id": "software-updates",
+              "path": "/docs/software-updates",
+              "sidebar": "wikiSidebar"
+            },
+            {
+              "id": "soil-probes",
+              "path": "/docs/soil-probes",
+              "sidebar": "wikiSidebar"
+            },
+            {
+              "id": "specifications",
+              "path": "/docs/specifications",
+              "sidebar": "wikiSidebar"
+            },
+            {
+              "id": "sprint-planning",
+              "path": "/docs/sprint-planning",
+              "sidebar": "wikiSidebar"
+            },
+            {
+              "id": "sprint-retrospective",
+              "path": "/docs/sprint-retrospective",
+              "sidebar": "wikiSidebar"
+            },
+            {
+              "id": "standup-meeting",
+              "path": "/docs/standup-meeting",
+              "sidebar": "wikiSidebar"
+            },
+            {
+              "id": "startup-kickoff",
+              "path": "/docs/startup-kickoff",
+              "sidebar": "wikiSidebar"
+            },
+            {
+              "id": "support-tickets",
+              "path": "/docs/support-tickets",
+              "sidebar": "wikiSidebar"
+            },
+            {
+              "id": "system-design",
+              "path": "/docs/system-design",
+              "sidebar": "wikiSidebar"
+            },
+            {
+              "id": "teabuddy",
+              "path": "/docs/teabuddy",
+              "sidebar": "wikiSidebar"
+            },
+            {
+              "id": "team-collaboration",
+              "path": "/docs/team-collaboration",
+              "sidebar": "wikiSidebar"
+            },
+            {
+              "id": "team-communication",
+              "path": "/docs/team-communication",
+              "sidebar": "wikiSidebar"
+            },
+            {
+              "id": "technical-specifications",
+              "path": "/docs/technical-specifications",
+              "sidebar": "wikiSidebar"
+            },
+            {
+              "id": "testing",
+              "path": "/docs/testing",
+              "sidebar": "wikiSidebar"
+            },
+            {
+              "id": "trademark-law",
+              "path": "/docs/trademark-law",
+              "sidebar": "wikiSidebar"
+            },
+            {
+              "id": "training",
+              "path": "/docs/training",
+              "sidebar": "wikiSidebar"
+            },
+            {
+              "id": "troubleshooting",
+              "path": "/docs/troubleshooting",
+              "sidebar": "wikiSidebar"
+            },
+            {
+              "id": "weekly-sync",
+              "path": "/docs/weekly-sync",
+              "sidebar": "wikiSidebar"
+            },
+            {
+              "id": "wiki-automation",
+              "path": "/docs/wiki-automation",
+              "sidebar": "wikiSidebar"
+            },
+            {
+              "id": "wiki-compiler",
+              "path": "/docs/wiki-compiler",
+              "sidebar": "wikiSidebar"
+            },
+            {
+              "id": "wiki-management",
+              "path": "/docs/wiki-management",
+              "sidebar": "wikiSidebar"
+            },
+            {
+              "id": "wiki-migration",
+              "path": "/docs/wiki-migration",
+              "sidebar": "wikiSidebar"
+            },
+            {
+              "id": "wireless-communication",
+              "path": "/docs/wireless-communication",
+              "sidebar": "wikiSidebar"
+            },
+            {
+              "id": "wireless-communication-protocols",
+              "path": "/docs/wireless-communication-protocols",
+              "sidebar": "wikiSidebar"
+            },
+            {
+              "id": "wireless-connectivity",
+              "path": "/docs/wireless-connectivity",
+              "sidebar": "wikiSidebar"
+            },
+            {
+              "id": "wireless-mesh-networking",
+              "path": "/docs/wireless-mesh-networking",
+              "sidebar": "wikiSidebar"
+            }
+          ],
+          "draftIds": [],
+          "sidebars": {
+            "wikiSidebar": {
+              "link": {
+                "path": "/docs/index",
+                "label": "index"
+              }
+            }
+          }
+        }
+      ],
+      "breadcrumbs": true
+    }
+  },
+  "docusaurus-plugin-backlinks": {
+    "default": {
+      "backlinks": {
+        "meshsync": [
+          {
+            "id": "aurora-nova",
+            "title": "Aurora Nova",
+            "permalink": "/docs/aurora-nova"
+          },
+          {
+            "id": "aurora-nova-widget",
+            "title": "Aurora Nova Widget",
+            "permalink": "/docs/aurora-nova-widget"
+          },
+          {
+            "id": "bluetooth-low-energy-ble",
+            "title": "Bluetooth Low Energy (BLE)",
+            "permalink": "/docs/bluetooth-low-energy-ble"
+          },
+          {
+            "id": "competitive-analysis",
+            "title": "Competitive Analysis",
+            "permalink": "/docs/competitive-analysis"
+          },
+          {
+            "id": "cr2032-battery",
+            "title": "CR2032 Battery",
+            "permalink": "/docs/cr2032-battery"
+          },
+          {
+            "id": "customer-support",
+            "title": "Customer Support",
+            "permalink": "/docs/customer-support"
+          },
+          {
+            "id": "customer-support-faq",
+            "title": "Customer Support FAQ",
+            "permalink": "/docs/customer-support-faq"
+          },
+          {
+            "id": "data-ingestion",
+            "title": "Data Ingestion",
+            "permalink": "/docs/data-ingestion"
+          },
+          {
+            "id": "data-privacy",
+            "title": "Data Privacy",
+            "permalink": "/docs/data-privacy"
+          },
+          {
+            "id": "data-schema",
+            "title": "Data Schema",
+            "permalink": "/docs/data-schema"
+          },
+          {
+            "id": "development-tools",
+            "title": "Development Tools",
+            "permalink": "/docs/development-tools"
+          },
+          {
+            "id": "documentation",
+            "title": "Documentation",
+            "permalink": "/docs/documentation"
+          },
+          {
+            "id": "firmware-changelog",
+            "title": "Firmware Changelog",
+            "permalink": "/docs/firmware-changelog"
+          },
+          {
+            "id": "firmware-updates",
+            "title": "Firmware Updates",
+            "permalink": "/docs/firmware-updates"
+          },
+          {
+            "id": "garden-sensors",
+            "title": "Garden Sensors",
+            "permalink": "/docs/garden-sensors"
+          },
+          {
+            "id": "hacker-news",
+            "title": "Hacker News",
+            "permalink": "/docs/hacker-news"
+          },
+          {
+            "id": "hardware-engineering",
+            "title": "Hardware Engineering",
+            "permalink": "/docs/hardware-engineering"
+          },
+          {
+            "id": "heuristic-mode",
+            "title": "Heuristic Mode",
+            "permalink": "/docs/heuristic-mode"
+          },
+          {
+            "id": "home-assistant-integration",
+            "title": "Home Assistant Integration",
+            "permalink": "/docs/home-assistant-integration"
+          },
+          {
+            "id": "investor-relations",
+            "title": "Investor Relations",
+            "permalink": "/docs/investor-relations"
+          },
+          {
+            "id": "ios-development",
+            "title": "iOS Development",
+            "permalink": "/docs/ios-development"
+          },
+          {
+            "id": "iot-sensors",
+            "title": "IoT Sensors",
+            "permalink": "/docs/iot-sensors"
+          },
+          {
+            "id": "kickoff-meeting",
+            "title": "Kickoff Meeting",
+            "permalink": "/docs/kickoff-meeting"
+          },
+          {
+            "id": "llm-wiki-pipeline",
+            "title": "LLM Wiki Pipeline",
+            "permalink": "/docs/llm-wiki-pipeline"
+          },
+          {
+            "id": "markdown-export-issues",
+            "title": "Markdown Export Issues",
+            "permalink": "/docs/markdown-export-issues"
+          },
+          {
+            "id": "mesh-networking",
+            "title": "Mesh Networking",
+            "permalink": "/docs/mesh-networking"
+          },
+          {
+            "id": "nova-widget",
+            "title": "Nova Widget",
+            "permalink": "/docs/nova-widget"
+          },
+          {
+            "id": "product-comparison",
+            "title": "Product Comparison",
+            "permalink": "/docs/product-comparison"
+          },
+          {
+            "id": "product-compatibility",
+            "title": "Product Compatibility",
+            "permalink": "/docs/product-compatibility"
+          },
+          {
+            "id": "product-management",
+            "title": "Product Management",
+            "permalink": "/docs/product-management"
+          },
+          {
+            "id": "product-safety",
+            "title": "Product Safety",
+            "permalink": "/docs/product-safety"
+          },
+          {
+            "id": "product-specification",
+            "title": "Product Specification",
+            "permalink": "/docs/product-specification"
+          },
+          {
+            "id": "product-specifications",
+            "title": "Product Specifications",
+            "permalink": "/docs/product-specifications"
+          },
+          {
+            "id": "product-support",
+            "title": "Product Support",
+            "permalink": "/docs/product-support"
+          },
+          {
+            "id": "project-management",
+            "title": "Project Management",
+            "permalink": "/docs/project-management"
+          },
+          {
+            "id": "release-notes",
+            "title": "Release Notes",
+            "permalink": "/docs/release-notes"
+          },
+          {
+            "id": "sensor-networks",
+            "title": "Sensor Networks",
+            "permalink": "/docs/sensor-networks"
+          },
+          {
+            "id": "sensor-products",
+            "title": "Sensor Products",
+            "permalink": "/docs/sensor-products"
+          },
+          {
+            "id": "sensor-technology",
+            "title": "Sensor Technology",
+            "permalink": "/docs/sensor-technology"
+          },
+          {
+            "id": "software-updates",
+            "title": "Software Updates",
+            "permalink": "/docs/software-updates"
+          },
+          {
+            "id": "startup-kickoff",
+            "title": "Startup Kickoff",
+            "permalink": "/docs/startup-kickoff"
+          },
+          {
+            "id": "teabuddy",
+            "title": "TeaBuddy",
+            "permalink": "/docs/teabuddy"
+          },
+          {
+            "id": "technical-specifications",
+            "title": "Technical Specifications",
+            "permalink": "/docs/technical-specifications"
+          },
+          {
+            "id": "trademark-law",
+            "title": "Trademark Law",
+            "permalink": "/docs/trademark-law"
+          },
+          {
+            "id": "wiki-compiler",
+            "title": "Wiki Compiler",
+            "permalink": "/docs/wiki-compiler"
+          },
+          {
+            "id": "wiki-migration",
+            "title": "Wiki Migration",
+            "permalink": "/docs/wiki-migration"
+          },
+          {
+            "id": "wireless-communication",
+            "title": "Wireless Communication",
+            "permalink": "/docs/wireless-communication"
+          }
+        ],
+        "cr2032-battery": [
+          {
+            "id": "aurora-nova",
+            "title": "Aurora Nova",
+            "permalink": "/docs/aurora-nova"
+          },
+          {
+            "id": "aurora-nova-widget",
+            "title": "Aurora Nova Widget",
+            "permalink": "/docs/aurora-nova-widget"
+          },
+          {
+            "id": "battery-technology",
+            "title": "Battery Technology",
+            "permalink": "/docs/battery-technology"
+          },
+          {
+            "id": "customer-support-faq",
+            "title": "Customer Support FAQ",
+            "permalink": "/docs/customer-support-faq"
+          },
+          {
+            "id": "mesh-networking",
+            "title": "Mesh Networking",
+            "permalink": "/docs/mesh-networking"
+          },
+          {
+            "id": "product-troubleshooting",
+            "title": "Product Troubleshooting",
+            "permalink": "/docs/product-troubleshooting"
+          },
+          {
+            "id": "teabuddy",
+            "title": "TeaBuddy",
+            "permalink": "/docs/teabuddy"
+          }
+        ],
+        "teabuddy": [
+          {
+            "id": "aurora-nova-widget",
+            "title": "Aurora Nova Widget",
+            "permalink": "/docs/aurora-nova-widget"
+          },
+          {
+            "id": "battery-specifications",
+            "title": "Battery Specifications",
+            "permalink": "/docs/battery-specifications"
+          },
+          {
+            "id": "battery-technology",
+            "title": "Battery Technology",
+            "permalink": "/docs/battery-technology"
+          },
+          {
+            "id": "bluetooth-low-energy-ble",
+            "title": "Bluetooth Low Energy (BLE)",
+            "permalink": "/docs/bluetooth-low-energy-ble"
+          },
+          {
+            "id": "customer-support",
+            "title": "Customer Support",
+            "permalink": "/docs/customer-support"
+          },
+          {
+            "id": "customer-support-faq",
+            "title": "Customer Support FAQ",
+            "permalink": "/docs/customer-support-faq"
+          },
+          {
+            "id": "data-ingestion",
+            "title": "Data Ingestion",
+            "permalink": "/docs/data-ingestion"
+          },
+          {
+            "id": "development-tools",
+            "title": "Development Tools",
+            "permalink": "/docs/development-tools"
+          },
+          {
+            "id": "documentation",
+            "title": "Documentation",
+            "permalink": "/docs/documentation"
+          },
+          {
+            "id": "firmware-changelog",
+            "title": "Firmware Changelog",
+            "permalink": "/docs/firmware-changelog"
+          },
+          {
+            "id": "hacker-news",
+            "title": "Hacker News",
+            "permalink": "/docs/hacker-news"
+          },
+          {
+            "id": "heuristic-mode",
+            "title": "Heuristic Mode",
+            "permalink": "/docs/heuristic-mode"
+          },
+          {
+            "id": "home-assistant-integration",
+            "title": "Home Assistant Integration",
+            "permalink": "/docs/home-assistant-integration"
+          },
+          {
+            "id": "investor-relations",
+            "title": "Investor Relations",
+            "permalink": "/docs/investor-relations"
+          },
+          {
+            "id": "ios-development",
+            "title": "iOS Development",
+            "permalink": "/docs/ios-development"
+          },
+          {
+            "id": "iot-sensors",
+            "title": "IoT Sensors",
+            "permalink": "/docs/iot-sensors"
+          },
+          {
+            "id": "legal-disclaimers",
+            "title": "Legal Disclaimers",
+            "permalink": "/docs/legal-disclaimers"
+          },
+          {
+            "id": "llm-wiki-pipeline",
+            "title": "LLM Wiki Pipeline",
+            "permalink": "/docs/llm-wiki-pipeline"
+          },
+          {
+            "id": "local-first-iot",
+            "title": "Local-first IoT",
+            "permalink": "/docs/local-first-iot"
+          },
+          {
+            "id": "markdown-export-issues",
+            "title": "Markdown Export Issues",
+            "permalink": "/docs/markdown-export-issues"
+          },
+          {
+            "id": "mesh-networking",
+            "title": "Mesh Networking",
+            "permalink": "/docs/mesh-networking"
+          },
+          {
+            "id": "mobile-app-development",
+            "title": "Mobile App Development",
+            "permalink": "/docs/mobile-app-development"
+          },
+          {
+            "id": "nova-widget",
+            "title": "Nova Widget",
+            "permalink": "/docs/nova-widget"
+          },
+          {
+            "id": "product-comparison",
+            "title": "Product Comparison",
+            "permalink": "/docs/product-comparison"
+          },
+          {
+            "id": "product-compatibility",
+            "title": "Product Compatibility",
+            "permalink": "/docs/product-compatibility"
+          },
+          {
+            "id": "product-design",
+            "title": "Product Design",
+            "permalink": "/docs/product-design"
+          },
+          {
+            "id": "product-documentation",
+            "title": "Product Documentation",
+            "permalink": "/docs/product-documentation"
+          },
+          {
+            "id": "product-features",
+            "title": "Product Features",
+            "permalink": "/docs/product-features"
+          },
+          {
+            "id": "product-management",
+            "title": "Product Management",
+            "permalink": "/docs/product-management"
+          },
+          {
+            "id": "product-safety",
+            "title": "Product Safety",
+            "permalink": "/docs/product-safety"
+          },
+          {
+            "id": "product-specification",
+            "title": "Product Specification",
+            "permalink": "/docs/product-specification"
+          },
+          {
+            "id": "product-specifications",
+            "title": "Product Specifications",
+            "permalink": "/docs/product-specifications"
+          },
+          {
+            "id": "product-support",
+            "title": "Product Support",
+            "permalink": "/docs/product-support"
+          },
+          {
+            "id": "project-management",
+            "title": "Project Management",
+            "permalink": "/docs/project-management"
+          },
+          {
+            "id": "sensor-technology",
+            "title": "Sensor Technology",
+            "permalink": "/docs/sensor-technology"
+          },
+          {
+            "id": "software-updates",
+            "title": "Software Updates",
+            "permalink": "/docs/software-updates"
+          },
+          {
+            "id": "system-design",
+            "title": "System Design",
+            "permalink": "/docs/system-design"
+          },
+          {
+            "id": "trademark-law",
+            "title": "Trademark Law",
+            "permalink": "/docs/trademark-law"
+          },
+          {
+            "id": "training",
+            "title": "Training",
+            "permalink": "/docs/training"
+          },
+          {
+            "id": "wiki-compiler",
+            "title": "Wiki Compiler",
+            "permalink": "/docs/wiki-compiler"
+          },
+          {
+            "id": "wiki-migration",
+            "title": "Wiki Migration",
+            "permalink": "/docs/wiki-migration"
+          },
+          {
+            "id": "wireless-communication",
+            "title": "Wireless Communication",
+            "permalink": "/docs/wireless-communication"
+          },
+          {
+            "id": "wireless-communication-protocols",
+            "title": "Wireless Communication Protocols",
+            "permalink": "/docs/wireless-communication-protocols"
+          }
+        ],
+        "power-budgeting": [
+          {
+            "id": "aurora-nova-widget",
+            "title": "Aurora Nova Widget",
+            "permalink": "/docs/aurora-nova-widget"
+          },
+          {
+            "id": "project-management",
+            "title": "Project Management",
+            "permalink": "/docs/project-management"
+          }
+        ],
+        "sensenode": [
+          {
+            "id": "aurora-nova",
+            "title": "Aurora Nova",
+            "permalink": "/docs/aurora-nova"
+          },
+          {
+            "id": "customer-support",
+            "title": "Customer Support",
+            "permalink": "/docs/customer-support"
+          },
+          {
+            "id": "firmware-updates",
+            "title": "Firmware Updates",
+            "permalink": "/docs/firmware-updates"
+          },
+          {
+            "id": "garden-sensors",
+            "title": "Garden Sensors",
+            "permalink": "/docs/garden-sensors"
+          },
+          {
+            "id": "hacker-news",
+            "title": "Hacker News",
+            "permalink": "/docs/hacker-news"
+          },
+          {
+            "id": "hardware-engineering",
+            "title": "Hardware Engineering",
+            "permalink": "/docs/hardware-engineering"
+          },
+          {
+            "id": "investor-relations",
+            "title": "Investor Relations",
+            "permalink": "/docs/investor-relations"
+          },
+          {
+            "id": "legal-disclaimers",
+            "title": "Legal Disclaimers",
+            "permalink": "/docs/legal-disclaimers"
+          },
+          {
+            "id": "markdown-export-issues",
+            "title": "Markdown Export Issues",
+            "permalink": "/docs/markdown-export-issues"
+          },
+          {
+            "id": "product-comparison",
+            "title": "Product Comparison",
+            "permalink": "/docs/product-comparison"
+          },
+          {
+            "id": "product-design",
+            "title": "Product Design",
+            "permalink": "/docs/product-design"
+          },
+          {
+            "id": "product-features",
+            "title": "Product Features",
+            "permalink": "/docs/product-features"
+          },
+          {
+            "id": "product-roadmap",
+            "title": "Product Roadmap",
+            "permalink": "/docs/product-roadmap"
+          },
+          {
+            "id": "product-safety",
+            "title": "Product Safety",
+            "permalink": "/docs/product-safety"
+          },
+          {
+            "id": "product-support",
+            "title": "Product Support",
+            "permalink": "/docs/product-support"
+          },
+          {
+            "id": "product-troubleshooting",
+            "title": "Product Troubleshooting",
+            "permalink": "/docs/product-troubleshooting"
+          },
+          {
+            "id": "project-management",
+            "title": "Project Management",
+            "permalink": "/docs/project-management"
+          },
+          {
+            "id": "sensor-networks",
+            "title": "Sensor Networks",
+            "permalink": "/docs/sensor-networks"
+          },
+          {
+            "id": "sensor-products",
+            "title": "Sensor Products",
+            "permalink": "/docs/sensor-products"
+          },
+          {
+            "id": "sensor-technology",
+            "title": "Sensor Technology",
+            "permalink": "/docs/sensor-technology"
+          },
+          {
+            "id": "software-updates",
+            "title": "Software Updates",
+            "permalink": "/docs/software-updates"
+          },
+          {
+            "id": "technical-specifications",
+            "title": "Technical Specifications",
+            "permalink": "/docs/technical-specifications"
+          },
+          {
+            "id": "training",
+            "title": "Training",
+            "permalink": "/docs/training"
+          },
+          {
+            "id": "wiki-migration",
+            "title": "Wiki Migration",
+            "permalink": "/docs/wiki-migration"
+          },
+          {
+            "id": "wireless-communication",
+            "title": "Wireless Communication",
+            "permalink": "/docs/wireless-communication"
+          }
+        ],
+        "mesh-networking": [
+          {
+            "id": "aurora-nova",
+            "title": "Aurora Nova",
+            "permalink": "/docs/aurora-nova"
+          },
+          {
+            "id": "battery-technology",
+            "title": "Battery Technology",
+            "permalink": "/docs/battery-technology"
+          },
+          {
+            "id": "hardware-engineering",
+            "title": "Hardware Engineering",
+            "permalink": "/docs/hardware-engineering"
+          },
+          {
+            "id": "hardware-specification",
+            "title": "Hardware Specification",
+            "permalink": "/docs/hardware-specification"
+          },
+          {
+            "id": "iot-sensors",
+            "title": "IoT Sensors",
+            "permalink": "/docs/iot-sensors"
+          },
+          {
+            "id": "kickoff-meeting",
+            "title": "Kickoff Meeting",
+            "permalink": "/docs/kickoff-meeting"
+          },
+          {
+            "id": "local-first-iot",
+            "title": "Local-first IoT",
+            "permalink": "/docs/local-first-iot"
+          },
+          {
+            "id": "network-engineering",
+            "title": "Network Engineering",
+            "permalink": "/docs/network-engineering"
+          },
+          {
+            "id": "product-design",
+            "title": "Product Design",
+            "permalink": "/docs/product-design"
+          },
+          {
+            "id": "project-management",
+            "title": "Project Management",
+            "permalink": "/docs/project-management"
+          },
+          {
+            "id": "sensor-technology",
+            "title": "Sensor Technology",
+            "permalink": "/docs/sensor-technology"
+          },
+          {
+            "id": "startup-kickoff",
+            "title": "Startup Kickoff",
+            "permalink": "/docs/startup-kickoff"
+          },
+          {
+            "id": "technical-specifications",
+            "title": "Technical Specifications",
+            "permalink": "/docs/technical-specifications"
+          },
+          {
+            "id": "wireless-communication",
+            "title": "Wireless Communication",
+            "permalink": "/docs/wireless-communication"
+          },
+          {
+            "id": "wireless-communication-protocols",
+            "title": "Wireless Communication Protocols",
+            "permalink": "/docs/wireless-communication-protocols"
+          }
+        ],
+        "battery-life": [
+          {
+            "id": "aurora-nova",
+            "title": "Aurora Nova",
+            "permalink": "/docs/aurora-nova"
+          },
+          {
+            "id": "firmware-updates",
+            "title": "Firmware Updates",
+            "permalink": "/docs/firmware-updates"
+          },
+          {
+            "id": "iot-sensors",
+            "title": "IoT Sensors",
+            "permalink": "/docs/iot-sensors"
+          },
+          {
+            "id": "power-budgeting",
+            "title": "Power Budgeting",
+            "permalink": "/docs/power-budgeting"
+          },
+          {
+            "id": "release-notes",
+            "title": "Release Notes",
+            "permalink": "/docs/release-notes"
+          },
+          {
+            "id": "sensor-products",
+            "title": "Sensor Products",
+            "permalink": "/docs/sensor-products"
+          },
+          {
+            "id": "wireless-communication",
+            "title": "Wireless Communication",
+            "permalink": "/docs/wireless-communication"
+          }
+        ],
+        "aurora-nova-widget": [
+          {
+            "id": "battery-specifications",
+            "title": "Battery Specifications",
+            "permalink": "/docs/battery-specifications"
+          },
+          {
+            "id": "bluetooth-low-energy-ble",
+            "title": "Bluetooth Low Energy (BLE)",
+            "permalink": "/docs/bluetooth-low-energy-ble"
+          },
+          {
+            "id": "cr2032-battery",
+            "title": "CR2032 Battery",
+            "permalink": "/docs/cr2032-battery"
+          },
+          {
+            "id": "customer-support",
+            "title": "Customer Support",
+            "permalink": "/docs/customer-support"
+          },
+          {
+            "id": "customer-support-faq",
+            "title": "Customer Support FAQ",
+            "permalink": "/docs/customer-support-faq"
+          },
+          {
+            "id": "data-privacy",
+            "title": "Data Privacy",
+            "permalink": "/docs/data-privacy"
+          },
+          {
+            "id": "firmware-updates",
+            "title": "Firmware Updates",
+            "permalink": "/docs/firmware-updates"
+          },
+          {
+            "id": "ios-development",
+            "title": "iOS Development",
+            "permalink": "/docs/ios-development"
+          },
+          {
+            "id": "issue-reporting",
+            "title": "Issue Reporting",
+            "permalink": "/docs/issue-reporting"
+          },
+          {
+            "id": "legal-disclaimers",
+            "title": "Legal Disclaimers",
+            "permalink": "/docs/legal-disclaimers"
+          },
+          {
+            "id": "power-budgeting",
+            "title": "Power Budgeting",
+            "permalink": "/docs/power-budgeting"
+          },
+          {
+            "id": "product-compatibility",
+            "title": "Product Compatibility",
+            "permalink": "/docs/product-compatibility"
+          },
+          {
+            "id": "product-documentation",
+            "title": "Product Documentation",
+            "permalink": "/docs/product-documentation"
+          },
+          {
+            "id": "product-features",
+            "title": "Product Features",
+            "permalink": "/docs/product-features"
+          },
+          {
+            "id": "product-roadmap",
+            "title": "Product Roadmap",
+            "permalink": "/docs/product-roadmap"
+          },
+          {
+            "id": "product-safety",
+            "title": "Product Safety",
+            "permalink": "/docs/product-safety"
+          },
+          {
+            "id": "product-specifications",
+            "title": "Product Specifications",
+            "permalink": "/docs/product-specifications"
+          },
+          {
+            "id": "sensor-technology",
+            "title": "Sensor Technology",
+            "permalink": "/docs/sensor-technology"
+          },
+          {
+            "id": "teabuddy",
+            "title": "TeaBuddy",
+            "permalink": "/docs/teabuddy"
+          }
+        ],
+        "aurora-labs": [
+          {
+            "id": "battery-technology",
+            "title": "Battery Technology",
+            "permalink": "/docs/battery-technology"
+          },
+          {
+            "id": "branding-strategy",
+            "title": "Branding Strategy",
+            "permalink": "/docs/branding-strategy"
+          },
+          {
+            "id": "bug-tracking",
+            "title": "Bug Tracking",
+            "permalink": "/docs/bug-tracking"
+          },
+          {
+            "id": "competitive-analysis",
+            "title": "Competitive Analysis",
+            "permalink": "/docs/competitive-analysis"
+          },
+          {
+            "id": "data-schema",
+            "title": "Data Schema",
+            "permalink": "/docs/data-schema"
+          },
+          {
+            "id": "documentation",
+            "title": "Documentation",
+            "permalink": "/docs/documentation"
+          },
+          {
+            "id": "firmware-updates",
+            "title": "Firmware Updates",
+            "permalink": "/docs/firmware-updates"
+          },
+          {
+            "id": "garden-sensors",
+            "title": "Garden Sensors",
+            "permalink": "/docs/garden-sensors"
+          },
+          {
+            "id": "hardware-specification",
+            "title": "Hardware Specification",
+            "permalink": "/docs/hardware-specification"
+          },
+          {
+            "id": "home-assistant-integration",
+            "title": "Home Assistant Integration",
+            "permalink": "/docs/home-assistant-integration"
+          },
+          {
+            "id": "internal-reporting",
+            "title": "Internal Reporting",
+            "permalink": "/docs/internal-reporting"
+          },
+          {
+            "id": "investor-relations",
+            "title": "Investor Relations",
+            "permalink": "/docs/investor-relations"
+          },
+          {
+            "id": "issue-reporting",
+            "title": "Issue Reporting",
+            "permalink": "/docs/issue-reporting"
+          },
+          {
+            "id": "market-research",
+            "title": "Market Research",
+            "permalink": "/docs/market-research"
+          },
+          {
+            "id": "nova-widget",
+            "title": "Nova Widget",
+            "permalink": "/docs/nova-widget"
+          },
+          {
+            "id": "product-comparison",
+            "title": "Product Comparison",
+            "permalink": "/docs/product-comparison"
+          },
+          {
+            "id": "product-design",
+            "title": "Product Design",
+            "permalink": "/docs/product-design"
+          },
+          {
+            "id": "product-documentation",
+            "title": "Product Documentation",
+            "permalink": "/docs/product-documentation"
+          },
+          {
+            "id": "product-features",
+            "title": "Product Features",
+            "permalink": "/docs/product-features"
+          },
+          {
+            "id": "product-specification",
+            "title": "Product Specification",
+            "permalink": "/docs/product-specification"
+          },
+          {
+            "id": "product-specifications",
+            "title": "Product Specifications",
+            "permalink": "/docs/product-specifications"
+          },
+          {
+            "id": "project-management",
+            "title": "Project Management",
+            "permalink": "/docs/project-management"
+          },
+          {
+            "id": "release-notes",
+            "title": "Release Notes",
+            "permalink": "/docs/release-notes"
+          },
+          {
+            "id": "sensor-products",
+            "title": "Sensor Products",
+            "permalink": "/docs/sensor-products"
+          },
+          {
+            "id": "sensor-technology",
+            "title": "Sensor Technology",
+            "permalink": "/docs/sensor-technology"
+          },
+          {
+            "id": "startup-kickoff",
+            "title": "Startup Kickoff",
+            "permalink": "/docs/startup-kickoff"
+          },
+          {
+            "id": "technical-specifications",
+            "title": "Technical Specifications",
+            "permalink": "/docs/technical-specifications"
+          },
+          {
+            "id": "trademark-law",
+            "title": "Trademark Law",
+            "permalink": "/docs/trademark-law"
+          },
+          {
+            "id": "wireless-communication",
+            "title": "Wireless Communication",
+            "permalink": "/docs/wireless-communication"
+          }
+        ],
+        "bluetooth-low-energy-ble": [
+          {
+            "id": "battery-technology",
+            "title": "Battery Technology",
+            "permalink": "/docs/battery-technology"
+          },
+          {
+            "id": "product-design",
+            "title": "Product Design",
+            "permalink": "/docs/product-design"
+          },
+          {
+            "id": "startup-kickoff",
+            "title": "Startup Kickoff",
+            "permalink": "/docs/startup-kickoff"
+          }
+        ],
+        "ios-18": [
+          {
+            "id": "bluetooth-low-energy-ble",
+            "title": "Bluetooth Low Energy (BLE)",
+            "permalink": "/docs/bluetooth-low-energy-ble"
+          },
+          {
+            "id": "mobile-app-development",
+            "title": "Mobile App Development",
+            "permalink": "/docs/mobile-app-development"
+          },
+          {
+            "id": "software-updates",
+            "title": "Software Updates",
+            "permalink": "/docs/software-updates"
+          }
+        ],
+        "firmware": [
+          {
+            "id": "bluetooth-low-energy-ble",
+            "title": "Bluetooth Low Energy (BLE)",
+            "permalink": "/docs/bluetooth-low-energy-ble"
+          },
+          {
+            "id": "ios-development",
+            "title": "iOS Development",
+            "permalink": "/docs/ios-development"
+          },
+          {
+            "id": "issue-reporting",
+            "title": "Issue Reporting",
+            "permalink": "/docs/issue-reporting"
+          },
+          {
+            "id": "legal-disclaimers",
+            "title": "Legal Disclaimers",
+            "permalink": "/docs/legal-disclaimers"
+          },
+          {
+            "id": "product-documentation",
+            "title": "Product Documentation",
+            "permalink": "/docs/product-documentation"
+          },
+          {
+            "id": "release-notes",
+            "title": "Release Notes",
+            "permalink": "/docs/release-notes"
+          },
+          {
+            "id": "teabuddy",
+            "title": "TeaBuddy",
+            "permalink": "/docs/teabuddy"
+          }
+        ],
+        "product-naming": [
+          {
+            "id": "branding-strategy",
+            "title": "Branding Strategy",
+            "permalink": "/docs/branding-strategy"
+          }
+        ],
+        "product-design": [
+          {
+            "id": "branding-strategy",
+            "title": "Branding Strategy",
+            "permalink": "/docs/branding-strategy"
+          }
+        ],
+        "nova-widget": [
+          {
+            "id": "branding-strategy",
+            "title": "Branding Strategy",
+            "permalink": "/docs/branding-strategy"
+          },
+          {
+            "id": "competitive-analysis",
+            "title": "Competitive Analysis",
+            "permalink": "/docs/competitive-analysis"
+          },
+          {
+            "id": "data-ingestion",
+            "title": "Data Ingestion",
+            "permalink": "/docs/data-ingestion"
+          },
+          {
+            "id": "data-schema",
+            "title": "Data Schema",
+            "permalink": "/docs/data-schema"
+          },
+          {
+            "id": "electrical-design",
+            "title": "Electrical Design",
+            "permalink": "/docs/electrical-design"
+          },
+          {
+            "id": "grocery-list",
+            "title": "Grocery List",
+            "permalink": "/docs/grocery-list"
+          },
+          {
+            "id": "hardware-engineering",
+            "title": "Hardware Engineering",
+            "permalink": "/docs/hardware-engineering"
+          },
+          {
+            "id": "heuristic-mode",
+            "title": "Heuristic Mode",
+            "permalink": "/docs/heuristic-mode"
+          },
+          {
+            "id": "investor-relations",
+            "title": "Investor Relations",
+            "permalink": "/docs/investor-relations"
+          },
+          {
+            "id": "iot-sensors",
+            "title": "IoT Sensors",
+            "permalink": "/docs/iot-sensors"
+          },
+          {
+            "id": "kickoff-meeting",
+            "title": "Kickoff Meeting",
+            "permalink": "/docs/kickoff-meeting"
+          },
+          {
+            "id": "llm-wiki-pipeline",
+            "title": "LLM Wiki Pipeline",
+            "permalink": "/docs/llm-wiki-pipeline"
+          },
+          {
+            "id": "local-first-iot",
+            "title": "Local-first IoT",
+            "permalink": "/docs/local-first-iot"
+          },
+          {
+            "id": "markdown-export-issues",
+            "title": "Markdown Export Issues",
+            "permalink": "/docs/markdown-export-issues"
+          },
+          {
+            "id": "mobile-app-development",
+            "title": "Mobile App Development",
+            "permalink": "/docs/mobile-app-development"
+          },
+          {
+            "id": "product-design",
+            "title": "Product Design",
+            "permalink": "/docs/product-design"
+          },
+          {
+            "id": "product-evaluation",
+            "title": "Product Evaluation",
+            "permalink": "/docs/product-evaluation"
+          },
+          {
+            "id": "product-troubleshooting",
+            "title": "Product Troubleshooting",
+            "permalink": "/docs/product-troubleshooting"
+          },
+          {
+            "id": "project-management",
+            "title": "Project Management",
+            "permalink": "/docs/project-management"
+          },
+          {
+            "id": "release-notes",
+            "title": "Release Notes",
+            "permalink": "/docs/release-notes"
+          },
+          {
+            "id": "software-updates",
+            "title": "Software Updates",
+            "permalink": "/docs/software-updates"
+          },
+          {
+            "id": "startup-kickoff",
+            "title": "Startup Kickoff",
+            "permalink": "/docs/startup-kickoff"
+          },
+          {
+            "id": "system-design",
+            "title": "System Design",
+            "permalink": "/docs/system-design"
+          },
+          {
+            "id": "technical-specifications",
+            "title": "Technical Specifications",
+            "permalink": "/docs/technical-specifications"
+          },
+          {
+            "id": "training",
+            "title": "Training",
+            "permalink": "/docs/training"
+          },
+          {
+            "id": "wiki-compiler",
+            "title": "Wiki Compiler",
+            "permalink": "/docs/wiki-compiler"
+          },
+          {
+            "id": "wiki-migration",
+            "title": "Wiki Migration",
+            "permalink": "/docs/wiki-migration"
+          },
+          {
+            "id": "wireless-communication",
+            "title": "Wireless Communication",
+            "permalink": "/docs/wireless-communication"
+          },
+          {
+            "id": "wireless-communication-protocols",
+            "title": "Wireless Communication Protocols",
+            "permalink": "/docs/wireless-communication-protocols"
+          }
+        ],
+        "github-issues": [
+          {
+            "id": "bug-tracking",
+            "title": "Bug Tracking",
+            "permalink": "/docs/bug-tracking"
+          }
+        ],
+        "software-releases": [
+          {
+            "id": "bug-tracking",
+            "title": "Bug Tracking",
+            "permalink": "/docs/bug-tracking"
+          }
+        ],
+        "quality-assurance": [
+          {
+            "id": "bug-tracking",
+            "title": "Bug Tracking",
+            "permalink": "/docs/bug-tracking"
+          }
+        ],
+        "lorawan": [
+          {
+            "id": "competitive-analysis",
+            "title": "Competitive Analysis",
+            "permalink": "/docs/competitive-analysis"
+          },
+          {
+            "id": "garden-sensors",
+            "title": "Garden Sensors",
+            "permalink": "/docs/garden-sensors"
+          },
+          {
+            "id": "product-comparison",
+            "title": "Product Comparison",
+            "permalink": "/docs/product-comparison"
+          },
+          {
+            "id": "sensor-networks",
+            "title": "Sensor Networks",
+            "permalink": "/docs/sensor-networks"
+          },
+          {
+            "id": "sensor-technology",
+            "title": "Sensor Technology",
+            "permalink": "/docs/sensor-technology"
+          },
+          {
+            "id": "wireless-communication",
+            "title": "Wireless Communication",
+            "permalink": "/docs/wireless-communication"
+          }
+        ],
+        "battery-specifications": [
+          {
+            "id": "customer-support",
+            "title": "Customer Support",
+            "permalink": "/docs/customer-support"
+          },
+          {
+            "id": "product-documentation",
+            "title": "Product Documentation",
+            "permalink": "/docs/product-documentation"
+          },
+          {
+            "id": "software-updates",
+            "title": "Software Updates",
+            "permalink": "/docs/software-updates"
+          }
+        ],
+        "firmware-updates": [
+          {
+            "id": "customer-support",
+            "title": "Customer Support",
+            "permalink": "/docs/customer-support"
+          },
+          {
+            "id": "product-troubleshooting",
+            "title": "Product Troubleshooting",
+            "permalink": "/docs/product-troubleshooting"
+          }
+        ],
+        "llm-wiki-pipeline": [
+          {
+            "id": "data-ingestion",
+            "title": "Data Ingestion",
+            "permalink": "/docs/data-ingestion"
+          }
+        ],
+        "heuristic-mode": [
+          {
+            "id": "data-ingestion",
+            "title": "Data Ingestion",
+            "permalink": "/docs/data-ingestion"
+          },
+          {
+            "id": "llm-wiki-pipeline",
+            "title": "LLM Wiki Pipeline",
+            "permalink": "/docs/llm-wiki-pipeline"
+          }
+        ],
+        "wiki-compiler": [
+          {
+            "id": "data-ingestion",
+            "title": "Data Ingestion",
+            "permalink": "/docs/data-ingestion"
+          },
+          {
+            "id": "heuristic-mode",
+            "title": "Heuristic Mode",
+            "permalink": "/docs/heuristic-mode"
+          },
+          {
+            "id": "investor-relations",
+            "title": "Investor Relations",
+            "permalink": "/docs/investor-relations"
+          },
+          {
+            "id": "llm-wiki-pipeline",
+            "title": "LLM Wiki Pipeline",
+            "permalink": "/docs/llm-wiki-pipeline"
+          }
+        ],
+        "confidentiality": [
+          {
+            "id": "data-privacy",
+            "title": "Data Privacy",
+            "permalink": "/docs/data-privacy"
+          },
+          {
+            "id": "product-safety",
+            "title": "Product Safety",
+            "permalink": "/docs/product-safety"
+          }
+        ],
+        "mqtt": [
+          {
+            "id": "data-privacy",
+            "title": "Data Privacy",
+            "permalink": "/docs/data-privacy"
+          },
+          {
+            "id": "data-schema",
+            "title": "Data Schema",
+            "permalink": "/docs/data-schema"
+          },
+          {
+            "id": "garden-sensors",
+            "title": "Garden Sensors",
+            "permalink": "/docs/garden-sensors"
+          },
+          {
+            "id": "hacker-news",
+            "title": "Hacker News",
+            "permalink": "/docs/hacker-news"
+          },
+          {
+            "id": "hardware-specification",
+            "title": "Hardware Specification",
+            "permalink": "/docs/hardware-specification"
+          },
+          {
+            "id": "home-assistant-integration",
+            "title": "Home Assistant Integration",
+            "permalink": "/docs/home-assistant-integration"
+          },
+          {
+            "id": "iot-sensors",
+            "title": "IoT Sensors",
+            "permalink": "/docs/iot-sensors"
+          },
+          {
+            "id": "mesh-networking",
+            "title": "Mesh Networking",
+            "permalink": "/docs/mesh-networking"
+          },
+          {
+            "id": "nova-widget",
+            "title": "Nova Widget",
+            "permalink": "/docs/nova-widget"
+          },
+          {
+            "id": "product-comparison",
+            "title": "Product Comparison",
+            "permalink": "/docs/product-comparison"
+          },
+          {
+            "id": "product-design",
+            "title": "Product Design",
+            "permalink": "/docs/product-design"
+          },
+          {
+            "id": "product-specification",
+            "title": "Product Specification",
+            "permalink": "/docs/product-specification"
+          },
+          {
+            "id": "product-support",
+            "title": "Product Support",
+            "permalink": "/docs/product-support"
+          },
+          {
+            "id": "project-management",
+            "title": "Project Management",
+            "permalink": "/docs/project-management"
+          },
+          {
+            "id": "release-notes",
+            "title": "Release Notes",
+            "permalink": "/docs/release-notes"
+          },
+          {
+            "id": "startup-kickoff",
+            "title": "Startup Kickoff",
+            "permalink": "/docs/startup-kickoff"
+          },
+          {
+            "id": "wireless-communication",
+            "title": "Wireless Communication",
+            "permalink": "/docs/wireless-communication"
+          }
+        ],
+        "home-assistant": [
+          {
+            "id": "data-schema",
+            "title": "Data Schema",
+            "permalink": "/docs/data-schema"
+          },
+          {
+            "id": "nova-widget",
+            "title": "Nova Widget",
+            "permalink": "/docs/nova-widget"
+          },
+          {
+            "id": "product-support",
+            "title": "Product Support",
+            "permalink": "/docs/product-support"
+          }
+        ],
+        "mqtt-export": [
+          {
+            "id": "data-schema",
+            "title": "Data Schema",
+            "permalink": "/docs/data-schema"
+          },
+          {
+            "id": "legal-disclaimers",
+            "title": "Legal Disclaimers",
+            "permalink": "/docs/legal-disclaimers"
+          },
+          {
+            "id": "product-safety",
+            "title": "Product Safety",
+            "permalink": "/docs/product-safety"
+          }
+        ],
+        "beta-testing": [
+          {
+            "id": "documentation",
+            "title": "Documentation",
+            "permalink": "/docs/documentation"
+          },
+          {
+            "id": "hardware-engineering",
+            "title": "Hardware Engineering",
+            "permalink": "/docs/hardware-engineering"
+          },
+          {
+            "id": "investor-relations",
+            "title": "Investor Relations",
+            "permalink": "/docs/investor-relations"
+          },
+          {
+            "id": "issue-reporting",
+            "title": "Issue Reporting",
+            "permalink": "/docs/issue-reporting"
+          },
+          {
+            "id": "legal-disclaimers",
+            "title": "Legal Disclaimers",
+            "permalink": "/docs/legal-disclaimers"
+          },
+          {
+            "id": "product-compatibility",
+            "title": "Product Compatibility",
+            "permalink": "/docs/product-compatibility"
+          },
+          {
+            "id": "project-management",
+            "title": "Project Management",
+            "permalink": "/docs/project-management"
+          }
+        ],
+        "ota-updates": [
+          {
+            "id": "firmware-updates",
+            "title": "Firmware Updates",
+            "permalink": "/docs/firmware-updates"
+          },
+          {
+            "id": "hardware-specification",
+            "title": "Hardware Specification",
+            "permalink": "/docs/hardware-specification"
+          },
+          {
+            "id": "mesh-networking",
+            "title": "Mesh Networking",
+            "permalink": "/docs/mesh-networking"
+          },
+          {
+            "id": "nova-widget",
+            "title": "Nova Widget",
+            "permalink": "/docs/nova-widget"
+          },
+          {
+            "id": "product-specification",
+            "title": "Product Specification",
+            "permalink": "/docs/product-specification"
+          }
+        ],
+        "support-tickets": [
+          {
+            "id": "firmware-updates",
+            "title": "Firmware Updates",
+            "permalink": "/docs/firmware-updates"
+          }
+        ],
+        "competitive-analysis": [
+          {
+            "id": "internal-reporting",
+            "title": "Internal Reporting",
+            "permalink": "/docs/internal-reporting"
+          },
+          {
+            "id": "sensor-technology",
+            "title": "Sensor Technology",
+            "permalink": "/docs/sensor-technology"
+          }
+        ],
+        "product-specifications": [
+          {
+            "id": "internal-reporting",
+            "title": "Internal Reporting",
+            "permalink": "/docs/internal-reporting"
+          }
+        ],
+        "co-marketing": [
+          {
+            "id": "investor-relations",
+            "title": "Investor Relations",
+            "permalink": "/docs/investor-relations"
+          },
+          {
+            "id": "product-features",
+            "title": "Product Features",
+            "permalink": "/docs/product-features"
+          }
+        ],
+        "maker-faire": [
+          {
+            "id": "investor-relations",
+            "title": "Investor Relations",
+            "permalink": "/docs/investor-relations"
+          }
+        ],
+        "power-management": [
+          {
+            "id": "iot-sensors",
+            "title": "IoT Sensors",
+            "permalink": "/docs/iot-sensors"
+          }
+        ],
+        "data-ownership": [
+          {
+            "id": "kickoff-meeting",
+            "title": "Kickoff Meeting",
+            "permalink": "/docs/kickoff-meeting"
+          },
+          {
+            "id": "network-engineering",
+            "title": "Network Engineering",
+            "permalink": "/docs/network-engineering"
+          },
+          {
+            "id": "product-design",
+            "title": "Product Design",
+            "permalink": "/docs/product-design"
+          },
+          {
+            "id": "startup-kickoff",
+            "title": "Startup Kickoff",
+            "permalink": "/docs/startup-kickoff"
+          },
+          {
+            "id": "technical-specifications",
+            "title": "Technical Specifications",
+            "permalink": "/docs/technical-specifications"
+          }
+        ],
+        "product-safety": [
+          {
+            "id": "legal-disclaimers",
+            "title": "Legal Disclaimers",
+            "permalink": "/docs/legal-disclaimers"
+          }
+        ],
+        "knowledge-management": [
+          {
+            "id": "llm-applications",
+            "title": "LLM Applications",
+            "permalink": "/docs/llm-applications"
+          }
+        ],
+        "wiki-automation": [
+          {
+            "id": "llm-applications",
+            "title": "LLM Applications",
+            "permalink": "/docs/llm-applications"
+          }
+        ],
+        "garden-sensors": [
+          {
+            "id": "local-first-iot",
+            "title": "Local-first IoT",
+            "permalink": "/docs/local-first-iot"
+          },
+          {
+            "id": "product-comparison",
+            "title": "Product Comparison",
+            "permalink": "/docs/product-comparison"
+          }
+        ],
+        "power-consumption": [
+          {
+            "id": "lorawan",
+            "title": "LoRaWAN",
+            "permalink": "/docs/lorawan"
+          },
+          {
+            "id": "network-engineering",
+            "title": "Network Engineering",
+            "permalink": "/docs/network-engineering"
+          },
+          {
+            "id": "power-budgeting",
+            "title": "Power Budgeting",
+            "permalink": "/docs/power-budgeting"
+          },
+          {
+            "id": "wireless-communication",
+            "title": "Wireless Communication",
+            "permalink": "/docs/wireless-communication"
+          }
+        ],
+        "notion-export": [
+          {
+            "id": "markdown-export-issues",
+            "title": "Markdown Export Issues",
+            "permalink": "/docs/markdown-export-issues"
+          },
+          {
+            "id": "wiki-migration",
+            "title": "Wiki Migration",
+            "permalink": "/docs/wiki-migration"
+          }
+        ],
+        "iot-sensors": [
+          {
+            "id": "mesh-networking",
+            "title": "Mesh Networking",
+            "permalink": "/docs/mesh-networking"
+          },
+          {
+            "id": "technical-specifications",
+            "title": "Technical Specifications",
+            "permalink": "/docs/technical-specifications"
+          }
+        ],
+        "sensor-networks": [
+          {
+            "id": "product-compatibility",
+            "title": "Product Compatibility",
+            "permalink": "/docs/product-compatibility"
+          },
+          {
+            "id": "wireless-communication",
+            "title": "Wireless Communication",
+            "permalink": "/docs/wireless-communication"
+          }
+        ],
+        "local-first-gadgets": [
+          {
+            "id": "product-design",
+            "title": "Product Design",
+            "permalink": "/docs/product-design"
+          }
+        ],
+        "backlog-grooming": [
+          {
+            "id": "product-management",
+            "title": "Product Management",
+            "permalink": "/docs/product-management"
+          },
+          {
+            "id": "project-management",
+            "title": "Project Management",
+            "permalink": "/docs/project-management"
+          }
+        ],
+        "documentation": [
+          {
+            "id": "project-management",
+            "title": "Project Management",
+            "permalink": "/docs/project-management"
+          }
+        ],
+        "known-issues": [
+          {
+            "id": "release-notes",
+            "title": "Release Notes",
+            "permalink": "/docs/release-notes"
+          }
+        ],
+        "local-first-iot": [
+          {
+            "id": "wireless-communication-protocols",
+            "title": "Wireless Communication Protocols",
+            "permalink": "/docs/wireless-communication-protocols"
+          }
+        ]
+      }
+    }
+  }
+}

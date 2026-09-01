@@ -5,79 +5,58 @@ tags:
   - aurora
   - auto-ingest
   - ble
-  - ceos
-  - contradiction-marker
   - cr2032
-  - docusaurus
-  - docusaurus-graph-plugin
-last_updated: "2026-06-25T08:05:02.458818+00:00"
+  - graph-diff
+  - jonah
+  - karpathy
+  - llm-faq-summarization
+last_updated: "2026-09-01T19:21:59.765942+00:00"
 sidebar_label: Wiki Automation
 slug: /wiki-automation
 ---
+
+<!-- AUTO-GENERATED — compiled by the LLM Wiki compiler from data/raw/ sources into compiler/temp_output/, then linked here. Edits to this file are overwritten on the next compile: edit sources under data/raw/, or manual cross-links in data/link_overrides.json, instead. -->
 
 # Wiki Automation
 
 ## Overview
 
-Wiki automation refers to the implementation of tools and processes designed to streamline the creation, maintenance, and enhancement of wiki content. This includes automating tasks such as content ingestion, quality control, summarization, and cross-referencing, aiming to improve efficiency, accuracy, and user experience. Various ideas have been proposed, ranging from pre-commit hooks for content validation to leveraging Large Language Models (LLMs) for content generation and summarization.
+The Wiki Automation initiative encompasses a collection of ideas, cross-product standardization goals, and architectural references aimed at streamlining [Documentation](./documentation.md) maintenance, ingestion, and cross-functional terminology. Inspired by the Karpathy LLM wiki pattern and Docusaurus graph plugins, the project seeks to leverage automation tools, linters, and LLMs to keep knowledge bases synchronized and clean.
 
 ## Key Details
 
-### Proposed Automation Ideas
+The automation roadmap includes several core functional components and cross-product initiatives:
 
-Several specific automation ideas have been suggested to improve wiki management:
-
-*   **Pre-commit Hook for Contradiction Markers**: Implement a pre-commit hook that greps raw wiki files for a `CONTRADICTION` marker, helping to identify and address conflicting information before it's committed.
-*   **Automated Slack Export Ingestion**: Develop a system to automatically ingest Slack exports from designated folders (e.g., `dummy-test/`) into the wiki, converting conversational data into structured content.
-*   **Graph Diff for New Entities**: Generate a graph difference between wiki compiles to visually highlight and track newly introduced entities, aiding in content discovery and organization.
-*   **LLM Summarization for FAQ Pages**: Utilize Large Language Models (LLMs) to summarize support tickets and similar communications, transforming them into concise FAQ pages.
-*   **Orphan Page Linter**: Implement a linter to identify "orphan pages" (pages not linked from any other page), which is already noted on backlog #1.
+* **Pre-commit Hook:** Automatically greps raw files for any `CONTRADICTION` markers to catch discrepancies before they are committed.
+* **Auto-Ingest:** Automatically processes and ingests Slack exports from the `dummy-test/` folder.
+* **Graph Diff:** Computes graph differences between compiles to highlight newly introduced entities.
+* **LLM FAQ Summarization:** Uses Large Language Models to summarize support tickets directly into FAQ pages.
+* **Orphan Page Linter:** A maintenance tool already prioritized on the backlog as item #1.
 
 ### Cross-Product Initiatives
+* **Shared Glossary:** Establishes common definitions for terms such as `CR2032`, [BLE](./ble.md), MeshSync, and `steep preset`.
+* **Unified Manifesto:** Creates a unified "local-first manifesto" page combining quotes from [Aurora Labs](./aurora-labs.md) and [TeaBuddy](./teabuddy.md).
 
-Automation efforts also extend to fostering consistency and collaboration across different products:
-
-*   **Shared Glossary**: Create a unified glossary for common terms and components such as CR2032, BLE, MeshSync, and "steep preset," ensuring consistent definitions across documentation.
-*   **Unified "Local-First Manifesto" Page**: Develop a single, comprehensive page detailing the "local-first manifesto," incorporating quotes and perspectives from products like Aurora and TeaBuddy.
-
-### Rejected Initiatives
-
-Not all automation ideas proceed; some are explicitly rejected:
-
-*   **Single App for Both Products**: The idea of developing a single application to serve both products was rejected by the CEOs.
-*   **Mesh Tea Timer**: A proposal for a "mesh tea timer" was explicitly rejected by Jonah.
-
-### References and Inspirations
-
-Key inspirations and reference points for wiki automation include:
-
-*   **Karpathy LLM Wiki Pattern**: The patterns and approaches used by Karpathy for LLM-driven wiki content.
-*   **Docusaurus Graph Plugin**: The capabilities of the Docusaurus graph plugin for visualizing relationships and structures within wiki content.
+### Rejected Ideas
+* **Single App:** Merging both products into a single application was rejected after the CEOs said no.
+* **Mesh Tea Timer:** The concept of a mesh tea timer was explicitly vetoed by Jonah, who stated "absolutely not."
 
 ## Related Entities
 
-*   Aurora (product)
-*   TeaBuddy (product, implied)
-*   CEOs (decision-makers)
-*   Jonah (decision-maker)
-*   Karpathy (influencer/researcher)
+* **Aurora:** Product associated with the local-first manifesto and cross-product documentation.
+* **TeaBuddy:** Product associated with the local-first manifesto.
+* **Jonah:** Leadership figure who vetoed the mesh tea timer project.
 
 ## Related Concepts
 
-*   Pre-commit hooks
-*   Large Language Models (LLM)
-*   Graph databases/visualization
-*   Local-first manifesto
-*   Content ingestion
-*   FAQ generation
-*   Orphan page detection
-*   Shared glossaries
-*   Docusaurus (wiki framework)
+* **Auto-ingest:** Automated pipeline for bringing external data (such as Slack exports) into the wiki ecosystem.
+* **Graph Diff:** Visualization and tracking of entity relationships changing between compilation cycles.
+* **LLM FAQ Summarization:** Automated conversion of raw support ticket text into structured knowledge base articles.
+* **Local-first Manifesto:** A philosophical statement combining quotes from multiple product lines.
+* **[Hardware](./hardware.md) & Technical Terms:** Standardized terminology including CR2032 batteries, [BLE](./ble.md) ([Bluetooth Low Energy](./bluetooth-low-energy.md)), MeshSync, and steep presets.
 
-## Contradictions
+## References & Trust
 
-No direct contradictions in factual information regarding wiki automation were identified in the provided source material. The "rejected" items represent discarded proposals rather than conflicting facts about the automation process itself.
-
-## Sources
-
-*   `samples/ideas/[SAMPLE]-2026-07-04-wiki-automation-ideas.txt`
+| # | Source | Type | Trust |
+|---|--------|------|-------|
+| 1 | `samples/ideas/[SAMPLE]-2026-07-04-wiki-automation-ideas.txt` | text | Unverified |

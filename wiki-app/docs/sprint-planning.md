@@ -3,75 +3,59 @@ id: sprint-planning
 title: Sprint Planning
 tags:
   - aurora-labs
-  - co-marketing
-  - contradiction-linter
-  - investor-demo
+  - backlog-grooming
   - jonah
-  - mesh-network
-  - meshsink
   - meshsync
-last_updated: "2026-06-25T08:00:03.476635+00:00"
+  - mira
+  - sensenode-sn-400
+  - sprint-goal
+  - sprint-planning
+last_updated: "2026-09-01T19:21:37.693635+00:00"
 sidebar_label: Sprint Planning
 slug: /sprint-planning
 ---
 
-```markdown
+<!-- AUTO-GENERATED — compiled by the LLM Wiki compiler from data/raw/ sources into compiler/temp_output/, then linked here. Edits to this file are overwritten on the next compile: edit sources under data/raw/, or manual cross-links in data/link_overrides.json, instead. -->
+
 # Sprint Planning
 
 ## Overview
-
-Sprint Planning is a crucial event in agile development methodologies, typically conducted at the beginning of a sprint. It involves the development team, product owner, and scrum master collaborating to define the sprint goal and select the product backlog items they will work on during the sprint. The planning session for Aurora Labs' Sprint 15, held on July 10, focused on stabilizing their 8-node mesh network and publishing a power budget.
+This wiki page details the Sprint 15 planning session for [Aurora Labs](./aurora-labs.md), held on July 10, 2026. The primary focus of the sprint centers around stabilizing an 8-node mesh network and publishing an official [Power Budget](./power-budget.md).
 
 ## Key Details
-
-The Sprint 15 planning session for Aurora Labs on July 10 outlined the following:
-
-### Sprint Goal
-*   Stabilize the 8-node mesh network.
-*   Publish the power budget.
-
-### Committed Tasks
-*   **Mira**: Conduct rejoin spike profiling on the nRF5340 evaluation board.
-*   **Jonah**: Update the comparison page, specifically against the SenseNode SN-400.
-*   **Intern**: Fix the CSS selector for the forum scrape tool.
-
-### Stretch Goals
-*   Develop an MQTT export CSV sample.
-*   Create an Over-The-Air (OTA) update design document (implementation is not part of this sprint).
-
-### Carried Over Tasks
-*   Implement a contradiction linter specifically for battery claims.
-*   Refresh the `index.md` file in preparation for an upcoming investor demo.
-
-### Parking Lot Items
-*   **TeaBuddy Co-marketing**: This initiative is to be revisited in August.
-*   **Rename MeshSync to MeshSink**: This proposal was rejected for the fifth time.
+* **Sprint Goal:** Stabilize 8-node mesh + publish power budget
+* **Committed Items:**
+  * **[Mira](./aurora-labs.md):** Rejoin spike profiling on the nRF5340 eval board.
+  * **Jonah:** Comparison page update versus the [SenseNode SN-400](./sensenode-sn-400.md).
+  * **Intern:** Fix forum scrape CSS selector.
+* **Stretch Items:**
+  * [MQTT Export](./mqtt-export.md) CSV sample.
+  * OTA update design [Documentation](./documentation.md) (design only, no implementation).
+* **Carried Over Items:**
+  * Contradiction linter for battery claims.
+  * `index.md` refresh ahead of the upcoming investor demo.
+* **Parking Lot:**
+  * [TeaBuddy](./teabuddy.md) co-marketing (scheduled to be revisited in August).
+  * Proposal to rename MeshSync to MeshSink (rejected for the 5th time).
 
 ## Related Entities
-
-*   **Aurora Labs**: The company conducting the sprint planning.
-*   **Mira**: An individual assigned a task related to nRF5340 evaluation.
-*   **Jonah**: An individual assigned a task related to comparison page updates.
-*   **SenseNode SN-400**: A product or competitor against which a comparison page is being updated.
-*   **TeaBuddy**: An entity involved in a potential co-marketing effort.
+* **Aurora Labs**
+* **Mira**
+* **Jonah**
+* **SenseNode SN-400**
+* **TeaBuddy**
 
 ## Related Concepts
-
-*   **Mesh Network**: A network topology where each node relays data for the network. The sprint goal includes stabilizing an 8-node mesh.
-*   **Power Budget**: A detailed plan for power consumption, a key deliverable for the sprint.
-*   **nRF5340 Eval Board**: A development board used for profiling.
-*   **MQTT**: A lightweight messaging protocol, a stretch goal involves an MQTT export CSV sample.
-*   **OTA Update**: Over-The-Air update, a design document for which is a stretch goal.
-*   **Contradiction Linter**: A tool or process to identify conflicting statements, particularly for battery claims.
-*   **Investor Demo**: A presentation to potential investors, requiring an `index.md` refresh.
-*   **Co-marketing**: A collaborative marketing effort, specifically with TeaBuddy.
-*   **MeshSync / MeshSink**: Names related to a system or product, with a proposed renaming rejected.
+* **Mesh Network / MeshSync**
+* **Power Budget**
+* **OTA Update**
+* **Investor Demo**
 
 ## Contradictions
+*(No direct contradictions reported in this sprint planning session.)*
 
-No direct contradictions were identified within the provided sprint planning notes. The rejection of the "Rename MeshSync → MeshSink" proposal indicates a decision made, not a contradiction of facts.
+## References & Trust
 
-## Sources
-
-*   `samples/notes/[SAMPLE]-2026-07-10-sprint-planning-aurora.txt`
-```
+| # | Source | Type | Trust |
+|---|--------|------|-------|
+| 1 | `samples/notes/[SAMPLE]-2026-07-10-sprint-planning-aurora.txt` | text | Unverified |

@@ -1,0 +1,80 @@
+{
+  "id": "personal-notes",
+  "title": "Personal Notes",
+  "description": "Overview",
+  "source": "@site/docs/personal-notes.md",
+  "sourceDirName": ".",
+  "slug": "/personal-notes",
+  "permalink": "/docs/personal-notes",
+  "draft": false,
+  "unlisted": false,
+  "tags": [
+    {
+      "inline": true,
+      "label": "dentist",
+      "permalink": "/docs/tags/dentist"
+    },
+    {
+      "inline": true,
+      "label": "enclosure-design",
+      "permalink": "/docs/tags/enclosure-design"
+    },
+    {
+      "inline": true,
+      "label": "karpathy",
+      "permalink": "/docs/tags/karpathy"
+    },
+    {
+      "inline": true,
+      "label": "llm-wiki-pattern",
+      "permalink": "/docs/tags/llm-wiki-pattern"
+    },
+    {
+      "inline": true,
+      "label": "nova-prototypes",
+      "permalink": "/docs/tags/nova-prototypes"
+    },
+    {
+      "inline": true,
+      "label": "nova-widget",
+      "permalink": "/docs/tags/nova-widget"
+    },
+    {
+      "inline": true,
+      "label": "personal-notes",
+      "permalink": "/docs/tags/personal-notes"
+    },
+    {
+      "inline": true,
+      "label": "plant-whisperer",
+      "permalink": "/docs/tags/plant-whisperer"
+    }
+  ],
+  "version": "current",
+  "frontMatter": {
+    "id": "personal-notes",
+    "title": "Personal Notes",
+    "tags": [
+      "dentist",
+      "enclosure-design",
+      "karpathy",
+      "llm-wiki-pattern",
+      "nova-prototypes",
+      "nova-widget",
+      "personal-notes",
+      "plant-whisperer"
+    ],
+    "last_updated": "2026-06-25T07:45:15.461576+00:00",
+    "sidebar_label": "Personal Notes",
+    "slug": "/personal-notes"
+  },
+  "sidebar": "wikiSidebar",
+  "previous": {
+    "title": "OTA Updates",
+    "permalink": "/docs/ota-updates"
+  },
+  "next": {
+    "title": "Podcast Planning",
+    "permalink": "/docs/podcast-planning"
+  }
+}

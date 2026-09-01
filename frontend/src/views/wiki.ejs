@@ -1,10 +1,16 @@
 <%- include('partials/head', { title, apiBase, active }) %>
 
-<h1 class="text-2xl font-semibold tracking-tight text-gray-900">Wiki</h1>
-<p class="mt-1 max-w-2xl text-sm text-gray-600">
-  Every compiled wiki page, as a file. Click one to download it as <code>.txt</code> —
-  nothing is shown inline.
-</p>
+<div class="flex items-start justify-between gap-4">
+  <div>
+    <h1 class="text-2xl font-semibold tracking-tight text-gray-900">Wiki</h1>
+    <p class="mt-1 max-w-2xl text-sm text-gray-600">
+      Every compiled wiki page. Click one to open it, or use the actions to edit, view, or remove it.
+    </p>
+  </div>
+  <span class="hidden shrink-0 rounded-full bg-gray-100 px-3 py-1 text-xs font-medium text-gray-500 sm:inline-block">
+    <%= pages.length %> page<%= pages.length === 1 ? '' : 's' %>
+  </span>
+</div>
 
 <input
   id="wiki-search"
@@ -13,16 +19,43 @@
   class="mt-4 w-full max-w-sm rounded-lg border border-gray-300 px-3 py-1.5 text-sm focus:border-accent focus:outline-none focus:ring-2 focus:ring-accent/20"
 />
 
-<div id="wiki-file-grid" class="mt-6 grid grid-cols-3 gap-1 sm:grid-cols-4 md:grid-cols-6 lg:grid-cols-8">
+<div id="wiki-file-grid" class="mt-6 grid grid-cols-2 gap-3 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5">
   <% pages.forEach(function(page) { %>
-    <a
-      href="/wiki/<%= page.slug %>/download"
+    <div
+      class="wiki-file-tile group relative flex flex-col items-center gap-1.5 rounded-xl border border-gray-200 bg-white p-4 text-center shadow-card transition-shadow hover:shadow-md"
       data-title="<%= page.title.toLowerCase() %>"
-      class="wiki-file-tile flex flex-col items-center gap-1.5 rounded-lg p-3 text-center no-underline hover:bg-gray-50">
-      <span class="flex h-12 w-12 items-center justify-center rounded-xl bg-generated-bg text-xl text-generated">📄</span>
-      <span class="line-clamp-2 w-24 text-xs font-medium text-gray-800"><%= page.title %></span>
-      <span class="text-[10px] font-medium tracking-wide text-gray-400">TXT</span>
-    </a>
+      data-slug="<%= page.slug %>">
+
+      <div class="absolute right-2 top-2 flex gap-1 opacity-0 transition-opacity group-hover:opacity-100 group-focus-within:opacity-100">
+        <a href="/wiki/<%= page.slug %>"
+           title="View"
+           aria-label="View <%= page.title %>"
+           class="flex h-7 w-7 items-center justify-center rounded-md bg-white text-gray-500 no-underline shadow-sm ring-1 ring-gray-200 hover:text-accent hover:ring-accent/40">
+          <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path><circle cx="12" cy="12" r="3"></circle></svg>
+        </a>
+        <a href="/wiki/<%= page.slug %>/edit"
+           title="Edit"
+           aria-label="Edit <%= page.title %>"
+           class="flex h-7 w-7 items-center justify-center rounded-md bg-white text-gray-500 no-underline shadow-sm ring-1 ring-gray-200 hover:text-accent hover:ring-accent/40">
+          <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path><path d="M18.5 2.5a2.12 2.12 0 0 1 3 3L12 15l-4 1 1-4z"></path></svg>
+        </a>
+        <button
+          type="button"
+          title="Delete"
+          aria-label="Delete <%= page.title %>"
+          class="wiki-delete-btn flex h-7 w-7 items-center justify-center rounded-md bg-white text-gray-500 shadow-sm ring-1 ring-gray-200 hover:text-red-600 hover:ring-red-300"
+          data-slug="<%= page.slug %>"
+          data-title="<%= page.title %>">
+          <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"></path><path d="M10 11v6"></path><path d="M14 11v6"></path><path d="M9 6V4a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2"></path></svg>
+        </button>
+      </div>
+
+      <a href="/wiki/<%= page.slug %>" class="flex flex-col items-center gap-1.5 no-underline">
+        <span class="flex h-12 w-12 items-center justify-center rounded-xl bg-generated-bg text-xl text-generated">📄</span>
+        <span class="line-clamp-2 w-28 text-xs font-medium text-gray-800"><%= page.title %></span>
+        <span class="text-[10px] font-medium tracking-wide text-gray-400">TXT</span>
+      </a>
+    </div>
   <% }); %>
   <% if (pages.length === 0) { %>
     <p class="col-span-full py-10 text-center text-sm text-gray-400">No compiled pages yet. Run the compiler.</p>
@@ -34,6 +67,29 @@
     var needle = event.target.value.trim().toLowerCase();
     document.querySelectorAll('.wiki-file-tile').forEach(function (tile) {
       tile.style.display = !needle || tile.dataset.title.includes(needle) ? '' : 'none';
+    });
+  });
+
+  var apiBase = document.querySelector('meta[name="api-base"]')?.getAttribute('content') ?? '';
+
+  document.querySelectorAll('.wiki-delete-btn').forEach(function (btn) {
+    btn.addEventListener('click', async function (event) {
+      event.preventDefault();
+      event.stopPropagation();
+      var slug = btn.dataset.slug;
+      var title = btn.dataset.title;
+      if (!confirm('Delete "' + title + '"? This cannot be undone.')) return;
+      btn.disabled = true;
+      try {
+        var res = await fetch(apiBase + '/api/docs/' + slug + '.md', { method: 'DELETE' });
+        if (!res.ok) throw new Error('Delete failed (' + res.status + ')');
+        var tile = btn.closest('.wiki-file-tile');
+        if (tile) tile.remove();
+        window.showToast('Deleted "' + title + '"', 'success');
+      } catch (err) {
+        window.showToast(err.message || 'Failed to delete page.', 'error');
+        btn.disabled = false;
+      }
     });
   });
 </script>

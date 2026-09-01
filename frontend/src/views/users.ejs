@@ -1,0 +1,20 @@
+<%- include('partials/head', { title, apiBase, active }) %>
+
+<h1 class="text-2xl font-semibold tracking-tight text-gray-900">Users</h1>
+<p class="mt-1 max-w-2xl text-sm text-gray-600">
+  Everyone signs into the same wiki and dashboard. Admins can also manage other users; everyone
+  else gets dashboard, compiler, uploads, chat, and sources.
+</p>
+
+<section class="mt-6 rounded-xl border border-gray-200 bg-white shadow-card">
+  <div class="flex items-center justify-between border-b border-gray-100 px-5 py-4">
+    <h2 class="text-base font-semibold text-gray-900">Accounts</h2>
+    <button id="add-user-toggle" type="button" class="rounded-lg bg-accent px-3 py-1.5 text-sm font-medium text-white hover:bg-accent-dark">+ Add user</button>
+  </div>
+  <div id="add-user-form" class="hidden border-b border-gray-100 p-5"></div>
+  <div id="users-list" class="divide-y divide-gray-100">
+    <p class="p-5 text-sm text-gray-500">Loading…</p>
+  </div>
+</section>
+
+<%- include('partials/foot', { clientScript }) %>

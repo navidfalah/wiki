@@ -1,0 +1,80 @@
+{
+  "id": "software-updates",
+  "title": "Software Updates",
+  "description": "Overview",
+  "source": "@site/docs/software-updates.md",
+  "sourceDirName": ".",
+  "slug": "/software-updates",
+  "permalink": "/docs/software-updates",
+  "draft": false,
+  "unlisted": false,
+  "tags": [
+    {
+      "inline": true,
+      "label": "software updates",
+      "permalink": "/docs/tags/software-updates"
+    },
+    {
+      "inline": true,
+      "label": "firmware",
+      "permalink": "/docs/tags/firmware"
+    },
+    {
+      "inline": true,
+      "label": "bug fixes",
+      "permalink": "/docs/tags/bug-fixes"
+    },
+    {
+      "inline": true,
+      "label": "nova widget",
+      "permalink": "/docs/tags/nova-widget"
+    },
+    {
+      "inline": true,
+      "label": "teabuddy",
+      "permalink": "/docs/tags/teabuddy"
+    },
+    {
+      "inline": true,
+      "label": "ios 18",
+      "permalink": "/docs/tags/ios-18"
+    },
+    {
+      "inline": true,
+      "label": "version 0.3.8",
+      "permalink": "/docs/tags/version-0-3-8"
+    },
+    {
+      "inline": true,
+      "label": "version 0.9.3",
+      "permalink": "/docs/tags/version-0-9-3"
+    }
+  ],
+  "version": "current",
+  "frontMatter": {
+    "id": "software-updates",
+    "title": "Software Updates",
+    "tags": [
+      "software updates",
+      "firmware",
+      "bug fixes",
+      "nova widget",
+      "teabuddy",
+      "ios 18",
+      "version 0.3.8",
+      "version 0.9.3"
+    ],
+    "last_updated": "2026-06-25T07:59:08.524057+00:00",
+    "sidebar_label": "Software Updates",
+    "slug": "/software-updates"
+  },
+  "sidebar": "wikiSidebar",
+  "previous": {
+    "title": "Software Releases",
+    "permalink": "/docs/software-releases"
+  },
+  "next": {
+    "title": "Soil Probes",
+    "permalink": "/docs/soil-probes"
+  }
+}

@@ -1,0 +1,80 @@
+{
+  "id": "product-design",
+  "title": "Product Design",
+  "description": "Overview",
+  "source": "@site/docs/product-design.md",
+  "sourceDirName": ".",
+  "slug": "/product-design",
+  "permalink": "/docs/product-design",
+  "draft": false,
+  "unlisted": false,
+  "tags": [
+    {
+      "inline": true,
+      "label": "nova-widget",
+      "permalink": "/docs/tags/nova-widget"
+    },
+    {
+      "inline": true,
+      "label": "aurora-labs",
+      "permalink": "/docs/tags/aurora-labs"
+    },
+    {
+      "inline": true,
+      "label": "local-first",
+      "permalink": "/docs/tags/local-first"
+    },
+    {
+      "inline": true,
+      "label": "mesh-networking",
+      "permalink": "/docs/tags/mesh-networking"
+    },
+    {
+      "inline": true,
+      "label": "ble",
+      "permalink": "/docs/tags/ble"
+    },
+    {
+      "inline": true,
+      "label": "product-design-philosophy",
+      "permalink": "/docs/tags/product-design-philosophy"
+    },
+    {
+      "inline": true,
+      "label": "data-privacy",
+      "permalink": "/docs/tags/data-privacy"
+    },
+    {
+      "inline": true,
+      "label": "manufacturing",
+      "permalink": "/docs/tags/manufacturing"
+    }
+  ],
+  "version": "current",
+  "frontMatter": {
+    "id": "product-design",
+    "title": "Product Design",
+    "tags": [
+      "nova-widget",
+      "aurora-labs",
+      "local-first",
+      "mesh-networking",
+      "ble",
+      "product-design-philosophy",
+      "data-privacy",
+      "manufacturing"
+    ],
+    "last_updated": "2026-06-25T07:48:25.157263+00:00",
+    "sidebar_label": "Product Design",
+    "slug": "/product-design"
+  },
+  "sidebar": "wikiSidebar",
+  "previous": {
+    "title": "Product Compatibility",
+    "permalink": "/docs/product-compatibility"
+  },
+  "next": {
+    "title": "Product Development",
+    "permalink": "/docs/product-development"
+  }
+}

@@ -1,0 +1,27 @@
+Message-ID: <a3d8e2c1-7f4b-4a9c-8e2d-2b3f7c8d9012@auroralabs.example>
+In-Reply-To: <b2f1a6b0-3c2e-4e0a-9d1f-1c2f6a7e9001@powercell-supply.example>
+References: <b2f1a6b0-3c2e-4e0a-9d1f-1c2f6a7e9001@powercell-supply.example>
+Subject: Re: Cell restock delay — order #PC-88213 (affects MeshSync batch 5)
+From: Mira Chen <mira.chen@auroralabs.example>
+To: Rosa Delgado <rosa.delgado@powercell-supply.example>
+Cc: Grace Liu <grace.liu@auroralabs.example>
+Date: Thu, 04 Jun 2026 13:47:00 -0700
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 8bit
+MIME-Version: 1.0
+
+[DUMMY TEST DATA — fictional]
+
+Rosa,
+
+Let's do the split shipment — 600 cells by air on the 8th. That covers the
+0.3.9 retest on batch 5 units (we only need ~40 for the field group, but I'd
+rather have buffer for bench testing too).
+
+Grace — can you confirm the air freight surcharge waiver is documented
+somewhere for the audit trail? Not expecting a cost change per Rosa's note
+but want a paper trail.
+
+Thanks for turning this around fast, Rosa.
+
+Mira

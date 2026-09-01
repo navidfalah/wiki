@@ -1,0 +1,80 @@
+{
+  "id": "product-management",
+  "title": "Product Management",
+  "description": "",
+  "source": "@site/docs/product-management.md",
+  "sourceDirName": ".",
+  "slug": "/product-management",
+  "permalink": "/docs/product-management",
+  "draft": false,
+  "unlisted": false,
+  "tags": [
+    {
+      "inline": true,
+      "label": "aurora",
+      "permalink": "/docs/tags/aurora"
+    },
+    {
+      "inline": true,
+      "label": "backlog-grooming",
+      "permalink": "/docs/tags/backlog-grooming"
+    },
+    {
+      "inline": true,
+      "label": "beta-release",
+      "permalink": "/docs/tags/beta-release"
+    },
+    {
+      "inline": true,
+      "label": "box-copy-audit",
+      "permalink": "/docs/tags/box-copy-audit"
+    },
+    {
+      "inline": true,
+      "label": "bug-verification",
+      "permalink": "/docs/tags/bug-verification"
+    },
+    {
+      "inline": true,
+      "label": "compiler-stress-test",
+      "permalink": "/docs/tags/compiler-stress-test"
+    },
+    {
+      "inline": true,
+      "label": "contradiction-linter",
+      "permalink": "/docs/tags/contradiction-linter"
+    },
+    {
+      "inline": true,
+      "label": "icebox",
+      "permalink": "/docs/tags/icebox"
+    }
+  ],
+  "version": "current",
+  "frontMatter": {
+    "id": "product-management",
+    "title": "Product Management",
+    "tags": [
+      "aurora",
+      "backlog-grooming",
+      "beta-release",
+      "box-copy-audit",
+      "bug-verification",
+      "compiler-stress-test",
+      "contradiction-linter",
+      "icebox"
+    ],
+    "last_updated": "2026-06-25T07:50:19.929278+00:00",
+    "sidebar_label": "Product Management",
+    "slug": "/product-management"
+  },
+  "sidebar": "wikiSidebar",
+  "previous": {
+    "title": "Product Information",
+    "permalink": "/docs/product-information"
+  },
+  "next": {
+    "title": "Product Naming",
+    "permalink": "/docs/product-naming"
+  }
+}

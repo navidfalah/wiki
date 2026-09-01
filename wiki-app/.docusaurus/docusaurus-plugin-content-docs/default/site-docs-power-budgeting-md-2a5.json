@@ -1,0 +1,92 @@
+{
+  "id": "power-budgeting",
+  "title": "Power Budgeting",
+  "description": "Overview",
+  "source": "@site/docs/power-budgeting.md",
+  "sourceDirName": ".",
+  "slug": "/power-budgeting",
+  "permalink": "/docs/power-budgeting",
+  "draft": false,
+  "unlisted": false,
+  "tags": [
+    {
+      "inline": true,
+      "label": "aurora-nova-widget",
+      "permalink": "/docs/tags/aurora-nova-widget"
+    },
+    {
+      "inline": true,
+      "label": "cr2032",
+      "permalink": "/docs/tags/cr-2032"
+    },
+    {
+      "inline": true,
+      "label": "engineering-claim",
+      "permalink": "/docs/tags/engineering-claim"
+    },
+    {
+      "inline": true,
+      "label": "mah-milliampere-hour",
+      "permalink": "/docs/tags/mah-milliampere-hour"
+    },
+    {
+      "inline": true,
+      "label": "marketing-slide",
+      "permalink": "/docs/tags/marketing-slide"
+    },
+    {
+      "inline": true,
+      "label": "mesh-size",
+      "permalink": "/docs/tags/mesh-size"
+    },
+    {
+      "inline": true,
+      "label": "meshsync",
+      "permalink": "/docs/tags/meshsync"
+    },
+    {
+      "inline": true,
+      "label": "mira-chen",
+      "permalink": "/docs/tags/mira-chen"
+    },
+    {
+      "inline": true,
+      "label": "battery-life",
+      "permalink": "/docs/tags/battery-life"
+    },
+    {
+      "inline": true,
+      "label": "power-consumption",
+      "permalink": "/docs/tags/power-consumption"
+    }
+  ],
+  "version": "current",
+  "frontMatter": {
+    "id": "power-budgeting",
+    "title": "Power Budgeting",
+    "tags": [
+      "aurora-nova-widget",
+      "cr2032",
+      "engineering-claim",
+      "mah-milliampere-hour",
+      "marketing-slide",
+      "mesh-size",
+      "meshsync",
+      "mira-chen",
+      "battery-life",
+      "power-consumption"
+    ],
+    "last_updated": "2026-06-25T07:45:47.170406+00:00",
+    "sidebar_label": "Power Budgeting",
+    "slug": "/power-budgeting"
+  },
+  "sidebar": "wikiSidebar",
+  "previous": {
+    "title": "Podcast Planning",
+    "permalink": "/docs/podcast-planning"
+  },
+  "next": {
+    "title": "Power Consumption",
+    "permalink": "/docs/power-consumption"
+  }
+}

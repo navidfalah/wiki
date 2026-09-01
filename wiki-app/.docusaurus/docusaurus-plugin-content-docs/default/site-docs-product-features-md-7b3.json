@@ -1,0 +1,80 @@
+{
+  "id": "product-features",
+  "title": "Product Features",
+  "description": "The Aurora Nova Widget, often referred to as the \"Aurora Labs Nova thing,\" is a sensor device developed by Aurora Labs. Its key features emphasize Local Mesh Networking, a Subscription Model-free model, and a focus on Open Firmware.",
+  "source": "@site/docs/product-features.md",
+  "sourceDirName": ".",
+  "slug": "/product-features",
+  "permalink": "/docs/product-features",
+  "draft": false,
+  "unlisted": false,
+  "tags": [
+    {
+      "inline": true,
+      "label": "aurora-nova-widget",
+      "permalink": "/docs/tags/aurora-nova-widget"
+    },
+    {
+      "inline": true,
+      "label": "battery-life",
+      "permalink": "/docs/tags/battery-life"
+    },
+    {
+      "inline": true,
+      "label": "waterproofing",
+      "permalink": "/docs/tags/waterproofing"
+    },
+    {
+      "inline": true,
+      "label": "local-mesh",
+      "permalink": "/docs/tags/local-mesh"
+    },
+    {
+      "inline": true,
+      "label": "no-subscription",
+      "permalink": "/docs/tags/no-subscription"
+    },
+    {
+      "inline": true,
+      "label": "beta-program",
+      "permalink": "/docs/tags/beta-program"
+    },
+    {
+      "inline": true,
+      "label": "sensenode-competitor",
+      "permalink": "/docs/tags/sensenode-competitor"
+    },
+    {
+      "inline": true,
+      "label": "open-firmware",
+      "permalink": "/docs/tags/open-firmware"
+    }
+  ],
+  "version": "current",
+  "frontMatter": {
+    "id": "product-features",
+    "title": "Product Features",
+    "tags": [
+      "aurora-nova-widget",
+      "battery-life",
+      "waterproofing",
+      "local-mesh",
+      "no-subscription",
+      "beta-program",
+      "sensenode-competitor",
+      "open-firmware"
+    ],
+    "last_updated": "2026-06-25T07:49:22.802939+00:00",
+    "sidebar_label": "Product Features",
+    "slug": "/product-features"
+  },
+  "sidebar": "wikiSidebar",
+  "previous": {
+    "title": "Product Evaluation",
+    "permalink": "/docs/product-evaluation"
+  },
+  "next": {
+    "title": "Product Ideas",
+    "permalink": "/docs/product-ideas"
+  }
+}

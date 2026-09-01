@@ -1,0 +1,80 @@
+{
+  "id": "aurora-nova-widget",
+  "title": "Aurora Nova Widget",
+  "description": "Overview",
+  "source": "@site/docs/aurora-nova-widget.md",
+  "sourceDirName": ".",
+  "slug": "/aurora-nova-widget",
+  "permalink": "/docs/aurora-nova-widget",
+  "draft": false,
+  "unlisted": false,
+  "tags": [
+    {
+      "inline": true,
+      "label": "aurora-nova-widget",
+      "permalink": "/docs/tags/aurora-nova-widget"
+    },
+    {
+      "inline": true,
+      "label": "cr2032",
+      "permalink": "/docs/tags/cr-2032"
+    },
+    {
+      "inline": true,
+      "label": "meshsync",
+      "permalink": "/docs/tags/meshsync"
+    },
+    {
+      "inline": true,
+      "label": "power-management",
+      "permalink": "/docs/tags/power-management"
+    },
+    {
+      "inline": true,
+      "label": "reading-interval",
+      "permalink": "/docs/tags/reading-interval"
+    },
+    {
+      "inline": true,
+      "label": "ip-rating",
+      "permalink": "/docs/tags/ip-rating"
+    },
+    {
+      "inline": true,
+      "label": "beta-guidance",
+      "permalink": "/docs/tags/beta-guidance"
+    },
+    {
+      "inline": true,
+      "label": "local-first",
+      "permalink": "/docs/tags/local-first"
+    }
+  ],
+  "version": "current",
+  "frontMatter": {
+    "id": "aurora-nova-widget",
+    "title": "Aurora Nova Widget",
+    "tags": [
+      "aurora-nova-widget",
+      "cr2032",
+      "meshsync",
+      "power-management",
+      "reading-interval",
+      "ip-rating",
+      "beta-guidance",
+      "local-first"
+    ],
+    "last_updated": "2026-06-25T07:12:12.184990+00:00",
+    "sidebar_label": "Aurora Nova Widget",
+    "slug": "/aurora-nova-widget"
+  },
+  "sidebar": "wikiSidebar",
+  "previous": {
+    "title": "Aurora Labs",
+    "permalink": "/docs/aurora-labs"
+  },
+  "next": {
+    "title": "Aurora Nova",
+    "permalink": "/docs/aurora-nova"
+  }
+}

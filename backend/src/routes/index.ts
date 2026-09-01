@@ -1,10 +1,18 @@
 import fs from 'node:fs';
 import path from 'node:path';
 import type { Express } from 'express';
+import multer from 'multer';
 
 import { INDEX_JSON, OUTPUT_DIR, RAW_DIR, REVIEW_REPORT_PATH, STATE_FILE } from '../paths';
 import { HttpError, wrap } from '../lib/httpError';
 import { buildAnalytics, getTagDetail } from '../lib/analytics';
+import { appendChatTurn, clearChatHistory, loadChatHistory } from '../lib/chatHistory';
+import { listEvents, logEvent } from '../lib/activityLog';
+import { describeLlmBackend } from '../lib/llmBackend';
+import { requireAdmin, requireAuth } from '../lib/authMiddleware';
+import { createSession, deleteSession } from '../lib/sessions';
+import { createUser, deleteUser, ensureBootstrapAdmin, listUsers, UserError, verifyPassword } from '../lib/users';
+import { loadLlmSettings, LlmSettingsError, saveLlmSettings, toPublicSettings } from '../lib/llmSettings';
 import {
   collectSourceMetadata,
   parseFrontmatter,
@@ -19,9 +27,17 @@ import {
   saveLinkOverrides,
   validateConnections,
 } from '../lib/linkOverrides';
-import { isBuildRunning, runCli, streamCompilerBuild } from '../lib/pythonBridge';
-import { createFolder, deleteFolder, discoverRawFolders, FolderError, moveFile } from '../lib/rawFolders';
-import { computeMd5, discoverRawSourceFiles, loadState } from '../lib/rawFiles';
+import { getPipelineRun, listPipelineRuns } from '../lib/pipelineRuns';
+import { isBuildRunning, runCli, stopBuild, streamCompilerBuild } from '../lib/pythonBridge';
+import { createFolder, deleteFile, deleteFolder, discoverRawFolders, FolderError, moveFile, uploadFiles } from '../lib/rawFolders';
+import {
+  computeMd5,
+  discoverRawSourceFiles,
+  IMAGE_PREVIEW_EXTENSIONS,
+  loadState,
+  mimeTypeFor,
+  TEXT_PREVIEW_EXTENSIONS,
+} from '../lib/rawFiles';
 import { getResourceDetail, listResources } from '../lib/resourcesEngine';
 import { addSource, listSources, removeSource, setEnabled, SourceError, syncSymlinks } from '../lib/sourcesRegistry';
 
@@ -43,10 +59,95 @@ function managedNames(): Set<string> {
   return new Set(listSources().map((s) => s.link_name));
 }
 
+const upload = multer({ storage: multer.memoryStorage(), limits: { fileSize: 25 * 1024 * 1024, files: 20 } });
+
 export function registerRoutes(app: Express): void {
   syncSymlinks();
+  ensureBootstrapAdmin();
 
   app.get('/api/health', (_req, res) => res.json({ status: 'ok' }));
+
+  // --- Auth ------------------------------------------------------------------
+  // Registered before the requireAuth gate below, so login itself doesn't
+  // need a session yet.
+
+  app.post(
+    '/api/auth/login',
+    wrap((req, res) => {
+      const username = String(req.body?.username ?? '').trim();
+      const password = String(req.body?.password ?? '');
+      if (!username || !password) throw new HttpError(400, 'Username and password are required');
+      const user = verifyPassword(username, password);
+      if (!user) throw new HttpError(401, 'Invalid username or password');
+      const publicUser = { id: user.id, username: user.username, role: user.role, created_at: user.created_at };
+      const token = createSession(publicUser);
+      logEvent(publicUser.username, 'Logged in');
+      res.json({ token, user: publicUser });
+    }),
+  );
+
+  app.use('/api', requireAuth);
+
+  app.post('/api/auth/logout', (req, res) => {
+    const header = req.headers.authorization;
+    if (header?.startsWith('Bearer ')) deleteSession(header.slice('Bearer '.length).trim());
+    logEvent(req.user?.username, 'Logged out');
+    res.json({ ok: true });
+  });
+
+  app.get(
+    '/api/activity',
+    wrap((_req, res) => {
+      res.json({ events: listEvents() });
+    }),
+  );
+
+  app.get('/api/auth/me', (req, res) => {
+    res.json({ user: req.user });
+  });
+
+  // --- User management (admin only) -----------------------------------------
+
+  app.get(
+    '/api/users',
+    requireAdmin,
+    wrap((_req, res) => {
+      res.json({ users: listUsers() });
+    }),
+  );
+
+  app.post(
+    '/api/users',
+    requireAdmin,
+    wrap((req, res) => {
+      const username = String(req.body?.username ?? '').trim();
+      const password = String(req.body?.password ?? '');
+      const role = req.body?.role === 'admin' ? 'admin' : 'user';
+      try {
+        const user = createUser(username, password, role);
+        logEvent(req.user?.username, `Created user ${user.username} (${user.role})`);
+        res.json(user);
+      } catch (err) {
+        if (err instanceof UserError) throw new HttpError(400, err.message);
+        throw err;
+      }
+    }),
+  );
+
+  app.delete(
+    '/api/users/:id',
+    requireAdmin,
+    wrap((req, res) => {
+      try {
+        deleteUser(req.params.id, req.user!.id);
+        logEvent(req.user?.username, `Deleted user ${req.params.id}`);
+        res.json({ removed: true, id: req.params.id });
+      } catch (err) {
+        if (err instanceof UserError) throw new HttpError(400, err.message);
+        throw err;
+      }
+    }),
+  );
 
   // --- Source folder registry ---------------------------------------------
 
@@ -62,6 +163,7 @@ export function registerRoutes(app: Express): void {
     wrap((req, res) => {
       try {
         const entry = addSource(req.body?.path, req.body?.label ?? null);
+        logEvent(req.user?.username, 'Added source folder', `${entry.label} (${entry.path})`);
         res.json(entry);
       } catch (err) {
         if (err instanceof SourceError) throw new HttpError(400, err.message);
@@ -74,6 +176,7 @@ export function registerRoutes(app: Express): void {
     '/api/sources/:id',
     wrap((req, res) => {
       if (!removeSource(req.params.id)) throw new HttpError(404, `Source not found: ${req.params.id}`);
+      logEvent(req.user?.username, 'Removed source folder', req.params.id);
       res.json({ removed: true, id: req.params.id });
     }),
   );
@@ -84,6 +187,7 @@ export function registerRoutes(app: Express): void {
       if (req.body?.enabled === undefined) throw new HttpError(400, "'enabled' is required");
       const entry = setEnabled(req.params.id, Boolean(req.body.enabled));
       if (!entry) throw new HttpError(404, `Source not found: ${req.params.id}`);
+      logEvent(req.user?.username, entry.enabled ? 'Enabled source folder' : 'Disabled source folder', entry.label);
       res.json(entry);
     }),
   );
@@ -124,6 +228,20 @@ export function registerRoutes(app: Express): void {
   );
 
   app.get(
+    '/api/raw-files/raw/*',
+    wrap((req, res) => {
+      const relPath = (req.params as any)[0] as string;
+      const filePath = safePath(RAW_DIR, relPath);
+      if (!fs.existsSync(filePath) || !fs.statSync(filePath).isFile()) {
+        throw new HttpError(404, `Raw file not found: ${relPath}`);
+      }
+      res.setHeader('Content-Type', mimeTypeFor(filePath));
+      res.setHeader('Content-Disposition', `inline; filename="${encodeURIComponent(path.basename(filePath))}"`);
+      fs.createReadStream(filePath).pipe(res);
+    }),
+  );
+
+  app.get(
     '/api/raw-files/*',
     wrap((req, res) => {
       const relPath = (req.params as any)[0] as string;
@@ -132,7 +250,10 @@ export function registerRoutes(app: Express): void {
         throw new HttpError(404, `Raw file not found: ${relPath}`);
       }
       const rel = path.relative(RAW_DIR, filePath).split(path.sep).join('/');
-      const content = fs.readFileSync(filePath, 'utf-8');
+      const ext = path.extname(filePath).toLowerCase();
+      const isText = TEXT_PREVIEW_EXTENSIONS.has(ext);
+      const isImage = IMAGE_PREVIEW_EXTENSIONS.has(ext);
+      const content = isText ? fs.readFileSync(filePath, 'utf-8') : null;
       const md5 = computeMd5(filePath);
       const state = loadState();
       const status = rawFileStatus(rel, md5, state);
@@ -143,6 +264,11 @@ export function registerRoutes(app: Express): void {
         path: rel,
         status,
         content,
+        is_text: isText,
+        is_image: isImage,
+        is_pdf: ext === '.pdf',
+        mime: mimeTypeFor(filePath),
+        raw_url: `/api/raw-files/raw/${rel.split('/').map(encodeURIComponent).join('/')}`,
         processed_at: stateEntry.processed_at ?? null,
         topics: metadata.topics,
         entities: metadata.entities,
@@ -153,10 +279,31 @@ export function registerRoutes(app: Express): void {
   );
 
   app.post(
+    '/api/raw-files/upload',
+    upload.array('files', 20),
+    wrap((req, res) => {
+      const parent = (req.body?.parent as string) ?? '';
+      const files = ((req.files as Express.Multer.File[]) ?? []).map((f) => ({
+        originalName: f.originalname,
+        buffer: f.buffer,
+      }));
+      try {
+        const saved = uploadFiles(RAW_DIR, parent, files, managedNames());
+        logEvent(req.user?.username, `Uploaded ${saved.length} file${saved.length === 1 ? '' : 's'}`, saved.join(', '));
+        res.json({ saved });
+      } catch (err) {
+        if (err instanceof FolderError) throw new HttpError(400, err.message);
+        throw err;
+      }
+    }),
+  );
+
+  app.post(
     '/api/raw-files/folders',
     wrap((req, res) => {
       try {
         const relPath = createFolder(RAW_DIR, req.body?.parent ?? '', req.body?.name ?? '', managedNames());
+        logEvent(req.user?.username, 'Created folder', relPath);
         res.json({ path: relPath });
       } catch (err) {
         if (err instanceof FolderError) throw new HttpError(400, err.message);
@@ -171,6 +318,7 @@ export function registerRoutes(app: Express): void {
       const folderPath = (req.params as any)[0] as string;
       try {
         deleteFolder(RAW_DIR, folderPath, managedNames());
+        logEvent(req.user?.username, 'Deleted folder', folderPath);
         res.json({ removed: true, path: folderPath });
       } catch (err) {
         if (err instanceof FolderError) throw new HttpError(400, err.message);
@@ -184,7 +332,23 @@ export function registerRoutes(app: Express): void {
     wrap((req, res) => {
       try {
         const newPath = moveFile(RAW_DIR, req.body?.path ?? '', req.body?.destination ?? '', managedNames());
+        logEvent(req.user?.username, 'Moved file', `${req.body?.path} → ${newPath}`);
         res.json({ path: newPath });
+      } catch (err) {
+        if (err instanceof FolderError) throw new HttpError(400, err.message);
+        throw err;
+      }
+    }),
+  );
+
+  app.delete(
+    '/api/raw-files/*',
+    wrap((req, res) => {
+      const relPath = (req.params as any)[0] as string;
+      try {
+        deleteFile(RAW_DIR, relPath, managedNames());
+        logEvent(req.user?.username, 'Deleted file', relPath);
+        res.json({ removed: true, path: relPath });
       } catch (err) {
         if (err instanceof FolderError) throw new HttpError(400, err.message);
         throw err;
@@ -257,6 +421,46 @@ export function registerRoutes(app: Express): void {
     }),
   );
 
+  app.put(
+    '/api/docs/*',
+    wrap((req, res) => {
+      const relPath = (req.params as any)[0] as string;
+      const docPath = safePath(OUTPUT_DIR, relPath);
+      if (!fs.existsSync(docPath) || !fs.statSync(docPath).isFile()) {
+        throw new HttpError(404, `Doc not found: ${relPath}`);
+      }
+      const body = (req.body as any)?.body;
+      if (typeof body !== 'string') throw new HttpError(400, 'body (string) is required');
+
+      const raw = fs.readFileSync(docPath, 'utf-8');
+      let next = body;
+      if (raw.startsWith('---')) {
+        const first = raw.indexOf('---');
+        const second = raw.indexOf('---', first + 3);
+        if (second !== -1) {
+          next = raw.slice(0, second + 3) + '\n\n' + body.replace(/^\n+/, '');
+        }
+      }
+      fs.writeFileSync(docPath, next, 'utf-8');
+      logEvent(req.user?.username, 'Edited wiki page', relPath);
+      res.json(readDocPayload(docPath));
+    }),
+  );
+
+  app.delete(
+    '/api/docs/*',
+    wrap((req, res) => {
+      const relPath = (req.params as any)[0] as string;
+      const docPath = safePath(OUTPUT_DIR, relPath);
+      if (!fs.existsSync(docPath) || !fs.statSync(docPath).isFile()) {
+        throw new HttpError(404, `Doc not found: ${relPath}`);
+      }
+      fs.unlinkSync(docPath);
+      logEvent(req.user?.username, 'Deleted wiki page', relPath);
+      res.json({ deleted: relPath });
+    }),
+  );
+
   app.get(
     '/api/state',
     wrap((_req, res) => {
@@ -279,8 +483,64 @@ export function registerRoutes(app: Express): void {
 
   app.get('/api/build/stream', (req, res) => {
     const force = req.query.force === 'true';
-    streamCompilerBuild(res, force);
+    const excludeFolders = String(req.query.exclude_folders ?? '')
+      .split(',')
+      .map((s) => s.trim())
+      .filter(Boolean);
+    const criticPass = req.query.critic_pass === 'true';
+    const criticSamplesRaw = Number(req.query.critic_samples);
+    const criticSamples = Number.isFinite(criticSamplesRaw) && criticSamplesRaw > 0 ? Math.floor(criticSamplesRaw) : undefined;
+    const criticRegenerate = req.query.critic_regenerate === 'true';
+    const useCorrections = req.query.use_corrections === 'true';
+    const redactPii = req.query.redact_pii === 'true';
+
+    logEvent(
+      req.user?.username,
+      'Started compiler run',
+      [
+        force ? 'forced' : 'incremental',
+        excludeFolders.length ? `excluding ${excludeFolders.join(', ')}` : null,
+        criticPass ? `critic pass${criticSamples && criticSamples > 1 ? ` x${criticSamples}` : ''}${criticRegenerate ? ' +regen' : ''}` : null,
+        useCorrections ? 'use corrections' : null,
+        redactPii ? 'redact PII' : null,
+      ]
+        .filter(Boolean)
+        .join(' · '),
+    );
+    streamCompilerBuild(res, {
+      force,
+      excludeFolders,
+      criticPass,
+      criticSamples,
+      criticRegenerate,
+      useCorrections,
+      redactPii,
+    });
   });
+
+  app.post('/api/build/stop', (req, res) => {
+    const stopped = stopBuild();
+    if (stopped) logEvent(req.user?.username, 'Stopped compiler run');
+    res.json({ stopped });
+  });
+
+  // --- Pipeline run history -------------------------------------------------
+
+  app.get(
+    '/api/pipelines',
+    wrap((_req, res) => {
+      res.json({ runs: listPipelineRuns(), llm_backend: describeLlmBackend() });
+    }),
+  );
+
+  app.get(
+    '/api/pipelines/:id',
+    wrap((req, res) => {
+      const run = getPipelineRun(req.params.id);
+      if (!run) throw new HttpError(404, `Pipeline run not found: ${req.params.id}`);
+      res.json({ ...run, llm_backend: describeLlmBackend() });
+    }),
+  );
 
   // --- Knowledge graph ---------------------------------------------------
 
@@ -317,6 +577,7 @@ export function registerRoutes(app: Express): void {
       const connections = validateConnections(rawConnections, topicIndex);
       const savedPath = saveLinkOverrides({ version: 1, connections });
       const graph = buildKnowledgeGraphPayload(topicIndex, OUTPUT_DIR);
+      logEvent(req.user?.username, 'Updated graph link overrides', `${connections.length} connection(s)`);
       res.json({ saved: true, path: savedPath, connection_count: connections.length, graph });
     }),
   );
@@ -368,7 +629,9 @@ export function registerRoutes(app: Express): void {
       if (history !== undefined && !Array.isArray(history)) {
         throw new HttpError(400, "'history' must be a list");
       }
-      res.json(await runCli('chat', { message, history }));
+      const result = await runCli('chat', { message, history });
+      appendChatTurn(message, result.answer ?? '', result.sources);
+      res.json(result);
     }),
   );
 
@@ -376,6 +639,63 @@ export function registerRoutes(app: Express): void {
     '/api/chat/status',
     wrap(async (_req, res) => {
       res.json(await runCli('chat-status'));
+    }),
+  );
+
+  app.get(
+    '/api/chat/history',
+    wrap((_req, res) => {
+      res.json(loadChatHistory());
+    }),
+  );
+
+  app.delete(
+    '/api/chat/history',
+    wrap((req, res) => {
+      clearChatHistory();
+      logEvent(req.user?.username, 'Cleared chat history');
+      res.json({ cleared: true });
+    }),
+  );
+
+  // --- LLM settings (providers, API keys, local Gemma config) --------------
+
+  app.get(
+    '/api/settings/llm',
+    wrap((_req, res) => {
+      res.json(toPublicSettings(loadLlmSettings()));
+    }),
+  );
+
+  app.put(
+    '/api/settings/llm',
+    wrap((req, res) => {
+      try {
+        const saved = saveLlmSettings(req.body);
+        logEvent(req.user?.username, 'Updated LLM settings');
+        res.json(toPublicSettings(saved));
+      } catch (err) {
+        if (err instanceof LlmSettingsError) throw new HttpError(400, err.message);
+        throw err;
+      }
+    }),
+  );
+
+  app.get(
+    '/api/settings/llm/local-status',
+    wrap(async (_req, res) => {
+      const settings = loadLlmSettings();
+      const localProfile = settings.profiles.find((p) => p.provider === 'local');
+      const baseUrl = (localProfile?.base_url || 'http://local-llm:8080/v1').replace(/\/+$/, '');
+      try {
+        const controller = new AbortController();
+        const timeout = setTimeout(() => controller.abort(), 2500);
+        const response = await fetch(`${baseUrl}/models`, { signal: controller.signal });
+        clearTimeout(timeout);
+        res.json({ reachable: response.ok, base_url: baseUrl });
+      } catch {
+        res.json({ reachable: false, base_url: baseUrl });
+      }
     }),
   );
 

@@ -1,0 +1,74 @@
+{
+  "id": "protocol-design",
+  "title": "Protocol Design",
+  "description": "",
+  "source": "@site/docs/protocol-design.md",
+  "sourceDirName": ".",
+  "slug": "/protocol-design",
+  "permalink": "/docs/protocol-design",
+  "draft": false,
+  "unlisted": false,
+  "tags": [
+    {
+      "inline": true,
+      "label": "protocol-design",
+      "permalink": "/docs/tags/protocol-design"
+    },
+    {
+      "inline": true,
+      "label": "meshsync",
+      "permalink": "/docs/tags/meshsync"
+    },
+    {
+      "inline": true,
+      "label": "network-protocols",
+      "permalink": "/docs/tags/network-protocols"
+    },
+    {
+      "inline": true,
+      "label": "configuration",
+      "permalink": "/docs/tags/configuration"
+    },
+    {
+      "inline": true,
+      "label": "roles",
+      "permalink": "/docs/tags/roles"
+    },
+    {
+      "inline": true,
+      "label": "deprecated-features",
+      "permalink": "/docs/tags/deprecated-features"
+    },
+    {
+      "inline": true,
+      "label": "integration",
+      "permalink": "/docs/tags/integration"
+    }
+  ],
+  "version": "current",
+  "frontMatter": {
+    "id": "protocol-design",
+    "title": "Protocol Design",
+    "tags": [
+      "protocol-design",
+      "meshsync",
+      "network-protocols",
+      "configuration",
+      "roles",
+      "deprecated-features",
+      "integration"
+    ],
+    "last_updated": "2026-06-25T07:54:12.408467+00:00",
+    "sidebar_label": "Protocol Design",
+    "slug": "/protocol-design"
+  },
+  "sidebar": "wikiSidebar",
+  "previous": {
+    "title": "Project Management",
+    "permalink": "/docs/project-management"
+  },
+  "next": {
+    "title": "Quality Assurance",
+    "permalink": "/docs/quality-assurance"
+  }
+}

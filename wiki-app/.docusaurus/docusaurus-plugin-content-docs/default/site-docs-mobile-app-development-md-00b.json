@@ -1,0 +1,80 @@
+{
+  "id": "mobile-app-development",
+  "title": "Mobile App Development",
+  "description": "Overview",
+  "source": "@site/docs/mobile-app-development.md",
+  "sourceDirName": ".",
+  "slug": "/mobile-app-development",
+  "permalink": "/docs/mobile-app-development",
+  "draft": false,
+  "unlisted": false,
+  "tags": [
+    {
+      "inline": true,
+      "label": "android",
+      "permalink": "/docs/tags/android"
+    },
+    {
+      "inline": true,
+      "label": "apple",
+      "permalink": "/docs/tags/apple"
+    },
+    {
+      "inline": true,
+      "label": "beta-release-notes",
+      "permalink": "/docs/tags/beta-release-notes"
+    },
+    {
+      "inline": true,
+      "label": "ble-pairing",
+      "permalink": "/docs/tags/ble-pairing"
+    },
+    {
+      "inline": true,
+      "label": "cbmanagerauthorization",
+      "permalink": "/docs/tags/cbmanagerauthorization"
+    },
+    {
+      "inline": true,
+      "label": "gatt-connect",
+      "permalink": "/docs/tags/gatt-connect"
+    },
+    {
+      "inline": true,
+      "label": "mobile-app-development",
+      "permalink": "/docs/tags/mobile-app-development"
+    },
+    {
+      "inline": true,
+      "label": "nova-widget",
+      "permalink": "/docs/tags/nova-widget"
+    }
+  ],
+  "version": "current",
+  "frontMatter": {
+    "id": "mobile-app-development",
+    "title": "Mobile App Development",
+    "tags": [
+      "android",
+      "apple",
+      "beta-release-notes",
+      "ble-pairing",
+      "cbmanagerauthorization",
+      "gatt-connect",
+      "mobile-app-development",
+      "nova-widget"
+    ],
+    "last_updated": "2026-06-25T07:42:06.929842+00:00",
+    "sidebar_label": "Mobile App Development",
+    "slug": "/mobile-app-development"
+  },
+  "sidebar": "wikiSidebar",
+  "previous": {
+    "title": "Meshsync",
+    "permalink": "/docs/meshsync"
+  },
+  "next": {
+    "title": "MQTT Export",
+    "permalink": "/docs/mqtt-export"
+  }
+}

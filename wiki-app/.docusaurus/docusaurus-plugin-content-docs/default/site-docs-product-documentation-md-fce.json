@@ -1,0 +1,74 @@
+{
+  "id": "product-documentation",
+  "title": "Product Documentation",
+  "description": "Overview",
+  "source": "@site/docs/product-documentation.md",
+  "sourceDirName": ".",
+  "slug": "/product-documentation",
+  "permalink": "/docs/product-documentation",
+  "draft": false,
+  "unlisted": false,
+  "tags": [
+    {
+      "inline": true,
+      "label": "product documentation",
+      "permalink": "/docs/tags/product-documentation"
+    },
+    {
+      "inline": true,
+      "label": "aurora nova widget",
+      "permalink": "/docs/tags/aurora-nova-widget"
+    },
+    {
+      "inline": true,
+      "label": "battery specifications",
+      "permalink": "/docs/tags/battery-specifications"
+    },
+    {
+      "inline": true,
+      "label": "firmware",
+      "permalink": "/docs/tags/firmware"
+    },
+    {
+      "inline": true,
+      "label": "beta program",
+      "permalink": "/docs/tags/beta-program"
+    },
+    {
+      "inline": true,
+      "label": "support",
+      "permalink": "/docs/tags/support"
+    },
+    {
+      "inline": true,
+      "label": "wiki",
+      "permalink": "/docs/tags/wiki"
+    }
+  ],
+  "version": "current",
+  "frontMatter": {
+    "id": "product-documentation",
+    "title": "Product Documentation",
+    "tags": [
+      "product documentation",
+      "aurora nova widget",
+      "battery specifications",
+      "firmware",
+      "beta program",
+      "support",
+      "wiki"
+    ],
+    "last_updated": "2026-06-25T07:48:48.307194+00:00",
+    "sidebar_label": "Product Documentation",
+    "slug": "/product-documentation"
+  },
+  "sidebar": "wikiSidebar",
+  "previous": {
+    "title": "Product Development",
+    "permalink": "/docs/product-development"
+  },
+  "next": {
+    "title": "Product Evaluation",
+    "permalink": "/docs/product-evaluation"
+  }
+}

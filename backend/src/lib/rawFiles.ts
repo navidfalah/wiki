@@ -53,3 +53,31 @@ export function discoverRawSourceFiles(rawDir: string): string[] {
 export function computeMd5(filePath: string): string {
   return crypto.createHash('md5').update(fs.readFileSync(filePath)).digest('hex');
 }
+
+// Extensions the dashboard can render as plain text in the preview modal --
+// everything else (PDF, images, docx/xlsx/pptx/zip) needs a binary-aware
+// viewer (native <embed>/<img>) or a download link instead.
+export const TEXT_PREVIEW_EXTENSIONS = new Set(['.txt', '.md', '.eml', '.csv', '.json']);
+export const IMAGE_PREVIEW_EXTENSIONS = new Set(['.png', '.jpg', '.jpeg', '.gif', '.webp']);
+
+const MIME_TYPES: Record<string, string> = {
+  '.txt': 'text/plain; charset=utf-8',
+  '.md': 'text/markdown; charset=utf-8',
+  '.eml': 'message/rfc822',
+  '.csv': 'text/csv; charset=utf-8',
+  '.json': 'application/json; charset=utf-8',
+  '.pdf': 'application/pdf',
+  '.png': 'image/png',
+  '.jpg': 'image/jpeg',
+  '.jpeg': 'image/jpeg',
+  '.gif': 'image/gif',
+  '.webp': 'image/webp',
+  '.docx': 'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
+  '.xlsx': 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+  '.pptx': 'application/vnd.openxmlformats-officedocument.presentationml.presentation',
+  '.zip': 'application/zip',
+};
+
+export function mimeTypeFor(filePath: string): string {
+  return MIME_TYPES[path.extname(filePath).toLowerCase()] ?? 'application/octet-stream';
+}

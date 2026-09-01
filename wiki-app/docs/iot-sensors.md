@@ -2,63 +2,56 @@
 id: iot-sensors
 title: IoT Sensors
 tags:
+  - alex-rivera
+  - aurora-labs
+  - aurora-labs-nova
+  - battery-life-optimization
+  - cloud-free-iot
+  - hardware-habit
   - iot-sensors
-  - mesh-networking
-  - mqtt
-  - local-control
-  - battery-life
-  - duty-cycle
-  - ip-ratings
-  - durability
-last_updated: "2026-06-25T07:31:33.423385+00:00"
+  - ip67-enclosure
+last_updated: "2026-09-01T19:19:31.602618+00:00"
 sidebar_label: IoT Sensors
 slug: /iot-sensors
 ---
 
+<!-- AUTO-GENERATED — compiled by the LLM Wiki compiler from data/raw/ sources into compiler/temp_output/, then linked here. Edits to this file are overwritten on the next compile: edit sources under data/raw/, or manual cross-links in data/link_overrides.json, instead. -->
+
 # IoT Sensors
 
 ## Overview
-
-IoT (Internet of Things) sensors are devices that detect and respond to events or changes in the physical environment, converting them into digital signals that can be processed and transmitted over a network. These sensors are fundamental components of IoT ecosystems, enabling data collection for various applications, from environmental monitoring to industrial automation.
-
-A notable example is the **[Nova Widget](./nova-widget.md)**, a local mesh soil sensor developed by mirachen. This device highlights several key trends in IoT sensor design, including Local Control, efficient [Power Management](./power-management.md), and robust connectivity options.
+[IoT](./iot.md) [sensors](./sensors.md) are [hardware](./hardware.md) devices deployed for environmental monitoring, such as tracking soil moisture, air temperature, and ambient light for home gardeners and small-acreage farmers. Recent developments in the indie sensor space highlight a design tension between robust environmental weather sealing (such as IP67 enclosures) and open, cloud-free data architectures that rely on [mesh networking](./mesh-networking.md) instead of paid subscription dashboards. Prominent hardware examples include the commercial [SenseNode SN-400](./sensenode-sn-400.md) and the pre-release [Aurora Labs Nova](./aurora-labs.md) Widget v2.
 
 ## Key Details
-
-*   **Nova Widget (Example Sensor)**:
-    *   **Functionality**: A local mesh soil sensor designed for environmental monitoring.
-    *   **Connectivity**: Utilizes [MeshSync](./meshsync.md) for [Mesh Networking](./mesh-networking.md) and offers optional [MQTT](./mqtt.md) support. It prioritizes a LAN-first approach, aiming for a lower Duty Cycle compared to Wi-Fi-based solutions.
-    *   **Cloud Policy**: Features no mandatory cloud connection, emphasizing local control and data ownership.
-    *   **Power Source**: Powered by a CR2032 coin cell battery.
-    *   **Operation**: Designed to take readings approximately every 15 minutes.
-    *   **Durability**: Rated IP54, indicating protection against dust ingress and splashing water. While suitable for many outdoor applications, it is acknowledged that an IP67 rating would be more appropriate for submersion use cases.
-
-*   **Power Management**: The choice of a CR2032 battery and a 15-minute read interval suggests a focus on optimizing [Battery Life](./battery-life.md) through careful duty cycle management.
-
-*   **Connectivity Choices**: The preference for LAN-first and MeshSync over Wi-Fi is driven by the desire for a lower duty cycle, which directly impacts battery longevity.
-
-*   **Related Projects**: The Nova Widget team has connections to the "[Teabuddy](./teabuddy.md)" project, though they are from different companies.
+- **SenseNode SN-400 ($49):**
+  - Features an IP67 enclosure, offering top-tier weather sealing.
+  - Utilizes an STM32WL module communicating via [LoRaWAN](./lorawan.md) (non-mesh).
+  - Requires a cloud dashboard for alerts, which includes a limited free tier.
+  - Claimed 3-year [battery life](./battery-life.md), with real-world estimates closer to ~22 months at default 30-minute intervals.
+- **Aurora Labs [Nova Widget v2](./nova-widget-v2.md) (Beta):**
+  - Designed with an IP54 plastic enclosure (identified as moderately sealed).
+  - Built with an nRF52840 MCU and a custom [BLE](./ble.md)-based mesh protocol known as **MeshSync**.
+  - Provides open [MQTT](./mqtt.md) and CSV data exports without requiring a cloud account or subscription.
+  - Powered by a CR2032 coin cell battery (an initial blog typo incorrectly stated a CR2450 battery was used). 
+  - Designed to monitor soil moisture (capacitive), air temperature, and ambient light.
 
 ## Related Entities
-
-*   **Nova Widget**: A specific local mesh soil sensor discussed as an example of an an IoT sensor.
-*   **Teabuddy**: Another IoT project, developed by friends of the Nova Widget team, though by a different company.
+- **Aurora Labs:** A hardware startup founded by [Mira Chen](./aurora-labs.md) and Jonah Park in Portland, OR, focused on building open, subscription-free sensors.
+- **Alex Rivera:** Author and hardware reviewer for the *Hardware Habit* blog who conducted teardowns and power profiling on garden sensors.
+- **SenseNode SN-400:** A competing commercial garden sensor known for its strong LoRaWAN connectivity and IP67 weather resistance.
 
 ## Related Concepts
-
-*   **Mesh Networking**: A network topology where each node relays data for the network, allowing for greater range and redundancy. MeshSync is a specific implementation used by the Nova Widget.
-*   **MQTT (Message Queuing Telemetry Transport)**: A lightweight messaging protocol for small sensors and mobile devices, optimized for high-latency or unreliable networks.
-*   **Duty Cycle**: The proportion of time that a component, device, or system is in an active state. A lower duty cycle generally means less power consumption, crucial for battery-powered IoT sensors.
-*   **IP Ratings (Ingress Protection)**: A standard that classifies the degrees of protection provided against the intrusion of solid objects (dust, etc.) and water in electrical enclosures.
-    *   **IP54**: Protected from dust ingress (limited protection, no harmful deposit) and splashing water from any direction.
-    *   **IP67**: Protected from dust ingress (total protection) and immersion in water up to 1 meter for 30 minutes.
-*   **Battery Life / Power Management**: Critical considerations for IoT sensors, especially those deployed in remote or hard-to-reach locations, involving choices of battery type, read intervals, and communication protocols.
-*   **Local Control / LAN-first**: A design philosophy for IoT devices that prioritizes direct control and data processing within the local network, reducing reliance on cloud services and enhancing privacy and reliability.
+- **MeshSync:** A custom BLE mesh protocol developed by Aurora Labs to extend range between sensor nodes without incurring LoRaWAN gateway fees.
+- **Battery Life Optimization:** Engineering targets aimed at maximizing coin cell lifespan (such as CR2032) through aggressive power profiling, sleep states, and optimized reading intervals.
+- **Cloud-Free IoT:** A design philosophy emphasizing local data ownership, offering direct MQTT or CSV data exports instead of mandatory cloud dashboard subscriptions.
 
 ## Contradictions
+&gt; **Contradiction:** There is a discrepancy between Aurora Labs' internal design targets and independent power profiling regarding the Nova Widget's battery longevity and [power consumption](./power-consumption.md). Kickoff [meeting notes](./meeting-notes.md) state a target of 2 years on a CR2032 battery with *hourly* readings, while hardware teardown analysis and community discussions reference a 2-year lifespan based on *15-minute* readings, with actual 48-hour power profiling showing an average draw of ~92 µA (slightly exceeding the 85 µA target) resulting in an estimated ~20-month battery life.
 
-No direct contradictions were found in the provided source material. The discussion regarding IP54 versus IP67 highlights different suitability for specific use cases (general outdoor vs. submersion), rather than a contradiction.
+## References & Trust
 
-## Sources
-
-*   `samples/forums/[SAMPLE]-2026-07-10-hackernews-thread-scrape.txt`
+| # | Source | Type | Trust |
+|---|--------|------|-------|
+| 1 | `articles/2026-05-20-competitor-teardown-blog.md` | text | Medium |
+| 2 | `articles/scraped-forum-thread.txt` | text | Medium |
+| 3 | `notes/2026-05-01-kickoff-notes.md` | text | Medium |

@@ -1,0 +1,80 @@
+{
+  "id": "wireless-communication-protocols",
+  "title": "Wireless Communication Protocols",
+  "description": "Overview",
+  "source": "@site/docs/wireless-communication-protocols.md",
+  "sourceDirName": ".",
+  "slug": "/wireless-communication-protocols",
+  "permalink": "/docs/wireless-communication-protocols",
+  "draft": false,
+  "unlisted": false,
+  "tags": [
+    {
+      "inline": true,
+      "label": "alex-kim",
+      "permalink": "/docs/tags/alex-kim"
+    },
+    {
+      "inline": true,
+      "label": "aurora-office",
+      "permalink": "/docs/tags/aurora-office"
+    },
+    {
+      "inline": true,
+      "label": "ble-bluetooth-low-energy",
+      "permalink": "/docs/tags/ble-bluetooth-low-energy"
+    },
+    {
+      "inline": true,
+      "label": "cloud-accounts",
+      "permalink": "/docs/tags/cloud-accounts"
+    },
+    {
+      "inline": true,
+      "label": "jonah",
+      "permalink": "/docs/tags/jonah"
+    },
+    {
+      "inline": true,
+      "label": "local-first-iot",
+      "permalink": "/docs/tags/local-first-iot"
+    },
+    {
+      "inline": true,
+      "label": "mesh-networking",
+      "permalink": "/docs/tags/mesh-networking"
+    },
+    {
+      "inline": true,
+      "label": "mira",
+      "permalink": "/docs/tags/mira"
+    }
+  ],
+  "version": "current",
+  "frontMatter": {
+    "id": "wireless-communication-protocols",
+    "title": "Wireless Communication Protocols",
+    "tags": [
+      "alex-kim",
+      "aurora-office",
+      "ble-bluetooth-low-energy",
+      "cloud-accounts",
+      "jonah",
+      "local-first-iot",
+      "mesh-networking",
+      "mira"
+    ],
+    "last_updated": "2026-06-25T08:06:10.374762+00:00",
+    "sidebar_label": "Wireless Communication Protocols",
+    "slug": "/wireless-communication-protocols"
+  },
+  "sidebar": "wikiSidebar",
+  "previous": {
+    "title": "Wiki Migration",
+    "permalink": "/docs/wiki-migration"
+  },
+  "next": {
+    "title": "Wireless Communication",
+    "permalink": "/docs/wireless-communication"
+  }
+}

@@ -1,0 +1,80 @@
+{
+  "id": "product-troubleshooting",
+  "title": "Product Troubleshooting",
+  "description": "Overview",
+  "source": "@site/docs/product-troubleshooting.md",
+  "sourceDirName": ".",
+  "slug": "/product-troubleshooting",
+  "permalink": "/docs/product-troubleshooting",
+  "draft": false,
+  "unlisted": false,
+  "tags": [
+    {
+      "inline": true,
+      "label": "alex",
+      "permalink": "/docs/tags/alex"
+    },
+    {
+      "inline": true,
+      "label": "aurora",
+      "permalink": "/docs/tags/aurora"
+    },
+    {
+      "inline": true,
+      "label": "ble-kitchen-app",
+      "permalink": "/docs/tags/ble-kitchen-app"
+    },
+    {
+      "inline": true,
+      "label": "cr2032",
+      "permalink": "/docs/tags/cr-2032"
+    },
+    {
+      "inline": true,
+      "label": "cr2450",
+      "permalink": "/docs/tags/cr-2450"
+    },
+    {
+      "inline": true,
+      "label": "cross-ticket",
+      "permalink": "/docs/tags/cross-ticket"
+    },
+    {
+      "inline": true,
+      "label": "ios-18",
+      "permalink": "/docs/tags/ios-18"
+    },
+    {
+      "inline": true,
+      "label": "ip54",
+      "permalink": "/docs/tags/ip-54"
+    }
+  ],
+  "version": "current",
+  "frontMatter": {
+    "id": "product-troubleshooting",
+    "title": "Product Troubleshooting",
+    "tags": [
+      "alex",
+      "aurora",
+      "ble-kitchen-app",
+      "cr2032",
+      "cr2450",
+      "cross-ticket",
+      "ios-18",
+      "ip54"
+    ],
+    "last_updated": "2026-06-25T07:53:23.201516+00:00",
+    "sidebar_label": "Product Troubleshooting",
+    "slug": "/product-troubleshooting"
+  },
+  "sidebar": "wikiSidebar",
+  "previous": {
+    "title": "Product Support",
+    "permalink": "/docs/product-support"
+  },
+  "next": {
+    "title": "Project Ideas",
+    "permalink": "/docs/project-ideas"
+  }
+}

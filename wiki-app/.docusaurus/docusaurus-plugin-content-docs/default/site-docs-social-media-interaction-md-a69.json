@@ -1,0 +1,80 @@
+{
+  "id": "social-media-interaction",
+  "title": "Social Media Interaction",
+  "description": "Overview",
+  "source": "@site/docs/social-media-interaction.md",
+  "sourceDirName": ".",
+  "slug": "/social-media-interaction",
+  "permalink": "/docs/social-media-interaction",
+  "draft": false,
+  "unlisted": false,
+  "tags": [
+    {
+      "inline": true,
+      "label": "auroralabs",
+      "permalink": "/docs/tags/auroralabs"
+    },
+    {
+      "inline": true,
+      "label": "beta",
+      "permalink": "/docs/tags/beta"
+    },
+    {
+      "inline": true,
+      "label": "cr2032",
+      "permalink": "/docs/tags/cr-2032"
+    },
+    {
+      "inline": true,
+      "label": "cr2450",
+      "permalink": "/docs/tags/cr-2450"
+    },
+    {
+      "inline": true,
+      "label": "maker-faire",
+      "permalink": "/docs/tags/maker-faire"
+    },
+    {
+      "inline": true,
+      "label": "meshsync",
+      "permalink": "/docs/tags/meshsync"
+    },
+    {
+      "inline": true,
+      "label": "mqtt-schema-v2",
+      "permalink": "/docs/tags/mqtt-schema-v-2"
+    },
+    {
+      "inline": true,
+      "label": "nodes-max",
+      "permalink": "/docs/tags/nodes-max"
+    }
+  ],
+  "version": "current",
+  "frontMatter": {
+    "id": "social-media-interaction",
+    "title": "Social Media Interaction",
+    "tags": [
+      "auroralabs",
+      "beta",
+      "cr2032",
+      "cr2450",
+      "maker-faire",
+      "meshsync",
+      "mqtt-schema-v2",
+      "nodes-max"
+    ],
+    "last_updated": "2026-06-25T07:57:50.464937+00:00",
+    "sidebar_label": "Social Media Interaction",
+    "slug": "/social-media-interaction"
+  },
+  "sidebar": "wikiSidebar",
+  "previous": {
+    "title": "Smart Gardening",
+    "permalink": "/docs/smart-gardening"
+  },
+  "next": {
+    "title": "Software Bugs",
+    "permalink": "/docs/software-bugs"
+  }
+}

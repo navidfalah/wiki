@@ -1,0 +1,32 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Sign in · Aurora Labs Wiki</title>
+  <link rel="stylesheet" href="/css/app.css" />
+</head>
+<body class="app-shell flex min-h-screen items-center justify-center bg-gray-50 text-gray-900">
+  <div class="w-full max-w-sm rounded-xl border border-gray-200 bg-white p-6 shadow-card">
+    <h1 class="text-lg font-semibold tracking-tight text-gray-900">Aurora Labs Wiki</h1>
+    <p class="mt-1 text-sm text-gray-500">Sign in to continue.</p>
+
+    <% if (typeof error !== 'undefined' && error) { %>
+      <p class="mt-4 rounded-lg bg-red-50 px-3 py-2 text-sm text-red-700"><%= error %></p>
+    <% } %>
+
+    <form method="POST" action="/login" class="mt-4 flex flex-col gap-3">
+      <input type="hidden" name="next" value="<%= typeof next !== 'undefined' ? next : '' %>" />
+      <label class="text-xs font-medium text-gray-600">
+        Username
+        <input name="username" type="text" required autofocus class="mt-1 w-full rounded-lg border border-gray-300 px-3 py-2 text-sm focus:border-accent focus:outline-none focus:ring-2 focus:ring-accent/20" />
+      </label>
+      <label class="text-xs font-medium text-gray-600">
+        Password
+        <input name="password" type="password" required class="mt-1 w-full rounded-lg border border-gray-300 px-3 py-2 text-sm focus:border-accent focus:outline-none focus:ring-2 focus:ring-accent/20" />
+      </label>
+      <button type="submit" class="mt-1 rounded-lg bg-accent px-4 py-2 text-sm font-medium text-white hover:bg-accent-dark">Sign in</button>
+    </form>
+  </div>
+</body>
+</html>
