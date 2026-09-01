@@ -19,7 +19,7 @@ slug: /aurora-nova-widget
 
 ## Overview
 
-The Aurora Nova Widget is a device designed for data collection, utilizing a [MeshSync](./meshsync.md) network. It is powered by a [CR2032 battery](./cr2032-battery.md) and has a default reading interval of 15 minutes. While it shares a "[Local-First Philosophy](./local-first-philosophy.md)" with other products, it is not compatible with the [TeaBuddy](./teabuddy.md) system.
+The Aurora Nova Widget is a device designed for data collection, utilizing a [MeshSync](./meshsync.md) network. It is powered by a [CR2032 battery](./cr2032-battery.md) and has a default reading interval of 15 minutes. While it shares a "Local-First Philosophy" with other products, it is not compatible with the [TeaBuddy](./teabuddy.md) system.
 
 ## Key Details
 
@@ -35,26 +35,26 @@ The Aurora Nova Widget is a device designed for data collection, utilizing a [Me
 *   **Mesh Network**:
     *   For beta users, a maximum of **6 nodes** is recommended until MeshSync version 0.3.9 is released.
     *   Operating with eight or more nodes may lead to rejoin loops (refer to ticket #2099).
-*   **Water Resistance**: The device has an [IP54](./ip54.md) rating, meaning it is splash resistant but not suitable for submersion.
+*   **Water Resistance**: The device has an IP54 rating, meaning it is splash resistant but not suitable for submersion.
 *   **Compatibility**: The Aurora Nova Widget is not compatible with the TeaBuddy product line. They are distinct products from different companies, utilizing separate applications.
 
 ## Related Entities
 
 *   **[MeshSync](./meshsync.md)**: The networking protocol used by the Aurora Nova Widget. Version 0.3.9 is anticipated to improve mesh stability.
-*   **[SenseNode SN-400](./sensenode-sn-400.md)**: An alternative product that offers a higher [IP67](./ip67.md) water resistance rating for outdoor submersion needs.
-*   **[TeaBuddy Puck](./teabuddy-puck.md)**: A different product mentioned for power consumption comparison, but not compatible with the Aurora Nova Widget.
+*   **SenseNode SN-400**: An alternative product that offers a higher IP67 water resistance rating for outdoor submersion needs.
+*   **TeaBuddy Puck**: A different product mentioned for power consumption comparison, but not compatible with the Aurora Nova Widget.
 
 ## Related Concepts
 
-*   **[Local-First Philosophy](./local-first-philosophy.md)**: A design principle shared by both the Aurora Nova Widget and TeaBuddy, emphasizing local data processing and control.
-*   **[IP Ratings](./ip-ratings.md)**: Standards for ingress protection, with IP54 indicating splash resistance and IP67 indicating dust-tightness and resistance to temporary submersion.
+*   **Local-First Philosophy**: A design principle shared by both the Aurora Nova Widget and TeaBuddy, emphasizing local data processing and control.
+*   **IP Ratings**: Standards for ingress protection, with IP54 indicating splash resistance and IP67 indicating dust-tightness and resistance to temporary submersion.
 *   **[Power Budgeting](./power-budgeting.md)**: The process of calculating and managing power consumption to estimate battery life.
 
 ## Contradictions
 
 *   **Contradiction:** **Battery Life Claim**: An engineering claim projects approximately 18 months of battery life, while marketing slides have previously stated "2 years." The marketing claim was based on assumptions of 6 nodes, an optimistic battery cell, and an incorrect hourly reading interval.
 *   **Contradiction:** **Default Reading Interval**: The authoritative default reading interval is 15 minutes. However, some older documentation incorrectly stated an hourly interval.
-*   **Contradiction:** **Battery Type**: While the correct battery type is CR2032, some older blog posts incorrectly mentioned [CR2450](./cr2450.md).
+*   **Contradiction:** **Battery Type**: While the correct battery type is CR2032, some older blog posts incorrectly mentioned CR2450.
 
 ## Sources
 

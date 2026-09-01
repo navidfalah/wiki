@@ -19,7 +19,7 @@ slug: /development-tools
 
 ## Overview
 
-Development tools encompass a wide range of software, processes, and methodologies designed to enhance efficiency, collaboration, and quality throughout the software development lifecycle. This page outlines various ideas and initiatives related to development tools, specifically focusing on [Wiki Automation](./wiki_automation.md) and cross-product development strategies. These tools aim to streamline documentation, improve knowledge sharing, and foster consistency across different product lines.
+Development tools encompass a wide range of software, processes, and methodologies designed to enhance efficiency, collaboration, and quality throughout the software development lifecycle. This page outlines various ideas and initiatives related to development tools, specifically focusing on Wiki Automation and cross-product development strategies. These tools aim to streamline documentation, improve knowledge sharing, and foster consistency across different product lines.
 
 ## Key Details
 
@@ -27,29 +27,29 @@ Development tools encompass a wide range of software, processes, and methodologi
 
 Several ideas have been proposed to automate and improve wiki management and content generation:
 
-*   **Pre-commit Hook for Contradiction Markers:** Implement a [Pre-commit Hooks](./pre_commit_hooks.md) that greps raw wiki files for a `CONTRADICTION` marker. This helps identify and address potential inconsistencies before they are committed.
+*   **Pre-commit Hook for Contradiction Markers:** Implement a Pre-commit Hooks that greps raw wiki files for a `CONTRADICTION` marker. This helps identify and address potential inconsistencies before they are committed.
 *   **Automated Slack Export Ingestion:** Develop a system to automatically ingest Slack exports from designated folders (e.g., `dummy-test/`) to capture discussions and decisions for wiki content.
-*   **Graph Diff for Compiles:** Create a tool to generate a [Graph Diff](./graph_diff.md) between different compile outputs, highlighting newly introduced entities. This aids in tracking changes and understanding system evolution.
-*   **LLM Summarization for Support Tickets:** Utilize [Large Language Models](./large_language_models.md) ([LLMs](./large_language_models.md)) to summarize support tickets, transforming them into structured [FAQ](./faq.md) pages for easier access and knowledge dissemination.
-*   **Orphan Page Linter:** Implement a linter to identify and flag "[Orphan Pages](./orphan_pages.md)" within the wiki – pages that are not linked from any other page. This initiative is already on the backlog (#1).
+*   **Graph Diff for Compiles:** Create a tool to generate a Graph Diff between different compile outputs, highlighting newly introduced entities. This aids in tracking changes and understanding system evolution.
+*   **LLM Summarization for Support Tickets:** Utilize Large Language Models (LLMs) to summarize support tickets, transforming them into structured FAQ pages for easier access and knowledge dissemination.
+*   **Orphan Page Linter:** Implement a linter to identify and flag "Orphan Pages" within the wiki – pages that are not linked from any other page. This initiative is already on the backlog (#1).
 
 ### Cross-Product Development Concepts
 
 To foster consistency and collaboration across different products, several cross-product initiatives have been identified:
 
-*   **Shared Glossary:** Establish a [Shared Glossary](./shared_glossary.md) for common terms and components, including:
-    *   [CR2032](./cr2032.md) (a common battery type)
-    *   [BLE (Bluetooth Low Energy)](./ble_bluetooth_low_energy.md)
+*   **Shared Glossary:** Establish a Shared Glossary for common terms and components, including:
+    *   CR2032 (a common battery type)
+    *   BLE (Bluetooth Low Energy)
     *   [MeshSync](./meshsync.md) (a synchronization mechanism)
-    *   [Steep Preset](./steep_preset.md) (a specific configuration or setting)
-*   **Unified "Local-First Manifesto" Page:** Create a single, comprehensive page detailing the "[Local-First Manifesto](./local_first_manifesto.md)," incorporating quotes and perspectives from both [Aurora](./aurora.md) and [TeaBuddy](./teabuddy.md) product teams.
+    *   Steep Preset (a specific configuration or setting)
+*   **Unified "Local-First Manifesto" Page:** Create a single, comprehensive page detailing the "Local-First Manifesto," incorporating quotes and perspectives from both Aurora and [TeaBuddy](./teabuddy.md) product teams.
 
 ### Rejected Development Initiatives
 
 Not all development ideas proceed. The following initiatives were considered but ultimately rejected:
 
-*   **Single Application for Both Products:** The idea of merging both products into a single application was rejected by the [CEOs](./ceos.md).
-*   **Mesh Tea Timer:** A proposal for a "Mesh tea timer" product was explicitly rejected by [Jonah](./jonah.md), who stated "absolutely not."
+*   **Single Application for Both Products:** The idea of merging both products into a single application was rejected by the CEOs.
+*   **Mesh Tea Timer:** A proposal for a "Mesh tea timer" product was explicitly rejected by Jonah, who stated "absolutely not."
 
 ## Related Entities
 
@@ -57,16 +57,16 @@ Not all development ideas proceed. The following initiatives were considered but
 *   **TeaBuddy:** A product mentioned alongside Aurora for the "local-first manifesto."
 *   **CEOs:** Key decision-makers who rejected the single application idea.
 *   **Jonah:** An individual who rejected the "Mesh tea timer" idea.
-*   **[Karpathy](./karpathy.md):** Referenced for the "LLM wiki pattern."
-*   **[Docusaurus](./docusaurus.md):** A documentation framework, referenced for its "graph plugin."
+*   **Karpathy:** Referenced for the "LLM wiki pattern."
+*   **Docusaurus:** A documentation framework, referenced for its "graph plugin."
 
 ## Related Concepts
 
 *   **Wiki Automation:** The overarching theme for several proposed tools, focusing on streamlining wiki content creation and maintenance.
 *   **Pre-commit Hooks:** Automated scripts that run before a code commit, used here for content validation.
-*   **[Auto-ingestion](./auto_ingestion.md):** The process of automatically importing data from external sources.
+*   **Auto-ingestion:** The process of automatically importing data from external sources.
 *   **Graph Diff:** A method for visualizing and comparing differences between graph structures.
-*   **[LLM Summarization](./llm_summarization.md):** Using Large Language Models to condense information.
+*   **LLM Summarization:** Using Large Language Models to condense information.
 *   **FAQ:** Frequently Asked Questions, a common format for knowledge bases.
 *   **Orphan Pages:** Wiki pages that are not linked from any other page, indicating potential discoverability issues.
 *   **Shared Glossary:** A centralized list of terms and definitions for consistency.

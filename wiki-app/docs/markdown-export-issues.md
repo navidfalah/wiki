@@ -36,16 +36,16 @@ The Notion export exhibited several common Markdown and content integrity issues
 #### [Nova Widget](./nova-widget.md)
 *   **Protocol**: Utilizes [MeshSync](./meshsync.md) as its mesh protocol.
 *   **Read Interval**: The default read interval is 15 minutes.
-*   **Battery**: The device uses a [CR2032](./cr2032.md) battery.
+*   **Battery**: The device uses a CR2032 battery.
     *   Sleep current: 4.2 µA
     *   TX current: 12 mA
 
 #### [TeaBuddy](./teabuddy.md)
-*   **Protocol**: Employs [BLE (Bluetooth Low Energy)](./ble.md), not a mesh protocol.
-*   **[Codebase Merging](./codebase-merging.md)**: [Sam Rivera](./sam-rivera.md) advised against merging the TeaBuddy codebase with other projects.
+*   **Protocol**: Employs BLE (Bluetooth Low Energy), not a mesh protocol.
+*   **Codebase Merging**: Sam Rivera advised against merging the TeaBuddy codebase with other projects.
 
 #### [SenseNode](./sensenode.md)
-*   **Waterproofing**: Features [IP67](./ip67.md) waterproofing.
+*   **Waterproofing**: Features IP67 waterproofing.
 
 ## Related Entities
 *   **Nova Widget**: A device whose notes were part of the problematic export.
@@ -58,7 +58,7 @@ The Notion export exhibited several common Markdown and content integrity issues
 *   **BLE (Bluetooth Low Energy)**: The wireless communication protocol used by TeaBuddy.
 *   **Codebase Merging**: The process of combining different software codebases, specifically advised against for TeaBuddy.
 *   **CR2032**: A type of lithium coin cell battery used in Nova Widget.
-*   **[CR2450](./cr2450.md)**: Another type of lithium coin cell battery, incorrectly cited for Nova Widget in some documentation.
+*   **CR2450**: Another type of lithium coin cell battery, incorrectly cited for Nova Widget in some documentation.
 *   **IP67**: An Ingress Protection rating indicating dust-tightness and protection against temporary immersion in water.
 *   **Notion Export**: The source of the problematic Markdown content.
 

@@ -19,7 +19,7 @@ slug: /meeting-notes
 
 ## Overview
 
-This page synthesizes notes from a 23-minute meeting held on 2026-06-08. The meeting lacked a formal agenda, and no formal decisions were recorded, though several key actions and priorities were implied. Attendees included [Mira](./mira.md), [Jonah](./jonah.md), and the individual who took notes.
+This page synthesizes notes from a 23-minute meeting held on 2026-06-08. The meeting lacked a formal agenda, and no formal decisions were recorded, though several key actions and priorities were implied. Attendees included Mira, Jonah, and the individual who took notes.
 
 ## Key Details
 
@@ -32,43 +32,43 @@ This page synthesizes notes from a 23-minute meeting held on 2026-06-08. The mee
 
 ### Topics Discussed
 
-*   **[Competitor Teardown Blog](./competitor-teardown-blog.md):**
+*   **Competitor Teardown Blog:**
     *   The blog post was generally considered fair.
     *   One error regarding battery information was identified and subsequently fixed.
-*   **Publishing [Power Numbers](./power-numbers.md):**
+*   **Publishing Power Numbers:**
     *   Mira expressed caution regarding the publication of power numbers.
-*   **[Beta Tester List](./beta-tester-list.md):**
+*   **Beta Tester List:**
     *   Comprises 12 individuals.
     *   The list includes 3 farmers and the remaining are hobbyists.
-*   **[Obsidian Graph View](./obsidian-graph-view.md):**
+*   **Obsidian Graph View:**
     *   Mentioned during the discussion, with general agreement among attendees.
 
 ### Implied Decisions
 
 While no formal decisions were made, the following were implied:
 
-*   **[IP54 Beta](./ip54-beta.md):** Prioritize shipping the IP54 beta version first.
+*   **IP54 Beta:** Prioritize shipping the IP54 beta version first.
 *   **Renaming:** No items or concepts should be renamed.
-*   **[Wiki Maintenance](./wiki-maintenance.md):** The wiki requires further attention and improvement.
+*   **Wiki Maintenance:** The wiki requires further attention and improvement.
 
 ### Next Steps
 
-*   **Next Meeting:** To be scheduled "when [Mesh Stability](./mesh-stability.md) stable."
+*   **Next Meeting:** To be scheduled "when Mesh Stability stable."
 
 ## Related Entities
 
-*   [Mira](/docs/mira)
-*   [Jonah](/docs/jonah)
-*   [IP54 Beta](/docs/ip54-beta)
-*   [Obsidian](/docs/obsidian)
+*   Mira
+*   Jonah
+*   IP54 Beta
+*   Obsidian
 
 ## Related Concepts
 
-*   [Competitor Teardown Blog](/docs/competitor-teardown-blog)
-*   [Beta Tester List](/docs/beta-tester-list)
-*   [Power Numbers](/docs/power-numbers)
-*   [Wiki Maintenance](/docs/wiki-maintenance)
-*   [Mesh Stability](/docs/mesh-stability)
+*   Competitor Teardown Blog
+*   Beta Tester List
+*   Power Numbers
+*   Wiki Maintenance
+*   Mesh Stability
 
 ## Contradictions
 

@@ -26,8 +26,8 @@ This page synthesizes information from a support training roleplay scenario, foc
 
 *   **Customer Scenario**: A common customer scenario involves owning both a Nova Widget and a TeaBuddy puck, often requesting a single application for both.
 *   **Application Differences**:
-    *   Nova Widget utilizes the [MeshSync Garden App](./meshsync-garden-app.md).
-    *   TeaBuddy puck uses a separate [BLE Kitchen App](./ble-kitchen-app.md). These are from different companies and require distinct applications.
+    *   Nova Widget utilizes the MeshSync Garden App.
+    *   TeaBuddy puck uses a separate BLE Kitchen App. These are from different companies and require distinct applications.
 *   **Waterproofing Comparison**:
     *   [SenseNode](./sensenode.md) products are noted for IP67 waterproofing.
     *   "Our" products (implied to be Nova Widget/TeaBuddy) have an IP54 rating.
@@ -37,15 +37,15 @@ This page synthesizes information from a support training roleplay scenario, foc
     *   Resolution involves updating the device software to version 0.3.8.
     *   Users should maintain a maximum of six nodes to prevent this issue.
 *   **TeaBuddy Pairing with iOS 18**:
-    *   This [Pairing](./pairing.md) issue was fixed in TeaBuddy software version 0.9.3.
-    *   For the [TB-142](./tb-142.md) model, a long-press reset is required to resolve a specific cancel bug.
+    *   This Pairing issue was fixed in TeaBuddy software version 0.9.3.
+    *   For the TB-142 model, a long-press reset is required to resolve a specific cancel bug.
 *   **Battery Type Clarification**:
     *   The correct battery type used is CR2032.
-    *   A blog post by "[Alex](./alex.md)" and the internal wiki previously contained a typo incorrectly stating CR2450, which has since been corrected.
+    *   A blog post by "Alex" and the internal wiki previously contained a typo incorrectly stating CR2450, which has since been corrected.
 
 ## Related Entities
 
-*   **Nova Widget**: A product mentioned in a [Cross-Ticket](./cross-ticket.md) scenario.
+*   **Nova Widget**: A product mentioned in a Cross-Ticket scenario.
 *   **TeaBuddy Puck**: Another product mentioned, often alongside Nova Widget, with specific pairing and battery details.
 *   **SenseNode**: A product line referenced for its higher IP67 waterproofing rating.
 *   **Alex**: An individual responsible for a blog that required a correction regarding [Battery Types](./battery-types.mdd).
@@ -56,7 +56,7 @@ This page synthesizes information from a support training roleplay scenario, foc
 
 *   **MeshSync Garden App**: The application used by Nova Widget.
 *   **BLE Kitchen App**: The application used by TeaBuddy puck.
-*   **[IP Ratings](./ip-ratings.md) (IP67, IP54)**: Standards for ingress protection, indicating waterproofing and dust resistance.
+*   **IP Ratings (IP67, IP54)**: Standards for ingress protection, indicating waterproofing and dust resistance.
 *   **Cross-Ticket**: A support scenario involving multiple products from potentially different companies.
 *   **Rejoin Loop**: A software bug where a device repeatedly attempts to reconnect.
 *   **Pairing**: The process of connecting two devices wirelessly (e.g., TeaBuddy with iOS).

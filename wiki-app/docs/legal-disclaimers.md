@@ -24,9 +24,9 @@ Legal disclaimers outline important terms, conditions, and limitations related t
 
 ### Confidentiality
 *   Certain materials are considered confidential and must be protected. These include:
-    *   [Beta firmware](./beta-firmware.md)
-    *   [MeshSync source partial](./meshsync-source-partial.md)
-    *   [Power budget spreadsheets](./power-budget-spreadsheets.md)
+    *   Beta firmware
+    *   MeshSync source partial
+    *   Power budget spreadsheets
 
 ### Device Safety and Usage
 *   The [Aurora Nova Widget](./aurora-nova-widget.md) is designed to be IP54 splash-resistant only.
@@ -47,13 +47,13 @@ Legal disclaimers outline important terms, conditions, and limitations related t
 
 ## Related Concepts
 *   Beta testing
-*   [Confidentiality agreements](./confidentiality-agreements.md)
-*   [Data telemetry](./data-telemetry.md)
-*   [IP54 rating (splash resistance)](./ip54-rating-splash-resistance.md)
+*   Confidentiality agreements
+*   Data telemetry
+*   IP54 rating (splash resistance)
 *   [Firmware](./firmware.md)
-*   [Source code](./source-code.md)
+*   Source code
 *   [Product safety](./product-safety.md)
-*   [Implied partnership](./implied-partnership.md)
+*   Implied partnership
 
 ## Contradictions
 No contradictions were identified in the provided source material.

@@ -19,13 +19,13 @@ slug: /startup-kickoff
 
 ## Overview
 
-The initial kickoff meeting for [Aurora Labs](./aurora-labs.md) took place on May 1, 2026, in [Mira Chen](./mira-chen.md)'s garage workshop in [Portland, OR](./portland-or.md). The meeting brought together co-founders Mira Chen and [Jonah Park](./jonah-park.md), who shared a common frustration with existing [Internet of Things (IoT)](./internet-of-things-iot.md) sensors that often have short lifespans and require proprietary cloud accounts. The primary outcome was the establishment of Aurora Labs with a draft mission statement focused on [open data ownership](./open-data-ownership.md) and the initial scoping of their first product, the [Nova Widget](./nova-widget.md).
+The initial kickoff meeting for [Aurora Labs](./aurora-labs.md) took place on May 1, 2026, in Mira Chen's garage workshop in Portland, OR. The meeting brought together co-founders Mira Chen and Jonah Park, who shared a common frustration with existing Internet of Things (IoT) sensors that often have short lifespans and require proprietary cloud accounts. The primary outcome was the establishment of Aurora Labs with a draft mission statement focused on open data ownership and the initial scoping of their first product, the [Nova Widget](./nova-widget.md).
 
 ## Key Details
 
 ### Company & Mission
 *   **Company Name:** Aurora Labs (suggested by Jonah Park, agreed by Mira Chen). The name was chosen to evoke "dawn, new beginning."
-*   **Mission Statement (Draft):** "[Open sensors](./open-sensors.md) for people who own their data." This reflects the founders' desire to create [IoT](./internet-of-things-iot.md) devices that are user-centric and avoid mandatory cloud subscriptions.
+*   **Mission Statement (Draft):** "Open sensors for people who own their data." This reflects the founders' desire to create IoT devices that are user-centric and avoid mandatory cloud subscriptions.
 
 ### Product Idea: Nova Widget
 *   **Working Name:** Nova Widget
@@ -38,18 +38,18 @@ The initial kickoff meeting for [Aurora Labs](./aurora-labs.md) took place on Ma
     *   [Mesh networking](./mesh-networking.md) between nodes for range extension
 *   **v1 Non-Goals:**
     *   No camera functionality
-    *   No [GPS](./gps.md) capabilities
+    *   No GPS capabilities
     *   No subscription-based cloud dashboard (data export via CSV or [MQTT](./mqtt.md) only)
 
 ### Technical Decisions
-*   **Microcontroller Unit (MCU):** [nRF52840](./nrf52840.md) (Jonah Park already possesses development boards for this [MCU](./microcontroller-unit-mcu.md)).
+*   **Microcontroller Unit (MCU):** nRF52840 (Jonah Park already possesses development boards for this MCU).
 *   **Mesh Protocol:** A custom protocol, codenamed **[MeshSync](./meshsync.md)**, will be developed. Mira Chen is tasked with prototyping this.
-*   **Power Target:** The device is designed to operate for 2 years on a single [CR2032](./cr2032.md) coin cell battery, with hourly readings.
-*   **Enclosure:** Initial beta units will use [3D-printed](./3d-printed.md) [PETG](./petg.md) enclosures, with plans for [injection molding](./injection-molding.md) in later stages.
+*   **Power Target:** The device is designed to operate for 2 years on a single CR2032 coin cell battery, with hourly readings.
+*   **Enclosure:** Initial beta units will use 3D-printed PETG enclosures, with plans for injection molding in later stages.
 
 ### Roles
-*   Mira Chen: Responsible for [firmware development](./firmware-development.md), the MeshSync protocol, and power profiling.
-*   Jonah Park: Responsible for [PCB design](./pcb-design.md), sensor integration, and mechanical design.
+*   Mira Chen: Responsible for firmware development, the MeshSync protocol, and power profiling.
+*   Jonah Park: Responsible for PCB design, sensor integration, and mechanical design.
 
 ### Action Items
 *   Mira Chen: Develop a MeshSync proof-of-concept by May 15.

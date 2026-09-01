@@ -19,7 +19,7 @@ slug: /product-specifications
 
 ## Overview
 
-This page details the key specifications for the [Aurora Nova Widget](./aurora-nova-widget.md), a [Local-first](./local-first.md) device developed by [Aurora Labs](./aurora-labs.md). It covers technical details such as sensor capacity, water resistance, battery type, and compatibility, along with known issues and comparisons to related products like the [SenseNode SN-400](./sensenode-sn-400.md).
+This page details the key specifications for the [Aurora Nova Widget](./aurora-nova-widget.md), a Local-first device developed by [Aurora Labs](./aurora-labs.md). It covers technical details such as sensor capacity, water resistance, battery type, and compatibility, along with known issues and comparisons to related products like the SenseNode SN-400.
 
 ## Key Details
 
@@ -30,12 +30,12 @@ This page details the key specifications for the [Aurora Nova Widget](./aurora-n
     *   The current default reading interval for the Aurora Nova Widget is 15 minutes.
     *   **Contradiction:** Some older documentation and initial kickoff discussions incorrectly stated an hourly interval.
 *   **Water Resistance (IP Rating):**
-    *   The Aurora Nova Widget has an [IP54](./ip54.md) rating, making it splash resistant but not suitable for submersion.
-    *   For applications requiring outdoor submersion, the SenseNode SN-400 offers an [IP67](./ip67.md) rating.
+    *   The Aurora Nova Widget has an IP54 rating, making it splash resistant but not suitable for submersion.
+    *   For applications requiring outdoor submersion, the SenseNode SN-400 offers an IP67 rating.
     *   Achieving an IP65 rating for the Nova Widget would require an $8,000 tooling investment.
 *   **Battery Type:**
-    *   The Aurora Nova Widget uses a [CR2032](./cr2032.md) battery.
-    *   **Contradiction:** Some blog posts and [Alex](./alex.md)'s teardown incorrectly mentioned [CR2450](./cr2450.md).
+    *   The Aurora Nova Widget uses a CR2032 battery.
+    *   **Contradiction:** Some blog posts and Alex's teardown incorrectly mentioned CR2450.
 *   **Cloud Fee:**
     *   MeshSync operates without a cloud fee.
 *   **Compatibility:**

@@ -25,21 +25,21 @@ Network engineering encompasses the design, implementation, and management of co
 *   **Mesh Network Performance**:
     *   A mesh network configuration exhibited "weird" behavior when scaled to 8 nodes.
     *   A current spike of 110µA was observed during a node rejoin event.
-    *   This behavior was considered "fine for [Product Development Phases](./product-development-phases.md) beta" phase, suggesting it may be addressed in future development cycles.
+    *   This behavior was considered "fine for Product Development Phases beta" phase, suggesting it may be addressed in future development cycles.
 
 *   **Hardware & Enclosures**:
-    *   Gasket samples were evaluated, with IP54 [Ingress Protection (IP Ratings)](./ingress-protection-ip-ratings.md) deemed acceptable.
+    *   Gasket samples were evaluated, with IP54 Ingress Protection (IP Ratings) deemed acceptable.
     *   Achieving IP65 protection would require a significant investment in tooling ($8,000).
 
 *   **Power Management**:
-    *   Discussions are ongoing regarding the feasibility of [Solar Trickle Charging](./solar-trickle-charging.md) for devices, with differing opinions from team members.
+    *   Discussions are ongoing regarding the feasibility of Solar Trickle Charging for devices, with differing opinions from team members.
     *   The cost discrepancy of CR2032 cells between hardware stores and online retailers was noted as a general observation.
 
 *   **Data & Sensors**:
     *   The principle of "open sensors for people who own their data" remains a guiding concept for sensor development.
 
 *   **System Operations**:
-    *   A [System Automation](./system-automation.md) cron job on the staging environment may require fixing.
+    *   A System Automation cron job on the staging environment may require fixing.
 
 *   **Testing**:
     *   "Touch test" and "incremental test" were mentioned as testing methodologies.

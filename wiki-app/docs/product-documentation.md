@@ -17,24 +17,24 @@ slug: /product-documentation
 # Product Documentation
 
 ## Overview
-Product documentation for [Aurora Labs](./aurora-labs.md), particularly concerning the [Aurora Nova Widget](./aurora-nova-widget.md), is primarily hosted on a wiki and undergoes regular updates. This documentation covers critical product specifications, operational guidelines, and support information, aiming to provide accurate and up-to-date details for users, including [beta testers](./beta-program.md) and general customers.
+Product documentation for [Aurora Labs](./aurora-labs.md), particularly concerning the [Aurora Nova Widget](./aurora-nova-widget.md), is primarily hosted on a wiki and undergoes regular updates. This documentation covers critical product specifications, operational guidelines, and support information, aiming to provide accurate and up-to-date details for users, including beta testers and general customers.
 
 ## Key Details
 
 ### Aurora Nova Widget Documentation
 *   **Primary Location**: The official documentation is compiled from raw sources and available at `wiki.auroralabs.example`.
-*   **Updates**: A "docs refresh" was implemented for [beta invite batch #3](./beta-program.md), indicating ongoing efforts to keep information current.
+*   **Updates**: A "docs refresh" was implemented for beta invite batch #3, indicating ongoing efforts to keep information current.
 *   **Firmware 0.3.8**: Users are instructed to flash [firmware](./firmware.md) version 0.3.8 before adding more than 6 nodes to their Aurora Nova Widget setup.
-*   **Default Read Interval**: The current default [read interval](./read-interval.md) for the Aurora Nova Widget is 15 minutes. This updates older documentation (e.g., an old PDF) that might state an hourly interval.
+*   **Default Read Interval**: The current default read interval for the Aurora Nova Widget is 15 minutes. This updates older documentation (e.g., an old PDF) that might state an hourly interval.
 *   **Battery Specification**:
     *   The correct [battery specification](./battery-specifications.md) for the Aurora Nova Widget is CR2032.
-    *   An earlier blog post by "[Alex](./alex.md)" incorrectly listed CR2450 but was corrected on 2026-06-20. The wiki page has also been updated to reflect the correct CR2032 specification.
+    *   An earlier blog post by "Alex" incorrectly listed CR2450 but was corrected on 2026-06-20. The wiki page has also been updated to reflect the correct CR2032 specification.
 *   **Battery Life**:
     *   The actual battery life of the Aurora Nova Widget is variable and depends on factors such as the number of nodes connected and the configured read interval (defaulting to 15 minutes).
     *   A detailed power budget document is expected to be published soon to provide more clarity on battery life expectations.
 
 ### Support and Issue Reporting
-*   **Beta Program Issues**: [Beta testers](./beta-program.md) are directed to report issues via GitHub at `aurora-labs/meshsync #442`.
+*   **Beta Program Issues**: Beta testers are directed to report issues via GitHub at `aurora-labs/meshsync #442`.
 *   **General Support**: For other inquiries or issues, users can contact `support@auroralabs.example`.
 
 ### Related Products
@@ -42,7 +42,7 @@ Product documentation for [Aurora Labs](./aurora-labs.md), particularly concerni
 
 ## Related Entities
 *   **Aurora Labs**: The company developing the Aurora Nova Widget.
-*   **Aurora Nova Widget**: The primary product discussed, a [mesh network](./mesh-network.md) device.
+*   **Aurora Nova Widget**: The primary product discussed, a mesh network device.
 *   **Alex**: A blog author who initially published incorrect battery specifications.
 *   **Mira**: A support agent from [Aurora Labs](./aurora-labs.md).
 *   **TeaBuddy**: An unrelated product from a different company.

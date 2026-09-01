@@ -19,7 +19,7 @@ slug: /system-design
 
 ## Overview
 
-System Design encompasses the process of defining the architecture, modules, interfaces, and data for a system to satisfy specified requirements. This page, drawing from an [Over-the-Air (OTA) Updates](./over-the-air-updates.md) design sketch for the [Nova Widget](./nova-widget.md), illustrates specific considerations within the broader field of system design, focusing on firmware updates in a mesh network environment.
+System Design encompasses the process of defining the architecture, modules, interfaces, and data for a system to satisfy specified requirements. This page, drawing from an Over-the-Air (OTA) Updates design sketch for the [Nova Widget](./nova-widget.md), illustrates specific considerations within the broader field of system design, focusing on firmware updates in a mesh network environment.
 
 ## Key Details
 
@@ -28,19 +28,19 @@ The provided design sketch for Over-the-Air (OTA) updates for the Nova Widget hi
 ### OTA Update Design (Nova Widget)
 
 *   **Requirements**:
-    *   [Firmware Images](./firmware-images.md) must be cryptographically signed using `ed25519` for authenticity and integrity.
-    *   The system must incorporate [Rollback Protection](./rollback-protection.md) mechanisms, especially after a [Mesh-wide Upgrade](./mesh-wide-upgrade.md), to prevent devices from reverting to vulnerable or incompatible firmware versions.
-    *   A [BLE Proxy Update](./ble-proxy-update.md) mechanism is required, allowing updates via a phone application when a mesh node is otherwise unreachable.
+    *   Firmware Images must be cryptographically signed using `ed25519` for authenticity and integrity.
+    *   The system must incorporate Rollback Protection mechanisms, especially after a Mesh-wide Upgrade, to prevent devices from reverting to vulnerable or incompatible firmware versions.
+    *   A BLE Proxy Update mechanism is required, allowing updates via a phone application when a mesh node is otherwise unreachable.
 *   **Risks**:
-    *   A "[Brick Scenario](./brick-scenario.md)" is a significant risk, particularly if a parent node fails during a firmware push, potentially rendering child nodes inoperable.
-    *   [MeshSync Routing Table Invalidation](./meshsync-routing-table-invalidation.md) is a concern during the flashing process, which could disrupt network communication.
+    *   A "Brick Scenario" is a significant risk, particularly if a parent node fails during a firmware push, potentially rendering child nodes inoperable.
+    *   MeshSync Routing Table Invalidation is a concern during the flashing process, which could disrupt network communication.
 *   **Open Questions**:
-    *   A key design decision is whether [Explicit User Consent](./explicit-user-consent.md) for each individual node or if a [Batch Update](./batch-update.md) approach is acceptable.
+    *   A key design decision is whether Explicit User Consent for each individual node or if a Batch Update approach is acceptable.
 
 ### Related Notes
 
-*   [Sam Rivera](./sam-rivera.md)'s [TeaBuddy](./teabuddy.md) project utilizes a simpler single-device BLE [DFU (Device Firmware Update)](./dfu-device-firmware-update.md) approach and has offered to share their test harness.
-*   The [Aurora](./aurora.md) project has deferred its [Over-the-Air (OTA) Updates](./over-the-air-updates.md) implementation.
+*   Sam Rivera's [TeaBuddy](./teabuddy.md) project utilizes a simpler single-device BLE DFU (Device Firmware Update) approach and has offered to share their test harness.
+*   The Aurora project has deferred its Over-the-Air (OTA) Updates implementation.
 
 ## Related Entities
 

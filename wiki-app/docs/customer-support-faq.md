@@ -32,35 +32,35 @@ This FAQ addresses common questions regarding the [Aurora Nova Widget](./aurora-
     *   Some older documentation incorrectly stated an hourly interval, which was a mistake from the product kickoff.
 
 *   **Water Resistance**
-    *   The [Aurora Nova Widget](./aurora-nova-widget.md) has an **[IP54 rating](./ip54-rating.md)**, meaning it is splash resistant but not suitable for submersion.
-    *   For applications requiring outdoor submersion, the [SenseNode SN-400](./sensenode-sn-400.md) offers an **[IP67 rating](./ip67-rating.md)**.
+    *   The [Aurora Nova Widget](./aurora-nova-widget.md) has an **IP54 rating**, meaning it is splash resistant but not suitable for submersion.
+    *   For applications requiring outdoor submersion, the SenseNode SN-400 offers an **IP67 rating**.
 
 *   **Battery Type**
     *   The [Aurora Nova Widget](./aurora-nova-widget.md) uses a **[CR2032](./cr2032-battery.md)** battery.
-    *   Earlier blog posts mistakenly mentioned [CR2450](./cr2450-battery.md) batteries, which has since been corrected in the wiki.
+    *   Earlier blog posts mistakenly mentioned CR2450 batteries, which has since been corrected in the wiki.
 
 *   **Compatibility with TeaBuddy**
     *   The [Aurora Nova Widget](./aurora-nova-widget.md) is **not compatible** with [TeaBuddy](./teabuddy.md).
     *   These are distinct products from different companies, each with their own dedicated applications.
-    *   However, both products share a "[Local-first architecture](./local-first-architecture.md)" philosophical approach to data handling.
+    *   However, both products share a "Local-first architecture" philosophical approach to data handling.
 
 ## Related Entities
 
 *   [Aurora Nova Widget](./aurora-nova-widget.md)
-*   [SenseNode SN-400](./sensenode-sn-400.md)
+*   SenseNode SN-400
 *   [TeaBuddy](./teabuddy.md)
 
 ## Related Concepts
 
 *   [MeshSync](./meshsync.md) (specifically version 0.3.9)
-*   [IP54 rating](./ip54-rating.md)
-*   [IP67 rating](./ip67-rating.md)
-*   [Local-first architecture](./local-first-architecture.md)
+*   IP54 rating
+*   IP67 rating
+*   Local-first architecture
 
 ## Contradictions
 
 *   **Contradiction:** Older documentation incorrectly stated the default reading interval as hourly; the correct interval is 15 minutes.
-*   **Contradiction:** Some blog posts incorrectly identified the battery type as [CR2450](./cr2450-battery.md); the correct battery type is [CR2032](./cr2032-battery.md).
+*   **Contradiction:** Some blog posts incorrectly identified the battery type as CR2450; the correct battery type is [CR2032](./cr2032-battery.md).
 
 ## Sources
 

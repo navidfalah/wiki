@@ -19,17 +19,17 @@ slug: /forum-discussions
 
 ## Overview
 
-This page synthesizes discussions from a "HomeLab Sensors" forum thread, primarily focusing on the [Aurora Labs Nova](./Aurora%20Labs%20Nova.md) device and its comparison with a competitor, [Sensenode](./Sensenode.md). Key topics include features, [Battery Life](./Battery%20Life.md), and waterproofing.
+This page synthesizes discussions from a "HomeLab Sensors" forum thread, primarily focusing on the Aurora Labs Nova device and its comparison with a competitor, Sensenode. Key topics include features, Battery Life, and waterproofing.
 
 ## Key Details
 
 *   **Aurora Labs Nova**
-    *   There is user interest in obtaining a [Beta Invite](./Beta%20Invite.md) for the Aurora Labs Nova device.
-    *   The device features "[MeshSync](./MeshSync.md)" and operates without requiring [No Cloud Operation](./No%20Cloud%20Operation.md), which is seen as a positive by some users.
+    *   There is user interest in obtaining a Beta Invite for the Aurora Labs Nova device.
+    *   The device features "MeshSync" and operates without requiring No Cloud Operation, which is seen as a positive by some users.
     *   Battery life claims for the Aurora Labs Nova are stated as 2 years when performing reads every 15 minutes. An independent teardown blog reportedly estimated the battery life at approximately 20 months.
 *   **Sensenode**
-    *   The Sensenode device is noted for having superior [IP67 Waterproof Rating](./IP67%20Waterproof%20Rating.md) compared to the Aurora Labs Nova.
-    *   A significant drawback of the Sensenode, as highlighted in the discussion, is its requirement for a [Subscription](./Subscription.md).
+    *   The Sensenode device is noted for having superior IP67 Waterproof Rating compared to the Aurora Labs Nova.
+    *   A significant drawback of the Sensenode, as highlighted in the discussion, is its requirement for a Subscription.
 
 ## Related Entities
 

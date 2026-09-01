@@ -19,7 +19,7 @@ slug: /competitive-analysis
 
 ## Overview
 
-Competitive analysis is a strategic process used to identify and evaluate competitors, understand their strengths and weaknesses, and assess their products and services. This page synthesizes insights from an internal [Aurora Labs](./aurora-labs.md) [Competitive Landscape](./competitive-landscape.md) review for Q3 2026, focusing on key market segments, competitor offerings, and strategic considerations.
+Competitive analysis is a strategic process used to identify and evaluate competitors, understand their strengths and weaknesses, and assess their products and services. This page synthesizes insights from an internal [Aurora Labs](./aurora-labs.md) Competitive Landscape review for Q3 2026, focusing on key market segments, competitor offerings, and strategic considerations.
 
 ## Key Details
 
@@ -35,17 +35,17 @@ This segment focuses on devices designed for monitoring garden and soil conditio
     *   **Product:** [Nova Widget](./nova-widget.md)
     *   **Mesh Protocol:** [MeshSync](./meshsync.md)
     *   **Cloud Integration:** Optional
-    *   **Waterproofing:** [IP54](./ip54.md)
-    *   **Battery:** [CR2032](./cr2032.md)
+    *   **Waterproofing:** IP54
+    *   **Battery:** CR2032
 *   **SenseNode**
-    *   **Product:** [SN-400](./sn-400.md)
+    *   **Product:** SN-400
     *   **Mesh Protocol:** [LoRaWAN](./lorawan.md)
     *   **Cloud Integration:** Required
-    *   **Waterproofing:** [IP67](./ip67.md)
-    *   **Battery:** [CR2450](./cr2450.md)
+    *   **Waterproofing:** IP67
+    *   **Battery:** CR2450
 *   **CheapoCo**
-    *   **Product:** [SoilStick](./soilstick.md)
-    *   **Mesh Protocol:** [WiFi](./wifi.md)
+    *   **Product:** SoilStick
+    *   **Mesh Protocol:** WiFi
     *   **Cloud Integration:** Required
     *   **Waterproofing:** None
     *   **Battery:** USB (rechargeable)
@@ -55,8 +55,8 @@ This segment focuses on devices designed for monitoring garden and soil conditio
 This segment includes products that, while not direct competitors in the core sensor market, represent adjacent or related lifestyle technologies.
 
 *   **TeaBuddy**
-    *   **Product:** [Puck](./puck.md)
-    *   **Protocol:** [BLE](./ble.md) (Bluetooth Low Energy)
+    *   **Product:** Puck
+    *   **Protocol:** BLE (Bluetooth Low Energy)
     *   **Notes:** Functions as a local-only tea timer.
 *   **TimerCap**
     *   **Product:** (No specific product name given, but refers to a Kickstarter project)
@@ -65,9 +65,9 @@ This segment includes products that, while not direct competitors in the core se
 
 ### Battlecard Updates
 
-Strategic updates for internal [Battlecard](./battlecard.md)s based on the Q3 2026 analysis:
+Strategic updates for internal Battlecards based on the Q3 2026 analysis:
 
-*   **SenseNode:** When competing against SenseNode, it is crucial to emphasize their [Subscription Models](./subscription-models.md) cost over a 3-year period, as this can be a significant factor for customers.
+*   **SenseNode:** When competing against SenseNode, it is crucial to emphasize their Subscription Models cost over a 3-year period, as this can be a significant factor for customers.
 *   **TeaBuddy:** TeaBuddy is not considered a direct competitor. Instead, opportunities for partnership or co-marketing should be explored.
 
 ## Related Entities

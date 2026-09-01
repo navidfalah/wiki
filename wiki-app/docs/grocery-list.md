@@ -23,7 +23,7 @@ This entry details a personal grocery list, recorded alongside various project i
 ## Key Details
 The grocery list includes the following items:
 *   Milk
-*   Batteries (CR2032 x4), specifically noted for use with [Nova Prototypes](/docs/nova-prototypes)
+*   Batteries (CR2032 x4), specifically noted for use with Nova Prototypes
 *   Coffee
 *   "That one cheese" (specific type not detailed)
 

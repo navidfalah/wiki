@@ -26,12 +26,12 @@ A product roadmap outlines the strategic direction and planned evolution of a pr
 ### Aurora Nova Widget Roadmap
 
 *   **Waterproofing**:
-    *   The Aurora Nova Widget currently has an [IP54](./ip54.md) rating, meaning it is protected from limited dust ingress and water spray from any direction.
-    *   There is a plan to upgrade the waterproofing to [IP65](./ip65.md) on the product roadmap.
-    *   The current IP54 rating, rather than a higher [IP67](./ip67.md) rating like some competitors, is attributed to a [Cost/Tooling Tradeoff](./cost-tooling-tradeoff.md).
+    *   The Aurora Nova Widget currently has an IP54 rating, meaning it is protected from limited dust ingress and water spray from any direction.
+    *   There is a plan to upgrade the waterproofing to IP65 on the product roadmap.
+    *   The current IP54 rating, rather than a higher IP67 rating like some competitors, is attributed to a Cost/Tooling Tradeoff.
     *   A customer experienced unit failure due to rain when installed in a raised bed, highlighting the need for improved waterproofing.
 *   **Feature Focus**:
-    *   The beta phase of the Aurora Nova Widget is primarily focused on developing [Local Mesh](./local-mesh.md) capabilities and [Open Export](./open-export.md) functionalities.
+    *   The beta phase of the Aurora Nova Widget is primarily focused on developing Local Mesh capabilities and Open Export functionalities.
 *   **Documentation**:
     *   An update to the product comparison page, likely to clarify waterproofing differences, is scheduled for **sprint 15**.
 
@@ -40,7 +40,7 @@ A product roadmap outlines the strategic direction and planned evolution of a pr
 *   **SenseNode**:
     *   The [SenseNode](./sensenode.md), a competitor product (SN-400), offers an IP67 rating, providing superior protection against dust and immersion in water.
 *   **TeaBuddy Puck**:
-    *   The [TeaBuddy Puck](./teabuddy-puck.md) is a different product designed for splash-resistant kitchen use and is not intended for outdoor or waterproof applications.
+    *   The TeaBuddy Puck is a different product designed for splash-resistant kitchen use and is not intended for outdoor or waterproof applications.
 
 ## Related Entities
 

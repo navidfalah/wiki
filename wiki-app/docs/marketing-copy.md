@@ -19,7 +19,7 @@ slug: /marketing-copy
 
 ## Overview
 
-Marketing copy refers to the textual content created to promote products, services, or [Branding](./Branding.md) brands. This includes elements such as [Product Naming](./Product%20Naming.md) product names, company names, and [Tagline Development](./Tagline%20Development.md) taglines. The development process often involves internal brainstorming, evaluation, and refinement, with notes explicitly marked for internal use to prevent premature customer exposure.
+Marketing copy refers to the textual content created to promote products, services, or Branding brands. This includes elements such as Product Naming product names, company names, and Tagline Development taglines. The development process often involves internal brainstorming, evaluation, and refinement, with notes explicitly marked for internal use to prevent premature customer exposure.
 
 ## Key Details
 
@@ -28,14 +28,14 @@ Marketing copy refers to the textual content created to promote products, servic
 Internal discussions have led to the acceptance and rejection of various names for products and companies:
 
 *   **Accepted Names**:
-    *   [Nova Widget](./Nova%20Widget.md)
-    *   [Aurora Labs](./Aurora%20Labs.md)
+    *   Nova Widget
+    *   Aurora Labs
 *   **Rejected Names**:
-    *   [SoilPal](./SoilPal.md)
-    *   [GritNode](./GritNode.md)
-    *   [PetalPing](./PetalPing.md)
-    *   [CloudFree Sensor](./CloudFree%20Sensor.md) (rejected for being "too on the nose")
-    *   [KarpathyGarden](./KarpathyGarden.md) (reason for rejection noted as "???", indicating unclear rationale)
+    *   SoilPal
+    *   GritNode
+    *   PetalPing
+    *   CloudFree Sensor (rejected for being "too on the nose")
+    *   KarpathyGarden (reason for rejection noted as "???", indicating unclear rationale)
 
 ### Taglines Explored
 
@@ -48,7 +48,7 @@ Several taglines have been considered and evaluated:
 ### Internal Context
 
 *   All brainstorm notes and evaluations are strictly for internal use and explicitly marked "DO NOT SEND TO CUSTOMERS."
-*   Internal debates, such as [Jonah](./Jonah.md)'s preference for a pebble [Product Design](./Product%20Design.md) product shape versus [Mira](./Mira.md)'s for a hex shape, highlight ongoing discussions that can influence product identity and subsequent marketing efforts.
+*   Internal debates, such as Jonah's preference for a pebble Product Design product shape versus Mira's for a hex shape, highlight ongoing discussions that can influence product identity and subsequent marketing efforts.
 
 ## Related Entities
 
@@ -69,7 +69,7 @@ Several taglines have been considered and evaluated:
 *   Branding
 *   Product Naming
 *   Tagline Development
-*   [Internal Feedback](./Internal%20Feedback.md)
+*   Internal Feedback
 *   Product Design
 
 ## Contradictions

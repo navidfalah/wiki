@@ -25,11 +25,11 @@ Support tickets serve as a record of customer inquiries and agent responses, pro
 
 A representative support ticket (#2099, dummy) illustrates a common customer inquiry regarding product suitability for specific environments:
 
-*   **Customer Inquiry**: A customer sought clarification on the suitability of the [Nova Widget](./Nova Widget.md) versus the [SenseNode SN-400](./SenseNode SN-400.md) for outdoor use.
+*   **Customer Inquiry**: A customer sought clarification on the suitability of the Nova Widget versus the SenseNode SN-400 for outdoor use.
 *   **Agent Response**:
-    *   The SenseNode SN-400 is rated [IP67](./IP67.md), indicating high protection against dust and water ingress, making it suitable for outdoor environments.
-    *   The Nova Widget is currently in beta and has an [IP54](./IP54.md) rating, suggesting it has less robust protection compared to IP67 devices.
-    *   [MeshSync](./MeshSync.md) is noted for not incurring any [Cloud Fee](./Cloud Fee.md)s.
+    *   The SenseNode SN-400 is rated IP67, indicating high protection against dust and water ingress, making it suitable for outdoor environments.
+    *   The Nova Widget is currently in beta and has an IP54 rating, suggesting it has less robust protection compared to IP67 devices.
+    *   MeshSync is noted for not incurring any Cloud Fees.
 
 ## Related Entities
 

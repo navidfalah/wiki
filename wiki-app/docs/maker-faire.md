@@ -20,20 +20,20 @@ slug: /maker-faire
 
 ## Overview
 
-Maker Faire is an event where creators, innovators, and enthusiasts gather to showcase their projects and share knowledge. [AuroraLabs](./AuroraLabs.md), a developer of [MeshSync](./MeshSync.md) technology, has expressed interest in attending, suggesting it as a potential venue for community engagement and product demonstrations.
+Maker Faire is an event where creators, innovators, and enthusiasts gather to showcase their projects and share knowledge. AuroraLabs, a developer of MeshSync technology, has expressed interest in attending, suggesting it as a potential venue for community engagement and product demonstrations.
 
 ## Key Details
 
 *   **AuroraLabs' Potential Attendance**: AuroraLabs indicated a possibility of attending Maker Faire, engaging with the community and potentially showcasing their latest developments.
 *   **Related AuroraLabs Updates**: In the same conversation where Maker Faire was mentioned, AuroraLabs provided updates on their MeshSync product:
-    *   **MeshSync 0.3.8**: This version was released with rejoin fixes and an updated [MQTT Schema v2](./MQTT_Schema_v2.md).
-    *   **[Node Limits](./Node_Limits.md)**: While 8 nodes are improving, AuroraLabs currently recommends a maximum of 6 nodes for [beta deployments](./Beta_Program.md).
-    *   **Battery Type**: For their devices, [CR2032](./CR2032.md) batteries are confirmed as the correct type, correcting an old blog typo that might have suggested [CR2450](./CR2450.md).
+    *   **MeshSync 0.3.8**: This version was released with rejoin fixes and an updated MQTT Schema v2.
+    *   **Node Limits**: While 8 nodes are improving, AuroraLabs currently recommends a maximum of 6 nodes for beta deployments.
+    *   **Battery Type**: For their devices, CR2032 batteries are confirmed as the correct type, correcting an old blog typo that might have suggested CR2450.
 
 ## Related Entities
 
 *   **AuroraLabs**: A technology company developing MeshSync, which might be showcased at Maker Faire.
-*   **[TeaBuddyHQ](./TeaBuddyHQ.md)**: An entity that interacted with AuroraLabs, celebrating their updates.
+*   **TeaBuddyHQ**: An entity that interacted with AuroraLabs, celebrating their updates.
 
 ## Related Concepts
 

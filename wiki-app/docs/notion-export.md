@@ -20,7 +20,7 @@ slug: /notion-export
 
 ## Overview
 
-This page details issues encountered during a wiki migration attempt, specifically highlighting problems with Notion's [Markdown Export](./Markdown_Export.md) functionality. The export process resulted in broken Markdown, including unclosed formatting, missing elements, and embedded HTML, making direct migration challenging. The source material also contained notes on various devices and protocols, some with conflicting information.
+This page details issues encountered during a wiki migration attempt, specifically highlighting problems with Notion's Markdown Export functionality. The export process resulted in broken Markdown, including unclosed formatting, missing elements, and embedded HTML, making direct migration challenging. The source material also contained notes on various devices and protocols, some with conflicting information.
 
 ## Key Details
 
@@ -35,20 +35,20 @@ The Notion export produced several common Markdown formatting errors, indicating
 
 ### Nova Widget Notes
 
-*   **Protocol:** The [Nova Widget](./Nova_Widget.md) utilizes [MeshSync](./MeshSync.md) as its mesh protocol.
-*   **Battery:** The device uses a [CR2032](./CR2032.md) battery.
+*   **Protocol:** The Nova Widget utilizes MeshSync as its mesh protocol.
+*   **Battery:** The device uses a CR2032 battery.
 *   **Power Consumption:**
     *   Sleep mode: 4.2 µA
     *   Transmit (TX) mode: 12 mA
 
 ### TeaBuddy Cross-reference
 
-*   **Protocol:** [TeaBuddy](./TeaBuddy.md) uses [Bluetooth Low Energy](./Bluetooth_Low_Energy.md) (BLE), not a mesh protocol.
-*   **Codebase Merging:** [Sam Rivera](./Sam_Rivera.md) advises against merging the TeaBuddy and Nova Widget [Codebase Merging](./Codebase_Merging.md) codebases.
+*   **Protocol:** TeaBuddy uses Bluetooth Low Energy (BLE), not a mesh protocol.
+*   **Codebase Merging:** Sam Rivera advises against merging the TeaBuddy and Nova Widget Codebase Merging codebases.
 
 ### SenseNode
 
-*   **Waterproofing:** The [SenseNode](./SenseNode.md) device boasts an [IP67](./IP67.md) waterproof rating.
+*   **Waterproofing:** The SenseNode device boasts an IP67 waterproof rating.
 
 ## Related Entities
 
@@ -64,7 +64,7 @@ The Notion export produced several common Markdown formatting errors, indicating
 *   **Bluetooth Low Energy (BLE):** A wireless personal area network technology.
 *   **Codebase Merging:** The process of combining different software codebases.
 *   **CR2032:** A common type of lithium coin cell battery.
-*   **CR2450:** Another type of lithium coin cell battery, larger than [CR2450](./CR2450.md).
+*   **CR2450:** Another type of lithium coin cell battery, larger than CR2450.
 *   **IP67:** An Ingress Protection rating indicating dust-tightness and protection against temporary immersion in water.
 
 ## Contradictions

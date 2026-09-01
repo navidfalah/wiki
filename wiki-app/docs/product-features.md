@@ -17,7 +17,7 @@ slug: /product-features
 
 # Product Features
 
-The [Aurora Nova Widget](./aurora-nova-widget.md), often referred to as the "Aurora Labs Nova thing," is a sensor device developed by [Aurora Labs](./aurora-labs.md). Its key features emphasize [Local Mesh Networking](./local-mesh-networking.md), a [Subscription Model](./subscription-model.md)-free model, and a focus on [Open Firmware](./open-firmware.md).
+The [Aurora Nova Widget](./aurora-nova-widget.md), often referred to as the "Aurora Labs Nova thing," is a sensor device developed by [Aurora Labs](./aurora-labs.md). Its key features emphasize Local Mesh Networking, a Subscription Model-free model, and a focus on Open Firmware.
 
 ## Overview
 
@@ -40,7 +40,7 @@ The Aurora Nova Widget is designed for home lab and environmental monitoring, of
 
 ### Waterproofing and Durability
 
-*   **Current Rating (Beta)**: The Aurora Nova Widget is currently rated [IP Ratings (Ingress Protection)](./ip-ratings.md) IP54, meaning it is protected from dust ingress (limited protection) and water splashes from any direction.
+*   **Current Rating (Beta)**: The Aurora Nova Widget is currently rated IP Ratings (Ingress Protection) IP54, meaning it is protected from dust ingress (limited protection) and water splashes from any direction.
 *   **Roadmap**: Aurora Labs plans to upgrade the waterproofing to IP65 (dust-tight and protected against water jets) once tooling funding is secured.
 *   **Comparison to Competitors**: Competitors like SenseNode offer IP67 waterproofing (dust-tight and immersion up to 1m), which is a higher standard than the Aurora Nova's current rating. This difference is attributed to cost and tooling tradeoffs during development.
 *   **Recommendations**: For outdoor installations, especially in wet environments like raised garden beds in the Pacific Northwest, a protective cover is recommended.

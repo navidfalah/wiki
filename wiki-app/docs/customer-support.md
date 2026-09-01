@@ -27,28 +27,28 @@ Customer Support addresses inquiries and issues related to product specification
 ### Aurora Nova Widget
 
 *   **Battery Specification**:
-    *   The correct battery type for the Aurora Nova Widget is [CR2032](./cr2032.md).
-    *   An earlier blog post by "[Alex](./alex.md)" incorrectly listed [CR2450](./cr2450.md), but this has since been corrected (as of 2026-06-20), and the official wiki page has been updated.
-    *   [Battery Life Factors](./battery-life-factors.md) estimates vary: marketing materials state 2 years, while forum discussions suggest 18 months. The actual battery life depends on factors such as node count and the read interval (defaulting to 15 minutes). A detailed power budget document is expected to be published soon.
+    *   The correct battery type for the Aurora Nova Widget is CR2032.
+    *   An earlier blog post by "Alex" incorrectly listed CR2450, but this has since been corrected (as of 2026-06-20), and the official wiki page has been updated.
+    *   Battery Life Factors estimates vary: marketing materials state 2 years, while forum discussions suggest 18 months. The actual battery life depends on factors such as node count and the read interval (defaulting to 15 minutes). A detailed power budget document is expected to be published soon.
 *   **Waterproofing**:
-    *   The Aurora Nova Widget has an [IP54](./ip54.md) rating, meaning it is protected from dust and splashing water, but it is not fully waterproof.
-    *   It is not comparable to devices with an [IP67](./ip67.md) rating, such as the [SenseNode](./sensenode.md), which can withstand immersion.
+    *   The Aurora Nova Widget has an IP54 rating, meaning it is protected from dust and splashing water, but it is not fully waterproof.
+    *   It is not comparable to devices with an IP67 rating, such as the [SenseNode](./sensenode.md), which can withstand immersion.
     *   Customers are advised to use a cover for units installed in outdoor environments prone to rain.
-    *   The decision for IP54 was a [Cost/Tooling Tradeoffs](./cost-tooling-tradeoffs.md), with a beta focus on local mesh and open export features. An upgrade to [IP65](./ip65.md) is on the roadmap.
+    *   The decision for IP54 was a Cost/Tooling Tradeoffs, with a beta focus on local mesh and open export features. An upgrade to IP65 is on the roadmap.
     *   A comparison page detailing waterproofing differences is scheduled for update in Sprint 15.
 *   **Known Issues & Fixes**:
-    *   **[Rejoin Loop](./rejoin-loop.md)**: For ticket #2099, a known issue with rejoin loops can be resolved by [updating to version 0.3.8](./firmware-updates.md) and maintaining a maximum of six nodes.
+    *   **Rejoin Loop**: For ticket #2099, a known issue with rejoin loops can be resolved by [updating to version 0.3.8](./firmware-updates.md) and maintaining a maximum of six nodes.
 
 ### TeaBuddy
 
 *   **App Compatibility**:
-    *   The TeaBuddy puck uses a separate [BLE kitchen app](./ble-kitchen-app.md) and does not share an app with the Aurora Nova Widget (which uses the [MeshSync](./meshsync.md) garden app).
-    *   TeaBuddy is a different [Product Differentiation](./product-differentiation.md) from a different company.
+    *   The TeaBuddy puck uses a separate BLE kitchen app and does not share an app with the Aurora Nova Widget (which uses the [MeshSync](./meshsync.md) garden app).
+    *   TeaBuddy is a different Product Differentiation from a different company.
 *   **Waterproofing**:
     *   The TeaBuddy puck is splash-resistant, designed for kitchen use, but is not fully waterproof.
 *   **Known Issues & Fixes**:
-    *   **[iOS 18 Pairing](./ios-18-pairing.md)**: Pairing issues with iOS 18 have been fixed in version 0.9.3.
-    *   **[TB-142 Cancel Bug](./tb-142-cancel-bug.md)**: A long-press reset can resolve the TB-142 cancel bug.
+    *   **iOS 18 Pairing**: Pairing issues with iOS 18 have been fixed in version 0.9.3.
+    *   **TB-142 Cancel Bug**: A long-press reset can resolve the TB-142 cancel bug.
 
 ## Related Entities
 
@@ -59,12 +59,12 @@ Customer Support addresses inquiries and issues related to product specification
 
 ## Related Concepts
 
-*   **[Battery Specifications](./battery-specifications.md)**: [CR2032](./cr2032.md), [CR2450](./cr2450.md).
-*   **[Battery Life Factors](./battery-life-factors.md)**: Node count, read interval, power budget.
-*   **[IP Ratings](./ip-ratings.md)**: Industry standards for ingress protection (e.g., [IP54](./ip54.md), [IP65](./ip65.md), [IP67](./ip67.md)).
-*   **[App Compatibility](./app-compatibility.md)**: Differentiation between [MeshSync](./meshsync.md) garden app and [BLE kitchen app](./ble-kitchen-app.md).
-*   **[Product Differentiation](./product-differentiation.md)**: Understanding the distinct features and limitations of different products (e.g., [Aurora Nova Widget](./aurora-nova-widget.md) vs. [TeaBuddy](./teabuddy.md)).
-*   **[Cost/Tooling Tradeoffs](./cost-tooling-tradeoffs.md)**: Business decisions influencing product specifications and features.
+*   **[Battery Specifications](./battery-specifications.md)**: CR2032, CR2450.
+*   **Battery Life Factors**: Node count, read interval, power budget.
+*   **IP Ratings**: Industry standards for ingress protection (e.g., IP54, IP65, IP67).
+*   **App Compatibility**: Differentiation between [MeshSync](./meshsync.md) garden app and BLE kitchen app.
+*   **Product Differentiation**: Understanding the distinct features and limitations of different products (e.g., [Aurora Nova Widget](./aurora-nova-widget.md) vs. [TeaBuddy](./teabuddy.md)).
+*   **Cost/Tooling Tradeoffs**: Business decisions influencing product specifications and features.
 *   **[Firmware Updates](./firmware-updates.md)**: Solutions for known software issues (e.g., versions 0.3.8, 0.9.3).
 
 ## Contradictions

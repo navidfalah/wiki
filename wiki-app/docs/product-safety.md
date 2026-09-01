@@ -24,19 +24,19 @@ Product safety guidelines are crucial for the proper use and longevity of device
 ## Key Details
 
 ### Safety Guidelines for Aurora Nova Widget
-*   **Water Resistance**: The Aurora Nova Widget is rated [IP54](./ip54.md), meaning it is splash-resistant only.
+*   **Water Resistance**: The Aurora Nova Widget is rated IP54, meaning it is splash-resistant only.
 *   **Usage Restrictions**:
     *   The device should **not** be submerged in water.
     *   Outdoor burial, similar to [SenseNode](./sensenode.md)-style installations, is **not supported** for the Aurora Nova Widget.
 
 ### Confidentiality
 During the beta testing phase, certain materials are considered [Confidentiality](./confidentiality.md):
-*   [Beta Firmware](./beta-firmware.md)
+*   Beta Firmware
 *   [MeshSync](./meshsync.md) source partial
 *   Power budget spreadsheets
 
 ### Data Handling
-*   **Telemetry**: Device [Telemetry](./telemetry.md) data remains local to the device by default.
+*   **Telemetry**: Device Telemetry data remains local to the device by default.
 *   **MQTT Export**: Users have the option to configure [MQTT Export](./mqtt-export.md) for telemetry data, which is user-controlled.
 
 ### Endorsement and Partnerships

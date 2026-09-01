@@ -20,16 +20,16 @@ slug: /sensor-technology
 
 ## Overview
 
-Sensor technology encompasses a range of devices designed to detect and respond to physical input from the environment. This page primarily focuses on garden and soil sensors, exemplified by the [Aurora Nova Widget](./aurora-nova-widget.md), and its [Competitive Analysis](./competitive-analysis.md). These devices often feature local [Mesh Networking](./mesh-networking.md) capabilities, with varying degrees of [Cloud Connectivity](./cloud-connectivity.md) and power requirements.
+Sensor technology encompasses a range of devices designed to detect and respond to physical input from the environment. This page primarily focuses on garden and soil sensors, exemplified by the [Aurora Nova Widget](./aurora-nova-widget.md), and its [Competitive Analysis](./competitive-analysis.md). These devices often feature local [Mesh Networking](./mesh-networking.md) capabilities, with varying degrees of Cloud Connectivity and power requirements.
 
 ## Key Details
 
 ### Aurora Nova Widget v2 Beta Unit
 
-The [Aurora Nova Widget](./aurora-nova-widget.md) v2 beta unit is an [Open Source Hardware/Software](./open-source-hardware-software.md) [Soil Moisture Sensing](./soil-moisture-sensing.md) and [Temperature Sensing](./temperature-sensing.md) sensor. It utilizes a local [MeshSync](./meshsync.md) mesh network and does not require mandatory cloud connectivity.
+The [Aurora Nova Widget](./aurora-nova-widget.md) v2 beta unit is an Open Source Hardware/Software Soil Moisture Sensing and Temperature Sensing sensor. It utilizes a local [MeshSync](./meshsync.md) mesh network and does not require mandatory cloud connectivity.
 
 *   **Product Status:** Draft, with sections 4-7 missing from its specification. Beta testing has shown instability with 8 nodes, though theoretically it supports up to 32 nodes.
-*   **Owners:** [Mira Chen](./mira-chen.md) (firmware) and [Jonah Park](./jonah-park.md) (hardware).
+*   **Owners:** Mira Chen (firmware) and Jonah Park (hardware).
 *   **Features:** Measures soil moisture and temperature.
 *   **Connectivity:**
     *   [MeshSync](./meshsync.md) local mesh network.
@@ -37,13 +37,13 @@ The [Aurora Nova Widget](./aurora-nova-widget.md) v2 beta unit is an [Open Sourc
     *   Parent election mechanism is still to be determined.
 *   **Power:**
     *   Powered by 1x CR2032 battery.
-    *   Marketing claims a 2-year [Battery Life Optimization](./battery-life-optimization.md), while engineering estimates 18 months when operating with 10 nodes.
+    *   Marketing claims a 2-year Battery Life Optimization, while engineering estimates 18 months when operating with 10 nodes.
     *   **Power Budget (DRAFT):**
         *   Sleep mode: 4.2 µA (target)
         *   Sample + TX: 12 mA peak (at 15-minute intervals)
         *   Rejoin spike: 110–340 µA (known issue)
 *   **Durability:** IP54 waterproof rating.
-*   **Missing Specifications:** Final enclosure [IP Rating](./ip-rating.md), OTA update path, and MQTT export schema.
+*   **Missing Specifications:** Final enclosure IP Rating, OTA update path, and MQTT export schema.
 
 ### Competitive Landscape (Q3 2026)
 
@@ -56,13 +56,13 @@ The market for smart sensors includes various vendors offering solutions for gar
     *   Cloud: Optional
     *   Waterproof: IP54
     *   Battery: CR2032
-*   **[SenseNode](./sensenode.md) [SN-400](./sensenode-sn-400.md):**
+*   **[SenseNode](./sensenode.md) SN-400:**
     *   Mesh: [LoRaWAN](./lorawan.md)
     *   Cloud: Required
     *   Waterproof: IP67
     *   Battery: CR2450
     *   **Battlecard Note:** Emphasize subscription cost over 3 years as a competitive differentiator.
-*   **[CheapoCo](./cheapoco.md) [SoilStick](./cheapoco-soilstick.md):**
+*   **CheapoCo SoilStick:**
     *   Mesh: WiFi
     *   Cloud: Required
     *   Waterproof: None
@@ -70,32 +70,32 @@ The market for smart sensors includes various vendors offering solutions for gar
 
 #### Kitchen / Lifestyle (Adjacent)
 
-*   **[TeaBuddy Puck](./teabuddy-puck.md):**
+*   **TeaBuddy Puck:**
     *   Protocol: BLE (Bluetooth Low Energy)
     *   Notes: Local-only tea timer. Not considered a direct competitor; potential for partnership/co-marketing.
-*   **[TimerCap](./timercap.md):**
+*   **TimerCap:**
     *   Protocol: Mechanical
     *   Notes: Not a smart device. Kickstarter campaign failed in 2024.
 
 ## Related Entities
 
 *   **[Aurora Labs](./aurora-labs.md):** Developer of the Nova Widget.
-*   **[SenseNode](./sensenode.md):** Competitor in the soil sensor market with the [SN-400](./sensenode-sn-400.md).
-*   **[CheapoCo](./cheapoco.md):** Competitor in the soil sensor market with the [SoilStick](./cheapoco-soilstick.md).
+*   **[SenseNode](./sensenode.md):** Competitor in the soil sensor market with the SN-400.
+*   **CheapoCo:** Competitor in the soil sensor market with the SoilStick.
 *   **[TeaBuddy](./teabuddy.md):** Vendor of an adjacent lifestyle product (Puck tea timer).
-*   **[TimerCap](./timercap.md):** Vendor of a non-smart, adjacent lifestyle product.
-*   **[Mira Chen](./mira-chen.md):** Firmware owner for the [Aurora Nova Widget](./aurora-nova-widget.md).
-*   **[Jonah Park](./jonah-park.md):** Hardware owner for the [Aurora Nova Widget](./aurora-nova-widget.md) and author of the competitive landscape analysis.
+*   **TimerCap:** Vendor of a non-smart, adjacent lifestyle product.
+*   **Mira Chen:** Firmware owner for the [Aurora Nova Widget](./aurora-nova-widget.md).
+*   **Jonah Park:** Hardware owner for the [Aurora Nova Widget](./aurora-nova-widget.md) and author of the competitive landscape analysis.
 
 ## Related Concepts
 
-*   **[Soil Moisture Sensing](./soil-moisture-sensing.md):** Core functionality of the Nova Widget and its competitors.
-*   **[Temperature Sensing](./temperature-sensing.md):** Additional environmental data collected by the Nova Widget.
+*   **Soil Moisture Sensing:** Core functionality of the Nova Widget and its competitors.
+*   **Temperature Sensing:** Additional environmental data collected by the Nova Widget.
 *   **[Mesh Networking](./mesh-networking.md):** A type of network topology where nodes connect directly, dynamically, and non-hierarchically to as many other nodes as possible. Examples include [MeshSync](./meshsync.md) and [LoRaWAN](./lorawan.md).
-*   **[Cloud Connectivity](./cloud-connectivity.md):** The ability of a device to connect to internet-based services for data storage, processing, or remote control.
-*   **[Battery Life Optimization](./battery-life-optimization.md):** Critical for IoT devices, involving power budget management and efficient operation modes.
-*   **[IP Rating](./ip-rating.md):** Ingress Protection rating, indicating a device's resistance to dust and water.
-*   **[Open Source Hardware/Software](./open-source-hardware-software.md):** The Nova Widget's design philosophy.
+*   **Cloud Connectivity:** The ability of a device to connect to internet-based services for data storage, processing, or remote control.
+*   **Battery Life Optimization:** Critical for IoT devices, involving power budget management and efficient operation modes.
+*   **IP Rating:** Ingress Protection rating, indicating a device's resistance to dust and water.
+*   **Open Source Hardware/Software:** The Nova Widget's design philosophy.
 *   **[Competitive Analysis](./competitive-analysis.md):** The process of identifying and evaluating competitors to determine their strengths and weaknesses relative to one's own product.
 
 ## Contradictions

@@ -27,14 +27,14 @@ Product Management is a discipline focused on the strategy, roadmap, and feature
 Product management activities often involve categorizing tasks based on urgency, impact, and strategic fit. Common categories observed during backlog grooming include:
 
 *   **P0 (Priority 0)**: These are critical tasks requiring immediate attention, often essential for current product stability, core functionality, or high-impact features.
-    *   For **[AURORA](./aurora.md)**, P0 tasks include publishing a power budget spreadsheet, hardening the 0.3.9 rejoin functionality, and developing a comparison page for the [SenseNode SN-400](./sensenode-sn-400.md).
-    *   For **[TEABUDDY](./teabuddy.md)**, P0 tasks involve the Android v1.1 [Beta Release](./beta-release.md), verification of the TB-142 cancel bug, and a comprehensive [Box Copy Audit](./box-copy-audit.md) for all presets.
-*   **Shared [Icebox](./icebox.md)**: This category holds ideas, features, or projects that are not prioritized for immediate development but are considered valuable for future exploration. Items in the icebox are typically deferred due to lower current priority, resource constraints, or a need for further research.
-    *   Examples include the "[Plant Whisperer app](./plant-whisperer-app.md)" (#47), a "[Contradiction Linter](./contradiction-linter.md)" for content consistency, and an "Wiki index auto-refresh" feature.
-*   **[Quick Wins](./quick-wins.md)**: These are tasks that offer a high return on investment for relatively low effort. They are often small improvements or fixes that can be implemented rapidly to provide immediate value.
-    *   Examples include adding 40 extended dummy raw files for a [Compiler Stress Test](./compiler-stress-test.md) and fixing a specific forum scrape thread (#9102).
+    *   For **AURORA**, P0 tasks include publishing a power budget spreadsheet, hardening the 0.3.9 rejoin functionality, and developing a comparison page for the SenseNode SN-400.
+    *   For **[TEABUDDY](./teabuddy.md)**, P0 tasks involve the Android v1.1 Beta Release, verification of the TB-142 cancel bug, and a comprehensive Box Copy Audit for all presets.
+*   **Shared Icebox**: This category holds ideas, features, or projects that are not prioritized for immediate development but are considered valuable for future exploration. Items in the icebox are typically deferred due to lower current priority, resource constraints, or a need for further research.
+    *   Examples include the "Plant Whisperer app" (#47), a "Contradiction Linter" for content consistency, and an "Wiki index auto-refresh" feature.
+*   **Quick Wins**: These are tasks that offer a high return on investment for relatively low effort. They are often small improvements or fixes that can be implemented rapidly to provide immediate value.
+    *   Examples include adding 40 extended dummy raw files for a Compiler Stress Test and fixing a specific forum scrape thread (#9102).
 *   **Stale**: This category includes items that have been repeatedly reviewed and rejected, or are no longer considered relevant or viable for the product roadmap.
-    *   Examples include the proposed rename of "[MeshSync](./meshsync.md)" to "[MeshSink](./meshsink.md)" and the "[KarpathyGarden](./karpathygarden.md)" product name, both of which have been rejected multiple times.
+    *   Examples include the proposed rename of "[MeshSync](./meshsync.md)" to "MeshSink" and the "KarpathyGarden" product name, both of which have been rejected multiple times.
 
 ## Related Entities
 
@@ -48,9 +48,9 @@ Product management activities often involve categorizing tasks based on urgency,
 ## Related Concepts
 
 *   **Backlog Grooming**: The process of regularly reviewing, refining, and prioritizing items in the product backlog.
-*   **[Prioritization](./prioritization.md)**: The act of determining the order of importance for tasks and features.
+*   **Prioritization**: The act of determining the order of importance for tasks and features.
 *   **Beta Release**: A pre-release version of software given to a group of users for testing and feedback before general availability.
-*   **[Bug Verification](./bug-verification.md)**: The process of confirming that a reported software defect has been successfully fixed.
+*   **Bug Verification**: The process of confirming that a reported software defect has been successfully fixed.
 *   **Box Copy Audit**: A review of all text and content associated with a product, often for consistency, accuracy, and branding.
 *   **Compiler Stress Test**: A type of software testing designed to evaluate the robustness and performance of a compiler under heavy load or unusual conditions.
 *   **Contradiction Linter**: A tool or process designed to identify inconsistencies or contradictions within a body of text or code.

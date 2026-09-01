@@ -262,6 +262,36 @@ page_type: source | entity | concept | comparison | synthesis
 - Resolves relative paths against `wiki-app/docs/`
 - Reports broken targets in `/api/analytics` and Analytics dashboard
 
+## fix_dead_links.py
+
+Repairs, rather than just reports, the broken links `dead_link_checker.py`
+finds: `[Link Text](./missing.md)` → `Link Text`. Frontmatter is left
+untouched; only markdown links whose resolved target file doesn't exist are
+unwrapped. Idempotent (already-plain text is never re-touched).
+
+**Real, measured impact**: running this against the 174-page sample corpus
+under `wiki-app/docs/` found 1,579 broken links across 109 files — the
+exact set Docusaurus's build was warning about
+(`Markdown link with URL './xxx.md' ... couldn't be resolved`). Inspecting
+the missing targets showed this predates the linker fixes above: filenames
+like `Alex%20Rivera.md`, `Aurora Nova Widget.md`, `@cloudbro.md`, `111.md`
+are inconsistent with this pipeline's slugify convention (always
+lowercase-hyphenated) — they're leftover output from an earlier,
+LLM-only-linking version of the pipeline that let the model invent
+plausible-looking link targets for entities that were never actually
+compiled into their own page, with no check against the real topic index.
+That failure mode doesn't reproduce with the current linker (LLM linking
+is now constrained to the real `topic_index`, and the fixed mechanical
+pass only ever links to titles that actually resolved to a file), but
+these 1,579 links were already baked into the checked-in sample corpus and
+needed a real repair pass, not a fresh compile (no LLM API key is
+available in this environment to regenerate the corpus from scratch).
+Running `fix_dead_links.py` brought `dead_link_checker.py`'s count on this
+corpus to 0.
+
+Flags: `--docs-dir PATH`, `--dry-run`. Safe to run again after any future
+compile if new dead links appear.
+
 ## fix_frontmatter.py
 
 Repairs YAML scalar fields that break Docusaurus parsing:

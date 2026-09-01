@@ -231,7 +231,7 @@ print(linked_markdown_output)
 
 ## Overview
 
-Aurora Labs is a company founded by [Mira Chen](./mira-chen.md) and [Jonah Park](./jonah-park.md), born from a shared frustration with [IoT Sensors](./iot-sensors.md) that have short battery lives and require proprietary cloud accounts. Their mission statement (draft) is "Open sensors for people who own their data." The company's primary product is the **[Nova Widget](./nova-widget.md)**, an IoT sensor system designed for home gardeners and small-acreage farmers, utilizing a custom mesh networking protocol called **[MeshSync](./meshsync.md)**.
+Aurora Labs is a company founded by Mira Chen and Jonah Park, born from a shared frustration with [IoT Sensors](./iot-sensors.md) that have short battery lives and require proprietary cloud accounts. Their mission statement (draft) is "Open sensors for people who own their data." The company's primary product is the **[Nova Widget](./nova-widget.md)**, an IoT sensor system designed for home gardeners and small-acreage farmers, utilizing a custom mesh networking protocol called **[MeshSync](./meshsync.md)**.
 
 ## Key Details
 
@@ -244,19 +244,19 @@ Aurora Labs is a company founded by [Mira Chen](./mira-chen.md) and [Jonah Park]
 *   **Nova Widget:**
     *   **Target Users:** Home gardeners and small-acreage farmers.
     *   **v1 Scope:** Measures soil moisture (capacitive), air temperature, and ambient light (simple photodiode).
-    *   **Connectivity:** Uses [BLE](./ble.md) to a phone for setup and a custom mesh protocol (MeshSync) for range extension between nodes.
-    *   **Data Export:** Supports [CSV](./csv.md) and [MQTT](./mqtt.md) export; no subscription cloud dashboard.
-    *   **Enclosure:** 3D printed [PETG](./petg.md) for beta, with plans for injection molding. The enclosure features a pebble shape.
-    *   **Environmental Rating:** [IP54](./ip54.md) for beta units, with a target of [IP65](./ip65.md) once tooling is funded.
+    *   **Connectivity:** Uses BLE to a phone for setup and a custom mesh protocol (MeshSync) for range extension between nodes.
+    *   **Data Export:** Supports CSV and [MQTT](./mqtt.md) export; no subscription cloud dashboard.
+    *   **Enclosure:** 3D printed PETG for beta, with plans for injection molding. The enclosure features a pebble shape.
+    *   **Environmental Rating:** IP54 for beta units, with a target of IP65 once tooling is funded.
 *   **MeshSync:**
     *   **Description:** A custom mesh networking protocol developed by Mira Chen.
-    *   **MCU:** Primarily uses the [nRF52840](./nrf52840.md), with profiling for rejoin spikes being done on the [nRF5340](./nrf5340.md) eval board.
+    *   **MCU:** Primarily uses the nRF52840, with profiling for rejoin spikes being done on the nRF5340 eval board.
     *   **Stability:** Stable at 6 nodes in lab environments. While 8-node stability has been achieved in some tests, 8+ nodes are still reported as unstable in field reports (ticket #2099). Six nodes are recommended for beta customers.
     *   **Naming:** The name "MeshSync" has been consistently chosen over "MeshSink" after multiple rejections of the latter.
 *   **MeshSync Firmware 0.3.8 Release (2026-07-02):**
     *   **Highlights:**
         *   Mitigation of rejoin storms when the mesh exceeds 6 nodes.
-        *   Parent election logging ([RSSI](./rssi.md) + hop count) exported via debug [UART](./uart.md).
+        *   Parent election logging (RSSI + hop count) exported via debug UART.
         *   Power spike on rejoin reduced from 340µA to 180µA (still above the 110µA target).
     *   **Breaking Changes:**
         *   Default read interval confirmed at 15 minutes (not hourly).
@@ -268,7 +268,7 @@ Aurora Labs is a company founded by [Mira Chen](./mira-chen.md) and [Jonah Park]
 ### Technical Specifications
 
 *   **MCU:** nRF52840 (Jonah Park has dev boards).
-*   **Power Target:** Originally aimed for 2 years on a [CR2032](./cr2032.md) battery with hourly readings.
+*   **Power Target:** Originally aimed for 2 years on a CR2032 battery with hourly readings.
 *   **Battery Type:** CR2032.
 *   **Read Interval:** Default read interval is 15 minutes.
 
@@ -285,12 +285,12 @@ Aurora Labs is a company founded by [Mira Chen](./mira-chen.md) and [Jonah Park]
 
 ### Competitive Landscape
 
-*   Aurora Labs differentiates itself from competitors like [SenseNode](./sensenode.md) (e.g., [SN-400](./sensenode-sn-400.md)) through its local mesh architecture without subscriptions, partially [Open Hardware/Firmware](./open-hardware-firmware.md), and focus on community integrations. Jonah Park is updating a comparison page against SenseNode.
+*   Aurora Labs differentiates itself from competitors like [SenseNode](./sensenode.md) (e.g., SN-400) through its local mesh architecture without subscriptions, partially Open Hardware/Firmware, and focus on community integrations. Jonah Park is updating a comparison page against SenseNode.
 
 ## Related Entities
 
 *   **SenseNode SN-400:** A competitor product against which Aurora Labs benchmarks its Nova Widget.
-*   **[TeaBuddy](./teabuddy.md):** A potential co-marketing partner. [Alex](./alex.md), a friend of the founders, is involved. While a "smart garden tea" partnership was rejected, co-marketing efforts are being revisited.
+*   **[TeaBuddy](./teabuddy.md):** A potential co-marketing partner. Alex, a friend of the founders, is involved. While a "smart garden tea" partnership was rejected, co-marketing efforts are being revisited.
 *   **Alex:** A friend of the founders, involved in discussions regarding TeaBuddy.
 
 ## Related Concepts
@@ -298,8 +298,8 @@ Aurora Labs is a company founded by [Mira Chen](./mira-chen.md) and [Jonah Park]
 *   **IoT Sensors:** The core product category for Aurora Labs.
 *   **[Mesh Networking](./mesh-networking.md):** The foundational technology (MeshSync) for node communication and range extension.
 *   **Open Hardware/Firmware:** A key differentiator and part of Aurora Labs' mission to give users data ownership.
-*   **[Battery Life Optimization](./battery-life-optimization.md):** A critical focus area, with ongoing efforts to reduce power consumption and improve longevity.
-*   **[Contradiction Linter](./contradiction-linter.md):** An internal tool or process identified as an action item to flag inconsistencies in documentation, particularly regarding battery claims.
+*   **Battery Life Optimization:** A critical focus area, with ongoing efforts to reduce power consumption and improve longevity.
+*   **Contradiction Linter:** An internal tool or process identified as an action item to flag inconsistencies in documentation, particularly regarding battery claims.
 
 ## Contradictions
 
@@ -308,7 +308,7 @@ Aurora Labs is a company founded by [Mira Chen](./mira-chen.md) and [Jonah Park]
 *   **Default Read Interval:**
     *   **Contradiction:** Kickoff slides initially stated an hourly default read interval. However, the product specification and MeshSync firmware 0.3.8 confirm the default read interval is 15 minutes. Despite this, internal documentation (e.g., "docs") still incorrectly states an hourly default.
 *   **Battery Type:**
-    *   **Contradiction:** A teardown by "Alex" incorrectly stated the use of a [CR2450](./cr2450.md) battery, whereas Aurora Labs products use a CR2032 battery.
+    *   **Contradiction:** A teardown by "Alex" incorrectly stated the use of a CR2450 battery, whereas Aurora Labs products use a CR2032 battery.
 *   **Rejoin Power Spike:**
     *   **Contradiction:** MeshSync firmware 0.3.8 release notes state the power spike on rejoin was reduced to 180µA, which is "still above 110µA target." However, a weekly sync transcript from 2026-05-28 mentions "still seeing spike to 110 µA when a node rejoins." This suggests either the 110µA is the *actual* spike observed at that time, or the target was being confused with the observed value. The 0.3.8 release notes, being more recent and formal, indicate the spike is 180µA.
 

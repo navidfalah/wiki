@@ -26,8 +26,8 @@ Data Ingestion, within the context of an [LLM Wiki pipeline](./llm-wiki-pipeline
 ### Process
 The [Heuristic mode](./heuristic-mode.md) of the [Wiki compiler](./wiki-compiler.md) orchestrates the data ingestion process:
 *   It reads all `.txt` and `.md` files from designated raw data directories.
-*   Topics are extracted from these files without requiring an [LLM API key](./llm-api-key.md) for this initial phase.
-*   The extracted information is then used to generate [Docusaurus](./docusaurus.md)-compatible wiki pages, which are outputted under `wiki-app/docs/`.
+*   Topics are extracted from these files without requiring an LLM API key for this initial phase.
+*   The extracted information is then used to generate Docusaurus-compatible wiki pages, which are outputted under `wiki-app/docs/`.
 *   A key feature of this process is the automatic generation of cross-links between mentioned entities, enhancing the interconnectedness of the wiki.
 
 ### Data Sources
@@ -43,7 +43,7 @@ The ingestion process is designed to handle various data quality issues and unst
 *   It manages the inclusion of irrelevant "wrong-thread noise" often found in email threads.
 
 ### Objective
-The overarching goal of data ingestion is to transform a large volume of raw files (e.g., 40+ files) into a rich, interconnected knowledge graph. A critical aspect of this goal is to identify and surface potential contradictions found within the ingested data, such as those related to "[battery](./battery.md)," "[herbal preset](./herbal-preset.md)," or "[read interval](./read-interval.md)."
+The overarching goal of data ingestion is to transform a large volume of raw files (e.g., 40+ files) into a rich, interconnected knowledge graph. A critical aspect of this goal is to identify and surface potential contradictions found within the ingested data, such as those related to "battery," "herbal preset," or "read interval."
 
 ## Related Entities
 
@@ -56,16 +56,16 @@ The overarching goal of data ingestion is to transform a large volume of raw fil
 *   [LLM Wiki pipeline](./llm-wiki-pipeline.md)
 *   [Wiki compiler](./wiki-compiler.md)
 *   [Heuristic mode](./heuristic-mode.md)
-*   [Karpathy pattern](./karpathy-pattern.md)
-*   [Cross-linking](./cross-linking.md)
-*   [Docusaurus](./docusaurus.md)
-*   [LLM API key](./llm-api-key.md)
-*   [Topic extraction](./topic-extraction.md)
-*   [Data parsing](./data-parsing.md)
+*   Karpathy pattern
+*   Cross-linking
+*   Docusaurus
+*   LLM API key
+*   Topic extraction
+*   Data parsing
 
 ## Contradictions
 
-The provided source does not contain contradictions regarding the process of data ingestion itself. However, a stated goal of the data ingestion and subsequent processing is to surface contradictions found *within* the ingested data, specifically mentioning "[battery](./battery.md)," "[herbal preset](./herbal-preset.md)," and "[read interval](./read-interval.md)" as examples of topics where contradictions might be identified.
+The provided source does not contain contradictions regarding the process of data ingestion itself. However, a stated goal of the data ingestion and subsequent processing is to surface contradictions found *within* the ingested data, specifically mentioning "battery," "herbal preset," and "read interval" as examples of topics where contradictions might be identified.
 
 ## Sources
 

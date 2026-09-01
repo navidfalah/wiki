@@ -19,7 +19,7 @@ slug: /heuristic-mode
 
 ## Overview
 
-Heuristic Mode is a component of an LLM Wiki pipeline designed to process raw text and Markdown files into a structured wiki. It operates without requiring an [LLM API key](./llm-api-key.md) for topic extraction, focusing on generating [Docusaurus](./docusaurus.md)-compatible pages and building cross-links between mentioned entities. Its primary goal is to transform a large volume of raw data into a rich knowledge graph, surfacing potential contradictions within the content.
+Heuristic Mode is a component of an LLM Wiki pipeline designed to process raw text and Markdown files into a structured wiki. It operates without requiring an LLM API key for topic extraction, focusing on generating Docusaurus-compatible pages and building cross-links between mentioned entities. Its primary goal is to transform a large volume of raw data into a rich knowledge graph, surfacing potential contradictions within the content.
 
 ## Key Details
 
@@ -55,17 +55,17 @@ The overarching goal of Heuristic Mode is to process over 40 raw files, transfor
 
 *   LLM API Key (Heuristic Mode operates *without* this for topic extraction)
 *   Docusaurus
-*   [Karpathy Pattern](./karpathy-pattern.md) (implied by the "wiki compiler" context)
+*   Karpathy Pattern (implied by the "wiki compiler" context)
 *   [Wiki Compiler](./wiki-compiler.md)
-*   [Knowledge Graph](./knowledge-graph.md)
-*   [Parser Resilience](./parser-resilience.md)
+*   Knowledge Graph
+*   Parser Resilience
 
 ## Contradictions
 
 Heuristic Mode is specifically designed to surface contradictions related to the following topics:
-*   [Battery](./battery.md)
-*   [Herbal Preset](./herbal-preset.md)
-*   [Read Interval](./read-interval.md)
+*   Battery
+*   Herbal Preset
+*   Read Interval
 
 ## Sources
 

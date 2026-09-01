@@ -26,16 +26,16 @@ Firmware updates are crucial for enhancing the functionality, stability, and sec
 ### MeshSync Firmware 0.3.8
 
 *   **Release Date**: 2026-07-02
-*   **Owners**: [Mira Chen](./mira-chen.md) (firmware), [Jonah Park](./jonah-park.md) (QA sign-off)
+*   **Owners**: Mira Chen (firmware), Jonah Park (QA sign-off)
 *   **Highlights**:
-    *   **[Rejoin Storm Mitigation](./rejoin-storm-mitigation.md)**: Addresses a known issue (since beta) where meshes exceeding 6 nodes experienced rejoin storms.
-    *   **[Parent Election Logging](./parent-election-logging.md)**: Exports RSSI and hop count via debug UART for improved diagnostics.
-    *   **[Power Spike Reduction](./power-spike-reduction.md)**: Reduced power spike on rejoin from 340µA to 180µA, though still above the 110µA target.
+    *   **Rejoin Storm Mitigation**: Addresses a known issue (since beta) where meshes exceeding 6 nodes experienced rejoin storms.
+    *   **Parent Election Logging**: Exports RSSI and hop count via debug UART for improved diagnostics.
+    *   **Power Spike Reduction**: Reduced power spike on rejoin from 340µA to 180µA, though still above the 110µA target.
 *   **Breaking Changes**:
-    *   **[Default Read Interval](./default-read-interval.md)**: Confirmed at **15 minutes**, correcting earlier kickoff slides that incorrectly stated an hourly interval.
-    *   **[MQTT Export Schema](./mqtt-export-schema.md) v2**: This new schema is optional for local brokers but is required for firmware 0.3.8 and later.
+    *   **Default Read Interval**: Confirmed at **15 minutes**, correcting earlier kickoff slides that incorrectly stated an hourly interval.
+    *   **MQTT Export Schema v2**: This new schema is optional for local brokers but is required for firmware 0.3.8 and later.
 *   **Known Issues (with 0.3.8)**:
-    *   **Mesh Instability**: Meshes with 8 or more nodes may still experience instability in field reports (ticket [#2099](./ticket-2099.md)). Users are recommended to stay at 6 nodes until further patches.
+    *   **Mesh Instability**: Meshes with 8 or more nodes may still experience instability in field reports (ticket #2099). Users are recommended to stay at 6 nodes until further patches.
     *   **[Battery Life](./battery-life.md) Discrepancy**: Engineering estimates 18 months at 10 nodes, while marketing materials may still claim 2 years.
 *   **Impact**:
     *   Addressed duplicate MQTT messages during rejoin storms, a known issue on 0.3.7.
@@ -43,17 +43,17 @@ Firmware updates are crucial for enhancing the functionality, stability, and sec
 
 ### [Over-the-Air (OTA) Updates](./ota-updates.md) Design Sketch
 
-*   **Author**: [Mira Chen](./mira-chen.md)
+*   **Author**: Mira Chen
 *   **Date**: 2026-07-04
 *   **Status**: NOT SHIPPING IN BETA (as of the design sketch date).
 *   **Requirements**:
-    *   **[Firmware Signing (ed25519)](./firmware-signing.md)**: Utilizes ed25519 for secure firmware authenticity.
-    *   **[Rollback Protection](./rollback-protection.md)**: Ensures system stability after a mesh-wide upgrade.
-    *   **[BLE Proxy Update](./ble-proxy-update.md)**: Allows updates via a phone app when a mesh node is unreachable, leveraging Bluetooth Low Energy (BLE).
+    *   **Firmware Signing (ed25519)**: Utilizes ed25519 for secure firmware authenticity.
+    *   **Rollback Protection**: Ensures system stability after a mesh-wide upgrade.
+    *   **BLE Proxy Update**: Allows updates via a phone app when a mesh node is unreachable, leveraging Bluetooth Low Energy (BLE).
 *   **Risks**:
     *   **Brick Scenario**: Potential for device bricking if a parent node fails during the update push.
     *   **Routing Table Invalidation**: Risk of [MeshSync](./meshsync.md) routing table invalidation during the flashing process.
-*   **Open Question**: Whether [Over-the-Air (OTA) Updates](./ota-updates.md) should require explicit user consent per node or allow a [Batch Updates](./batch-updates.md) option.
+*   **Open Question**: Whether [Over-the-Air (OTA) Updates](./ota-updates.md) should require explicit user consent per node or allow a Batch Updates option.
 
 ### General Update Information
 
@@ -66,14 +66,14 @@ Firmware updates are crucial for enhancing the functionality, stability, and sec
 *   **Aurora Labs**: The company developing the firmware.
 *   **Mira Chen**: Firmware owner for MeshSync 0.3.8 and author of the OTA update design sketch.
 *   **Jonah Park**: QA sign-off for MeshSync 0.3.8.
-*   **[Sam Rivera](./sam-rivera.md)**: Mentioned in relation to TeaBuddy's DFU and its irrelevance to Aurora v1 scope.
+*   **Sam Rivera**: Mentioned in relation to TeaBuddy's DFU and its irrelevance to Aurora v1 scope.
 *   **[SenseNode](./sensenode.md)**: A competitor mentioned for its simpler topology and subscription model, contrasted with MeshSync's complexity at scale.
-*   **[GitHub aurora-labs/meshsync #442](./github-aurora-labs-meshsync-442.md)**: Channel for reporting issues.
+*   **GitHub aurora-labs/meshsync #442**: Channel for reporting issues.
 *   **[Support Tickets](./support-tickets.md)**:
     *   **#2099**: MeshSync rejoin loop (addressed by 0.3.8).
-    *   **[#2210](./ticket-2210.md)**: MQTT Home Assistant setup (resolved by upgrading to 0.3.8 and using v2 schema).
-    *   **[#1042](./ticket-1042.md)**: Related to waterproofing.
-    *   **[#2101](./ticket-2101.md)**: Related to battery math documentation errors.
+    *   **#2210**: MQTT Home Assistant setup (resolved by upgrading to 0.3.8 and using v2 schema).
+    *   **#1042**: Related to waterproofing.
+    *   **#2101**: Related to battery math documentation errors.
 
 ## Related Concepts
 

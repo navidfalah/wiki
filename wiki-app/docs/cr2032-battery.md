@@ -26,7 +26,7 @@ The CR2032 is a common lithium coin cell battery, widely used in small electroni
 *   The nominal capacity of a CR2032 battery is typically around 220mAh, though datasheet variance can sometimes list it up to 240mAh. For engineering calculations, 220mAh is often used as a conservative estimate.
 
 ### Application in Aurora Nova Widget
-The CR2032 battery powers the Aurora Nova Widget, with its expected lifespan heavily dependent on the device's [Power Budget](./power-budget.md) and operational parameters.
+The CR2032 battery powers the Aurora Nova Widget, with its expected lifespan heavily dependent on the device's Power Budget and operational parameters.
 
 *   **Assumptions for Power Budget (Engineering)**:
     *   **Read Interval**: 15 minutes (authoritative specification).
@@ -39,17 +39,17 @@ The CR2032 battery powers the Aurora Nova Widget, with its expected lifespan hea
 *   **Projected Battery Life (Engineering Claim)**: Based on a 220mAh CR2032 and 0.19 mAh/day consumption, the estimated battery life is around 18 months.
 
 ### Comparison with Other Devices
-*   **[TeaBuddy Puck](./teabuddy-puck.md)**: A comparable device, the TeaBuddy puck, consumes approximately 0.35 mAh/day when used for 5 steeps. Its target battery life of 12 months is considered plausible given its consumption.
+*   **TeaBuddy Puck**: A comparable device, the TeaBuddy puck, consumes approximately 0.35 mAh/day when used for 5 steeps. Its target battery life of 12 months is considered plausible given its consumption.
 
 ## Related Entities
 *   [Aurora Nova Widget](./aurora-nova-widget.md)
-*   [TeaBuddy Puck](./teabuddy-puck.md)
+*   TeaBuddy Puck
 
 ## Related Concepts
-*   **[mAh (Milliampere-hour)](./mah.md)**: A unit of electric charge, commonly used to describe battery capacity.
-*   **[Power Budget](./power-budget.md)**: A detailed analysis of power consumption for a device, used to estimate battery life.
+*   **mAh (Milliampere-hour)**: A unit of electric charge, commonly used to describe battery capacity.
+*   **Power Budget**: A detailed analysis of power consumption for a device, used to estimate battery life.
 *   **[MeshSync](./meshsync.md)**: A protocol or system likely related to mesh networking, impacting power consumption through transmission and synchronization activities.
-*   **[Duty Cycle](./duty-cycle.md)**: The proportion of time during which a component, circuit, or system is in an active state.
+*   **Duty Cycle**: The proportion of time during which a component, circuit, or system is in an active state.
 
 ## Contradictions
 **Contradiction:** While engineering calculations project an 18-month battery life for the Aurora Nova Widget using a CR2032, marketing materials claim "2 years." This discrepancy arises because the marketing slide's "2 years" claim is based on different, more optimistic assumptions, including a smaller mesh size (6 nodes), an "optimistic cell" (potentially higher capacity or better performance), and an incorrect hourly read interval, which deviates from the authoritative 15-minute read interval specification.

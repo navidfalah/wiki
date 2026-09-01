@@ -19,24 +19,24 @@ slug: /home-assistant
 
 ## Overview
 
-Home Assistant is a popular open-source home automation platform. This page outlines an unofficial community guide for integrating [Nova Widget](./Nova Widget.md) devices with Home Assistant, primarily leveraging [MQTT](./MQTT.md) for data export and control.
+Home Assistant is a popular open-source home automation platform. This page outlines an unofficial community guide for integrating Nova Widget devices with Home Assistant, primarily leveraging MQTT for data export and control.
 
 ## Key Details
 
 ### Prerequisites for Integration
 
-To integrate [Nova Widget](./Nova Widget.md) devices with Home Assistant, the following prerequisites must be met:
+To integrate Nova Widget devices with Home Assistant, the following prerequisites must be met:
 
-*   **[MeshSync](./MeshSync.md)**: Version 0.3.8 or newer.
-*   **Local [MQTT](./MQTT.md) Broker**: A local [MQTT](./MQTT.md) broker, such as [Mosquitto](./Mosquitto.md), is required to facilitate communication.
-*   **[Aurora MQTT Schema](./Aurora MQTT Schema.md)**: The [Aurora MQTT Schema](./Aurora MQTT Schema.md) v2 must be in use for data formatting.
+*   **MeshSync**: Version 0.3.8 or newer.
+*   **Local MQTT Broker**: A local MQTT broker, such as Mosquitto, is required to facilitate communication.
+*   **Aurora MQTT Schema**: The Aurora MQTT Schema v2 must be in use for data formatting.
 
 ### Quick Start Guide
 
 Follow these steps for a basic integration:
 
-1.  **Enable [MQTT](./MQTT.md) Export**: Enable [MQTT](./MQTT.md) export in the device settings. This can currently be done via the UART command `mqtt on` until app support is available.
-2.  **Subscribe to Telemetry**: Subscribe to the `aurora/+/telemetry` [MQTT](./MQTT.md) topic to receive data from your devices.
+1.  **Enable MQTT Export**: Enable MQTT export in the device settings. This can currently be done via the UART command `mqtt on` until app support is available.
+2.  **Subscribe to Telemetry**: Subscribe to the `aurora/+/telemetry` MQTT topic to receive data from your devices.
 3.  **Map Soil Moisture**: Map the received soil moisture data to a percentage (`%`) entity within Home Assistant.
 
 ### Known Quirks
@@ -48,19 +48,19 @@ Users should be aware of the following known behaviors:
 
 ### TeaBuddy Integration
 
-There is currently no official integration for [TeaBuddy](./TeaBuddy.md) with Home Assistant.
+There is currently no official integration for TeaBuddy with Home Assistant.
 
 ## Related Entities
 
-*   [Nova Widget](./Nova Widget.md)
-*   [Mosquitto](./Mosquitto.md)
-*   [TeaBuddy](./TeaBuddy.md)
+*   Nova Widget
+*   Mosquitto
+*   TeaBuddy
 
 ## Related Concepts
 
-*   [MQTT](./MQTT.md)
-*   [MeshSync](./MeshSync.md)
-*   [Aurora MQTT Schema](./Aurora MQTT Schema.md)
+*   MQTT
+*   MeshSync
+*   Aurora MQTT Schema
 
 ## Sources
 

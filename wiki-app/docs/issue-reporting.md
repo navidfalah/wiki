@@ -20,9 +20,9 @@ Issue reporting is a critical process for identifying and resolving problems enc
 
 ## Key Details
 *   **Primary Methods**: Issues can be reported through two main channels:
-    *   **[GitHub](./github.md)**: For detailed bug reports and technical issues, users should utilize the designated GitHub repository.
+    *   **GitHub**: For detailed bug reports and technical issues, users should utilize the designated GitHub repository.
         *   **Repository**: `aurora-labs/meshsync`
-        *   **Specific Issue**: [Issue #442](./issue-442.md)
+        *   **Specific Issue**: Issue #442
     *   **Email**: For general support inquiries or less technical issues, users can contact the support team directly.
         *   **Email Address**: `support@` (implied `support@auroralabs.example` from context)
 *   **Context**: These reporting channels are specifically highlighted for participants in the [Aurora Nova Widget](./aurora-nova-widget.md) [beta testing](./beta-testing.md) program, particularly for those in batch #3, especially when using [firmware](./firmware.md) version 0.3.8.
@@ -35,7 +35,7 @@ Issue reporting is a critical process for identifying and resolving problems enc
 ## Related Concepts
 *   **Beta Testing**: A phase of software development where a product is released to a limited audience to test its functionality and identify bugs before general release.
 *   **Firmware**: Specific class of computer software that provides low-level control for a device's specific hardware.
-*   **[Documentation Refresh](./documentation-refresh.md)**: Updates to product manuals, wikis, or other informational resources.
+*   **Documentation Refresh**: Updates to product manuals, wikis, or other informational resources.
 
 ## Contradictions
 No contradictions were identified in the provided source material.

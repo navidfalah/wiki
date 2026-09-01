@@ -32,9 +32,9 @@ This page details various compatibility aspects and technical specifications for
 *   **Default Reading Interval**
     *   The standard data reading interval for the Aurora Nova Widget is **15 minutes**.
 
-*   **Water Resistance ([IP Rating](./ip-rating.md))**
+*   **Water Resistance (IP Rating)**
     *   The Aurora Nova Widget has an **IP54** rating, meaning it is splash resistant but **not submersible**.
-    *   For applications requiring outdoor submersion, the [SenseNode SN-400](./sensenode-sn-400.md) offers an **IP67** rating.
+    *   For applications requiring outdoor submersion, the SenseNode SN-400 offers an **IP67** rating.
 
 *   **Battery Type**
     *   The Aurora Nova Widget uses a **CR2032** battery.
@@ -42,7 +42,7 @@ This page details various compatibility aspects and technical specifications for
 *   **Compatibility with TeaBuddy**
     *   The Aurora Nova Widget is **not compatible** with [TeaBuddy](./teabuddy.md).
     *   These are distinct products from different companies, requiring separate applications.
-    *   Both products, however, share a "[Local-first architecture](./local-first-architecture.md)" philosophical approach to data handling.
+    *   Both products, however, share a "Local-first architecture" philosophical approach to data handling.
 
 ## Related Entities
 

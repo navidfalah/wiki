@@ -19,7 +19,7 @@ slug: /sensor-products
 # Sensor Products
 
 ## Overview
-This page discusses various sensor products, focusing on features, performance, and operational models. Key products mentioned include the [Aurora Labs Nova](./aurora-labs-nova.md) and [SenseNode](./sensenode.md), highlighting aspects such as connectivity, [Battery Life](./battery-life.md), and waterproofing.
+This page discusses various sensor products, focusing on features, performance, and operational models. Key products mentioned include the Aurora Labs Nova and [SenseNode](./sensenode.md), highlighting aspects such as connectivity, [Battery Life](./battery-life.md), and waterproofing.
 
 ## Key Details
 
@@ -37,13 +37,13 @@ This page discusses various sensor products, focusing on features, performance, 
 
 ## Related Entities
 *   **Aurora Labs**: The company behind the Aurora Labs Nova sensor product.
-*   **SenseNode**: A distinct sensor product known for its waterproofing and [Subscription Model](./subscription-model.md).
+*   **SenseNode**: A distinct sensor product known for its waterproofing and Subscription Model.
 
 ## Related Concepts
 *   [MeshSync](./meshsync.md): A technology enabling local synchronization of data, often associated with decentralized sensor networks.
-*   [No Cloud Operation](./no-cloud-operation.md): A design philosophy where devices function without requiring an internet connection to cloud services for core operations, enhancing privacy and local control.
+*   No Cloud Operation: A design philosophy where devices function without requiring an internet connection to cloud services for core operations, enhancing privacy and local control.
 *   **Battery Life**: A critical specification for wireless sensors, indicating how long a device can operate on a single charge or set of batteries.
-*   [IP67 Waterproof Rating](./ip67-waterproof-rating.md): An Ingress Protection rating signifying that a device is dust-tight and can withstand immersion in water up to 1 meter for 30 minutes.
+*   IP67 Waterproof Rating: An Ingress Protection rating signifying that a device is dust-tight and can withstand immersion in water up to 1 meter for 30 minutes.
 *   **Subscription Model**: A business model where customers pay a recurring price for access to a product or service.
 
 ## Contradictions

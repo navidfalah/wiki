@@ -20,7 +20,7 @@ slug: /mesh-networking
 
 ## Overview
 
-[Mesh Networking](./mesh-networking.md), specifically through the **[MeshSync](./meshsync.md)** protocol, is a core feature of the **[Aurora Nova Widget v2 beta unit](./aurora-nova-widget-v2-beta-unit.md)**. This technology enables local, device-to-device communication, forming a mesh network for [open-source](./open-source.md) soil moisture and temperature sensors. A primary advantage of MeshSync is its ability to operate without a mandatory [Cloud Subscription](./cloud-subscription.md), offering a decentralized approach to [IoT Sensors](./iot-sensors.md) data collection. However, this approach introduces inherent **[complexity at scale](./complexity-at-scale.md)** compared to simpler, potentially subscription-based network topologies.
+[Mesh Networking](./mesh-networking.md), specifically through the **[MeshSync](./meshsync.md)** protocol, is a core feature of the **Aurora Nova Widget v2 beta unit**. This technology enables local, device-to-device communication, forming a mesh network for open-source soil moisture and temperature sensors. A primary advantage of MeshSync is its ability to operate without a mandatory Cloud Subscription, offering a decentralized approach to [IoT Sensors](./iot-sensors.md) data collection. However, this approach introduces inherent **complexity at scale** compared to simpler, potentially subscription-based network topologies.
 
 ## Key Details
 
@@ -35,7 +35,7 @@ slug: /mesh-networking
 
 ### Aurora Nova Widget v2 Beta Unit
 *   **Product Type:** An open-source soil moisture and temperature sensor.
-*   **Key Personnel:** [Mira Chen](./mira-chen.md) (firmware owner) and [Jonah Park](./jonah-park.md) (hardware owner).
+*   **Key Personnel:** Mira Chen (firmware owner) and Jonah Park (hardware owner).
 *   **Sampling Interval:** The product specification dictates a 15-minute sampling interval, though public documentation still incorrectly states an hourly default.
 *   **Physical Design:** The enclosure features an approved "pebble shape."
 
@@ -51,17 +51,17 @@ slug: /mesh-networking
 *   **Action Items:** An action item exists to implement a "contradiction linter for battery claims" and publish a power budget spreadsheet.
 
 ### Known Issues and Stability Challenges
-*   **[Rejoin Storms](./rejoin-storm.md):** A "rejoin storm" issue consistently reproduces at 8 nodes, characterized by significant power spikes (110–340 µA) during parent swaps.
+*   **Rejoin Storms:** A "rejoin storm" issue consistently reproduces at 8 nodes, characterized by significant power spikes (110–340 µA) during parent swaps.
 *   **Mesh Instability at Scale:** Customers have reported that the entire mesh stops reporting for hours after adding an 8th node, requiring a power cycle for temporary resolution (Support Ticket #2099).
 *   **Firmware Status:** The rejoin spike is a known issue, with a fix targeted for the 0.3.8 firmware release. Mira Chen has noted it is "fine for beta" currently.
 *   **Recommendation:** Users are advised to limit their mesh to 6 nodes until a patch is released.
 *   **Documentation Discrepancy:** The discrepancy between the 15-minute spec and hourly documentation for sampling interval is a recurring issue.
 
 ### Future Development and Missing Specifications
-*   **Hardware Consideration:** Comparison between [nRF52840](./nrf52840.md) and [nRF5340](./nrf5340.md) microcontrollers is planned for future revisions.
+*   **Hardware Consideration:** Comparison between nRF52840 and nRF5340 microcontrollers is planned for future revisions.
 *   **Missing Spec Sections:** The current product specification is incomplete, lacking details on:
     *   Enclosure IP rating.
-    *   [Over-the-Air (OTA) update](./over-the-air-ota-update.md) path.
+    *   Over-the-Air (OTA) update path.
     *   [MQTT](./mqtt.md) export schema.
 *   **Internal Documentation:** A wiki page titled "known mesh quirks v0.3" has been suggested.
 
@@ -70,7 +70,7 @@ slug: /mesh-networking
 *   **Aurora Nova Widget v2 beta unit:** The primary product utilizing MeshSync.
 *   **Mira Chen:** Firmware owner for the Nova Widget, involved in MeshSync debugging.
 *   **Jonah Park:** Hardware owner for the Nova Widget, involved in MeshSync debugging and enclosure design.
-*   **[SenseNode SN-400](./sensenode-sn-400.md):** A competitor product mentioned for its ability to handle 10 devices with a simpler topology, but requiring a subscription.
+*   **SenseNode SN-400:** A competitor product mentioned for its ability to handle 10 devices with a simpler topology, but requiring a subscription.
 *   **[TeaBuddy](./teabuddy.md):** An unrelated project that inquired about MeshSync for syncing tea timers.
 *   **nRF52840 / nRF5340:** Microcontrollers considered for future hardware revisions.
 
@@ -78,12 +78,12 @@ slug: /mesh-networking
 
 *   **Open-source:** The Nova Widget and its MeshSync implementation are open-source.
 *   **IoT Sensors:** The Nova Widget functions as a soil moisture and temperature sensor.
-*   **[CR2032](./cr2032.md):** The type of battery used.
+*   **CR2032:** The type of battery used.
 *   **Cloud Subscription:** A service model that MeshSync aims to avoid.
 *   **[OTA Updates](./ota-updates.md):** A planned but currently missing feature for firmware updates.
 *   **MQTT:** A messaging protocol for IoT, with its export schema currently undefined for MeshSync.
-*   **[RSSI](./rssi.md) (Received Signal Strength Indicator):** A metric suggested for logging during rejoin events.
-*   **[Hop Count](./hop-count.md):** Another metric suggested for logging during rejoin events.
+*   **RSSI (Received Signal Strength Indicator):** A metric suggested for logging during rejoin events.
+*   **Hop Count:** Another metric suggested for logging during rejoin events.
 *   **Complexity at Scale:** A known trade-off for mesh networks compared to simpler topologies.
 
 ## Contradictions

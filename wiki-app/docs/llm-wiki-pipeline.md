@@ -20,7 +20,7 @@ slug: /llm-wiki-pipeline
 
 ## Overview
 
-The LLM Wiki Pipeline is a system designed to process raw data files and transform them into a structured, [Cross-linking](./cross-linking.md) wiki, specifically targeting [Docusaurus](./docusaurus.md) as an output format. It operates in a "[Heuristic Mode](./heuristic-mode.md)" to extract topics and build relationships without requiring an LLM API key for core extraction. The primary goal is to process a large number of raw files (e.g., 40+) into a rich knowledge graph, highlighting contradictions found within the data. It is considered a test artifact for wiki compilation.
+The LLM Wiki Pipeline is a system designed to process raw data files and transform them into a structured, Cross-linking wiki, specifically targeting Docusaurus as an output format. It operates in a "[Heuristic Mode](./heuristic-mode.md)" to extract topics and build relationships without requiring an LLM API key for core extraction. The primary goal is to process a large number of raw files (e.g., 40+) into a rich knowledge graph, highlighting contradictions found within the data. It is considered a test artifact for wiki compilation.
 
 ## Key Details
 
@@ -28,8 +28,8 @@ The pipeline's [Heuristic Mode](./heuristic-mode.md) performs several key functi
 
 *   **Data Ingestion:** Reads all `.txt` and `.md` files located under the `data/raw/` directory.
 *   **Topic Extraction:** Identifies and extracts topics from the ingested files without relying on an LLM API key.
-*   **Page Generation:** Generates [Docusaurus](./docusaurus.md)-compatible wiki pages, placing them under the `wiki-app/docs/` directory.
-*   **Cross-linking:** Automatically builds [Cross-linking](./cross-linking.md) between entities mentioned within the content, such as "[Nova Widget](./nova-widget.md)," "[TeaBuddy](./teabuddy.md)," and "[MeshSync](./meshsync.md)."
+*   **Page Generation:** Generates Docusaurus-compatible wiki pages, placing them under the `wiki-app/docs/` directory.
+*   **Cross-linking:** Automatically builds Cross-linking between entities mentioned within the content, such as "[Nova Widget](./nova-widget.md)," "[TeaBuddy](./teabuddy.md)," and "[MeshSync](./meshsync.md)."
 
 ### Test Data Layout
 
@@ -56,7 +56,7 @@ The pipeline is designed to handle various data quality issues, including:
 ## Related Concepts
 
 *   **Wiki Compiler:** The pipeline functions as a [Wiki Compiler](./wiki-compiler.md) for wiki content.
-*   **Karpathy Pattern:** The design may incorporate elements of the [Karpathy Pattern](./karpathy-pattern.md) for data processing.
+*   **Karpathy Pattern:** The design may incorporate elements of the Karpathy Pattern for data processing.
 *   **Docusaurus:** The target platform for the generated wiki pages.
 *   **Heuristic Mode:** An operational mode that extracts information without requiring an LLM API key.
 *   **Cross-linking:** The process of creating connections between related entities and concepts.
@@ -66,9 +66,9 @@ The pipeline is designed to handle various data quality issues, including:
 
 A key objective of the pipeline is to surface contradictions within the raw data. Specific examples of contradictions targeted include those related to:
 
-*   [Battery](./battery.md)
-*   [Herbal preset](./herbal-preset.md)
-*   [Read interval](./read-interval.md)
+*   Battery
+*   Herbal preset
+*   Read interval
 
 ## Sources
 

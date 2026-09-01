@@ -20,21 +20,21 @@ slug: /homelab-sensors
 
 ## Overview
 
-HomeLab sensors are devices used for monitoring various environmental parameters within a home lab or smart home environment. Discussions often revolve around factors like connectivity (e.g., cloud-free operation), [Battery Life](./Battery_Life.md), waterproofing, and [Subscription Models](./Subscription_Models.md). Two prominent examples frequently compared are the [Aurora Nova](./Aurora_Nova.md) from [Aurora Labs](./Aurora_Labs.md) and [SenseNode](./SenseNode.md).
+HomeLab sensors are devices used for monitoring various environmental parameters within a home lab or smart home environment. Discussions often revolve around factors like connectivity (e.g., cloud-free operation), Battery Life, waterproofing, and Subscription Models. Two prominent examples frequently compared are the Aurora Nova from Aurora Labs and SenseNode.
 
 ## Key Details
 
 ### Aurora Nova
 
-*   **Cloud-Free Operation**: The Aurora Nova system operates without requiring a cloud connection, utilizing a technology called [MeshSync](./MeshSync.md).
+*   **Cloud-Free Operation**: The Aurora Nova system operates without requiring a cloud connection, utilizing a technology called MeshSync.
 *   **Subscription Model**: It does not require a subscription, making it an attractive option for users preferring one-time purchases.
 *   **Battery Life**:
     *   Aurora Labs claims a battery life of 2 years when readings are taken every 15 minutes.
     *   Real-world estimates from teardown blogs suggest approximately 20 months of battery life.
-*   **Node Limitations**: Users have reported rejoin issues when running more than 6 Aurora Nova widgets on MeshSync. A fix for this issue is anticipated in version 0.3.8, with information posted by "[Mira](./Mira.md)" on GitHub issues.
+*   **Node Limitations**: Users have reported rejoin issues when running more than 6 Aurora Nova widgets on MeshSync. A fix for this issue is anticipated in version 0.3.8, with information posted by "Mira" on GitHub issues.
 *   **Beta Program**: Beta invites for the Aurora Nova were sought by interested users.
 *   **Battery Type Discrepancy**: There is conflicting information regarding the battery type used:
-    *   An "[Alex](./Alex.md) blog" states the use of a CR2450 battery.
+    *   An "Alex blog" states the use of a CR2450 battery.
     *   A teardown, however, indicates a CR2032 battery.
 
 ### SenseNode
@@ -52,13 +52,13 @@ HomeLab sensors are devices used for monitoring various environmental parameters
 
 ## Related Concepts
 
-*   **[Home Automation](./Home_Automation.md)**: The broader field that HomeLab sensors contribute to, enabling automated monitoring and control.
-*   **[Internet of Things (IoT)](./Internet_of_Things.md)**: HomeLab sensors are a component of IoT ecosystems, connecting physical devices to the internet or local networks.
-*   **[Wireless Sensors](./Wireless_Sensors.md)**: Devices that transmit data wirelessly, common in homelab setups.
-*   **[Battery Life](./Battery_Life.md)**: A critical factor for wireless sensors, impacting maintenance and longevity.
-*   **[Waterproofing (IP67)](./Waterproofing_IP67.md)**: An important feature for sensors deployed in environments exposed to moisture or dust.
-*   **[Subscription Models](./Subscription_Models.md)**: A business model for services, often a point of comparison for hardware products.
-*   **[Cloud-Free Solutions](./Cloud_Free_Solutions.md)**: Systems that operate locally without reliance on external cloud servers, appealing for privacy and control.
+*   **Home Automation**: The broader field that HomeLab sensors contribute to, enabling automated monitoring and control.
+*   **Internet of Things (IoT)**: HomeLab sensors are a component of IoT ecosystems, connecting physical devices to the internet or local networks.
+*   **Wireless Sensors**: Devices that transmit data wirelessly, common in homelab setups.
+*   **Battery Life**: A critical factor for wireless sensors, impacting maintenance and longevity.
+*   **Waterproofing (IP67)**: An important feature for sensors deployed in environments exposed to moisture or dust.
+*   **Subscription Models**: A business model for services, often a point of comparison for hardware products.
+*   **Cloud-Free Solutions**: Systems that operate locally without reliance on external cloud servers, appealing for privacy and control.
 
 ## Contradictions
 

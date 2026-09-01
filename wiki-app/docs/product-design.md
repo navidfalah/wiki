@@ -25,7 +25,7 @@ Product design at [Aurora Labs](./aurora-labs.md) focuses on creating devices th
 
 ### Design Philosophy & Principles
 
-*   **[User Experience](./user-experience.md)**: Products should feel like "garden equipment, not surveillance."
+*   **User Experience**: Products should feel like "garden equipment, not surveillance."
 *   **Data Ownership**: A core principle is "Open sensors for people who own their data."
 *   **Local-First**: The initial version (v1) of products, including Aurora's offerings, will not require a cloud account. Mesh data is designed to stay on the local area network (LAN).
 *   **Privacy**: Taglines like "Sense without surrender" and "Your data, your dirt" reflect a commitment to privacy. [TeaBuddy](./teabuddy.md)'s approach to "steep timer privacy theater vs real need" is also considered.
@@ -37,26 +37,26 @@ Product design at [Aurora Labs](./aurora-labs.md) focuses on creating devices th
     *   Aurora Labs
     *   Mesh Sync (name is considered fine, no further renaming)
 *   **Rejected Names**:
-    *   [SoilPal](./soilpal.md)
-    *   [GritNode](./gritnode.md)
-    *   [PetalPing](./petalping.md)
-    *   [CloudFree Sensor](./cloudfree-sensor.md) (deemed "too on the nose")
-    *   [KarpathyGarden](./karpathygarden.md)
+    *   SoilPal
+    *   GritNode
+    *   PetalPing
+    *   CloudFree Sensor (deemed "too on the nose")
+    *   KarpathyGarden
 
 ### Form Factor & Materials
 
-*   **Enclosure**: There is an ongoing discussion regarding the ideal shape for product enclosures. [Jonah](./jonah.md) prefers a "pebble shape," while [Mira Chen](./mira-chen.md) advocates for a "hex" shape. The general consensus is that the enclosure needs to be "more like a pebble" and less like an unspecified alternative.
-*   **Beta [Injection Molding](./injection-molding.md)**: PETG plastic is planned for beta injection molds, contingent on future fundraising.
+*   **Enclosure**: There is an ongoing discussion regarding the ideal shape for product enclosures. Jonah prefers a "pebble shape," while Mira Chen advocates for a "hex" shape. The general consensus is that the enclosure needs to be "more like a pebble" and less like an unspecified alternative.
+*   **Beta Injection Molding**: PETG plastic is planned for beta injection molds, contingent on future fundraising.
 
 ### Technical Specifications & Features
 
-*   **Power**: Nova prototypes and other products utilize [CR2032 batteries](./cr2032-batteries.md).
+*   **Power**: Nova prototypes and other products utilize CR2032 batteries.
 *   **Connectivity**:
     *   **Mesh Networking**: Preferred for "garden scale" applications involving multiple sensors.
     *   **Bluetooth Low Energy (BLE)**: Considered superior for single-device applications, such as in a kitchen setting.
     *   **Reverse Mesh**: An idea for phones acting as nodes was considered but deemed a "bad idea."
 *   **Data Export**: Mira Chen advocates for an [MQTT](./mqtt.md) export CSV option for dashboards, emphasizing that it should be optional and never mandatory.
-*   **Durability**: There is an aspiration for [IP67 Rating](./ip67-rating.md), drawing comparison to [SenseNode](./sensenode.md).
+*   **Durability**: There is an aspiration for IP67 Rating, drawing comparison to [SenseNode](./sensenode.md).
 
 ### Project Ideas
 
@@ -64,13 +64,13 @@ Product design at [Aurora Labs](./aurora-labs.md) focuses on creating devices th
 
 ## Related Entities
 
-*   **[Alex Kim](./alex-kim.md)**: Host from TeaBuddy, involved in discussions about local-first gadgets and privacy.
+*   **Alex Kim**: Host from TeaBuddy, involved in discussions about local-first gadgets and privacy.
 *   **Mira Chen**: From Aurora Labs, involved in product design discussions, advocating for hex shapes and optional MQTT export.
 *   **Jonah**: Involved in product design discussions, advocating for pebble shapes and PETG for beta molds.
 *   **Nova Widget**: A key product under development, utilizing CR2032 batteries and potentially connecting to the "Plant Whisperer" app.
 *   **Aurora Labs**: The company developing these products, co-hosting discussions on local-first gadgets.
 *   **TeaBuddy**: A company or product mentioned in context of privacy and local-first design.
-*   **SenseNode**: A competitor or benchmark product, noted for its IP67 Rating and contributing to [Subscription Fatigue](./subscription-fatigue.md).
+*   **SenseNode**: A competitor or benchmark product, noted for its IP67 Rating and contributing to Subscription Fatigue.
 
 ## Related Concepts
 

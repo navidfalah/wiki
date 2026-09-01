@@ -20,14 +20,14 @@ slug: /product-announcements
 
 ## Overview
 
-This page synthesizes recent product announcements, primarily focusing on updates for the [Aurora Nova Widget](./Aurora Nova Widget.md) [beta program](./Beta Program.md), including new [firmware](./Firmware.md), [documentation](./Documentation.md) refreshes, and important operational details. It also notes an unrelated demonstration at [Maker Faire](./Maker Faire.md).
+This page synthesizes recent product announcements, primarily focusing on updates for the Aurora Nova Widget beta program, including new firmware, documentation refreshes, and important operational details. It also notes an unrelated demonstration at Maker Faire.
 
 ## Key Details
 
 *   **Aurora Nova Widget Beta Program**:
     *   A new batch of 12 recipients (Batch #3) has been invited to the Aurora Nova Widget beta program.
 *   **Firmware Update**:
-    *   Beta testers are instructed to [flash firmware](./Firmware Flashing.md) version **0.3.8**.
+    *   Beta testers are instructed to flash firmware version **0.3.8**.
     *   This update is crucial and should be performed *before* adding more than 6 nodes to the system.
 *   **Documentation Refresh**:
     *   The official documentation has been refreshed and is available at `wiki.auroralabs.example`.
@@ -35,12 +35,12 @@ This page synthesizes recent product announcements, primarily focusing on update
 *   **Read Interval Correction**:
     *   The default read interval for the Nova Widget is **15 minutes**.
     *   This corrects outdated information found in an older PDF, which incorrectly stated an hourly interval.
-*   **[Issue Reporting](./Issue Reporting.md)**:
+*   **Issue Reporting**:
     *   Issues encountered during the beta testing should be reported via:
-        *   [GitHub](./GitHub.md): `aurora-labs/meshsync #442`
+        *   GitHub: `aurora-labs/meshsync #442`
         *   Email: `support@auroralabs.example`
 *   **Maker Faire Demo**:
-    *   [Aurora Labs](./Aurora Labs.md) will be demonstrating a [TeaBuddy puck](./TeaBuddy puck.md) at [Maker Faire](./Maker Faire.md). This event is noted as unrelated to the Nova Widget beta but is presented as a fun side activity.
+    *   Aurora Labs will be demonstrating a TeaBuddy puck at Maker Faire. This event is noted as unrelated to the Nova Widget beta but is presented as a fun side activity.
 
 ## Related Entities
 

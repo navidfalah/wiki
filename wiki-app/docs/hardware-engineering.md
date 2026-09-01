@@ -18,13 +18,13 @@ slug: /hardware-engineering
 # Hardware Engineering
 
 ## Overview
-This page summarizes recent activities and challenges in hardware engineering, encompassing various stages of product development from [Beta Testing](./beta-testing.md) to [Firmware Development](./firmware-development.md) refinement. Key areas of focus include the arrival of new hardware for testing, ongoing issues with [Mesh Networking](./mesh-networking.md) reliability, concerns regarding product durability, and scheduled development [Agile Sprint](./agile-sprint.md)s to address critical fixes.
+This page summarizes recent activities and challenges in hardware engineering, encompassing various stages of product development from [Beta Testing](./beta-testing.md) to Firmware Development refinement. Key areas of focus include the arrival of new hardware for testing, ongoing issues with [Mesh Networking](./mesh-networking.md) reliability, concerns regarding product durability, and scheduled development Agile Sprints to address critical fixes.
 
 ## Key Details
 *   **Nova Widget Beta Boards:** Beta boards for the "[Nova Widget](./nova-widget.md)" have been received, marking a significant milestone in its development cycle and indicating readiness for further testing and validation.
 *   **Meshsync Pairing Instability:** Persistent issues have been identified with [Meshsync](./meshsync.md) pairing, particularly within a 3-node mesh network configuration. This instability requires an urgent fix before an upcoming product demonstration.
-*   **IP54 Rating Concerns:** An external "[SenseNode](./sensenode.md) teardown blog" has raised concerns about the perceived weakness of the product's [IP54 Rating](./ip54-rating.md), suggesting potential vulnerabilities in its durability against dust and splashing water.
-*   **Firmware Development Sprint:** A dedicated [Agile Sprint](./agile-sprint.md) for [Firmware Development](./firmware-development.md) is scheduled for the current week. This sprint is critical for addressing identified software issues, including the [Meshsync](./meshsync.md) pairing problems, and ensuring product readiness.
+*   **IP54 Rating Concerns:** An external "[SenseNode](./sensenode.md) teardown blog" has raised concerns about the perceived weakness of the product's IP54 Rating, suggesting potential vulnerabilities in its durability against dust and splashing water.
+*   **Firmware Development Sprint:** A dedicated Agile Sprint for Firmware Development is scheduled for the current week. This sprint is critical for addressing identified software issues, including the [Meshsync](./meshsync.md) pairing problems, and ensuring product readiness.
 
 ## Related Entities
 *   **Jonah:** An individual actively involved in troubleshooting mesh network issues and leading firmware development efforts.

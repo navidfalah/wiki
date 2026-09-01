@@ -18,18 +18,18 @@ slug: /competitor-analysis
 # Competitor Analysis
 
 ## Overview
-Competitor analysis at Aurora Labs involves understanding the market landscape, identifying key differentiators against rivals like [SenseNode](./SenseNode.md), and evaluating product features such as [Battery Life](./Battery Life.md) and [IP Ratings](./IP Ratings.md). It also includes assessing potential partnerships and managing public perception through activities like competitor teardown blogs.
+Competitor analysis at Aurora Labs involves understanding the market landscape, identifying key differentiators against rivals like SenseNode, and evaluating product features such as Battery Life and IP Ratings. It also includes assessing potential partnerships and managing public perception through activities like competitor teardown blogs.
 
 ## Key Details
 
 *   **Primary Competitor:** SenseNode is identified as a key competitor in the market.
 *   **Aurora Labs' Moat Against SenseNode:**
-    *   Offers [Local Mesh](./Local Mesh.md) functionality without requiring a subscription.
-    *   Features partially [Open Firmware](./Open Firmware.md).
-    *   Provides robust [Community Integrations](./Community Integrations.md).
+    *   Offers Local Mesh functionality without requiring a subscription.
+    *   Features partially Open Firmware.
+    *   Provides robust Community Integrations.
 *   **Competitor Teardown Blog:**
     *   A blog post performing a competitor teardown was generally fair but contained an error regarding battery life, which was subsequently fixed.
-    *   There is internal discussion and caution from [Mira Chen](./Mira Chen.md) regarding whether Aurora Labs should publicly publish its [Power Numbers](./Power Numbers.md).
+    *   There is internal discussion and caution from Mira Chen regarding whether Aurora Labs should publicly publish its Power Numbers.
 *   **Battery Life Claims:**
     *   Engineering estimates indicate 18 months of battery life for a setup with ten nodes and 15-minute read intervals.
     *   Marketing rounds this figure to "two years."
@@ -39,14 +39,14 @@ Competitor analysis at Aurora Labs involves understanding the market landscape, 
     *   An upgrade to IP65 is planned for a future release, contingent on securing tooling funding.
 *   **Eight-Node Mesh Issue:**
     *   An issue related to an eight-node mesh configuration was mitigated in software version 0.3.8.
-    *   For [Beta Customers](./Beta Customers.md), a six-node mesh is currently recommended for optimal performance.
+    *   For Beta Customers, a six-node mesh is currently recommended for optimal performance.
 *   **TeaBuddy Partnership:**
-    *   The relationship with [TeaBuddy](./TeaBuddy.md) is strictly a [Co-marketing](./Co-marketing.md) partnership.
-    *   There are no plans for a merger, and the partnership is partly facilitated by [Alex](./Alex.md)'s personal connection.
+    *   The relationship with TeaBuddy is strictly a Co-marketing partnership.
+    *   There are no plans for a merger, and the partnership is partly facilitated by Alex's personal connection.
 *   **Beta Tester List:**
     *   The current beta tester list comprises 12 individuals, including 3 farmers and a majority of hobbyists.
 *   **Feature Inspiration:**
-    *   The concept of an "[Obsidian Graph View](./Obsidian Graph View.md)" was mentioned in a meeting and received positive acknowledgment, potentially indicating interest in a similar feature for Aurora Labs' products.
+    *   The concept of an "Obsidian Graph View" was mentioned in a meeting and received positive acknowledgment, potentially indicating interest in a similar feature for Aurora Labs' products.
 
 ## Related Entities
 

@@ -17,11 +17,11 @@ slug: /release-notes
 
 # Release Notes
 
-This page details the release notes for [MeshSync](./meshsync.md) [firmware](./firmware.md) version 0.3.8, a fictional release from [Aurora Labs](./aurora-labs.md). These notes highlight key updates, [breaking changes](./breaking-changes.md), and [known issues](./known-issues.md) associated with this firmware version.
+This page details the release notes for [MeshSync](./meshsync.md) [firmware](./firmware.md) version 0.3.8, a fictional release from [Aurora Labs](./aurora-labs.md). These notes highlight key updates, breaking changes, and [known issues](./known-issues.md) associated with this firmware version.
 
 ## Overview
 
-MeshSync firmware 0.3.8, released by Aurora Labs, focuses on improving mesh network stability and power efficiency, particularly for larger node counts. It introduces enhancements like [rejoin storm](./rejoin-storm.md) mitigation and improved logging, alongside a new [MQTT](./mqtt.md) export schema. The release also clarifies the [default read interval](./default-read-interval.md) and lists ongoing known issues.
+MeshSync firmware 0.3.8, released by Aurora Labs, focuses on improving mesh network stability and power efficiency, particularly for larger node counts. It introduces enhancements like rejoin storm mitigation and improved logging, alongside a new [MQTT](./mqtt.md) export schema. The release also clarifies the default read interval and lists ongoing known issues.
 
 ## Key Details
 
@@ -31,14 +31,14 @@ MeshSync firmware 0.3.8, released by Aurora Labs, focuses on improving mesh netw
 *   **Version:** 0.3.8
 *   **Release Date:** 2026-07-02
 *   **Owners:**
-    *   [Mira Chen](./mira-chen.md) (firmware)
-    *   [Jonah Park](./jonah-park.md) (QA sign-off)
+    *   Mira Chen (firmware)
+    *   Jonah Park (QA sign-off)
 *   **Label:** Fictional Aurora Labs release, also associated with the [Nova Widget](./nova-widget.md).
 
 ### Highlights
 
 *   **Rejoin Storm Mitigation:** Implemented to address instability when a mesh network exceeds 6 nodes, a known issue since the beta phase.
-*   **Parent Election Logging:** Enhanced to export [RSSI](./rssi.md) (Received Signal Strength Indicator) and [hop count](./hop-count.md) data via debug UART, providing better insights into network topology.
+*   **Parent Election Logging:** Enhanced to export RSSI (Received Signal Strength Indicator) and hop count data via debug UART, providing better insights into network topology.
 *   **Power Spike Reduction:** The power spike observed during node rejoin events has been reduced from 340µA to 180µA. The engineering target for this spike remains 110µA.
 
 ### Breaking Changes
@@ -53,7 +53,7 @@ MeshSync firmware 0.3.8, released by Aurora Labs, focuses on improving mesh netw
 
 ### Out of Scope
 
-*   **TeaBuddy Integration:** A request from [Sam Rivera](./sam-rivera.md) regarding MeshSync's ability to synchronize tea timers has been deemed out of scope for Aurora v1.
+*   **TeaBuddy Integration:** A request from Sam Rivera regarding MeshSync's ability to synchronize tea timers has been deemed out of scope for Aurora v1.
 
 ## Related Entities
 

@@ -25,19 +25,19 @@ This page details the changelog for the [TeaBuddy](./teabuddy.md) firmware, spec
 
 ### Version 0.9.4 (Released 2026-07-01)
 
-*   **Timer Fix**: Resolved issue TB-142, where the timer continued to run after being canceled in the application. (Credit: [Sam Rivera](./sam-rivera.md))
-*   **BLE Pairing Timeout**: Increased the [Bluetooth Low Energy (BLE) Pairing](./bluetooth-low-energy-ble-pairing.md) timeout to 45 seconds to improve compatibility with [iOS 18 beta](./ios-18-beta.md).
+*   **Timer Fix**: Resolved issue TB-142, where the timer continued to run after being canceled in the application. (Credit: Sam Rivera)
+*   **BLE Pairing Timeout**: Increased the Bluetooth Low Energy (BLE) Pairing timeout to 45 seconds to improve compatibility with iOS 18 beta.
 *   **Herbal Preset Alignment**: Adjusted the "Herbal" preset constant to 7:00.
 
 ### Version 0.9.3 (Released 2026-06-28)
 
-*   **CoreBluetooth Permissions**: Fixed the permission prompt order for [CoreBluetooth](./corebluetooth.md) interactions (ticket #2156).
-*   **Haptic Motor Duty Cycle**: Capped the [Haptic Motor](./haptic-motor.md) duty cycle at 70% following a UX review conducted by [Alex Kim](./alex-kim.md).
+*   **CoreBluetooth Permissions**: Fixed the permission prompt order for CoreBluetooth interactions (ticket #2156).
+*   **Haptic Motor Duty Cycle**: Capped the Haptic Motor duty cycle at 70% following a UX review conducted by Alex Kim.
 
 ### Version 0.9.2 (Released 2026-06-20)
 
-*   **QR Pairing Path**: Introduced a box [QR Pairing](./qr-pairing.md) path, primarily for [TestFlight](./testflight.md) builds.
-*   **CR2032 Sleep Draw**: Reduced the [CR2032](./cr2032.md) battery's [Sleep Draw](./sleep-draw.md) from 12µA to 9µA, improving battery life.
+*   **QR Pairing Path**: Introduced a box QR Pairing path, primarily for TestFlight builds.
+*   **CR2032 Sleep Draw**: Reduced the CR2032 battery's Sleep Draw from 12µA to 9µA, improving battery life.
 
 ## Related Entities
 

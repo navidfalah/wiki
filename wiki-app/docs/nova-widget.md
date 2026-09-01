@@ -20,20 +20,20 @@ slug: /nova-widget
 
 ## Overview
 
-The Nova Widget is an open-source soil moisture and temperature sensor developed by [Aurora Labs](./aurora-labs.md). Conceived by [Mira Chen](./mira-chen.md) and [Jonah Park](./jonah-park.md), its mission is to provide "Open sensors for people who own their data," targeting home gardeners and small-acreage farmers. It features a local [MeshSync](./meshsync.md) mesh network and does not require a mandatory cloud subscription. A cheaper variant is also planned for hobbyists.
+The Nova Widget is an open-source soil moisture and temperature sensor developed by [Aurora Labs](./aurora-labs.md). Conceived by Mira Chen and Jonah Park, its mission is to provide "Open sensors for people who own their data," targeting home gardeners and small-acreage farmers. It features a local [MeshSync](./meshsync.md) mesh network and does not require a mandatory cloud subscription. A cheaper variant is also planned for hobbyists.
 
 ## Key Details
 
 ### Hardware
 
-*   **Microcontroller (MCU):** [nRF52840](./nrf52840.md).
-*   **Battery:** Single [CR2032](./cr2032.md). Hardware revision C includes a holder fix to prevent rattling.
+*   **Microcontroller (MCU):** nRF52840.
+*   **Battery:** Single CR2032. Hardware revision C includes a holder fix to prevent rattling.
 *   **Sensors:**
     *   Capacitive soil probe (30mm length).
     *   Air temperature.
     *   Ambient light (simple photodiode).
 *   **Connectivity:**
-    *   [BLE](./ble.md) (Bluetooth Low Energy) for phone setup.
+    *   BLE (Bluetooth Low Energy) for phone setup.
     *   MeshSync for mesh networking and range extension between nodes.
 
 ### Firmware
@@ -111,8 +111,8 @@ The Nova Widget is an open-source soil moisture and temperature sensor developed
 *   **Aurora Labs:** The company developing the Nova Widget.
 *   **Mira Chen:** Firmware lead, responsible for MeshSync, power profiling, MQTT schema, and OTA updates.
 *   **Jonah Park:** Hardware lead, responsible for PCB, sensors, and mechanical design.
-*   [SenseNode SN-400](./sensenode-sn-400.md): A competitor product noted for its IP67 waterproof rating.
-*   **TeaBuddy:** An unrelated product that uses BLE (not mesh); [Sam Rivera](./sam-rivera.md) advised against merging codebases.
+*   SenseNode SN-400: A competitor product noted for its IP67 waterproof rating.
+*   **TeaBuddy:** An unrelated product that uses BLE (not mesh); Sam Rivera advised against merging codebases.
 
 ## Related Concepts
 
@@ -123,7 +123,7 @@ The Nova Widget is an open-source soil moisture and temperature sensor developed
 *   **Home Assistant:** A popular open-source home automation platform with which the Nova Widget is designed to integrate.
 *   **CR2032:** The coin cell battery type used by the device.
 *   **nRF52840:** The chosen microcontroller unit for the device.
-*   **[Capacitive Soil Probe](./capacitive-soil-probe.md):** The primary sensor for measuring soil moisture.
+*   **Capacitive Soil Probe:** The primary sensor for measuring soil moisture.
 
 ## Contradictions
 

@@ -18,20 +18,20 @@ slug: /ai-llms
 # AI & LLMs
 
 ## Overview
-This page explores the intersection of Artificial Intelligence (AI) and Large Language Models (LLMs) with knowledge management, specifically the concept of a [Self-Maintaining Systems](./self-maintaining-systems.md). It also touches upon various project ideas and notes from a broader context.
+This page explores the intersection of Artificial Intelligence (AI) and Large Language Models (LLMs) with knowledge management, specifically the concept of a Self-Maintaining Systems. It also touches upon various project ideas and notes from a broader context.
 
 ## Key Details
 
-*   **Self-Maintaining Wiki Concept**: A significant idea involves a wiki that could maintain itself, drawing inspiration from "[Karpathy](./karpathy.md) thing" and the "[LLM Wiki Pattern](./llm-wiki-pattern.md)." This suggests using AI/LLMs to automate or assist in the upkeep and evolution of knowledge bases.
+*   **Self-Maintaining Wiki Concept**: A significant idea involves a wiki that could maintain itself, drawing inspiration from "Karpathy thing" and the "LLM Wiki Pattern." This suggests using AI/LLMs to automate or assist in the upkeep and evolution of knowledge bases.
 *   **Project Idea #47: "Plant Whisperer"**:
     *   An application designed to alert users when soil is dry.
-    *   Potential integration with a "[Nova](./nova.md) widget."
+    *   Potential integration with a "Nova widget."
     *   Monetization strategy is currently undefined, with "stickers" being a speculative idea.
 *   **Project Idea #48: Reverse Mesh**:
-    *   Explores the concept of using phones as nodes in a reverse [Mesh Networks](./mesh-networks.md).
+    *   Explores the concept of using phones as nodes in a reverse Mesh Networks.
     *   Noted as a potentially "bad idea."
 *   **Nova Prototypes**: The development of Nova prototypes requires CR2032 batteries.
-*   **[Enclosure Design](./enclosure-design.md)**: Consideration for product enclosures, with a preference for a "pebble-like" design over other forms.
+*   **Enclosure Design**: Consideration for product enclosures, with a preference for a "pebble-like" design over other forms.
 *   **Personal Notes**: A reminder to call the dentist on Thursday.
 
 ## Related Entities

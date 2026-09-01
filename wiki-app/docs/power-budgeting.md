@@ -31,7 +31,7 @@ The [Aurora Nova Widget](./aurora-nova-widget.md) serves as a primary example fo
 
 **Assumptions:**
 
-*   **Battery:** [CR2032](./cr2032.md) cell, with a nominal capacity of 220 [mAh](./mah.md) (accounting for datasheet variance, not 240 mAh).
+*   **Battery:** CR2032 cell, with a nominal capacity of 220 mAh (accounting for datasheet variance, not 240 mAh).
 *   **Read Interval:** 15 minutes (authoritative specification).
 *   **Mesh Size:** 10 nodes (considered a stress case for network activity).
 
@@ -49,23 +49,23 @@ The [Aurora Nova Widget](./aurora-nova-widget.md) serves as a primary example fo
 
 ### Comparison with TeaBuddy Puck
 
-A comparison with the [TeaBuddy Puck](./teabuddy-puck.md) (based on Sam's numbers) indicates a daily consumption of approximately 0.35 mAh/day when used for 5 steeps. This consumption rate suggests a 12-month battery life target for the TeaBuddy puck is plausible.
+A comparison with the TeaBuddy Puck (based on Sam's numbers) indicates a daily consumption of approximately 0.35 mAh/day when used for 5 steeps. This consumption rate suggests a 12-month battery life target for the TeaBuddy puck is plausible.
 
 ## Related Entities
 
 *   **[Aurora Nova Widget](./aurora-nova-widget.md):** The primary device for which the power budget was calculated.
-*   **[CR2032](./cr2032.md):** A common coin cell battery type used in the Aurora Nova Widget.
+*   **CR2032:** A common coin cell battery type used in the Aurora Nova Widget.
 *   **[MeshSync](./meshsync.md):** Likely a component or protocol related to the mesh network functionality of the widget, impacting power consumption.
-*   **[TeaBuddy Puck](./teabuddy-puck.md):** Another device used for comparative power consumption analysis.
-*   **[Mira Chen](./mira-chen.md):** Author of the power budget working notes.
+*   **TeaBuddy Puck:** Another device used for comparative power consumption analysis.
+*   **Mira Chen:** Author of the power budget working notes.
 
 ## Related Concepts
 
-*   **[mAh](./mah.md) (Milliampere-hour):** A unit of electric charge, commonly used to express the energy capacity of batteries.
+*   **mAh (Milliampere-hour):** A unit of electric charge, commonly used to express the energy capacity of batteries.
 *   **[Battery Life](./battery-life.md):** The duration for which a battery can power a device under specified conditions.
 *   **[Power Consumption](./power-consumption.md):** The rate at which electrical energy is used by a device.
-*   **[Duty Cycle](./duty-cycle.md):** The proportion of time during which a component, device, or system is in an active state.
-*   **[Mesh Network](./mesh-network.md):** A network topology where each node relays data for the network, contributing to potential "Rejoin spike" power events.
+*   **Duty Cycle:** The proportion of time during which a component, device, or system is in an active state.
+*   **Mesh Network:** A network topology where each node relays data for the network, contributing to potential "Rejoin spike" power events.
 
 ## Contradictions
 

@@ -20,7 +20,7 @@ slug: /home-assistant-integration
 
 ## Overview
 
-The [Aurora Nova Widget v2 beta](./aurora-nova-widget-v2-beta.md) offers an optional local [MQTT](./mqtt.md) export feature designed for seamless integration with Home Assistant hobbyist setups. This integration does not require cloud services, allowing users to maintain full local control over their device data. It is primarily supported for the Aurora Nova Widget v2 beta product.
+The Aurora Nova Widget v2 beta offers an optional local [MQTT](./mqtt.md) export feature designed for seamless integration with Home Assistant hobbyist setups. This integration does not require cloud services, allowing users to maintain full local control over their device data. It is primarily supported for the Aurora Nova Widget v2 beta product.
 
 ## Key Details
 
@@ -54,22 +54,22 @@ The [Aurora Nova Widget v2 beta](./aurora-nova-widget-v2-beta.md) offers an opti
 
 ### Non-Goals
 
-*   [TeaBuddy](./teabuddy.md) Integration**: The TeaBuddy product does not support MQTT export; it is a [BLE](./ble.md) app-only device.
+*   [TeaBuddy](./teabuddy.md) Integration**: The TeaBuddy product does not support MQTT export; it is a BLE app-only device.
 *   **Cloud Broker Hosting**: Aurora Labs does not provide cloud broker hosting for MQTT.
 
 ## Related Entities
 
 *   **Aurora Nova Widget v2 beta**: The primary product supporting this integration.
 *   **Aurora Labs**: The developer of the Nova Widget.
-*   [Homelab](./homelab.md)**: A common customer type utilizing this integration for personal automation setups.
+*   Homelab**: A common customer type utilizing this integration for personal automation setups.
 *   **TeaBuddy**: A different product from Aurora Labs that does not support MQTT.
 
 ## Related Concepts
 
 *   **MQTT (Message Queuing Telemetry Transport)**: A lightweight messaging protocol used for IoT devices.
 *   [MeshSync](./meshsync.md)**: A technology likely related to the mesh networking capabilities of the Nova Widget.
-*   [Telemetry](./telemetry.md)**: The process of recording and transmitting readings from instruments.
-*   [Firmware Upgrade](./firmware-upgrade.md)**: The process of updating the software embedded in the device.
+*   Telemetry**: The process of recording and transmitting readings from instruments.
+*   Firmware Upgrade**: The process of updating the software embedded in the device.
 *   **BLE (Bluetooth Low Energy)**: A wireless technology used by some Aurora Labs products, like TeaBuddy.
 
 ## Contradictions

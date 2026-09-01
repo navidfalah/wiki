@@ -34,9 +34,9 @@ This segment focuses on devices designed for monitoring garden and soil conditio
 
 | Vendor | Product | Mesh | Cloud | Waterproof | Battery |
 | :---------- | :---------- | :--------- | :------- | :--------- | :------ |
-| [Aurora Labs](./aurora-labs.md) | [Nova Widget](./nova-widget.md) | [MeshSync](./meshsync.md) | optional | [IP54](./ip54.md) | [CR2032](./cr2032.md) |
-| [SenseNode](./sensenode.md) | [SN-400](./sn-400.md) | [LoRaWAN](./lorawan.md) | required | [IP67](./ip67.md) | [CR2450](./cr2450.md) |
-| [CheapoCo](./cheapoco.md) | [SoilStick](./soilstick.md) | [WiFi](./wifi.md) | required | none | [USB](./usb.md) |
+| [Aurora Labs](./aurora-labs.md) | [Nova Widget](./nova-widget.md) | [MeshSync](./meshsync.md) | optional | IP54 | CR2032 |
+| [SenseNode](./sensenode.md) | SN-400 | [LoRaWAN](./lorawan.md) | required | IP67 | CR2450 |
+| CheapoCo | SoilStick | WiFi | required | none | USB |
 
 *   **Aurora Labs Nova Widget**: Utilizes MeshSync for connectivity, offers optional cloud integration, and has an IP54 waterproof rating, powered by a CR2032 battery.
 *   **SenseNode SN-400**: Employs LoRaWAN, requires cloud connectivity, boasts an IP67 waterproof rating, and uses a CR2450 battery.
@@ -48,8 +48,8 @@ This segment examines products in adjacent lifestyle categories, assessing their
 
 | Vendor | Product | Protocol | Notes |
 | :-------- | :-------------- | :------- | :---------------------- |
-| [TeaBuddy](./teabuddy.md) | [Puck](./puck.md) | [BLE](./ble.md) | local-only tea timer |
-| [TimerCap](./timercap.md) | KS failed 2024 | mechanical | not smart |
+| [TeaBuddy](./teabuddy.md) | Puck | BLE | local-only tea timer |
+| TimerCap | KS failed 2024 | mechanical | not smart |
 
 *   **TeaBuddy Puck**: A BLE-enabled, local-only tea timer.
 *   **TimerCap**: A mechanical device, not considered a smart product, with a Kickstarter campaign that failed in 2024.
@@ -65,13 +65,13 @@ Based on the competitive analysis, specific strategic points have been identifie
 
 *   [Aurora Labs](./aurora-labs.md)
 *   [SenseNode](./sensenode.md)
-*   [CheapoCo](./cheapoco.md)
+*   CheapoCo
 *   [TeaBuddy](./teabuddy.md)
-*   [TimerCap](./timercap.md)
+*   TimerCap
 *   [Nova Widget](./nova-widget.md)
-*   [SN-400](./sn-400.md)
-*   [SoilStick](./soilstick.md)
-*   [Puck](./puck.md)
+*   SN-400
+*   SoilStick
+*   Puck
 
 ## Related Concepts
 
@@ -80,15 +80,15 @@ Based on the competitive analysis, specific strategic points have been identifie
 *   Kitchen/Lifestyle Products
 *   Mesh Networks ([MeshSync](./meshsync.md), [LoRaWAN](./lorawan.md))
 *   Cloud Integration
-*   Waterproofing ([IP54](./ip54.md), [IP67](./ip67.md))
-*   Battery Types ([CR2032](./cr2032.md), [CR2450](./cr2450.md), [USB](./usb.md))
+*   Waterproofing (IP54, IP67)
+*   Battery Types (CR2032, CR2450, USB)
 *   Subscription Models
 *   Co-marketing
-*   Bluetooth Low Energy ([BLE](./ble.md))
+*   Bluetooth Low Energy (BLE)
 
 ## Contradictions
 
-**Contradiction:** An internal [Amazon](./amazon.md) draft for the Nova Widget stated the battery type as CR2450, which contradicts the CR2032 specified in the Q3 2026 competitive landscape report. This discrepancy needs to be corrected before publication.
+**Contradiction:** An internal Amazon draft for the Nova Widget stated the battery type as CR2450, which contradicts the CR2032 specified in the Q3 2026 competitive landscape report. This discrepancy needs to be corrected before publication.
 
 ## Sources
 

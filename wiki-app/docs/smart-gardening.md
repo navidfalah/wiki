@@ -19,25 +19,25 @@ slug: /smart-gardening
 
 ## Overview
 
-Smart Gardening refers to the application of technology, particularly sensors and networking, to assist gardeners. A core principle driving initiatives in this area is the empowerment of gardeners through [Open Sensors](./Open Sensors.md) technology and full [Data Ownership](./Data Ownership.md). This approach aims to provide users with control over their gardening data, moving away from proprietary systems.
+Smart Gardening refers to the application of technology, particularly sensors and networking, to assist gardeners. A core principle driving initiatives in this area is the empowerment of gardeners through Open Sensors technology and full Data Ownership. This approach aims to provide users with control over their gardening data, moving away from proprietary systems.
 
 ## Key Details
 
 The development of smart gardening solutions includes:
 
 *   **Core Philosophy**: Providing open sensors for gardeners who maintain ownership of their data.
-*   **Product Idea**: The **[Nova Widget](./Nova Widget.md)**, a sensor device designed to monitor essential environmental parameters.
+*   **Product Idea**: The **Nova Widget**, a sensor device designed to monitor essential environmental parameters.
     *   **Functionality**: Measures soil moisture and temperature.
-    *   **Connectivity**: Utilizes **[MeshSync](./MeshSync.md)** technology to extend its operational range, facilitating robust [Mesh Networking](./Mesh Networking.md) within a garden environment.
+    *   **Connectivity**: Utilizes **MeshSync** technology to extend its operational range, facilitating robust Mesh Networking within a garden environment.
 *   **Technical Specifications**:
-    *   **Microcontroller (MCU)**: The **[nRF52840](./nRF52840.md)** has been selected as the primary microcontroller for the Nova Widget, known for its low power consumption and Bluetooth 5 capabilities.
+    *   **Microcontroller (MCU)**: The **nRF52840** has been selected as the primary microcontroller for the Nova Widget, known for its low power consumption and Bluetooth 5 capabilities.
     *   **Battery Target**: The device is engineered to achieve an 18-month battery life, minimizing maintenance for users.
 
 ## Related Entities
 
 *   **Nova Widget**: A specific product idea for a soil moisture and temperature sensor.
-*   **[Mira Chen](./Mira Chen.md)**: An attendee at the kickoff meeting for this initiative.
-*   **[Jonah Park](./Jonah Park.md)**: An attendee at the kickoff meeting for this initiative.
+*   **Mira Chen**: An attendee at the kickoff meeting for this initiative.
+*   **Jonah Park**: An attendee at the kickoff meeting for this initiative.
 *   **nRF52840**: The chosen microcontroller for the Nova Widget.
 *   **MeshSync**: The technology used for extending the range and enabling mesh networking for the Nova Widget.
 

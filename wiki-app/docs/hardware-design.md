@@ -26,7 +26,7 @@ Hardware design encompasses the process of creating physical electronic systems,
 
 *   **Product Example: Nova Widget Beta**
     *   A local mesh soil sensor, developed by mirachen.
-    *   Features MeshSync for connectivity, with optional [MQTT](./MQTT.md) support.
+    *   Features MeshSync for connectivity, with optional MQTT support.
     *   Emphasizes a LAN-first approach, avoiding mandatory cloud integration.
 *   **Power Management**
     *   Utilizes a CR2032 coin cell battery.
@@ -36,7 +36,7 @@ Hardware design encompasses the process of creating physical electronic systems,
     *   Prioritizes MeshSync and a LAN-first strategy over Wi-Fi, citing lower duty cycle as a benefit.
     *   Offers optional MQTT for integration, but does not mandate cloud services.
 *   **Environmental Protection**
-    *   The [Nova Widget](./Nova Widget.md)'s ingress protection (IP) rating is implied to be around IP54.
+    *   The Nova Widget's ingress protection (IP) rating is implied to be around IP54.
     *   Discussions highlight the importance of higher ratings like IP67 for specific use cases, particularly submersion, acknowledging its superiority for such applications.
 *   **Design Philosophy**
     *   Focuses on local control and optional cloud integration, giving users more autonomy.
@@ -45,20 +45,20 @@ Hardware design encompasses the process of creating physical electronic systems,
 ## Related Entities
 
 *   **Nova Widget**: A beta local mesh soil sensor, central to the hardware design discussion.
-*   **[Teabuddy](./Teabuddy.md)**: Another hardware product, developed by friends of the Nova Widget team, but by a different company.
-*   **[@mirachen](./@mirachen.md)**: The developer (OP) of the Nova Widget.
-*   **[@hardwarefan](./@hardwarefan.md)**: A user interested in the battery life calculations ("battery math").
-*   **[@cloudbro](./@cloudbro.md)**: A user questioning the choice against Wi-Fi connectivity.
-*   **[@sensenode](./@sensenode.md)**: A user advocating for higher IP ratings (IP67).
+*   **Teabuddy**: Another hardware product, developed by friends of the Nova Widget team, but by a different company.
+*   **@mirachen**: The developer (OP) of the Nova Widget.
+*   **@hardwarefan**: A user interested in the battery life calculations ("battery math").
+*   **@cloudbro**: A user questioning the choice against Wi-Fi connectivity.
+*   **@sensenode**: A user advocating for higher IP ratings (IP67).
 
 ## Related Concepts
 
-*   **[Mesh Networking](./Mesh Networking.md)**: A network topology where devices connect directly, often used for robust local communication.
+*   **Mesh Networking**: A network topology where devices connect directly, often used for robust local communication.
 *   **MQTT**: A lightweight messaging protocol often used for IoT devices, enabling optional cloud or local server integration.
-*   **[Duty Cycle](./Duty Cycle.md)**: The proportion of time a device or system is active, critical for battery-powered hardware to maximize lifespan.
+*   **Duty Cycle**: The proportion of time a device or system is active, critical for battery-powered hardware to maximize lifespan.
 *   **[IP Rating (Ingress Protection)](./IP Rating (Ingress Protection).md)**: A standard defining the sealing effectiveness of electrical enclosures against intrusion from foreign bodies (dust, water, etc.).
-*   **[Battery Math](./Battery Math.md)**: The calculation and estimation of battery life based on component power consumption, duty cycle, and battery capacity.
-*   **[LAN-first Design](./LAN-first Design.md)**: A design philosophy prioritizing local area network communication over wide area network (e.g., cloud) communication.
+*   **Battery Math**: The calculation and estimation of battery life based on component power consumption, duty cycle, and battery capacity.
+*   **LAN-first Design**: A design philosophy prioritizing local area network communication over wide area network (e.g., cloud) communication.
 
 ## Contradictions
 

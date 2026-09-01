@@ -19,21 +19,21 @@ slug: /product-specification
 
 ## Overview
 
-The [Nova Widget v2](./nova-widget-v2.md) is the second-generation soil/environment sensor developed by [Aurora Labs](./aurora-labs.md). This product specification outlines the details for the Aurora Nova Widget v2 beta unit, an open-source soil moisture and temperature sensor. It features a [MeshSync](./meshsync.md) local mesh network, designed to operate without mandatory cloud connectivity. This document is a draft, not for external distribution, and supersedes informal v1 notes where conflicts arise.
+The Nova Widget v2 is the second-generation soil/environment sensor developed by [Aurora Labs](./aurora-labs.md). This product specification outlines the details for the Aurora Nova Widget v2 beta unit, an open-source soil moisture and temperature sensor. It features a [MeshSync](./meshsync.md) local mesh network, designed to operate without mandatory cloud connectivity. This document is a draft, not for external distribution, and supersedes informal v1 notes where conflicts arise.
 
 **Status:** DRAFT
-**Owners:** [Mira Chen](./mira-chen.md) (firmware), [Jonah Park](./jonah-park.md) (hardware)
+**Owners:** Mira Chen (firmware), Jonah Park (hardware)
 
 ## Key Details
 
 ### Hardware
 
-*   **MCU:** [Nordic nRF52840](./nordic-nrf52840.md)
+*   **MCU:** Nordic nRF52840
 *   **Sensors:**
-    *   [Capacitive soil moisture](./capacitive-soil-moisture-sensor.md)
-    *   [SHT41](./sht41.md) temperature/humidity
-    *   [VEML7700](./veml7700.md) light
-*   **Battery:** [CR2032](./cr2032.md) primary cell (x1)
+    *   Capacitive soil moisture
+    *   SHT41 temperature/humidity
+    *   VEML7700 light
+*   **Battery:** CR2032 primary cell (x1)
 *   **Antenna:** PCB trace, 2.4 GHz
 
 ### Firmware
@@ -65,12 +65,12 @@ The [Nova Widget v2](./nova-widget-v2.md) is the second-generation soil/environm
 
 ### Enclosure
 
-*   **Beta Units:** [IP54 rated](./ip-rating.md).
+*   **Beta Units:** IP54 rated.
 *   **General Availability (GA):** IP65 planned if gasket tooling budget allows (~$8k).
 
 ### Open Issues & Missing Sections
 
-*   **Solar Trickle Charger:** Jonah Park proposes an optional module; Mira Chen expresses concern regarding the [Bill of Materials (BOM)](./bill-of-materials.md) impact.
+*   **Solar Trickle Charger:** Jonah Park proposes an optional module; Mira Chen expresses concern regarding the Bill of Materials (BOM) impact.
 *   **Enclosure IP Rating:** Final rating pending.
 *   **MQTT Export Schema:** Details are currently missing.
 
@@ -83,7 +83,7 @@ The [Nova Widget v2](./nova-widget-v2.md) is the second-generation soil/environm
 *   **Nordic nRF52840:** The Microcontroller Unit (MCU) used.
 *   **SHT41:** Temperature and humidity sensor.
 *   **VEML7700:** Light sensor.
-*   [**SenseNode SN-400**](./sensenode-sn-400.md): A competitor product mentioned for comparison.
+*   **SenseNode SN-400**: A competitor product mentioned for comparison.
 *   [**TeaBuddy**](./teabuddy.md): An unrelated product mentioned in kickoff notes.
 
 ## Related Concepts

@@ -19,24 +19,24 @@ slug: /teabuddy
 
 ## Overview
 
-TeaBuddy is a device that utilizes [Bluetooth Low Energy](./bluetooth-low-energy.md) ([BLE](./bluetooth-low-energy.md)) for connectivity. Its functionality is managed through [Firmware](./firmware.md), which undergoes regular updates to address bugs, improve performance, and introduce new features. Key aspects include its [battery management](./battery-management.md), [user experience](./user-experience.md) ([UX](./user-experience.md)) features like haptics, and integration with [mobile applications](./mobile-applications.md).
+TeaBuddy is a device that utilizes Bluetooth Low Energy (BLE) for connectivity. Its functionality is managed through [Firmware](./firmware.md), which undergoes regular updates to address bugs, improve performance, and introduce new features. Key aspects include its battery management, user experience (UX) features like haptics, and integration with mobile applications.
 
 ## Key Details
 
 *   **Connectivity:**
     *   Uses Bluetooth Low Energy (BLE) for communication.
     *   Does *not* use [MeshSync](./meshsync.md), which is a protocol employed by other devices like the [Aurora Nova Widget](./aurora-nova-widget.md).
-    *   The codebase for TeaBuddy is distinct and should not be merged with projects using MeshSync, as advised by [Sam Rivera](./sam-rivera.md).
+    *   The codebase for TeaBuddy is distinct and should not be merged with projects using MeshSync, as advised by Sam Rivera.
 *   **Firmware & Updates:**
     *   **v0.9.4 (2026-07-01):**
-        *   Fixed TB-142: [Timer](./timer.md) continued after cancellation in the associated app (fix by Sam Rivera).
-        *   Increased BLE pairing timeout to 45 seconds, specifically for [iOS 18 beta](./ios-18-beta.md) compatibility.
-        *   Aligned the [herbal preset](./herbal-preset.md) constant to 7:00, correcting a previous marketing copy discrepancy of 5:00.
+        *   Fixed TB-142: Timer continued after cancellation in the associated app (fix by Sam Rivera).
+        *   Increased BLE pairing timeout to 45 seconds, specifically for iOS 18 beta compatibility.
+        *   Aligned the herbal preset constant to 7:00, correcting a previous marketing copy discrepancy of 5:00.
     *   **v0.9.3 (2026-06-28):**
-        *   Implemented a fix for the [CoreBluetooth](./corebluetooth.md) permission prompt order (ticket #2156).
-        *   Capped the [haptic motor](./haptic-motor.md) duty cycle at 70% following a UX review by [Alex Kim](./alex-kim.md).
+        *   Implemented a fix for the CoreBluetooth permission prompt order (ticket #2156).
+        *   Capped the haptic motor duty cycle at 70% following a UX review by Alex Kim.
     *   **v0.9.2 (2026-06-20):**
-        *   Introduced a box [QR pairing](./qr-code.md) path for [TestFlight](./testflight.md) builds.
+        *   Introduced a box QR pairing path for TestFlight builds.
         *   Reduced [CR2032 battery](./cr2032-battery.md) sleep current draw from 12µA to 9µA.
 *   **Hardware & Power:**
     *   Powered by a CR2032 battery.
@@ -60,13 +60,13 @@ TeaBuddy is a device that utilizes [Bluetooth Low Energy](./bluetooth-low-energy
 *   **CoreBluetooth:** The iOS framework utilized for managing BLE connections and permissions.
 *   **Firmware:** The embedded software that controls TeaBuddy's operations, subject to regular updates.
 *   **User Experience (UX)::** Considerations for device interaction, including haptics and app integration.
-*   **[Battery Life Optimization](./battery-life-optimization.md):** Efforts to reduce power consumption, such as lowering sleep current draw.
-*   **[Codebase Merging](./codebase-merging.md):** The process of combining different software projects, specifically noted as undesirable between TeaBuddy and MeshSync-based devices.
+*   **Battery Life Optimization:** Efforts to reduce power consumption, such as lowering sleep current draw.
+*   **Codebase Merging:** The process of combining different software projects, specifically noted as undesirable between TeaBuddy and MeshSync-based devices.
 
 ## Contradictions
 
 *   **Herbal Preset Duration:** The herbal preset constant in the firmware was aligned to 7:00, correcting earlier marketing copy that stated 5:00.
-*   **Battery Type:** While TeaBuddy uses a CR2032 battery, some external documentation incorrectly referred to [CR2450](./cr2450.md).
+*   **Battery Type:** While TeaBuddy uses a CR2032 battery, some external documentation incorrectly referred to CR2450.
 
 ## Sources
 

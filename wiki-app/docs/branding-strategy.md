@@ -18,7 +18,7 @@ slug: /branding-strategy
 # Branding Strategy
 
 ## Overview
-This page outlines the ongoing development of branding elements, including [Product Naming](./product-naming.md), [Taglines](./taglines.md), and initial [Product Design](./product-design.md) preferences for products. It reflects internal brainstorming and decisions, distinguishing between approved and rejected concepts.
+This page outlines the ongoing development of branding elements, including [Product Naming](./product-naming.md), Taglines, and initial [Product Design](./product-design.md) preferences for products. It reflects internal brainstorming and decisions, distinguishing between approved and rejected concepts.
 
 ## Key Details
 
@@ -28,11 +28,11 @@ This page outlines the ongoing development of branding elements, including [Prod
 
 ### Rejected Brand Elements
 Several names were considered and subsequently rejected during the brainstorming process:
-*   **[SoilPal](./soilpal.md)**
-*   **[GritNode](./gritnode.md)**
-*   **[PetalPing](./petalping.md)**
-*   **[CloudFree Sensor](./cloudfree-sensor.md)**: Rejected for being "too on the nose," indicating it was overly literal or descriptive.
-*   **[KarpathyGarden](./karpathy-garden.md)**: Rejected with an unclear rationale ("???"), suggesting it was not well-understood or relevant.
+*   **SoilPal**
+*   **GritNode**
+*   **PetalPing**
+*   **CloudFree Sensor**: Rejected for being "too on the nose," indicating it was overly literal or descriptive.
+*   **KarpathyGarden**: Rejected with an unclear rationale ("???"), suggesting it was not well-understood or relevant.
 
 ### Tagline Exploration
 Multiple taglines were attempted, with varying degrees of internal reception:
@@ -42,8 +42,8 @@ Multiple taglines were attempted, with varying degrees of internal reception:
 
 ### Product Design Preferences
 There are differing internal preferences regarding product shape:
-*   **[Jonah](./jonah.md)**: Prefers a pebble shape for the product.
-*   **[Mira](./mira.md)**: Prefers a hexagonal (hex) shape for the product.
+*   **Jonah**: Prefers a pebble shape for the product.
+*   **Mira**: Prefers a hexagonal (hex) shape for the product.
 *   The discussion or "fight" between these preferences is ongoing.
 
 ## Related Entities
@@ -56,7 +56,7 @@ There are differing internal preferences regarding product shape:
 *   Product Naming
 *   Taglines
 *   Product Design
-*   [Brand Identity](./brand-identity.md)
+*   Brand Identity
 
 ## Contradictions
 There is an ongoing disagreement regarding product design preferences:

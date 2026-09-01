@@ -19,7 +19,7 @@ slug: /wiki-compiler
 
 ## Overview
 
-The Wiki Compiler is a core component of an LLM Wiki pipeline, designed to process raw data into a structured, navigable wiki. Its primary goal is to transform a large volume of raw files (40+) into a rich knowledge graph, explicitly surfacing contradictions within the data. It operates in a "heuristic mode" to extract information and generate [Docusaurus](./docusaurus.md)-compatible pages.
+The Wiki Compiler is a core component of an LLM Wiki pipeline, designed to process raw data into a structured, navigable wiki. Its primary goal is to transform a large volume of raw files (40+) into a rich knowledge graph, explicitly surfacing contradictions within the data. It operates in a "heuristic mode" to extract information and generate Docusaurus-compatible pages.
 
 ## Key Details
 
@@ -28,9 +28,9 @@ The Wiki Compiler is a core component of an LLM Wiki pipeline, designed to proce
 The Wiki Compiler's heuristic mode performs several key operations:
 
 *   **Data Ingestion:** It reads all `.txt` and `.md` files located under the `data/raw/` directory.
-*   **Topic Extraction:** It extracts topics from the ingested content without requiring an [LLM API Key](./llm-api-key.md), suggesting a rule-based or pattern-matching approach.
+*   **Topic Extraction:** It extracts topics from the ingested content without requiring an LLM API Key, suggesting a rule-based or pattern-matching approach.
 *   **Page Generation:** It generates Docusaurus-compatible wiki pages, placing them under the `wiki-app/docs/` directory.
-*   **Cross-linking:** It automatically builds [Cross-linking](./cross-linking.md) between entities mentioned in the text, such as [Nova Widget](./nova-widget.md), [TeaBuddy](./teabuddy.md), and [MeshSync](./meshsync.md).
+*   **Cross-linking:** It automatically builds Cross-linking between entities mentioned in the text, such as [Nova Widget](./nova-widget.md), [TeaBuddy](./teabuddy.md), and [MeshSync](./meshsync.md).
 
 ### Test Data Layout
 
@@ -44,7 +44,7 @@ The compiler is tested against a specific data structure:
 
 The compiler is designed to handle various data quality issues, including:
 
-*   **Broken Markdown Exports:** Tests the [Parser Resilience](./parser-resilience.md) to malformed Markdown.
+*   **Broken Markdown Exports:** Tests the Parser Resilience to malformed Markdown.
 *   **Forum HTML Scrapes:** Acknowledged to potentially lose nested content during processing.
 *   **Email Threads:** May include "wrong-thread noise," indicating challenges in isolating relevant information within conversational data.
 
@@ -64,7 +64,7 @@ The compiler is designed to handle various data quality issues, including:
 
 ## Contradictions
 
-The Wiki Compiler's goal explicitly includes surfacing contradictions within the processed data, such as those related to "[battery](./battery.md)," "[herbal preset](./herbal-preset.md)," and "[read interval](./read-interval.md)." While the compiler aims to identify these, no specific contradictions are detailed in this document.
+The Wiki Compiler's goal explicitly includes surfacing contradictions within the processed data, such as those related to "battery," "herbal preset," and "read interval." While the compiler aims to identify these, no specific contradictions are detailed in this document.
 
 ## Sources
 

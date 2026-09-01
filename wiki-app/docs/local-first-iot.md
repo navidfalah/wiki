@@ -18,18 +18,18 @@ slug: /local-first-iot
 # Local-first IoT
 
 ## Overview
-A lunch-and-learn session held on July 5, featuring [Alex Kim](./alex-kim.md) from [TeaBuddy](./teabuddy.md), explored the concept of "Local-first IoT." The discussion focused on the design choices and trade-offs involved in developing [Consumer Gadgets](./consumer-gadgets.md) that prioritize local operation over cloud dependency, using TeaBuddy's product development as a case study.
+A lunch-and-learn session held on July 5, featuring Alex Kim from [TeaBuddy](./teabuddy.md), explored the concept of "Local-first IoT." The discussion focused on the design choices and trade-offs involved in developing Consumer Gadgets that prioritize local operation over cloud dependency, using TeaBuddy's product development as a case study.
 
 ## Key Details
-*   **Presenter**: Alex Kim, an invited guest from TeaBuddy, presented at the [Aurora Office](./aurora-office.md).
+*   **Presenter**: Alex Kim, an invited guest from TeaBuddy, presented at the Aurora Office.
 *   **Core Topics**:
-    *   **BLE vs. Mesh Networking**: The session covered the trade-offs between [BLE](./ble.md) (Bluetooth Low Energy) and [Mesh Networking](./mesh-networking.md) solutions, particularly for consumer gadgets.
-    *   **Rejection of Cloud Accounts**: [TeaBuddy](./teabuddy.md)'s decision to forgo [Cloud Accounts](./cloud-accounts.md) for their version 1 product was highlighted. Alex Kim explained this choice by stating that "Tea drinkers want one device one job," implying a preference for simplicity and direct functionality without the overhead of cloud management.
+    *   **BLE vs. Mesh Networking**: The session covered the trade-offs between BLE (Bluetooth Low Energy) and [Mesh Networking](./mesh-networking.md) solutions, particularly for consumer gadgets.
+    *   **Rejection of Cloud Accounts**: [TeaBuddy](./teabuddy.md)'s decision to forgo Cloud Accounts for their version 1 product was highlighted. Alex Kim explained this choice by stating that "Tea drinkers want one device one job," implying a preference for simplicity and direct functionality without the overhead of cloud management.
 *   **Demonstration**: A practical demonstration showcased the differences between a puck buzzer and [Nova Widget](./nova-widget.md) LED patterns, likely illustrating various local interaction methods.
 *   **Q&A Highlights**:
-    *   **Mesh Complexity**: [Mira](./mira.md) commented that "Mesh complexity is worth it at 6+ [Garden Sensors](./garden-sensors.md)," suggesting scenarios where the added complexity of mesh networking provides significant benefits for larger deployments.
+    *   **Mesh Complexity**: Mira commented that "Mesh complexity is worth it at 6+ [Garden Sensors](./garden-sensors.md)," suggesting scenarios where the added complexity of mesh networking provides significant benefits for larger deployments.
     *   **User Preference**: Alex Kim reiterated the "one device one job" philosophy, reinforcing the rationale behind TeaBuddy's local-first approach.
-    *   **Collaboration**: [Jonah](./jonah.md) offered to share enclosure supplier contacts, indicating potential collaboration or resource sharing.
+    *   **Collaboration**: Jonah offered to share enclosure supplier contacts, indicating potential collaboration or resource sharing.
 *   **Action Item**: A cross-link to the `teabuddy-cross-ref` wiki page was suggested for further information.
 
 ## Related Entities

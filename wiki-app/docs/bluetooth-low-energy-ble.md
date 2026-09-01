@@ -27,9 +27,9 @@ Bluetooth Low Energy (BLE) is a wireless personal area network technology design
 
 *   **iOS 18 Compatibility**:
     *   The BLE pairing timeout was increased to 45 seconds specifically for [iOS 18](./ios-18.md) beta devices in [TeaBuddy](./teabuddy.md) [firmware](./firmware.md) v0.9.4 to improve reliability.
-    *   iOS 18 beta introduced changes to the [CoreBluetooth](./corebluetooth.md) permission prompt order, which caused issues (ticket #2156) where [`CBManagerAuthorization`](./cbmanagerauthorization.md) needed to resolve before a [QR Deep Link](./qr-deep-link.md) could trigger a [GATT (Generic Attribute Profile)](./gatt.md) connection.
+    *   iOS 18 beta introduced changes to the CoreBluetooth permission prompt order, which caused issues (ticket #2156) where `CBManagerAuthorization` needed to resolve before a QR Deep Link could trigger a GATT (Generic Attribute Profile) connection.
     *   Firmware v0.9.3 addressed the CoreBluetooth permission prompt order issue.
-    *   Future [Android](./android.md) development should learn from these iOS 18 changes to avoid similar ordering mistakes.
+    *   Future Android development should learn from these iOS 18 changes to avoid similar ordering mistakes.
 *   **QR Pairing**: A box QR pairing path was implemented for TestFlight builds (firmware v0.9.2), facilitating initial device setup.
 
 ### Firmware Enhancements (TeaBuddy Specific)
@@ -40,21 +40,21 @@ Bluetooth Low Energy (BLE) is a wireless personal area network technology design
     *   Aligned the herbal preset constant to 7:00 (previously 5:00 in marketing copy, a contradiction fixed in firmware).
 *   **v0.9.3 (2026-06-28)**:
     *   Implemented a fix for the CoreBluetooth permission prompt order (ticket #2156).
-    *   Capped the haptic motor duty cycle at 70% following an [Alex Kim](./alex-kim.md) UX review.
+    *   Capped the haptic motor duty cycle at 70% following an Alex Kim UX review.
 *   **v0.9.2 (2026-06-20)**:
     *   Introduced a TestFlight build with a box QR pairing path.
-    *   Reduced [CR2032](./cr2032.md) battery sleep current draw from 12µA to 9µA.
+    *   Reduced CR2032 battery sleep current draw from 12µA to 9µA.
 
 ### Background Operations
 
-*   Background steep timers require [`UIBackgroundTask`](./uibackgroundtask.md) renewal to prevent termination, addressing a "TB-background-kill" bug.
+*   Background steep timers require `UIBackgroundTask` renewal to prevent termination, addressing a "TB-background-kill" bug.
 
 ## Related Entities
 
 *   **TeaBuddy**: A device that utilizes BLE for connectivity, with specific firmware updates addressing BLE-related issues.
-*   **iOS 18**: An [Apple](./apple.md) operating system version that introduced changes affecting BLE pairing and CoreBluetooth permissions.
+*   **iOS 18**: An Apple operating system version that introduced changes affecting BLE pairing and CoreBluetooth permissions.
 *   **Apple**: The developer of iOS and CoreBluetooth framework.
-*   **[Sam Rivera](./sam-rivera.md)**: Author of research notes on iOS 18 CoreBluetooth pairing changes and contributor to TeaBuddy firmware.
+*   **Sam Rivera**: Author of research notes on iOS 18 CoreBluetooth pairing changes and contributor to TeaBuddy firmware.
 *   **Alex Kim**: Performed a UX review that influenced haptic motor duty cycle adjustments in TeaBuddy firmware.
 *   **[Aurora Nova Widget](./aurora-nova-widget.md)**: A separate product that uses UART provisioning and [MeshSync](./meshsync.md), not sharing the same BLE consumer QR flow codebase as TeaBuddy.
 *   **Android**: Another mobile operating system platform where BLE implementation considerations are relevant.
