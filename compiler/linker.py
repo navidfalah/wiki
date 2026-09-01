@@ -11,6 +11,7 @@ from dataclasses import dataclass, field
 from datetime import UTC, datetime
 from pathlib import Path
 
+from entity_resolution import Mention
 from link_overrides import (
     apply_connection_overrides,
     load_link_overrides,
@@ -18,7 +19,7 @@ from link_overrides import (
 )
 from llm_client import LLMClient, require_llm
 from mdx_sanitize import sanitize_for_mdx
-from mechanical_linker import auto_link_exact_titles
+from mechanical_linker import auto_link_exact_titles, build_alias_topic_index
 from models import OUTPUT_DIR
 from yaml_frontmatter import (
     FINAL_GENERATED_NOTE,
@@ -413,12 +414,21 @@ def link_and_export_pages(
     index_delta: IndexDelta | None = None,
     force: bool = False,
     on_progress: ProgressCallback | None = None,
+    entity_mentions: list[Mention] | None = None,
 ) -> tuple[list[Path], list[str]]:
     """
     Inject links into draft pages and export to wiki-app/docs/.
 
     When dirty_filenames / index_delta are provided, only regenerated pages and
     pages whose links may be stale are processed — unchanged pages are kept.
+
+    entity_mentions, when given (see mechanical_linker.mentions_from_extractions()),
+    expands the mechanical pre-pass's candidate list with every alias
+    entity_resolution.py's heuristic tier considers the same entity as an
+    existing topic title (e.g. bare "Mira" linking to the "Mira Chen"
+    page) — the LLM pass still only ever sees the real topic_index, not
+    the alias-expanded one, so this only strengthens the deterministic
+    floor, not what's fed to the model.
     """
     root = temp_dir or TEMP_OUTPUT_DIR
     out_dir = output_dir or OUTPUT_DIR
@@ -427,6 +437,7 @@ def link_and_export_pages(
     index = topic_index or load_topic_index(root / "index.json")
     delta = index_delta or IndexDelta()
     client = require_llm(llm)
+    mechanical_index = build_alias_topic_index(index, entity_mentions or [])
 
     dirty = dirty_filenames or set()
     removed = removed_filenames or set()
@@ -478,7 +489,7 @@ def link_and_export_pages(
         # mention of another page's title is linked regardless of what the
         # LLM catches. Runs before the LLM pass, not instead of it -- see
         # mechanical_linker.py's module docstring for why both matter.
-        link_source = auto_link_exact_titles(link_source, index, self_title=title).body
+        link_source = auto_link_exact_titles(link_source, mechanical_index, self_title=title).body
 
         linked_body = link_page_with_llm(
             link_source,

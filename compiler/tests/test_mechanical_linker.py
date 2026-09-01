@@ -1,4 +1,9 @@
-from mechanical_linker import auto_link_exact_titles
+from entity_resolution import Mention
+from mechanical_linker import (
+    auto_link_exact_titles,
+    build_alias_topic_index,
+    mentions_from_extractions,
+)
 
 
 def test_links_a_plain_exact_mention():
@@ -95,3 +100,85 @@ def test_no_topics_to_link_returns_body_unchanged():
     result = auto_link_exact_titles(body, {}, self_title="X")
     assert result.body == body
     assert result.linked_titles == []
+
+
+def test_build_alias_topic_index_adds_a_bare_first_name_alias():
+    topic_index = {"Mira Chen": "mira-chen.md"}
+    mentions = [
+        Mention("Mira Chen", "notes/a.md"),
+        Mention("Mira", "transcripts/b.txt"),
+    ]
+    expanded = build_alias_topic_index(topic_index, mentions)
+    assert expanded["Mira Chen"] == "mira-chen.md"
+    assert expanded["Mira"] == "mira-chen.md"
+
+
+def test_build_alias_topic_index_never_overrides_an_existing_title():
+    # "Nova" is both a real (distinct) topic title AND, per its mentions,
+    # would otherwise cluster as an alias of "Nova Widget" -- the real
+    # topic_index entry must win.
+    topic_index = {"Nova Widget": "nova-widget.md", "Nova": "nova-the-competitor.md"}
+    mentions = [Mention("Nova Widget", "a.md"), Mention("Nova", "b.md")]
+    expanded = build_alias_topic_index(topic_index, mentions)
+    assert expanded["Nova"] == "nova-the-competitor.md"
+
+
+def test_build_alias_topic_index_ignores_hard_negative_names():
+    # entity_resolution's own hard-negative case: Alex Kim and Alex Rivera
+    # share a token but are different people -- the heuristic tier must
+    # not merge them, so no alias should leak across.
+    topic_index = {"Alex Kim": "alex-kim.md"}
+    mentions = [Mention("Alex Kim", "a.md"), Mention("Alex Rivera", "b.md")]
+    expanded = build_alias_topic_index(topic_index, mentions)
+    assert "Alex Rivera" not in expanded
+
+
+def test_build_alias_topic_index_with_no_mentions_returns_topic_index_unchanged():
+    topic_index = {"MeshSync": "meshsync.md"}
+    assert build_alias_topic_index(topic_index, []) == topic_index
+
+
+def test_build_alias_topic_index_unmatched_cluster_adds_nothing():
+    # A cluster whose aliases don't touch any real topic title shouldn't
+    # add anything -- nowhere to point the alias at.
+    topic_index = {"MeshSync": "meshsync.md"}
+    mentions = [Mention("Jonah Park", "a.md"), Mention("Jonah", "b.md")]
+    expanded = build_alias_topic_index(topic_index, mentions)
+    assert "Jonah" not in expanded
+    assert "Jonah Park" not in expanded
+
+
+def test_mentions_from_extractions_builds_mentions_from_entities():
+    extractions = {
+        "files": [
+            {
+                "source": "notes/a.md",
+                "chunks": [
+                    {"entities": [{"name": "Mira Chen", "description": "founder"}]},
+                    {"entities": [{"name": "Nova Widget"}, {"name": ""}]},
+                ],
+            }
+        ]
+    }
+    mentions = mentions_from_extractions(extractions)
+    assert Mention("Mira Chen", "notes/a.md") in mentions
+    assert Mention("Nova Widget", "notes/a.md") in mentions
+    assert len(mentions) == 2  # the empty-name entity is dropped
+
+
+def test_mentions_from_extractions_handles_empty_payload():
+    assert mentions_from_extractions({}) == []
+    assert mentions_from_extractions({"files": []}) == []
+
+
+def test_auto_link_exact_titles_uses_alias_expanded_index():
+    """End-to-end: a bare first-name mention gets linked once the topic
+    index is alias-expanded, even though auto_link_exact_titles() itself
+    only ever does exact string matching."""
+    topic_index = {"Mira Chen": "mira-chen.md"}
+    mentions = [Mention("Mira Chen", "notes/a.md"), Mention("Mira", "transcripts/b.txt")]
+    expanded = build_alias_topic_index(topic_index, mentions)
+
+    body = "Mira reported the read interval is 15 minutes."
+    result = auto_link_exact_titles(body, expanded, self_title="X")
+    assert "[Mira](./mira-chen.md)" in result.body

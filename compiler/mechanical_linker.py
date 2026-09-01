@@ -42,6 +42,8 @@ from __future__ import annotations
 import re
 from dataclasses import dataclass, field
 
+from entity_resolution import Mention, resolve_entities
+
 _MARKDOWN_LINK_RE = re.compile(r"\[[^\]]*\]\([^)]*\)")
 _CODE_FENCE_RE = re.compile(r"```.*?```", re.DOTALL)
 _INLINE_CODE_RE = re.compile(r"`[^`]*`")
@@ -110,3 +112,63 @@ def auto_link_exact_titles(
         linked_titles.append(title)
 
     return MechanicalLinkResult(body=body, linked_titles=linked_titles)
+
+
+def build_alias_topic_index(topic_index: dict[str, str], mentions: list[Mention]) -> dict[str, str]:
+    """Expand topic_index (exact page titles only) with every alias
+    entity_resolution.py's heuristic tier considers the same real-world
+    entity as an existing topic title — e.g. a chunk mentioning bare
+    "Mira" alongside another mentioning "Mira Chen" clusters them together;
+    if "Mira Chen" is a real topic_index title, "Mira" gets added too,
+    pointing at the same file. auto_link_exact_titles() only ever matches
+    exact strings, so without this it can only catch a page's own full
+    title, never the shorter/alternate names people actually write in
+    prose.
+
+    Heuristic tier only (no embed_fn/llm passed to resolve_entities()) —
+    offline and deterministic, the same "mechanical, no live model needed"
+    property as the rest of this module. A mention that would need the
+    embedding or LLM tier to resolve is left alone rather than guessed at;
+    entity_resolution.py's own hard-negative design (Alex Kim vs. Alex
+    Rivera) already keeps the heuristic tier itself conservative.
+
+    Only ever ADDS entries — an alias never overrides or removes an
+    existing exact topic_index mapping, so a real topic title always wins
+    over an alias-derived one for the same string.
+    """
+    if not mentions:
+        return dict(topic_index)
+
+    title_by_lower = {title.lower(): filename for title, filename in topic_index.items()}
+    clusters = resolve_entities(mentions)
+
+    expanded = dict(topic_index)
+    for cluster in clusters:
+        matched_filename = next(
+            (title_by_lower[alias.lower()] for alias in cluster.aliases if alias.lower() in title_by_lower),
+            None,
+        )
+        if matched_filename is None:
+            continue
+        for alias in cluster.aliases:
+            if alias not in expanded:
+                expanded[alias] = matched_filename
+
+    return expanded
+
+
+def mentions_from_extractions(extractions: dict) -> list[Mention]:
+    """Build the Mention list build_alias_topic_index() needs from
+    main.py's extractions payload (compiler/synthesizer.py's
+    extract_topics_from_raw_files() output) — every entity name each raw
+    chunk's extraction step found, attributed to that chunk's source file.
+    """
+    mentions: list[Mention] = []
+    for file_entry in extractions.get("files", []):
+        source = file_entry.get("source", "")
+        for chunk in file_entry.get("chunks", []):
+            for entity in chunk.get("entities", []):
+                name = str(entity.get("name", "")).strip()
+                if name:
+                    mentions.append(Mention(name=name, source=source))
+    return mentions

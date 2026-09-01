@@ -67,6 +67,37 @@ was never linked; 789 such mentions total across the corpus. That gap is
 the direct, measurable consequence of the shadowing bug above — the LLM
 pass was working from a broken index the whole time.
 
+### Alias-aware mechanical linking (`build_alias_topic_index`)
+
+`auto_link_exact_titles()` only ever does exact-string matching — it can
+link a page's own title ("Nova Widget") but not a bare mention someone
+actually writes in prose ("Mira" instead of "Mira Chen"). Exact-title
+matching alone is a floor, not the ceiling this pass could be.
+
+`build_alias_topic_index(topic_index, mentions)` closes that gap using
+infrastructure that already existed but wasn't wired into linking:
+`entity_resolution.py`'s heuristic tier (task #6) clusters mention strings
+into the same entity — "Mira" and "Mira Chen" merge via its subset-of-
+tokens rule — and every alias in a cluster that touches a real topic title
+gets added to the index the mechanical pass uses, pointing at that title's
+file. Heuristic tier only (no `embed_fn`/`llm` passed to
+`resolve_entities()`) — fully offline and deterministic, same property as
+the rest of this module; a mention needing the embedding or LLM tier to
+resolve is left alone rather than guessed at, and
+`entity_resolution.py`'s own hard-negative design (Alex Kim vs. Alex
+Rivera share a token but are different people) keeps this conservative by
+construction. An alias never overrides a real topic_index entry for the
+same string — exact titles always win.
+
+`mentions_from_extractions(extractions)` builds the `Mention` list from
+`main.py`'s existing extraction payload (every entity name each raw
+chunk's extraction step found, attributed to its source file) — `main.py`
+already has `extractions` in scope when it calls `step_link()`, so this
+is threaded through as an optional parameter, not a new pipeline stage.
+The alias-expanded index is used **only** for the mechanical pre-pass —
+`link_page_with_llm()` still receives the real, unexpanded `topic_index`,
+so this doesn't change what the (already-fixed) LLM prompt looks like.
+
 ### LLM linking (`link_page_with_llm`)
 
 System prompt `LINKER_SYSTEM_PROMPT` in `linker.py`:

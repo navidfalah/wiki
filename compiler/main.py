@@ -32,6 +32,7 @@ from linker import (
     update_topic_index,
 )
 from llm_client import LLMClient, require_llm
+from mechanical_linker import mentions_from_extractions
 from moc_generator import generate_moc
 from models import OUTPUT_DIR, RAW_DIR, STATE_FILE
 from synthesizer import (
@@ -346,8 +347,16 @@ def step_link(
     written_filenames: set[str],
     removed_filenames: set[str],
     force: bool,
+    extractions: dict | None = None,
 ) -> list[Path]:
-    """Step 5: Incrementally inject links and export affected pages."""
+    """Step 5: Incrementally inject links and export affected pages.
+
+    extractions, when given, feeds mechanical_linker.py's alias-aware
+    deterministic pre-pass — every entity name extraction found across the
+    corpus becomes a candidate alias for the mechanical linker's floor
+    pass (see link_and_export_pages()'s entity_mentions docstring).
+    """
+    entity_mentions = mentions_from_extractions(extractions) if extractions else None
     mode = "LLM"
 
     with Progress(
@@ -380,6 +389,7 @@ def step_link(
             index_delta=index_delta,
             force=force,
             on_progress=on_progress,
+            entity_mentions=entity_mentions,
         )
 
     console.print(
@@ -461,6 +471,7 @@ def run_pipeline(
         written_filenames=synth_result["written_filenames"],
         removed_filenames=synth_result["removed_filenames"],
         force=force,
+        extractions=extractions,
     )
 
     console.print("[bold cyan]Map of Content[/] — generating hierarchical index.md")

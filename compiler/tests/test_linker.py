@@ -1,5 +1,6 @@
 from pathlib import Path
 
+from entity_resolution import Mention
 from linker import (
     _extract_title_from_markdown,
     _split_frontmatter,
@@ -179,3 +180,38 @@ def test_link_and_export_pages_applies_the_mechanical_pass_before_the_llm(tmp_pa
     nova_page = next(p for p in written if p.name == "nova-widget.md")
     exported = nova_page.read_text(encoding="utf-8")
     assert "[MeshSync](./meshsync.md)" in exported
+
+
+def test_link_and_export_pages_uses_entity_mentions_for_alias_linking(tmp_path: Path):
+    """A bare first-name mention ("Mira") should get linked to the
+    "Mira Chen" page when entity_mentions establishes the alias, even
+    though the topic index itself only has the full name as a title."""
+    temp_dir = tmp_path / "temp_output"
+    docs_dir = tmp_path / "docs"
+    temp_dir.mkdir()
+    docs_dir.mkdir()
+
+    (temp_dir / "mira-chen.md").write_text("# Mira Chen\n\nCo-founder.\n", encoding="utf-8")
+    (temp_dir / "meshsync.md").write_text(
+        "# MeshSync\n\nMira reported the read interval is 15 minutes.\n", encoding="utf-8"
+    )
+    topic_index, _ = build_topic_index(temp_dir, temp_dir / "index.json")
+
+    llm = _RecordingLinkerLLM()
+    written, _skipped = link_and_export_pages(
+        topic_index,
+        temp_dir=temp_dir,
+        output_dir=docs_dir,
+        llm=llm,
+        dirty_filenames={"mira-chen.md", "meshsync.md"},
+        removed_filenames=set(),
+        force=True,
+        entity_mentions=[
+            Mention("Mira Chen", "notes/a.md"),
+            Mention("Mira", "transcripts/b.txt"),
+        ],
+    )
+
+    meshsync_page = next(p for p in written if p.name == "meshsync.md")
+    exported = meshsync_page.read_text(encoding="utf-8")
+    assert "[Mira](./mira-chen.md)" in exported
