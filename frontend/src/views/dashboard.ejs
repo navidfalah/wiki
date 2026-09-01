@@ -1,0 +1,62 @@
+<%- include('partials/head', { title: 'Dashboard', apiBase, active: 'Dashboard' }) %>
+
+<h1 class="text-2xl font-semibold tracking-tight text-gray-900">Dashboard</h1>
+<p class="mt-1 max-w-2xl text-sm text-gray-600">
+  Point the compiler at your source folders, run it, and browse what came out.
+</p>
+
+<div id="stat-cards" class="mt-6 grid grid-cols-2 gap-3 sm:grid-cols-4"></div>
+
+<div class="mt-6 flex flex-col gap-6">
+  <section class="rounded-xl border border-gray-200 bg-white shadow-card">
+    <div class="flex flex-wrap items-center justify-between gap-3 border-b border-gray-100 px-5 py-4">
+      <div class="flex items-center gap-3">
+        <h2 class="text-base font-semibold text-gray-900">Run compiler</h2>
+        <span id="build-status-badge" class="inline-flex items-center gap-1 rounded-full bg-gray-100 px-2 py-0.5 text-xs font-medium text-gray-600">Ready</span>
+      </div>
+      <div class="flex flex-wrap items-center gap-3">
+        <label class="flex items-center gap-2 text-sm text-gray-600">
+          <input id="force-rebuild" type="checkbox" class="rounded border-gray-300 text-accent focus:ring-accent/30" />
+          Rebuild all files
+        </label>
+        <button id="clear-log" type="button" class="inline-flex items-center justify-center gap-2 rounded-lg border border-gray-300 bg-white px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50">Clear log</button>
+        <button id="run-build" type="button" class="inline-flex items-center justify-center gap-2 rounded-lg bg-accent px-4 py-2 text-sm font-medium text-white hover:bg-accent-dark">Run compiler</button>
+      </div>
+    </div>
+    <div class="p-4">
+      <pre id="build-log" class="h-64 overflow-auto rounded-lg bg-gray-900 p-3 font-mono text-xs text-gray-100">Ready. Click "Run compiler" to start.</pre>
+    </div>
+  </section>
+
+  <section class="rounded-xl border border-gray-200 bg-white shadow-card">
+    <div class="flex flex-wrap items-center justify-between gap-3 border-b border-gray-100 px-5 py-4">
+      <div>
+        <h2 class="flex items-center gap-2 text-base font-semibold text-gray-900">Source folders</h2>
+        <p id="sources-subtitle" class="mt-0.5 text-xs text-gray-500">Folders the compiler reads raw notes, emails, and files from.</p>
+      </div>
+      <button id="add-source-toggle" type="button" class="inline-flex items-center justify-center gap-2 rounded-lg border border-source-border px-4 py-2 text-sm font-medium text-source hover:bg-source-bg">+ Add folder</button>
+    </div>
+    <div id="add-source-form" class="hidden border-b border-gray-100 p-5"></div>
+    <div id="sources-grid" class="grid gap-3 p-5 sm:grid-cols-2 lg:grid-cols-3"></div>
+  </section>
+
+  <section class="rounded-xl border border-gray-200 bg-white shadow-card">
+    <div class="border-b border-gray-100 px-5 py-4">
+      <h2 class="text-base font-semibold text-gray-900">Files</h2>
+      <p class="mt-0.5 text-sm text-gray-500">Browse data/raw/ like a file manager. Click Preview to see a file's content.</p>
+    </div>
+    <div class="flex flex-wrap items-center justify-between gap-2 border-b border-gray-100 px-5 py-2.5">
+      <nav id="breadcrumbs" class="flex min-w-0 flex-wrap items-center gap-1 text-sm"></nav>
+      <div class="flex items-center gap-2">
+        <input id="file-search" type="search" placeholder="Search this folder…" class="w-40 rounded-lg border border-gray-300 px-2.5 py-1 text-sm focus:border-accent focus:outline-none focus:ring-2 focus:ring-accent/20" />
+        <button id="new-folder-toggle" type="button" class="inline-flex items-center justify-center gap-2 rounded-lg border border-gray-300 bg-white px-3 py-1 text-xs font-medium text-gray-700 hover:bg-gray-50">+ New folder</button>
+      </div>
+    </div>
+    <div id="new-folder-form" class="hidden mx-5 mt-4 rounded-lg border border-dashed border-gray-300 bg-gray-50 px-3 py-2"></div>
+    <div id="file-grid" class="grid grid-cols-3 gap-1 p-4 sm:grid-cols-4 md:grid-cols-6 lg:grid-cols-8"></div>
+  </section>
+</div>
+
+<div id="preview-modal" class="hidden"></div>
+
+<%- include('partials/foot', { clientScript: 'dashboard' }) %>

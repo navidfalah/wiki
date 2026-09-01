@@ -7,8 +7,9 @@ __pycache__/
 .venv/
 venv/
 node_modules/
-wiki-app/build/
-wiki-app/.docusaurus/
+backend/dist/
+frontend/dist/
+frontend/dist-static/
 data/state.json
 data/sources.json
 data/.llm-cache.sqlite

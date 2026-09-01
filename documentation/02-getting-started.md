@@ -4,9 +4,9 @@
 
 | Tool | Version | Used for |
 |------|---------|----------|
-| **Python** | 3.12+ recommended | Compiler, API server |
-| **Node.js** | ≥ 18 | Docusaurus dev server and build |
-| **npm** | Bundled with Node | `wiki-app` dependencies |
+| **Python** | 3.12+ recommended | Compiler pipeline, retrieval/chat (rag_engine.py), email parsing (email_engine.py) |
+| **Node.js** | ≥ 18 | Express+TypeScript backend and frontend |
+| **npm** | Bundled with Node | `backend/` and `frontend/` dependencies |
 | **Git** | Any recent | Clone, CI deploy |
 
 Optional:
@@ -48,7 +48,11 @@ Dependencies (`requirements.txt`):
 - `python-dotenv` — loads `.env` from repo root
 - `pyyaml` — MOC generator
 - `rich` — terminal progress UI in `main.py`
-- `fastapi`, `uvicorn` — API server
+
+The Python side no longer runs its own API server (`server.py`/FastAPI is
+retired) — the Express+TS backend calls into `compiler/main.py` and
+`compiler/cli.py` as subprocesses instead. See
+[11-wiki-app-and-dashboards.md](./11-wiki-app-and-dashboards.md).
 
 ## First compile
 
@@ -60,7 +64,8 @@ python main.py --force
 
 `--force` reprocesses every file in `data/raw/` regardless of `data/state.json`. Use it on first run or after bulk data changes.
 
-Expected output: Rich terminal panels for Steps 1–5, then Map of Content generation. Final pages land in `wiki-app/docs/`.
+Expected output: Rich terminal panels for Steps 1–5, then Map of Content generation. Final pages land in `wiki-app/docs/` (still the compiler's output directory — see the note in
+[11-wiki-app-and-dashboards.md](./11-wiki-app-and-dashboards.md) on why that path didn't change even though Docusaurus is gone).
 
 If you see `No raw files found under data/raw/`:
 
@@ -69,16 +74,12 @@ python scripts/dev/generate_junk_data.py    # from compiler/ — creates 10 seed
 python main.py --force
 ```
 
-## Node setup (wiki app)
+## Node setup (backend + frontend)
 
 ```bash
-cd wiki-app
-npm install
-npm start
+cd backend && npm install
+cd ../frontend && npm install
 ```
-
-Site: **http://localhost:3000**  
-Wiki index: **http://localhost:3000/docs/index**
 
 ## Three-terminal development setup
 
@@ -90,25 +91,32 @@ python main.py              # incremental (only changed files)
 python main.py --force      # full rebuild
 ```
 
-### Terminal 2 — API server (for dashboards)
+### Terminal 2 — backend (Express + TypeScript API)
 
 ```bash
-cd compiler
-chmod +x run_server.sh
-./run_server.sh
+cd backend
+npm run dev:server
 ```
 
-- Creates `.venv` if missing
-- Installs pip deps quietly
-- Runs `server.py` on **port 8000** with hot reload
-- API base: http://localhost:8000
+- Runs `src/index.ts` directly via `tsx watch` (auto-restarts on change)
+- Port **8000**
+- Also spawns `python3` for build/chat/email requests — `PYTHON_BIN` env var overrides the interpreter if `python3` isn't on `PATH`
 
 Verify: `curl http://localhost:8000/api/health` → `{"status":"ok"}`
 
-### Terminal 3 — Docusaurus dev server
+### Terminal 3 — frontend (Express + TypeScript + Tailwind)
 
 ```bash
-cd wiki-app && npm start
+cd frontend
+npm run dev:server     # Express server, tsx watch
+```
+
+In two more terminals (or run once before starting, then re-run after
+editing Tailwind classes / client TS):
+
+```bash
+cd frontend && npm run dev:css      # Tailwind watch → dist-static/css/app.css
+cd frontend && npm run dev:client   # esbuild watch → dist-static/js/*.js
 ```
 
 Default port **3000**. Kill conflicting processes if port is in use.
@@ -119,22 +127,28 @@ From repo root:
 
 ```bash
 chmod +x build_wiki.sh
-./build_wiki.sh                  # compile + Docusaurus build
-./build_wiki.sh --force          # pass --force to compiler
+./build_wiki.sh                  # compile + build backend + build frontend
+./build_wiki.sh --force          # pass --force to the compiler
 ```
 
 `build_wiki.sh`:
 
-1. Creates/activates `compiler/.venv`
-2. `pip install -r requirements.txt`
-3. Runs `python compiler/main.py` (forwards CLI args)
-4. `npm install` in `wiki-app/` if needed
-5. `npm run build` → output in `wiki-app/build/`
+1. Creates/activates `compiler/.venv`, installs Python deps
+2. Runs `python compiler/main.py` (forwards CLI args)
+3. `npm install` + `npm run build` in `backend/` → `backend/dist/`
+4. `npm install` + `npm run build` in `frontend/` → `frontend/dist/` + `frontend/dist-static/`
 
-Preview production build:
+Run the production build:
 
 ```bash
-cd wiki-app && npm run serve
+cd backend && npm start    # terminal 1 — port 8000
+cd frontend && npm start   # terminal 2 — port 3000
+```
+
+Or with Docker Compose (also builds both images):
+
+```bash
+docker compose up --build
 ```
 
 ## CLI quick reference
@@ -152,19 +166,26 @@ python scripts/dev/generate_extended_dummy_data.py [--overwrite]
 
 # Maintenance
 python fix_frontmatter.py [--dry-run] [--docs-dir PATH]
+python fix_dead_links.py [--dry-run] [--docs-dir PATH]
 python reviewer.py               # LLM quality review (needs API key)
 
-# Wiki app (from wiki-app/)
-npm start                        # dev server :3000
-npm run build                    # production static site
-npm run serve                    # preview build/
-npm run clear                    # clear Docusaurus cache
+# Backend (from backend/)
+npm run dev:server               # tsx watch, port 8000
+npm run build                    # tsc -> dist/
+npm start                        # node dist/index.js
+
+# Frontend (from frontend/)
+npm run dev:server               # tsx watch, port 3000
+npm run dev:css                  # tailwind watch
+npm run dev:client               # esbuild watch (client bundles)
+npm run build                    # css + client + server -> dist/, dist-static/
+npm start                        # node dist/index.js
 ```
 
 ## What to do after first run
 
-1. Open http://localhost:3000/docs/index — browse the Map of Content
-2. Open http://localhost:3000/workspace — compare raw vs compiled (needs API)
+1. Open http://localhost:3000/wiki — browse the wiki pages
+2. Open http://localhost:3000/dashboard — run the compiler, manage source folders, browse raw files
 3. Add a `.md` file under `data/raw/notes/` and run `python main.py`
 4. Read [05-compiler-pipeline.md](./05-compiler-pipeline.md) for pipeline details
 

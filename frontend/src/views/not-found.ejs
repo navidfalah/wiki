@@ -1,0 +1,9 @@
+<%- include('partials/head', { title: 'Not found', apiBase, active: 'Wiki' }) %>
+
+<div class="mx-auto max-w-lg rounded-xl border border-gray-200 bg-white p-8 text-center shadow-card">
+  <h1 class="text-xl font-semibold text-gray-900">Page not found</h1>
+  <p class="mt-2 text-sm text-gray-500">No compiled wiki page at <code><%= path %></code>.</p>
+  <a href="/wiki" class="mt-4 inline-block text-sm font-medium text-generated no-underline hover:underline">← Back to the wiki index</a>
+</div>
+
+<%- include('partials/foot', { clientScript: null }) %>

@@ -11,7 +11,7 @@ source .venv/bin/activate
 pip install -r requirements.txt
 ```
 
-Run compiler commands from `compiler/` with venv active, or use `build_wiki.sh` / `run_server.sh`.
+Run compiler commands from `compiler/` with venv active, or use `build_wiki.sh`.
 
 ## No raw files found
 
@@ -27,7 +27,7 @@ cd compiler && python scripts/dev/generate_junk_data.py
 
 ## YAML front matter errors
 
-Docusaurus build fails on titles with `:`, `#`, or special chars.
+The frontend's markdown rendering can choke on titles with `:`, `#`, or special chars if the YAML itself is malformed.
 
 ```bash
 cd compiler
@@ -36,43 +36,50 @@ python fix_frontmatter.py
 python main.py --force
 ```
 
-## Dashboard: "Could not reach the wiki API"
+## Dashboard: "Cannot reach API"
 
-**Cause:** API server not running.
+**Cause:** backend not running.
 
 ```bash
-cd compiler && ./run_server.sh
+cd backend && npm run dev:server
 curl http://localhost:8000/api/health
 ```
 
-Check `wiki-app/docusaurus.config.js` → `customFields.wikiApiUrl` matches your API host.
+Two different URLs are involved (see
+[11-wiki-app-and-dashboards.md](./11-wiki-app-and-dashboards.md)'s "Two
+backend URLs" section) — `BACKEND_API_URL` (frontend's own server-side
+fetches) and `PUBLIC_API_URL` (embedded in the page for the browser's own
+fetch/EventSource calls). Under Docker Compose these must differ
+(`http://backend:8000` vs `http://localhost:8000`); for local (non-Docker)
+dev, leaving both unset defaults both to `http://localhost:8000`, which
+is correct.
 
-Set at build time if needed:
+Set at start time if needed:
 
 ```bash
-WIKI_API_URL=http://localhost:8000 npm start
+BACKEND_API_URL=http://localhost:8000 PUBLIC_API_URL=http://localhost:8000 npm run dev:server
 ```
 
-## `clsx` module not found
+## Module not found (`npm run dev:server` / `npm run build`)
 
 ```bash
-cd wiki-app && npm install
+cd backend && npm install   # or cd frontend && npm install
 ```
 
-## `npm start` fails / port in use
+## `npm run dev:server` fails / port in use
 
 ```bash
-cd wiki-app
-npm run clear
+cd frontend
 npm install
-npm start    # default :3000
+PORT=3001 npm run dev:server    # or free port 3000
 ```
 
-Kill process on port 3000 if occupied.
+Kill the process on the conflicting port if needed.
 
 ## Build already running (HTTP 409)
 
-Only one SSE compile at a time. Wait for completion or restart API server to release lock.
+Only one SSE compile at a time (`backend/src/lib/pythonBridge.ts`'s
+in-memory lock). Wait for completion or restart the backend to release it.
 
 ## Slow compiles
 
@@ -124,10 +131,14 @@ This file has been deleted. Use `data/state.json` for incremental compile state.
 
 Not used by current pipeline. Confusion with `data/state.json` — see [10-data-layout-and-state.md](./10-data-layout-and-state.md).
 
-## Docusaurus cache weirdness
+## Stale CSS/JS in the browser
+
+The frontend doesn't hash its static asset filenames, so a browser cache
+can serve stale `app.css`/`dashboard.js` after a rebuild — hard-refresh,
+or rebuild and restart:
 
 ```bash
-cd wiki-app && npm run clear && npm start
+cd frontend && npm run build && npm start
 ```
 
 ## Next

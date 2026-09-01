@@ -1,217 +1,241 @@
-# 11 — Wiki App and Dashboards
+# 11 — Backend, Frontend, and Dashboards
 
-**Path:** `wiki-app/`  
-**Framework:** Docusaurus 3 + React 18 + Tailwind CSS 3
+**Paths:** `backend/` (Express + TypeScript API server), `frontend/` (Express + TypeScript + Tailwind server-rendered app)
 
-## Two parts of the site
+## Why this replaced Docusaurus + a React dashboard
 
-| Part | Route prefix | Source | Needs API? |
-|------|--------------|--------|------------|
-| **Wiki docs** | `/docs/...` | `wiki-app/docs/` (compiler output) | No |
-| **Dashboards** | `/workspace`, `/graph`, `/analytics` | `src/pages/*.js` (React) | Yes (port 8000) |
+The site used to be two things stitched loosely together: a Docusaurus
+static-doc-site rendering `wiki-app/docs/*.md` under `/docs/...`, plus a
+separate React dashboard (`/workspace`, `/graph`, `/analytics`) bolted on
+via Docusaurus's custom-pages escape hatch — different nav, different
+layout conventions, and (the concrete complaint that triggered this
+rewrite) the Docusaurus doc-sidebar view and the dashboard's own
+"Dashboard" nav link both looked like separate apps, not one product.
 
-## Docusaurus configuration
+This rewrite is a single Express+TypeScript **frontend** that renders
+*both* the wiki pages and the dashboard through one layout and one nav
+(`Wiki | Dashboard | Chat | Emails | Resources | Graph | Analytics`),
+backed by a single Express+TypeScript **backend** API — Docusaurus and the
+old React app are gone, not layered under the new stack.
 
-**File:** `docusaurus.config.js`
+**What did *not* change:** the Python compiler pipeline
+(`compiler/main.py` and every module it calls — extraction, synthesis,
+linking, MOC generation) is untouched, same code, same tests. Retrieval
+for chat (`rag_engine.py`, hybrid BM25 + embeddings + reranking + LLM
+calls) and `.eml` parsing + trust resolution (`email_engine.py`) also stay
+Python deliberately — reimplementing IR/NLP and MIME parsing from scratch
+in a rewrite is exactly the kind of work that produces a worse, silently
+different system, not a faster one. The Node backend reaches these
+through `compiler/cli.py`, a thin subprocess bridge (see "Python bridge"
+below).
 
-| Setting | Value |
-|---------|-------|
-| `title` | Aurora Labs Wiki |
-| `docs.path` | `docs` |
-| `docs.routeBasePath` | `docs` |
-| `docs.sidebarPath` | `./sidebars.js` |
-| `blog` | disabled |
-| `onBrokenLinks` | `warn` |
-| `customFields.wikiApiUrl` | `process.env.WIKI_API_URL \|\| 'http://localhost:8000'` |
+## Two Node services, one Python compiler
 
-### GitHub Pages base URL
-
-```javascript
-baseUrl: isGitHubPagesBuild ? `/${projectName}/` : '/'
+```
+ browser
+   │  GET /wiki/*, /dashboard, ...           (SSR pages)
+   │  fetch/EventSource to :8000 directly     (client-side calls)
+   ▼
+frontend (Express+TS, :3000)  ──SSR fetch──▶  backend (Express+TS, :8000)
+                                                    │
+                                     spawn python3 main.py / cli.py
+                                                    ▼
+                                          compiler/ (Python, unchanged)
+                                                    │
+                                    reads/writes data/, wiki-app/docs/
 ```
 
-Local dev: `/`. Production Pages: `/<repo>/`.
+The frontend never talks to the compiler directly — every fetch, including
+the ones this server does itself while rendering a page (`frontend/src/api.ts`),
+goes through the backend's REST API. The **only** thing frontend pages
+fetch that isn't proxied through the backend's JSON API is the client-side
+`EventSource` for the live build log and the client-side chat requests —
+those hit the backend directly from the browser (see "Two backend URLs"
+below).
 
-Env vars for CI: `GITHUB_PAGES=true`, `GITHUB_ORG`, `GITHUB_REPO`.
+## Backend (`backend/`)
 
-### Navbar (current)
+**Entry point:** `src/index.ts` · **Port:** 8000 (`PORT` env var)
 
-| Label | Route |
-|-------|-------|
-| Wiki | doc sidebar |
-| Graph | `/graph` |
-| Dashboard | `/workspace` |
-| Analytics | `/analytics` |
-| LLM Wiki pattern | external Karpathy gist |
+Ported module-for-module from the Python `compiler/` engines, in
+`src/lib/`:
 
-## Custom dashboard pages
+| TS module | Ports | Notes |
+|-----------|-------|-------|
+| `sourcesRegistry.ts` | `sources_registry.py` | Symlink-mirror source folders into `data/raw/` |
+| `rawFolders.ts` | `raw_folders.py` | Create/delete/move inside `data/raw/` |
+| `rawFiles.ts` | `synthesizer.discover_raw_source_files` | File discovery + md5 status |
+| `docUtils.ts` | `doc_utils.py` | Frontmatter parsing, doc payloads |
+| `deadLinkChecker.ts` | `dead_link_checker.py` | Broken-link scan (balanced-parens regex fix included) |
+| `analytics.ts` | `analytics.py` | Metrics, tag registry, dead-link audit |
+| `linkOverrides.ts` | `link_overrides.py` (read/CRUD surface) | Knowledge graph, connection overrides |
+| `resourcesEngine.ts` | `resources_engine.py` | Cited-source dedup |
+| `fsWalk.ts` | — | Shared directory-walk helper (see below) |
+| `pythonBridge.ts` | `build_runner.py` + new | Build SSE stream, `cli.py` subprocess calls |
 
-### `/workspace` — `src/pages/workspace.js`
+**A real bug found while porting, not a hypothetical:**
+`fs.readdirSync(dir, { withFileTypes: true })`'s `Dirent.isFile()` /
+`.isDirectory()` report the directory *entry's own* type — for a
+symlink entry both are `false` regardless of what the link points at.
+Every recursive walker here originally branched on those flags directly,
+so every mirrored source file (which is entirely made of symlinks) was
+silently invisible to `/api/raw-files`. Confirmed directly: added a
+source folder through the running server, and `/api/raw-files` came back
+without it. Fixed once, centrally, in `fsWalk.ts`'s `walkEntries()`
+(uses `fs.statSync`, which follows symlinks, instead of trusting Dirent
+flags) and wired into every walker that touches `data/raw/`.
 
-**Components:** `LiveBuild`, `SourceFolders`, `DataWorkspace`, `PageShell`, `PageHeader`
+### Python bridge (`src/lib/pythonBridge.ts`, `compiler/cli.py`)
 
-Redesigned (previously a flat gray/white layout with no visual distinction
-between raw input and compiled output, and a single hardcoded `data/raw/`
-directory with no way to add another folder). Features:
+- `streamCompilerBuild()` spawns `python3 -u main.py [--force]` with
+  `cwd: compiler/`, streams stdout/stderr as Server-Sent Events — the
+  same shape `build_runner.py` used to produce for FastAPI, just spawned
+  from Node instead of `asyncio.subprocess`.
+- `runCli(command, input)` spawns `python3 cli.py <command>`, writes JSON
+  to stdin, reads one JSON object from stdout. `compiler/cli.py` has four
+  subcommands: `chat`, `chat-status` (both call `rag_engine.py`),
+  `emails-list`, `email-detail` (both call `email_engine.py`). Verified
+  directly against the real corpus before wiring the Express routes to
+  it — all four return real data (see `compiler/cli.py`'s own tests via
+  manual invocation in this repo's history, or run
+  `echo '{"message":"..."}' | python3 cli.py chat` yourself).
 
-- Stat-card row (raw files processed, wiki pages, cross-links, dead links) via `fetchAnalytics`
-- **Run compiler** bar (`LiveBuild`) — status badge, SSE stream from `/api/build/stream`, "Rebuild all files"
-- **Source folders** (`SourceFolders`, new) — Explorer-style grid of registered source
-  directories; add a folder by path, toggle it on/off, or remove it, without restarting
-  anything. See "Source folder registry" below for how this reaches the compiler.
-- **File explorer** (`DataWorkspace`, rewritten) — `data/raw/` browsed as an icon grid,
-  like a desktop file manager, not a text list: folders and files as tiles, a breadcrumb
-  bar to navigate, "New folder" to organize files into subfolders, and a per-file "…" menu
-  with **Move to…** (any non-managed folder) and **Preview**. Raw content is never shown
-  inline — a file's source text and the wiki page it produced only appear if you explicitly
-  click **Preview**, which opens a modal (source in amber, generated wiki page in indigo);
-  closing it returns you to the grid. Folders belonging to a registered source (see below)
-  are visually marked and have no delete/move actions, since `sync_symlinks()` would just
-  regenerate them on the next sync.
-- Settings gear (top-right of every dashboard page, `PageHeader` → `SettingsPanel`) —
-  override the compiler API URL from the browser (persisted to `localStorage`), see the
-  raw data directory path
+### Routes (`src/routes/index.ts`)
 
-**Folder API:** `compiler/raw_folders.py`, backing `POST /api/raw-files/folders`
-(create), `DELETE /api/raw-files/folders/{path}` (delete, only if empty), and
-`POST /api/raw-files/move`. Every operand is checked for symlink-ness and
-containment *before* being resolved, not after — resolving first and
-checking second would follow a symlink to whatever it points at and
-silently operate on that instead (caught directly: an early version did
-exactly this and a "move" of a mirrored source file actually relocated
-the real external file). Any path whose top segment is a registered
-source's `link_name` is refused outright.
+Same endpoint shapes the old FastAPI `server.py` exposed — `GET/POST/PUT/DELETE
+/api/sources`, `GET /api/raw-files[/*]`, `POST /api/raw-files/folders`,
+`DELETE /api/raw-files/folders/*`, `POST /api/raw-files/move`,
+`GET /api/emails[/*]`, `GET /api/docs[/*]`, `GET /api/state`,
+`GET /api/build/status`, `GET /api/build/stream`, `GET/PUT
+/api/knowledge-graph[/overrides]`, `GET /api/analytics[/tags/:tag]`,
+`GET /api/resources[/*]`, `POST /api/chat`, `GET /api/chat/status` — so
+anything that talked to the old API base URL only needs the URL updated,
+not its request/response shapes.
 
-## Source folder registry
+## Frontend (`frontend/`)
 
-**Module:** `compiler/sources_registry.py` · **Registry file:** `data/sources.json` (gitignored, like `data/state.json`)
+**Entry point:** `src/index.ts` · **Port:** 3000 (`PORT` env var) · **Views:** EJS (`src/views/`) · **Styling:** Tailwind (`tailwind.config.js`, `@tailwindcss/typography` for rendered markdown) · **Client interactivity:** hand-written TypeScript, bundled per-page with esbuild (`src/client/*.ts` → `dist-static/js/*.js`), no framework
+
+### Routes
+
+| Route | Renders | Client bundle |
+|-------|---------|----------------|
+| `/wiki` | redirects to `/wiki/index` | — |
+| `/wiki/:slug` | one compiled page — markdown → HTML (`marked`, with internal `.md` links rewritten to `/wiki/...`), left sidebar (all pages, alphabetical, client-side filtered), right "On this page" rail from the page's own `##`/`###` headings | inline (search filter only) |
+| `/dashboard` | stat cards, run-compiler panel (SSE log), source folders grid, file-explorer grid (same feature set as the previous React `DataWorkspace`/`SourceFolders`: breadcrumbs, create/delete folder, move file, preview-on-demand modal) | `dashboard.ts` |
+| `/chat` | ask a question, grounded answer + cited pages | `chat.ts` |
+| `/emails` | ingested `.eml` list + detail modal | `emails.ts` |
+| `/resources` | deduped cited-source list, searchable | `resources.ts` |
+| `/graph` | **simplified from the previous version**: every topic and its outgoing links as a searchable list, not a force-directed canvas — the old `react-force-graph-2d` visualization isn't ported. A real follow-up if the visual graph is wanted back, not silently dropped. | `graph.ts` |
+| `/analytics` | metrics, dead-link list, tag cloud | `analytics.ts` |
+
+### App shell (`src/views/partials/head.ejs`, `foot.ejs`)
+
+One nav, one layout, included at the top/bottom of every view — this is
+the actual fix for the "dashboard inside a dashboard" complaint: `/wiki`
+and `/dashboard` are two links in the *same* pill nav, not two different
+site frames.
+
+### Two backend URLs (important for Docker)
+
+`frontend/src/config.ts` deliberately exposes two different values:
+
+- **`BACKEND_API_URL`** — used by this server's own SSR fetches
+  (`src/api.ts`, e.g. fetching a doc's body to render `/wiki/:slug`).
+  Under Docker Compose this has to be the service hostname
+  (`http://backend:8000`), reached over the Compose network.
+- **`PUBLIC_API_URL`** — embedded into every page as
+  `<meta name="api-base">`, read by every client bundle for its own
+  `fetch`/`EventSource` calls. The browser runs on the *host*, not the
+  Docker network, so it needs the host-published URL
+  (`http://localhost:8000`).
+
+Collapsing these into one variable works for local (non-Docker) dev,
+where both happen to be `http://localhost:8000` — and breaks silently
+under Docker Compose, where `backend` only resolves inside the container
+network. `docker-compose.yml` sets both explicitly; local dev can leave
+both unset and get the same default for each.
+
+### Markdown rendering (`src/markdown.ts`)
+
+- `renderMarkdown()`: rewrites `./slug.md` / `/docs/slug.md` links (the
+  compiler still writes links assuming a Docusaurus-style `docs/` tree)
+  to this app's own `/wiki/slug` routes, then renders with `marked` using
+  a custom heading renderer so `<h2 id="...">` slugs are generated the
+  *same* way both when rendering the body and when building the "on this
+  page" TOC — using `marked`'s own default IDs for one and a hand-rolled
+  slugify for the other would silently produce mismatched anchors.
+
+## Source folder registry (unchanged behavior, now backing a TS route)
+
+**Module:** `backend/src/lib/sourcesRegistry.ts` (ported from
+`compiler/sources_registry.py`) · **Registry file:** `data/sources.json`
+(gitignored, like `data/state.json`)
 
 The compiler pipeline only ever reads from one hardcoded directory,
-`RAW_DIR` (`data/raw/`) — that didn't change, and nothing in
-`extraction.py`/`synthesizer.py`/etc. was touched. What's new is a way to
-pull files in from *other* directories on disk without moving or copying
-them: register a folder, and it's mirrored into `data/raw/<slug>/` as a
-tree of **per-file symlinks**, one per real file, matching the external
-folder's own structure.
+`RAW_DIR` (`data/raw/`) — that didn't change. What the dashboard's
+"Source folders" panel does is register a folder living *elsewhere* on
+disk, mirrored into `data/raw/<slug>/` as a tree of **per-file symlinks**
+matching the external folder's structure — never one symlink to the whole
+directory (`Path.rglob()`/`fs.readdirSync()` recursion doesn't descend
+into a symlinked *directory*, in both Python and the Node port; see the
+Dirent bug above for the Node-specific version of the same underlying
+gotcha).
 
-**Why per-file symlinks and not one symlink to the folder:** the first
-version did exactly that — one symlink at `data/raw/<slug>` pointing
-straight at the external directory — and it silently didn't work.
-`discover_raw_source_files()` (`synthesizer.py`) walks `RAW_DIR` with
-`Path.rglob("*")`, and confirmed directly against the real filesystem: `rglob` does not
-descend into a symlinked *directory*, so every file inside would have been
-invisible to the compiler while still showing up fine in `ls`. Mirroring
-one symlink per file sidesteps that — each file is its own top-level match
-for `rglob`, so no change to `discover_raw_source_files()` was needed at
-all.
-
-`sync_symlinks()` re-derives `data/raw/`'s managed folders from
+`syncSymlinks()` re-derives `data/raw/`'s managed folders from
 `data/sources.json` on every add, remove, enable/disable toggle, and
-server startup — new files that appeared in a registered folder since the
-last sync get a new symlink, files that vanished lose theirs. It only
-ever touches names it manages (tracked by `link_name` in the registry);
-a real file or folder placed directly under `data/raw/` by hand is never
-touched.
+server startup. It only ever touches names it manages (tracked by
+`link_name`); a real file or folder placed directly under `data/raw/` is
+never touched.
 
-**Endpoints:** `GET/POST /api/sources`, `PUT` / `DELETE /api/sources/{id}`.
+**Endpoints:** `GET/POST /api/sources`, `PUT`/`DELETE /api/sources/{id}`.
 **Caveat for Docker:** the path you register must be visible to the
-`compiler-api` container's filesystem (e.g. an extra bind mount), not just
+`backend` container's filesystem (e.g. an extra bind mount), not just
 your host machine.
 
-### `/graph` — `src/pages/graph.js`
+## File explorer + folder API
 
-**Component:** `WikiGraph` (`react-force-graph-2d`)
-
-- Nodes: topics from `compiler/temp_output/index.json` (via API)
-- Edges: cross-links detected in compiled markdown
-- Force-directed layout, draggable nodes
-
-### `/analytics` — `src/pages/analytics.js`
-
-**Component:** `AnalyticsAudit`
-
-- Compiler metrics summary
-- Dead-link audit table
-- Tag explorer — drill into raw chunks and pages per tag
-- Uses `fetchKnowledgeGraph` internally for connection stats (no dedicated UI page)
-
-## Shared UI components
-
-Light theme, rounded-xl cards with a soft shadow (`shadow-card`/`shadow-card-hover`
-in `tailwind.config.js`), a pill-style tab nav, and a consistent colour language:
-**amber = source / raw / untouched** (`source` in `tailwind.config.js`),
-**indigo = generated / compiled wiki output** (`generated`), emerald `accent`
-for primary actions and "everything's fine" status.
-
-| Component | Path | Role |
-|-----------|------|------|
-| `PageShell` | `components/PageShell/` | Page background (subtle gradient), max-width container |
-| `PageHeader` | `components/PageHeader/` | Pill tab nav + title + description + Settings gear |
-| `DashboardNav` | `components/ui/DashboardNav.js` | Dashboard / Chat / Emails / Resources / Graph / Analytics links |
-| `Button` | `components/ui/Button.js` | `PrimaryButton`, `SecondaryButton`, `DangerGhostButton`, `IconButton`, `Switch`, `Badge` |
-| `Icons` | `components/ui/Icons.js` | Small hand-rolled line-icon set (no icon library dependency) |
-| `SourceFolders` | `components/SourceFolders/` | Explorer-style folder grid — add/enable/disable/remove source directories |
-| `SettingsPanel` | `components/SettingsPanel/` | Slide-over: API URL override, data directory info |
-| `DataWorkspace` | `components/DataWorkspace/` | Icon-grid file explorer for `data/raw/` — folders, breadcrumbs, move/create-folder, preview-on-demand modal |
-| `LiveBuild` | `components/LiveBuild/` | Compile controls + status badge + terminal (`BuildTerminal.js`) |
-| `WikiGraph` | `components/WikiGraph/` | Topic force graph |
-| `AnalyticsAudit` | `components/AnalyticsAudit/` | Metrics, dead links, tags |
-| `Backlinks` | `components/Backlinks/` | Backlinks on doc pages |
-
-`useApiBase()` (`utils/useApiBase.js`) is the one hook every data-fetching
-component now calls for the compiler API base URL — it reads a
-`localStorage` override written by `SettingsPanel`, falling back to
-`docusaurus.config.js`'s `customFields.wikiApiUrl` (the `WIKI_API_URL` env
-var) when there isn't one. Previously every component computed this
-inline from `useDocusaurusContext()`, with no way to change it without
-rebuilding.
-
-## API client
-
-**File:** `src/utils/wikiApi.js`
-
-| Export | Endpoint |
-|--------|----------|
-| `fetchRawFiles` | `GET /api/raw-files` |
-| `fetchRawFileDetail` | `GET /api/raw-files/{path}` |
-| `fetchDocDetail` | `GET /api/docs/{path}` |
-| `fetchDocsList` | `GET /api/docs` |
-| `buildStreamUrl` | `GET /api/build/stream?...` |
-| `fetchBuildStatus` | `GET /api/build/status` |
-| `fetchAnalytics` | `GET /api/analytics` |
-| `fetchAnalyticsTag` | `GET /api/analytics/tags/{tag}` |
-| `fetchKnowledgeGraph` | `GET /api/knowledge-graph` |
-| `saveKnowledgeGraphOverrides` | `PUT /api/knowledge-graph/overrides` |
+**Module:** `backend/src/lib/rawFolders.ts` (ported from
+`compiler/raw_folders.py`), backing `POST /api/raw-files/folders`
+(create), `DELETE /api/raw-files/folders/{path}` (delete, only if empty),
+and `POST /api/raw-files/move`. Every operand is checked for symlink-ness
+and containment *before* being resolved, not after — resolving first
+would follow a symlink to whatever it points at and silently operate on
+the real target instead of refusing (the Python original already got
+this right; the TS port re-verified it with the same test case). Any path
+whose top segment is a registered source's `link_name` is refused
+outright, since `syncSymlinks()` would just regenerate it.
 
 ## Tailwind
 
-**File:** `tailwind.config.js`
-
-- `preflight: false` — avoids conflicting with Docusaurus global styles
-- Dashboard pages use Tailwind utilities (`rounded-lg`, `border-gray-200`, etc.)
-
-## Backlinks plugin
-
-**File:** `plugins/backlinksPlugin.js`
-
-Adds backlinks section to doc pages — shows which other pages link to the current page.
+**File:** `frontend/tailwind.config.js` — same colour language as the
+previous React version: **amber `source`** = raw/untouched input,
+**indigo `generated`** = compiled wiki output, emerald `accent` for
+primary actions. `@tailwindcss/typography`'s `prose` class styles
+rendered wiki-page markdown.
 
 ## npm scripts
 
 ```bash
-npm start      # docusaurus start — dev :3000
-npm run build  # production static site → build/
-npm run serve  # preview build/
-npm run clear  # clear Docusaurus cache
+# backend/
+npm run dev:server   # tsx watch src/index.ts
+npm run build        # tsc -> dist/
+npm start            # node dist/index.js
+
+# frontend/
+npm run dev:server   # tsx watch src/index.ts
+npm run dev:css      # tailwindcss --watch
+npm run dev:client   # esbuild --watch (client bundles)
+npm run build        # css + client + server -> dist/, dist-static/
+npm start            # node dist/index.js
 ```
 
 ## Dependencies (high level)
 
-- `@docusaurus/core`, `@docusaurus/preset-classic` ^3.7
-- `react`, `react-dom` ^18
-- `react-force-graph-2d` ^1.29
-- `clsx` ^2.1
-- `tailwindcss`, `postcss`, `autoprefixer` (dev)
+- **backend/**: `express`, `cors` — no ORM/database, everything is
+  filesystem/JSON, same as the Python engines it ports
+- **frontend/**: `express`, `ejs`, `marked` — no client framework; `dist-static/js/*`
+  are hand-written TypeScript bundled with `esbuild`, styled with Tailwind
 
 ## Next
 

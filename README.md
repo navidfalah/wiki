@@ -1,6 +1,14 @@
 # LLM Wiki
 
-Personal knowledge base built on the **[Karpathy LLM Wiki pattern](https://gist.github.com/karpathy/442a6bf555914893e9891c11519de94f)**: drop messy raw notes into `data/raw/`, run a Python compiler pipeline, and browse the result as a Docusaurus static site with interactive dashboards.
+Personal knowledge base built on the **[Karpathy LLM Wiki pattern](https://gist.github.com/karpathy/442a6bf555914893e9891c11519de94f)**: drop messy raw notes into `data/raw/`, run a Python compiler pipeline, and browse the result through an Express + TypeScript + Tailwind app with a single unified nav (wiki pages and dashboards in one product, not a docs site with a dashboard bolted on).
+
+> **Stack note:** the frontend/backend used to be Docusaurus + a React
+> dashboard; that's been replaced by `backend/` (Express+TS API) and
+> `frontend/` (Express+TS+Tailwind, server-rendered, no client framework).
+> The Python compiler pipeline itself, and retrieval/chat (`rag_engine.py`)
+> and email parsing (`email_engine.py`), are unchanged. Some sections below
+> still describe the old Docusaurus/React stack in deep-dive code samples;
+> where they conflict with [documentation/11-wiki-app-and-dashboards.md](./documentation/11-wiki-app-and-dashboards.md), that doc is current.
 
 The sample domain is fictional **Aurora Labs** (open IoT sensors), cross-linked with **TeaBuddy** (BLE tea timers), **Nova Health** (wearables), and **GreenGrid Energy** (home energy mesh). Replace these with your own topic when ready.
 
@@ -53,34 +61,31 @@ flowchart TB
         S2 --> STATE
     end
 
-    subgraph output [Static site — wiki-app/]
+    subgraph output [Compiled pages — wiki-app/]
         DOCS["wiki-app/docs/<br/>linked markdown"]
         MOC["index.md Map of Content"]
-        DOCUSAURUS["Docusaurus + React<br/>/workspace /chat /emails /resources /graph /analytics"]
     end
 
-    subgraph api [Optional API — port 8000]
-        FASTAPI["FastAPI server<br/>server.py (thin router)"]
-        SSE["SSE build stream"]
-        EMAILENG["email_engine.py"]
-        RESENG["resources_engine.py"]
-        RAGENG["rag_engine.py"]
+    subgraph backend [Express+TS backend — port 8000]
+        NODE["backend/ — TS ports of the read/write engines<br/>(sources, files, docs, analytics, knowledge graph)"]
+        SSE["SSE build stream — spawns python3 main.py"]
+        BRIDGE["spawns python3 cli.py for<br/>rag_engine.py (chat) / email_engine.py (emails)"]
+    end
+
+    subgraph frontend [Express+TS+Tailwind frontend — port 3000]
+        WIKI["/wiki/* — rendered markdown"]
+        DASH["/dashboard /chat /emails /resources /graph /analytics"]
     end
 
     RAW --> S1
     S5 --> DOCS
     S5 --> MOC
-    DOCS --> DOCUSAURUS
-    FASTAPI --> RAW
-    FASTAPI --> DOCS
-    FASTAPI --> STATE
+    NODE --> RAW
+    NODE --> DOCS
+    NODE --> STATE
     SSE --> S1
-    FASTAPI --> EMAILENG
-    FASTAPI --> RESENG
-    FASTAPI --> RAGENG
-    EMAILENG --> RAW
-    RESENG --> DOCS
-    RAGENG --> DOCS
+    NODE --> WIKI
+    NODE --> DASH
 ```
 
 | Layer | Path | Owner | Description |
@@ -99,13 +104,13 @@ flowchart TB
 | Component | Technology | Role |
 |-----------|------------|------|
 | Compiler | Python 3.12+ | Orchestration in `main.py`; modules for synthesis, linking, MOC, analytics |
-| LLM client | OpenAI SDK + SQLite cache | Extraction, synthesis, and link injection (required) |
-| API server | FastAPI + Uvicorn | REST endpoints and SSE build streaming on port **8000** |
-| Frontend | Docusaurus 3 + React 18 | Docs site plus custom pages (`/workspace`, `/chat`, `/emails`, `/resources`, `/analytics`, `/graph`, `/knowledge-graph`) |
-| Styling | Tailwind CSS 3 | Dashboard UI (`tailwind.config.js`; `preflight: false` to coexist with Docusaurus) |
-| Graphs | `react-force-graph-2d` | Topic graph and knowledge graph visualizations |
+| LLM client | OpenAI SDK + SQLite cache | Extraction, synthesis, link injection, and chat retrieval (required for extraction) |
+| Backend API | Express + TypeScript | REST endpoints and SSE build streaming on port **8000**; ports the read/write engines to TS, spawns `python3` for the compile and for chat/email (`compiler/cli.py`) |
+| Frontend | Express + TypeScript + EJS | Server-rendered wiki pages and dashboards (`/wiki`, `/dashboard`, `/chat`, `/emails`, `/resources`, `/analytics`, `/graph`) — one nav, no client framework, port **3000** |
+| Styling | Tailwind CSS 3 + `@tailwindcss/typography` | Dashboard UI + rendered-markdown `prose` styling |
+| Client interactivity | Hand-written TypeScript, bundled per-page with esbuild | No React/framework — `dashboard.ts`, `chat.ts`, etc. |
 | Build UX | Server-Sent Events | Live compiler log stream from `/api/build/stream` |
-| CI | GitHub Actions | Compile + Docusaurus build + GitHub Pages deploy |
+| CI | GitHub Actions | Compile + build + GitHub Pages deploy |
 
 ---
 
@@ -116,7 +121,7 @@ wiki/
 ├── README.md                    # This file
 ├── AGENTS.md                    # Agent/human workflow schema
 ├── PROMPTS.md                   # Example Cursor prompts
-├── build_wiki.sh                # One-command: compile + Docusaurus production build
+├── build_wiki.sh                # One-command: compile + build backend + build frontend
 ├── .env.example                 # API key template (copy to .env)
 ├── .github/workflows/
 │   └── wiki-build.yml           # CI: compile → build → GitHub Pages
@@ -135,18 +140,18 @@ wiki/
 │   ├── media_ingest.py          # Images + file attachments → chunks
 │   ├── email_ingest.py          # .eml parsing → chunks
 │   ├── trust.py                 # Source trust levels + References & Trust section
-│   ├── doc_utils.py             # Shared frontmatter/topic-lookup helpers for the engines below
-│   ├── email_engine.py          # Email knowledge engine (backs /emails)
-│   ├── resources_engine.py      # Deduped, cross-page resources engine (backs /resources)
-│   ├── rag_engine.py            # RAG chat engine over compiled docs (backs /chat)
+│   ├── doc_utils.py             # Shared frontmatter/topic-lookup helpers (ported to backend/src/lib/docUtils.ts)
+│   ├── email_engine.py          # Email knowledge engine, called via cli.py (backs /emails)
+│   ├── resources_engine.py      # Deduped, cross-page resources engine (ported to backend/src/lib/resourcesEngine.ts)
+│   ├── rag_engine.py            # RAG chat engine, called via cli.py (backs /chat)
 │   ├── linker.py                # Topic index + cross-link injection
 │   ├── moc_generator.py         # Hierarchical index.md (Map of Content)
-│   ├── server.py                # FastAPI API for dashboards
-│   ├── build_runner.py          # SSE subprocess wrapper for main.py
-│   ├── analytics.py             # Metrics, tag index, dead-link audit
+│   ├── cli.py                   # JSON-in/JSON-out subprocess bridge for the Node backend (chat, emails)
+│   ├── analytics.py             # Metrics, tag index, dead-link audit (ported to backend/src/lib/analytics.ts)
 │   ├── llm_client.py            # OpenAI client, retries, SQLite cache, vision captioning
-│   ├── link_overrides.py        # Knowledge graph overrides
-│   ├── run_server.sh            # Start API on :8000
+│   ├── link_overrides.py        # Knowledge graph overrides (ported to backend/src/lib/linkOverrides.ts)
+│   ├── sources_registry.py      # Source-folder symlink mirroring (ported to backend/src/lib/sourcesRegistry.ts)
+│   ├── raw_folders.py           # data/raw/ folder create/delete/move (ported to backend/src/lib/rawFolders.ts)
 │   ├── temp_output/             # Draft pages + index.json (pre-link)
 │   ├── tests/                   # pytest suite (pure logic + fake-LLM pipeline tests)
 │   ├── scripts/dev/generate_dummy_data.py          # Dispatcher CLI for the generators below
@@ -157,16 +162,28 @@ wiki/
 │   ├── scripts/dev/keep_aurora_raw.py              # Archive non-Aurora raw files
 │   └── requirements.txt
 │
-└── wiki-app/
-    ├── docusaurus.config.js     # Site config; customFields.wikiApiUrl
-    ├── docs/                    # Compiler output (generated markdown)
-    ├── static/media/            # Ingested images/attachments (content-hash deduped)
-    ├── src/
-    │   ├── pages/               # workspace, chat, emails, resources, analytics, graph, knowledge-graph
-    │   ├── components/          # DataWorkspace, ChatEngine, EmailEngine, ResourcesExplorer, WikiGraph, AnalyticsAudit, …
-    │   └── utils/wikiApi.js     # API client helpers
-    ├── tailwind.config.js
-    └── package.json
+├── backend/                     # Express + TypeScript API server
+│   ├── src/
+│   │   ├── index.ts             # App entrypoint, port 8000
+│   │   ├── routes/index.ts      # All /api/* routes
+│   │   └── lib/                 # TS ports of the compiler's read/write engines + pythonBridge.ts
+│   ├── Dockerfile                # Node + Python (needs both — see documentation/11)
+│   └── package.json
+│
+├── frontend/                    # Express + TypeScript + Tailwind, server-rendered
+│   ├── src/
+│   │   ├── index.ts             # App entrypoint, port 3000
+│   │   ├── routes/               # wiki.ts, dashboard.ts, simple.ts (chat/emails/resources/graph/analytics)
+│   │   ├── views/                # EJS templates, partials/head.ejs + foot.ejs = the app shell
+│   │   ├── client/                # Per-page TypeScript, bundled with esbuild (no framework)
+│   │   └── markdown.ts           # marked + internal-link rewriting + heading-id slugging
+│   ├── tailwind.config.js
+│   ├── Dockerfile
+│   └── package.json
+│
+└── wiki-app/                    # Now just the compiler's output directory (no app here anymore)
+    ├── docs/                    # Compiler output (generated markdown), read by backend/
+    └── static/media/            # Ingested images/attachments (content-hash deduped)
 ```
 
 ---
@@ -199,7 +216,7 @@ cp .env.example .env   # add an API key, or skip and use the local LLM below
 docker compose up --build
 ```
 
-Compiler/API at http://localhost:8000, wiki-app at http://localhost:3000.
+Backend at http://localhost:8000, frontend at http://localhost:3000.
 For a local LLM (Gemma, run in-process by llama.cpp — no Ollama) instead of a paid API key, use
 `docker compose --profile local-llm up --build` — see
 [documentation/33-docker-and-local-llm.md](./documentation/33-docker-and-local-llm.md).
@@ -227,31 +244,41 @@ python main.py --force      # First full compile
 
 Set `OPENAI_API_KEY` in `.env` before compiling. Without a key, `python main.py` exits with an error.
 
-### 3. Start the API server (for dashboards)
+### 3. Start the backend (Express + TypeScript API)
 
 In a second terminal:
 
 ```bash
-cd compiler
-chmod +x run_server.sh
-./run_server.sh
+cd backend
+npm install
+npm run dev:server
 ```
 
-API base URL: **http://localhost:8000**
+API base URL: **http://localhost:8000**. Also spawns `python3` for
+build/chat/email requests — see
+[documentation/11-wiki-app-and-dashboards.md](./documentation/11-wiki-app-and-dashboards.md).
 
-### 4. Start the Docusaurus dev server
+### 4. Start the frontend (Express + TypeScript + Tailwind)
 
 In a third terminal:
 
 ```bash
-cd wiki-app
+cd frontend
 npm install
-npm start
+npm run dev:server
+```
+
+In two more terminals (only needed while actively editing styles/client
+scripts):
+
+```bash
+cd frontend && npm run dev:css      # Tailwind watch
+cd frontend && npm run dev:client   # esbuild watch (client bundles)
 ```
 
 Site: **http://localhost:3000**
 
-Open **Dashboard** at http://localhost:3000/workspace to browse raw files, trigger live compiles, and inspect synthesized pages. From there, **Chat** (`/chat`) answers questions over the compiled wiki, **Emails** (`/emails`) browses ingested `.eml` threads, and **Resources** (`/resources`) lists every cited source deduped across pages.
+Open **Dashboard** at http://localhost:3000/dashboard to browse raw files, trigger live compiles, and manage source folders. From there, **Chat** (`/chat`) answers questions over the compiled wiki, **Emails** (`/emails`) browses ingested `.eml` threads, and **Resources** (`/resources`) lists every cited source deduped across pages.
 
 ### 5. One-command production build
 
@@ -263,10 +290,11 @@ chmod +x build_wiki.sh
 ./build_wiki.sh --force          # Reprocess all raw files (ignore state.json)
 ```
 
-Output: static site in `wiki-app/build/`. Preview with:
+Output: `backend/dist/` + `frontend/dist/`/`frontend/dist-static/`. Run:
 
 ```bash
-cd wiki-app && npm run serve
+cd backend && npm start    # terminal 1
+cd frontend && npm start   # terminal 2
 ```
 
 ---

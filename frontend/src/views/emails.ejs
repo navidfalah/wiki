@@ -1,0 +1,12 @@
+<%- include('partials/head', { title, apiBase, active }) %>
+
+<h1 class="text-2xl font-semibold tracking-tight text-gray-900">Emails</h1>
+<p class="mt-1 max-w-2xl text-sm text-gray-600">Ingested .eml threads treated as first-class knowledge sources.</p>
+
+<div id="emails-list" class="mt-6 grid gap-3">
+  <p class="text-sm text-gray-500">Loading…</p>
+</div>
+
+<div id="email-modal" class="hidden"></div>
+
+<%- include('partials/foot', { clientScript }) %>

@@ -1,0 +1,36 @@
+{
+  "name": "wiki-frontend",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Express + TypeScript + Tailwind server-rendered frontend for the LLM Wiki -- renders the compiled wiki pages and the dashboard as one app with one nav, calling the Express+TS backend's REST API.",
+  "type": "commonjs",
+  "main": "dist/index.js",
+  "scripts": {
+    "build:css": "tailwindcss -i src/public/css/input.css -o dist-static/css/app.css --minify",
+    "build:client": "esbuild src/client/*.ts --bundle --outdir=dist-static/js --format=iife --minify",
+    "build:server": "tsc -p tsconfig.json",
+    "build": "npm run build:css && npm run build:client && npm run build:server",
+    "dev:css": "tailwindcss -i src/public/css/input.css -o dist-static/css/app.css --watch",
+    "dev:client": "esbuild src/client/*.ts --bundle --outdir=dist-static/js --sourcemap --watch",
+    "dev:server": "tsx watch src/index.ts",
+    "start": "node dist/index.js",
+    "typecheck": "tsc --noEmit"
+  },
+  "dependencies": {
+    "ejs": "^3.1.10",
+    "express": "^4.19.2",
+    "marked": "^14.1.2"
+  },
+  "devDependencies": {
+    "@types/ejs": "^3.1.5",
+    "@types/express": "^4.17.21",
+    "@types/node": "^20.14.2",
+    "@tailwindcss/typography": "^0.5.15",
+    "autoprefixer": "^10.4.20",
+    "esbuild": "^0.24.0",
+    "postcss": "^8.4.47",
+    "tailwindcss": "^3.4.19",
+    "tsx": "^4.19.2",
+    "typescript": "^5.5.4"
+  }
+}

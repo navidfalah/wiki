@@ -1,8 +1,10 @@
 # 33 — Docker Deployment and a Self-Contained Local LLM (Gemma)
 
-Three services, each in its own container: the compiler/API, the
-Docusaurus frontend, and an optional local LLM as a drop-in replacement
-for the OpenAI API — no code changes needed for the last part, because
+Three services, each in its own container: the Express+TS **backend**
+(which also carries the Python compiler and shells out to it — see
+[11](./11-wiki-app-and-dashboards.md)), the Express+TS+Tailwind
+**frontend**, and an optional local LLM as a drop-in replacement for the
+OpenAI API — no code changes needed for the last part, because
 `llm_client.py` was already built against an OpenAI-*compatible* endpoint
 (it already supports Gemini this way, per `.env.example`).
 
@@ -14,8 +16,8 @@ build of Gemma at container startup.
 | | |
 |---|---|
 | Orchestration | `docker-compose.yml` (repo root) |
-| Compiler/API image | `compiler/Dockerfile` |
-| Frontend image | `wiki-app/Dockerfile` |
+| Backend image (Node + Python) | `backend/Dockerfile` |
+| Frontend image (Node only) | `frontend/Dockerfile` |
 | Local LLM image + entrypoint | `docker/local-llm/Dockerfile`, `docker/local-llm/entrypoint.sh` |
 | Build context exclusions | `.dockerignore` |
 
@@ -23,7 +25,7 @@ build of Gemma at container startup.
 
 ```bash
 cp .env.example .env        # fill in an API key, or skip if using the local LLM
-docker compose up --build   # compiler-api :8000, wiki-app :3000
+docker compose up --build   # backend :8000, frontend :3000
 ```
 
 For the local LLM instead of a paid API:
@@ -36,28 +38,36 @@ The `local-llm` service only starts with `--profile local-llm` — a plain
 `docker compose up` never builds or runs it, so it costs nothing (no
 multi-GB model download, no container) unless explicitly asked for.
 
-## Why three services, and why `compiler-api`'s build context is the repo root
+## Why three services, and why `backend`'s build context is the repo root
 
-`compiler-api` and `wiki-app` map directly onto the two processes the
-non-Docker docs already run separately (`run_server.sh` / `npm start`,
-see [11](./11-wiki-app-and-dashboards.md)/[12](./12-api-server.md)) — this
+`backend` and `frontend` map directly onto the two processes the
+non-Docker docs already run separately (`npm run dev:server` in each, see
+[11](./11-wiki-app-and-dashboards.md)/[12](./12-api-server.md)) — this
 isn't a new architecture, just the existing one containerized.
 
-One deliberate detail: `compiler/Dockerfile` is built with `context: .`
-(the repo root), not `context: ./compiler`. That's not stylistic —
+One deliberate detail: `backend/Dockerfile` is built with `context: .`
+(the repo root), not `context: ./backend`. That's not stylistic — the
+image needs *both* `backend/` (Node) and `compiler/` (Python), since the
+backend spawns `python3 main.py`/`cli.py` as subprocesses rather than
+calling a separate service (see
+[11-wiki-app-and-dashboards.md](./11-wiki-app-and-dashboards.md)'s
+"Python bridge" section) — so `backend/Dockerfile` installs Python
+alongside Node in the same image and copies `compiler/` in too.
 `compiler/models.py` resolves `PROJECT_ROOT` as `compiler/`'s *parent*
 directory and derives `data/`, `wiki-app/docs/`, and
-`wiki-app/static/media/` from it. If the image only contained `compiler/`
-in isolation, those paths would resolve to directories that don't exist.
-The container's filesystem layout mirrors the repo's for the same reason
-the local dev setup does.
+`wiki-app/static/media/` from it, so the container's filesystem layout
+mirrors the repo's for the same reason the local dev setup does.
+`frontend/Dockerfile`, by contrast, is self-contained (`context:
+./frontend`) — the frontend never touches `compiler/` or `data/`
+directly, only the backend's REST API.
 
 `docker-compose.yml` mounts `./data`, `./wiki-app/docs`, and
-`./wiki-app/static/media` as bind volumes (not baked into the image) so a
-compile's output persists across rebuilds and is visible on the host —
-and mounts `./compiler` itself as a live volume, so editing Python during
-development doesn't require a rebuild (`server.py`'s own
-`uvicorn.run(..., reload=True)` picks up the change).
+`./wiki-app/static/media` as bind volumes on the `backend` service (not
+baked into the image) so a compile's output persists across rebuilds and
+is visible on the host — and mounts `./compiler` itself as a live volume,
+so editing `main.py`/`cli.py` during development doesn't require a
+rebuild (the Node side of `backend/` is not live-mounted; rebuild the
+image to pick up TypeScript changes).
 
 ## Why not Ollama
 
@@ -174,26 +184,30 @@ before relying on it.
 **Verified, in this environment:** `docker compose config` (and
 `docker compose --profile local-llm config`) resolve the compose file
 cleanly with no daemon required. `docker/local-llm/entrypoint.sh` passes
-`sh -n` syntax checking. `compiler/Dockerfile` and `wiki-app/Dockerfile`
-were written against the exact same commands the non-Docker docs already
-document (`python server.py`, `npm start -- --host 0.0.0.0`), not invented
-from scratch.
+`sh -n` syntax checking. `backend/Dockerfile` and `frontend/Dockerfile`
+run the exact same `npm run build && node dist/index.js` sequence the
+non-Docker docs document, and that exact sequence was run directly (not
+in Docker) in this environment and confirmed working end to end — real
+HTTP 200s on `/wiki/*`, `/dashboard`, `/api/health`, `/api/chat/status`,
+static CSS/JS assets — before the Dockerfiles were written around it.
 
 **Not verified here, and stated plainly rather than implied:** this
 sandbox has the `docker` CLI installed but no running daemon
 (`docker ps` / `docker build` both fail with "failed to connect to the
 docker API... dial unix /var/run/docker.sock: ... no such file or
 directory") — so `docker compose up --build` has not actually been run,
-no image has actually been built, `llama-cpp-python`'s build (which
-compiles C++ — the part most likely to hit an environment-specific issue)
-has not been exercised, and the placeholder Gemma model name above has not
-been confirmed to exist. Same posture as tasks #4/#5/#8's live-model gaps:
-the mechanism is real and inspectable, the live run — and confirming the
-real model name — is the reader's/user's to do, on a machine with Docker
+no image has actually been built (the Dockerfiles' `apt-get install
+python3`/`npm install`/`pip install` steps have not been exercised
+inside a real container), `llama-cpp-python`'s build (which compiles
+C++ — the part most likely to hit an environment-specific issue) has not
+been exercised, and the placeholder Gemma model name above has not been
+confirmed to exist. Same posture as tasks #4/#5/#8's live-model gaps: the
+mechanism is real and inspectable, the live run — and confirming the real
+model name — is the reader's/user's to do, on a machine with Docker
 actually running.
 
 ## Next
 
 - [25-hybrid-retrieval.md](./25-hybrid-retrieval.md) / [31-vector-graph-storage-and-scalability.md](./31-vector-graph-storage-and-scalability.md) — why `OPENAI_EMBEDDING_MODEL` still needs a real embeddings endpoint even with `local-llm` handling chat
-- [12-api-server.md](./12-api-server.md) — what `compiler-api`'s container actually runs (`server.py`), containerized as-is
+- [12-api-server.md](./12-api-server.md) — what the `backend` container actually runs
 - `.env.example` — the OpenAI / Gemini / local-llm variable blocks, side by side

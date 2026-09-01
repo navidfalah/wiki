@@ -1,10 +1,12 @@
 #!/usr/bin/env bash
-# build_wiki.sh — compile raw data into Markdown, then build the Docusaurus static site.
+# build_wiki.sh — compile raw data (Python), then build the Express+TS
+# backend and frontend for production.
 set -euo pipefail
 
 ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 COMPILER_DIR="${ROOT}/compiler"
-WIKI_APP_DIR="${ROOT}/wiki-app"
+BACKEND_DIR="${ROOT}/backend"
+FRONTEND_DIR="${ROOT}/frontend"
 VENV_DIR="${COMPILER_DIR}/.venv"
 
 log() { printf '\033[1;36m==>\033[0m %s\n' "$*"; }
@@ -25,19 +27,26 @@ pip install -q -r "${COMPILER_DIR}/requirements.txt"
 # --- Run compiler pipeline ---
 log "Running Python compiler (compiler/main.py)"
 if ! python "${COMPILER_DIR}/main.py" "$@"; then
-  err "Compiler pipeline failed — aborting Docusaurus build"
+  err "Compiler pipeline failed — aborting build"
   exit 1
 fi
 
-# --- Docusaurus static build ---
-if [[ ! -d "${WIKI_APP_DIR}/node_modules" ]]; then
-  log "Installing npm dependencies in wiki-app/"
-  (cd "${WIKI_APP_DIR}" && npm install)
+# --- Backend build ---
+if [[ ! -d "${BACKEND_DIR}/node_modules" ]]; then
+  log "Installing npm dependencies in backend/"
+  (cd "${BACKEND_DIR}" && npm install)
 fi
+log "Building backend (backend/dist/)"
+(cd "${BACKEND_DIR}" && npm run build)
 
-log "Building Docusaurus static site (wiki-app/)"
-cd "${WIKI_APP_DIR}"
-npm run build
+# --- Frontend build ---
+if [[ ! -d "${FRONTEND_DIR}/node_modules" ]]; then
+  log "Installing npm dependencies in frontend/"
+  (cd "${FRONTEND_DIR}" && npm install)
+fi
+log "Building frontend (frontend/dist/ + frontend/dist-static/)"
+(cd "${FRONTEND_DIR}" && npm run build)
 
-log "Done — static site output in wiki-app/build/"
-log "Preview locally: cd wiki-app && npm run serve"
+log "Done."
+log "Run: (cd backend && npm start) in one terminal, (cd frontend && npm start) in another."
+log "Or: docker compose up --build"

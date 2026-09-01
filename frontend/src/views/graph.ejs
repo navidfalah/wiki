@@ -1,0 +1,15 @@
+<%- include('partials/head', { title, apiBase, active }) %>
+
+<h1 class="text-2xl font-semibold tracking-tight text-gray-900">Topic Graph</h1>
+<p class="mt-1 max-w-2xl text-sm text-gray-600">
+  Every topic and the pages it links to. (A simplified list view for this rewrite — the previous
+  force-directed graph visualization isn't ported yet.)
+</p>
+
+<input id="graph-search" type="search" placeholder="Search topics…" class="mt-4 w-full max-w-sm rounded-lg border border-gray-300 px-3 py-1.5 text-sm focus:border-accent focus:outline-none focus:ring-2 focus:ring-accent/20" />
+
+<div id="graph-list" class="mt-4 grid gap-2">
+  <p class="text-sm text-gray-500">Loading…</p>
+</div>
+
+<%- include('partials/foot', { clientScript }) %>

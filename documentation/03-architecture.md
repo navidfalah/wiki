@@ -33,15 +33,20 @@ flowchart TB
         S3 --> TRUST
     end
 
-    subgraph output [Static site — wiki-app/]
+    subgraph output [Compiled pages — wiki-app/]
         DOCS["wiki-app/docs/<br/>linked markdown"]
         MOC["index.md Map of Content"]
-        DOCUSAURUS["Docusaurus + React<br/>dashboard pages"]
     end
 
-    subgraph api [Optional API — port 8000]
-        FASTAPI["FastAPI server<br/>server.py"]
-        SSE["SSE build stream"]
+    subgraph backend [Express+TS backend — port 8000]
+        NODE["backend/ (Express+TS)<br/>reads/writes data/, wiki-app/docs/"]
+        SSE["SSE build stream<br/>spawns python3 main.py"]
+        BRIDGE["spawns python3 cli.py<br/>for chat + email parsing"]
+    end
+
+    subgraph frontend [Express+TS+Tailwind frontend — port 3000]
+        WIKIVIEW["/wiki/* — rendered markdown pages"]
+        DASHVIEW["/dashboard, /chat, /emails,<br/>/resources, /graph, /analytics"]
     end
 
     RAW --> EMAIL
@@ -51,12 +56,12 @@ flowchart TB
     MEDIA --> S1
     S5 --> DOCS
     S5 --> MOC
-    DOCS --> DOCUSAURUS
-    STATIC --> DOCUSAURUS
-    FASTAPI --> RAW
-    FASTAPI --> DOCS
-    FASTAPI --> STATE
+    NODE --> RAW
+    NODE --> DOCS
+    NODE --> STATE
     SSE --> S1
+    NODE --> WIKIVIEW
+    NODE --> DASHVIEW
 ```
 
 Non-text sources (`.eml`, images, PDF/CSV/JSON/DOCX/XLSX/PPTX/ZIP) are turned
@@ -76,7 +81,7 @@ Step 1 ever sees them, so everything from Step 1 onward is unchanged — see
 | Draft output | `compiler/temp_output/` | Compiler | No |
 | Wiki markdown | `wiki-app/docs/` | Compiler (+ optional human refine) | Regenerated |
 | Ingested media/attachments | `wiki-app/static/media/` | Compiler | No (auto-written, content-hash deduped) |
-| Static site | `wiki-app/` | Docusaurus + React | Config and UI code |
+| Compiled pages | `wiki-app/` (`docs/`, `static/media/`) | Backend + frontend (`backend/`, `frontend/`) | Config and UI code |
 | Agent schema | `AGENTS.md` | Human + LLM | Co-evolved |
 
 ## Data flow (simplified)
@@ -90,7 +95,7 @@ Step 1 ever sees them, so everything from Step 1 onward is unchanged — see
 6. Index → compiler/temp_output/index.json {"MeshSync": "meshsync.md", ...}
 7. Linking → wiki-app/docs/meshsync.md (with [links](./other.md))
 8. MOC → wiki-app/docs/index.md (hierarchical TOC)
-9. Docusaurus → serves at /docs/meshsync
+9. frontend/ → serves at /wiki/meshsync
 ```
 
 ## Two output directories
@@ -100,7 +105,7 @@ Understanding the split between `temp_output/` and `wiki-app/docs/` is essential
 | Directory | Content | Linked? | Front matter |
 |-----------|---------|---------|--------------|
 | `compiler/temp_output/` | Draft topic pages | No (plain or partial FM) | May have basic YAML from synthesis |
-| `wiki-app/docs/` | Exported final pages | Yes | Full Docusaurus front matter |
+| `wiki-app/docs/` | Exported final pages | Yes | Full front matter (id, title, slug, tags, page_type) |
 
 The linker reads drafts from `temp_output/`, injects links, wraps/sanitizes for MDX, and writes to `wiki-app/docs/`.
 
@@ -140,15 +145,20 @@ heuristic/offline code path:
        OpenAI + SQLite cache     RuntimeError, exit 1
 ```
 
-## API layer (optional)
+## Backend + frontend (Node)
 
-The API does **not** participate in the compile path when you run `python main.py` directly. It:
+The backend does **not** participate in the compile path when you run
+`python main.py` directly — it's a separate always-on service. It:
 
 - Reads `data/raw/`, `wiki-app/docs/`, `data/state.json`
-- Spawns `main.py` as subprocess for `/api/build/stream`
+- Spawns `python3 main.py` as a subprocess for `/api/build/stream`
+- Spawns `python3 cli.py` for chat (`rag_engine.py`) and email parsing (`email_engine.py`)
 - Aggregates analytics and knowledge-graph data for dashboards
 
-Dashboard pages are **client-side React**; they fetch from port 8000.
+Every page (wiki content and dashboards alike) is server-rendered by the
+frontend (Express+EJS), with hand-written TypeScript client bundles for
+interactivity — no React, no client framework. See
+[11-wiki-app-and-dashboards.md](./11-wiki-app-and-dashboards.md).
 
 ## Tech stack summary
 
@@ -156,10 +166,10 @@ Dashboard pages are **client-side React**; they fetch from port 8000.
 |-----------|------------|
 | Compiler orchestration | Python 3.12+, `rich` |
 | LLM | OpenAI SDK, SQLite cache |
-| API | FastAPI, Uvicorn |
-| Frontend | Docusaurus 3, React 18 |
-| Styling (dashboards) | Tailwind CSS 3 (`preflight: false`) |
-| Graphs | `react-force-graph-2d` |
+| Backend API | Express + TypeScript (`backend/`) |
+| Frontend | Express + TypeScript + EJS (`frontend/`), no client framework |
+| Styling | Tailwind CSS 3 + `@tailwindcss/typography` |
+| Client bundling | esbuild (hand-written TypeScript, per page) |
 | Live builds | Server-Sent Events (SSE) |
 | CI | GitHub Actions → GitHub Pages |
 

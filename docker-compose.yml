@@ -1,11 +1,20 @@
 name: llm-wiki
 
 services:
-  compiler-api:
+  # Express + TypeScript API server. Owns everything that's a plain
+  # filesystem/JSON read or write (sources registry, raw-file explorer,
+  # docs, analytics, dead-link audit, knowledge graph, resources) as a
+  # genuine TypeScript port -- see backend/src/lib/. Retrieval/LLM chat
+  # (rag_engine.py) and .eml parsing + trust resolution (email_engine.py)
+  # stay Python, reached via a subprocess into compiler/cli.py rather than
+  # reimplemented; the compiler pipeline itself (`main.py`) also stays
+  # Python, run the same way build_runner.py used to, just spawned from
+  # Node instead of FastAPI. See documentation/11-wiki-app-and-dashboards.md.
+  backend:
     build:
       context: .
-      dockerfile: compiler/Dockerfile
-    container_name: llm-wiki-compiler
+      dockerfile: backend/Dockerfile
+    container_name: llm-wiki-backend
     env_file:
       - path: .env
         required: false
@@ -19,36 +28,40 @@ services:
       OPENAI_EMBEDDING_MODEL: ${OPENAI_EMBEDDING_MODEL:-text-embedding-3-small}
     volumes:
       # Mutable data shared with the host and (for docs/media) the
-      # wiki-app service — not baked into the image, so a compile's output
+      # frontend service — not baked into the image, so a compile's output
       # survives a rebuild and is visible outside the container.
       - ./data:/app/data
       - ./wiki-app/docs:/app/wiki-app/docs
       - ./wiki-app/static/media:/app/wiki-app/static/media
       - ./compiler/temp_output:/app/compiler/temp_output
-      # Live code mount for development — edits on the host apply without
-      # a rebuild; server.py's own uvicorn reload=True picks them up.
+      # Live code mount for the Python side only — main.py/cli.py edits on
+      # the host apply without a rebuild. The Node side isn't live-mounted
+      # (unlike the old compiler-api's uvicorn reload=True); rebuild the
+      # image to pick up backend/ changes.
       - ./compiler:/app/compiler
     ports:
       - "8000:8000"
     restart: unless-stopped
 
-  wiki-app:
+  frontend:
     build:
-      context: ./wiki-app
+      context: ./frontend
       dockerfile: Dockerfile
     container_name: llm-wiki-frontend
     environment:
-      WIKI_API_URL: ${WIKI_API_URL:-http://localhost:8000}
-    volumes:
-      - ./wiki-app:/app
-      # Anonymous volume so the container's own npm-installed
-      # node_modules isn't shadowed by the host bind mount above (the host
-      # doesn't have node_modules unless `npm install` was run there too).
-      - wiki-app-node-modules:/app/node_modules
+      # BACKEND_API_URL is this container's own server-side fetches (SSR
+      # wiki-page/dashboard rendering) — must be the Docker service
+      # hostname, not localhost, since it's reached over the Compose
+      # network, not the host's. PUBLIC_API_URL is embedded into every
+      # rendered page for the browser's own fetch/EventSource calls — the
+      # browser runs on the host, so it needs the host-published port.
+      # See frontend/src/config.ts for the full explanation.
+      BACKEND_API_URL: http://backend:8000
+      PUBLIC_API_URL: ${PUBLIC_API_URL:-http://localhost:8000}
     ports:
       - "3000:3000"
     depends_on:
-      - compiler-api
+      - backend
     restart: unless-stopped
 
   # Optional local LLM — Gemma served in-process by llama.cpp, running
@@ -85,5 +98,4 @@ services:
     restart: unless-stopped
 
 volumes:
-  wiki-app-node-modules:
   local-llm-models:

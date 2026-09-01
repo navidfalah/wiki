@@ -1,0 +1,7 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+.app-shell {
+  background: linear-gradient(to bottom, rgb(248 250 252), rgb(255 255 255));
+}
