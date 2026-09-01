@@ -66,15 +66,38 @@ BACKEND_API_URL=http://localhost:8000 PUBLIC_API_URL=http://localhost:8000 npm r
 cd backend && npm install   # or cd frontend && npm install
 ```
 
-## `npm run dev:server` fails / port in use
+## Port already in use / wrong app shows up at :3000 or :8000
+
+If something else on the host is already listening on 3000 or 8000
+(another project's dev server, say), Docker still starts the container
+"successfully" but the port either fails to bind or you end up hitting
+the *other* service instead of this one — the giveaway is an unrelated
+app's UI showing up at `localhost:3000`.
+
+**Docker Compose:** override the host-side port with `BACKEND_PORT` /
+`FRONTEND_PORT` (the container's internal port never changes, and
+`PUBLIC_API_URL` picks up the new `BACKEND_PORT` automatically):
+
+```bash
+BACKEND_PORT=8001 FRONTEND_PORT=3001 docker compose up --build
+```
+
+Then use `http://localhost:3001`. Set these in `.env` to make them
+stick across runs.
+
+**Manual (non-Docker) dev:**
 
 ```bash
 cd frontend
-npm install
 PORT=3001 npm run dev:server    # or free port 3000
 ```
 
-Kill the process on the conflicting port if needed.
+Find and stop whatever's already bound to the port if you'd rather keep
+the default:
+
+```bash
+lsof -nP -iTCP:3000 -sTCP:LISTEN   # macOS/Linux
+```
 
 ## Build already running (HTTP 409)
 
