@@ -114,14 +114,14 @@ not its request/response shapes.
 
 ## Frontend (`frontend/`)
 
-**Entry point:** `src/index.ts` · **Port:** 3000 (`PORT` env var) · **Views:** EJS (`src/views/`) · **Styling:** Tailwind (`tailwind.config.js`, `@tailwindcss/typography` for rendered markdown) · **Client interactivity:** hand-written TypeScript, bundled per-page with esbuild (`src/client/*.ts` → `dist-static/js/*.js`), no framework
+**Entry point:** `src/index.ts` · **Port:** 3000 (`PORT` env var) · **Views:** EJS (`src/views/`) · **Styling:** Tailwind (`tailwind.config.js`) · **Client interactivity:** hand-written TypeScript, bundled per-page with esbuild (`src/client/*.ts` → `dist-static/js/*.js`), no framework
 
 ### Routes
 
 | Route | Renders | Client bundle |
 |-------|---------|----------------|
 | `/wiki` | redirects to `/wiki/index` | — |
-| `/wiki/:slug` | one compiled page — markdown → HTML (`marked`, with internal `.md` links rewritten to `/wiki/...`), left sidebar (all pages, alphabetical, client-side filtered), right "On this page" rail from the page's own `##`/`###` headings | inline (search filter only) |
+| `/wiki/:slug` | one compiled page shown as **raw text**, not rendered HTML — a `<pre>` block of the page's actual markdown source, plus a Download button (`/wiki/:slug/download`, `Content-Disposition: attachment`); left sidebar (all pages, alphabetical, client-side filtered) | inline (search filter only) |
 | `/dashboard` | stat cards, run-compiler panel (SSE log), source folders grid, file-explorer grid (same feature set as the previous React `DataWorkspace`/`SourceFolders`: breadcrumbs, create/delete folder, move file, preview-on-demand modal) | `dashboard.ts` |
 | `/chat` | ask a question, grounded answer + cited pages | `chat.ts` |
 | `/emails` | ingested `.eml` list + detail modal | `emails.ts` |
@@ -156,15 +156,18 @@ under Docker Compose, where `backend` only resolves inside the container
 network. `docker-compose.yml` sets both explicitly; local dev can leave
 both unset and get the same default for each.
 
-### Markdown rendering (`src/markdown.ts`)
+### Wiki pages are shown as raw text, deliberately
 
-- `renderMarkdown()`: rewrites `./slug.md` / `/docs/slug.md` links (the
-  compiler still writes links assuming a Docusaurus-style `docs/` tree)
-  to this app's own `/wiki/slug` routes, then renders with `marked` using
-  a custom heading renderer so `<h2 id="...">` slugs are generated the
-  *same* way both when rendering the body and when building the "on this
-  page" TOC — using `marked`'s own default IDs for one and a hand-rolled
-  slugify for the other would silently produce mismatched anchors.
+`/wiki/:slug` does **not** render markdown to HTML — it fetches the
+page's raw body from the backend and puts it straight into a `<pre>`
+block, at the user's explicit request ("I don't want to see the actual
+text[, rendered,] but the files in the txt format"). No `marked`
+dependency, no link rewriting, no heading-anchor TOC — those all existed
+in an earlier version of this file and were removed along with the now-
+unused `marked` and `@tailwindcss/typography` packages once nothing
+referenced them. `/wiki/:slug/download` streams the same content back
+with `Content-Type: text/plain` and a `Content-Disposition: attachment`
+header, so it saves as a real `.txt` file.
 
 ## Source folder registry (unchanged behavior, now backing a TS route)
 
@@ -211,8 +214,7 @@ outright, since `syncSymlinks()` would just regenerate it.
 **File:** `frontend/tailwind.config.js` — same colour language as the
 previous React version: **amber `source`** = raw/untouched input,
 **indigo `generated`** = compiled wiki output, emerald `accent` for
-primary actions. `@tailwindcss/typography`'s `prose` class styles
-rendered wiki-page markdown.
+primary actions.
 
 ## npm scripts
 
@@ -234,8 +236,10 @@ npm start            # node dist/index.js
 
 - **backend/**: `express`, `cors` — no ORM/database, everything is
   filesystem/JSON, same as the Python engines it ports
-- **frontend/**: `express`, `ejs`, `marked` — no client framework; `dist-static/js/*`
-  are hand-written TypeScript bundled with `esbuild`, styled with Tailwind
+- **frontend/**: `express`, `ejs` — no markdown-rendering dependency
+  (wiki pages are shown as raw text) and no client framework;
+  `dist-static/js/*` are hand-written TypeScript bundled with `esbuild`,
+  styled with Tailwind
 
 ## Next
 

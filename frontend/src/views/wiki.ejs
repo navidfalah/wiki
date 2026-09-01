@@ -1,6 +1,6 @@
 <%- include('partials/head', { title: doc.title, apiBase, active: 'Wiki' }) %>
 
-<div class="grid grid-cols-1 gap-6 lg:grid-cols-[240px_1fr_200px]">
+<div class="grid grid-cols-1 gap-6 lg:grid-cols-[240px_1fr]">
   <aside class="order-2 lg:order-1">
     <div class="sticky top-20">
       <input
@@ -14,8 +14,9 @@
           <a
             href="/wiki/<%= page.slug %>"
             data-title="<%= page.title.toLowerCase() %>"
-            class="block truncate rounded-md px-2 py-1 no-underline <%= page.slug === currentSlug ? 'bg-generated-bg font-medium text-generated' : 'text-gray-600 hover:bg-gray-100' %>">
-            <%= page.title %>
+            class="flex items-center gap-1.5 truncate rounded-md px-2 py-1 no-underline <%= page.slug === currentSlug ? 'bg-generated-bg font-medium text-generated' : 'text-gray-600 hover:bg-gray-100' %>">
+            <span class="shrink-0 text-xs text-gray-400">▤</span>
+            <span class="truncate"><%= page.title %>.txt</span>
           </a>
         <% }); %>
       </nav>
@@ -23,27 +24,21 @@
   </aside>
 
   <article class="order-1 min-w-0 lg:order-2">
-    <div class="rounded-xl border border-gray-200 bg-white p-6 shadow-card sm:p-8">
-      <div class="prose prose-slate max-w-none prose-headings:scroll-mt-24 prose-a:text-generated prose-a:no-underline hover:prose-a:underline">
-        <%- doc.html %>
+    <div class="overflow-hidden rounded-xl border border-gray-200 bg-white shadow-card">
+      <div class="flex items-center justify-between gap-2 border-b border-gray-100 bg-gray-50 px-4 py-2.5">
+        <div class="flex min-w-0 items-center gap-2">
+          <span class="shrink-0 text-gray-400">▤</span>
+          <span class="truncate text-sm font-medium text-gray-800"><%= doc.filename %></span>
+        </div>
+        <a
+          href="/wiki/<%= currentSlug %>/download"
+          class="shrink-0 rounded-md border border-gray-300 bg-white px-2.5 py-1 text-xs font-medium text-gray-700 no-underline hover:bg-gray-100">
+          Download
+        </a>
       </div>
+      <pre class="max-h-[75vh] overflow-auto p-4 font-mono text-xs leading-relaxed text-gray-800 whitespace-pre-wrap"><%= doc.text %></pre>
     </div>
   </article>
-
-  <% if (doc.headings.length > 0) { %>
-    <aside class="order-3 hidden lg:block">
-      <div class="sticky top-20">
-        <p class="mb-2 text-xs font-semibold uppercase tracking-wide text-gray-400">On this page</p>
-        <nav class="space-y-1 text-sm">
-          <% doc.headings.forEach(function(h) { %>
-            <a href="#<%= h.id %>" class="block truncate text-gray-500 no-underline hover:text-gray-900 <%= h.level === 3 ? 'pl-3' : '' %>">
-              <%= h.text %>
-            </a>
-          <% }); %>
-        </nav>
-      </div>
-    </aside>
-  <% } %>
 </div>
 
 <script>
