@@ -186,15 +186,33 @@ Applied during `link_and_export_pages()` via `apply_connection_overrides()`.
 
 ### Categorization
 
-1. **Folder-based:** `entities/` → "Entities", `concepts/` → "Concepts", `sources/` → "Sources"
-2. **Tag-based:** flat pages matched against `TAG_CATEGORY_RULES` (first highest-overlap wins)
-3. **Fallback:** "Uncategorized"
+1. **Folder-based:** `entities/` → "Entities", `concepts/` → "Concepts", `sources/` → "Sources" (`FOLDER_CATEGORIES`)
+2. **Tag-based, computed from the actual corpus:** `_dynamic_tag_categories()` counts every meaningful tag across all pages and turns the most frequent ones (default: top 8, each needing ≥2 pages) into category buckets, named by title-casing the tag itself — `assign_category()` then checks a page's tags against that list, most-frequent-tag-first
+3. **Fallback:** `FALLBACK_CATEGORY` ("General Reference")
 
-Example tag rules:
-
-- "Products & Hardware" — nova-widget, sensenode, hardware, firmware, …
-- "Engineering & Protocols" — meshsync, battery, technical-decisions, …
-- "Team & Organization" — people-related tags
+**This replaced a hardcoded, sample-corpus-specific rule list**
+(`TAG_CATEGORY_RULES`), found and removed rather than left in place: it
+matched tag strings hand-picked from this repo's own fictional demo data
+(`"aurora-nova-widget-v2-beta-unit"`, `"standup-june-1-late-again"`, …).
+Two problems with that, checked directly rather than assumed:
+`wiki-app/docs/` has zero subdirectories in practice — `main.py` writes
+every page flat — so the folder-based rule above never actually fires,
+meaning category assignment depended *entirely* on those hardcoded
+strings; and even on the exact sample corpus they were tuned for, 25% of
+pages (43/174) already matched no rule and fell into "General Reference."
+On any other corpus — a real user's actual notes — nearly every page
+would have landed there, since none of those tag strings would ever
+appear. The dynamic version needs no advance knowledge of what a wiki is
+about, and measurably improves even the sample corpus it replaces
+tooling for: re-run against the same 174 pages, "General Reference"
+dropped from 43 to 27 (25% → 15.5%). The tradeoff, stated plainly: the
+old hand-curated names ("Products & Hardware", "Engineering & Protocols")
+grouped several related tags under one deliberately-chosen umbrella label;
+the dynamic version's categories are named after single raw tags
+("Meshsync", "Aurora Labs", "Cr2032") and can end up more numerous and
+finer-grained on any one corpus — generality was chosen over per-corpus
+curation quality, since a mechanism this project ships has to work for
+wikis it's never seen.
 
 ### MOC front matter
 

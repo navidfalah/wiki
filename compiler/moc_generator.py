@@ -14,7 +14,7 @@ from pathlib import Path
 import yaml
 
 from models import OUTPUT_DIR
-from synthesizer import build_docusaurus_frontmatter, slugify
+from synthesizer import build_docusaurus_frontmatter
 
 COMPILER_DIR = Path(__file__).resolve().parent
 DEFAULT_DOCS_DIR = OUTPUT_DIR
@@ -29,90 +29,21 @@ FOLDER_CATEGORIES: dict[str, str] = {
     "comparisons": "Comparisons",
 }
 
-# Tag → category for flat topic pages (first match with highest overlap wins).
-TAG_CATEGORY_RULES: list[tuple[str, set[str]]] = [
-    (
-        "Products & Hardware",
-        {
-            "nova-widget",
-            "nova-widget-v2",
-            "sensenode-sn-400",
-            "sensenode",
-            "hardware",
-            "firmware",
-            "product-idea-nova-widget",
-            "aurora-nova-widget-v2-beta-unit",
-        },
-    ),
-    (
-        "Engineering & Protocols",
-        {
-            "meshsync",
-            "mesh-between-nodes",
-            "mesh",
-            "battery",
-            "technical-decisions",
-            "firmware",
-            "target-average-current",
-        },
-    ),
-    (
-        "Team & Organization",
-        {
-            "aurora-labs",
-            "mira-chen",
-            "jonah-park",
-            "mira",
-            "jonah",
-            "weekly-sync-aurora-labs",
-        },
-    ),
-    (
-        "Meetings & Transcripts",
-        {
-            "standup-june-1-late-again",
-            "meeting-no-agenda-23-min",
-            "transcript-fragment-recording-failed-at-000412",
-            "weekly-sync-aurora-labs",
-            "voice-memo-transcription-auto-low-confidence",
-        },
-    ),
-    (
-        "Ideas & Research",
-        {
-            "backlog-unsorted-junk-drawer",
-            "naming-brainstorm-do-not-send-to-customers",
-            "research-tabs-open-right-now-mental-dump",
-            "grocery",
-            "why-were-doing-this",
-        },
-    ),
-    (
-        "External & Community",
-        {
-            "forum-homelab-sensors-thread-8821-scraped-badly",
-            "support-inbox-dump-ticket-1042-redacted-names",
-            "intro",
-            "summary",
-        },
-    ),
-]
-
-# Display order for top-level categories.
+# Fixed display order for the categories every corpus can produce (folder-
+# based ones, plus the always-present Overview). Dynamic tag-derived
+# categories (see _dynamic_tag_categories()) have no fixed name to sort by
+# ahead of time — render_moc_body() falls back to alphabetical for those,
+# and General Reference (the catch-all for pages with no strong tag) is
+# pinned last so it doesn't get lost among them.
 CATEGORY_ORDER = [
     "Overview",
     "Sources",
     "Entities",
     "Concepts",
     "Comparisons",
-    "Products & Hardware",
-    "Engineering & Protocols",
-    "Team & Organization",
-    "Meetings & Transcripts",
-    "Ideas & Research",
-    "External & Community",
-    "General Reference",
 ]
+FALLBACK_CATEGORY = "General Reference"
+CATEGORY_ORDER_LAST = [FALLBACK_CATEGORY]
 
 
 @dataclass
@@ -216,7 +147,41 @@ def _meaningful_tags(tags: list[str], doc_id: str) -> set[str]:
     return {t for t in tags if t not in META_TAGS and t != doc_id}
 
 
-def assign_category(page: PageMeta) -> str:
+def _dynamic_tag_categories(
+    pages: list[PageMeta], *, max_categories: int = 8, min_pages: int = 2
+) -> dict[str, str]:
+    """Build a tag → "Title Case" category name mapping from the actual
+    corpus being compiled, instead of a fixed set of tag strings hardcoded
+    to one specific sample dataset (a prior version of this module hand-
+    picked tags like "aurora-nova-widget-v2-beta-unit" — that worked only
+    for this repo's own fictional demo corpus and would match nothing at
+    all in a real user's personal wiki, silently dumping every page into
+    General Reference; confirmed live: even on the sample corpus it was
+    tuned for, 25% of pages already missed every rule).
+
+    The `max_categories` most frequent meaningful tags across all pages
+    become category buckets — any corpus naturally has its own most common
+    topics, so this needs no hardcoded knowledge of what a wiki is about.
+    `min_pages` avoids a category that would only ever hold one page (not
+    worth a whole top-level section). Returned dict is ordered by
+    descending frequency, most common tag first — assign_category() walks
+    it in that order so a page's *most globally common* matching tag wins
+    when it has several.
+    """
+    counts: dict[str, int] = defaultdict(int)
+    for page in pages:
+        for tag in _meaningful_tags(page.tags, page.doc_id):
+            counts[tag] += 1
+
+    frequent_tags = sorted(
+        (tag for tag, count in counts.items() if count >= min_pages),
+        key=lambda tag: (-counts[tag], tag),
+    )[:max_categories]
+
+    return {tag: tag.replace("-", " ").title() for tag in frequent_tags}
+
+
+def assign_category(page: PageMeta, tag_categories: dict[str, str]) -> str:
     if page.doc_id == "overview" or page.rel_path == "overview.md":
         return "Overview"
 
@@ -224,27 +189,21 @@ def assign_category(page: PageMeta) -> str:
         return FOLDER_CATEGORIES[page.folder]
 
     tag_set = _meaningful_tags(page.tags, page.doc_id)
-    best_category = "General Reference"
-    best_score = 0
+    for tag, category_name in tag_categories.items():
+        if tag in tag_set:
+            return category_name
 
-    for category, rule_tags in TAG_CATEGORY_RULES:
-        overlap = len(tag_set & rule_tags)
-        title_slug = slugify(page.title)
-        if title_slug in rule_tags:
-            overlap += 2
-        if overlap > best_score:
-            best_score = overlap
-            best_category = category
-
-    return best_category
+    return FALLBACK_CATEGORY
 
 
 def categorize_pages(pages: list[PageMeta]) -> dict[str, list[PageMeta]]:
+    tag_categories = _dynamic_tag_categories(pages)
+
     grouped: dict[str, list[PageMeta]] = defaultdict(list)
     for page in pages:
         if page.rel_path == "index.md":
             continue
-        category = assign_category(page)
+        category = assign_category(page, tag_categories)
         grouped[category].append(page)
 
     for category in grouped:
@@ -273,8 +232,9 @@ def render_moc_body(categories: dict[str, list[PageMeta]], *, total_pages: int) 
 
     ordered = [c for c in CATEGORY_ORDER if c in categories]
     for c in sorted(categories.keys()):
-        if c not in ordered:
+        if c not in ordered and c not in CATEGORY_ORDER_LAST:
             ordered.append(c)
+    ordered.extend(c for c in CATEGORY_ORDER_LAST if c in categories)
 
     for category in ordered:
         pages = categories.get(category, [])
