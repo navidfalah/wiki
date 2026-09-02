@@ -23,7 +23,7 @@ import email_engine
 import rag_engine
 import resources_engine
 from analytics import build_analytics, get_tag_detail
-from build_runner import stream_compiler_build
+from build_runner import stop_current_build, stream_compiler_build
 from doc_utils import (
     collect_source_metadata,
     parse_frontmatter,
@@ -348,6 +348,19 @@ async def build_status() -> dict[str, bool]:
     return {"running": _build_lock.locked()}
 
 
+@app.post("/api/build/stop")
+async def build_stop() -> dict[str, bool]:
+    """Kill the in-flight compiler build, if any.
+
+    Lets a stuck or merely unwanted build be cancelled immediately instead of
+    waiting out the full timeout — the running `stream_compiler_build` call
+    detects the kill, reports it as a `done` event, and releases
+    `_build_lock` itself.
+    """
+    stopped = await stop_current_build()
+    return {"stopped": stopped}
+
+
 @app.get("/api/build/stream")
 async def build_stream(force: bool = False, timeout_seconds: float | None = None) -> StreamingResponse:
     """Run main.py and stream compiler logs via Server-Sent Events.
@@ -356,17 +369,28 @@ async def build_stream(force: bool = False, timeout_seconds: float | None = None
     `build_runner.DEFAULT_BUILD_TIMEOUT_SECONDS`); the run is killed and
     reported as failed if it's exceeded, so a hung pipeline can't hold the
     build lock forever.
+
+    The lock is acquired here, synchronously, rather than inside the
+    generator: `_build_lock.locked()` and `_build_lock.acquire()` on an
+    unlocked `asyncio.Lock` both resolve without yielding to the event loop,
+    so no other request can slip in between the check and the acquire.
+    Acquiring lazily inside the generator (only once something iterates it)
+    would leave that window open across FastAPI's own await points, letting
+    two concurrent requests both see "not running" and both start a build.
     """
     if _build_lock.locked():
         raise HTTPException(status_code=409, detail="A build is already running")
+    await _build_lock.acquire()
 
     async def event_generator():
-        async with _build_lock:
+        try:
             async for event in stream_compiler_build(
                 force=force,
                 timeout_seconds=timeout_seconds,
             ):
                 yield event
+        finally:
+            _build_lock.release()
 
     return StreamingResponse(
         event_generator(),
