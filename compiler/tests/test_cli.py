@@ -82,6 +82,13 @@ def test_review_candidates_reflects_saved_corrections(tmp_path, monkeypatch):
     assert annotated["correction"]["verdict"] == "confirm_correct"
 
 
+def test_entity_graph_reflects_the_real_state_file():
+    result = cli.cmd_entity_graph()
+    assert "entities" in result
+    assert "counts" in result
+    assert result["counts"]["total_entities"] == len(result["entities"])
+
+
 def _isolate_connectors(tmp_path, monkeypatch):
     store = CredentialStore(store_dir=tmp_path / "store", secret_key=generate_secret_key())
     monkeypatch.setattr(connectors_service, "_credential_store", lambda: store)

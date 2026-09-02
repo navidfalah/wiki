@@ -962,6 +962,15 @@ export function registerRoutes(app: Express): void {
     }),
   );
 
+  // --- Entity graph (bridged to entity_graph.py) ----------------------------
+
+  app.get(
+    '/api/entity-graph',
+    wrap(async (_req, res) => {
+      res.json(await runCli('entity-graph'));
+    }),
+  );
+
   // --- External connectors (bridged to connectors_service.py) --------------
 
   app.get(

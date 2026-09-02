@@ -12,7 +12,9 @@ knowledge graph.
 | Module | `compiler/entity_resolution.py` |
 | Eval dataset (real corpus mentions) | `compiler/entity_resolution_eval_dataset.py` |
 | Eval script (pairwise precision/recall/F1) | `compiler/entity_resolution_eval.py` |
-| Tests | `test_entity_resolution.py`, `test_entity_resolution_eval_dataset.py`, `test_entity_resolution_eval.py` |
+| Real-corpus wiring | `compiler/entity_graph.py` — see "Wired up: a real entity graph" below |
+| Dashboard | `/entities` — `frontend/src/views/entities.ejs` + `client/entities.ts`, bridged via `cli.py`'s `entity-graph` command and `GET /api/entity-graph` |
+| Tests | `test_entity_resolution.py`, `test_entity_resolution_eval_dataset.py`, `test_entity_resolution_eval.py`, `test_entity_graph.py` |
 
 ## Design: same tiered-degradation shape as hybrid_retrieval.py
 
@@ -98,8 +100,46 @@ like "Bob" for "Robert") would be needed to actually exercise and evaluate
 the embedding and LLM tiers — a direct, named follow-up rather than
 something this pilot's perfect score should be read as covering.
 
+## Wired up: a real entity graph
+
+`compiler/entity_graph.py` closes the gap this doc originally left open —
+`linker.py`'s mention graph feeding into something clustered. It doesn't
+touch `linker.py` or `main.py`'s pipeline itself; instead it's a read-side
+adapter, computed on demand, the same posture `/api/knowledge-graph` and
+`/api/attention` already use for `state.json`/`index.json`-derived data
+rather than adding another persisted output file the pipeline has to know
+how to regenerate:
+
+- `mentions_from_state(state)` walks `data/state.json`'s `files[*].chunks[*].entities`
+  — exactly the same per-chunk entity mentions `synthesizer.py`'s
+  `CHUNK_EXTRACTION_SYSTEM_PROMPT` already extracts and `linker.py`'s
+  mention graph is built from — and turns each into a `Mention(name, source, description)`.
+- `build_entity_graph(state)` feeds those through `resolve_entities()`
+  from this module, heuristic tier only (no `embed_fn`/`llm` passed) — the
+  same tier this doc's own eval showed reaches perfect precision/recall on
+  this project's real corpus, so the on-demand HTTP endpoint stays free
+  and instant, no API key required.
+- `entity_graph_payload(state)` sorts clusters by source count (entities
+  cited across more sources surface first) and adds summary counts
+  (`total_entities`, `total_mentions`, `multi_source_entities`,
+  `multi_alias_entities` — the last one is direct evidence of the
+  heuristic tier actually merging name/email variants, not just passing
+  every mention through as a singleton).
+
+Bridged through the same JSON-in/JSON-out `cli.py` pattern as chat/email/
+review (`entity-graph` command, no input needed) and a `GET /api/entity-graph`
+route; `/entities` renders it as filterable cards (canonical name, other
+aliases, source count, mention count). `test_entity_graph.py` covers
+`mentions_from_state()`'s parsing (including malformed/missing chunk data),
+the Mira Chen/email/first-name merge case across three distinct sources,
+and — again — that the Alex Kim/Alex Rivera/Sam Rivera hard negative stays
+apart on synthetic state data shaped like a real compile's output, without
+needing an actual `data/state.json` (which requires an LLM run to
+produce) checked into the test fixtures.
+
 ## Next
 
 - [25-hybrid-retrieval.md](./25-hybrid-retrieval.md) — the tiered-degradation pattern this module reuses, and `cosine_similarity`
 - `compiler/synthesizer.py` — `CHUNK_EXTRACTION_SYSTEM_PROMPT`, the source of the raw entity mentions this module resolves
-- `compiler/linker.py` — the topic/mention graph this could feed a real entity graph into, not yet wired up (this task delivers the resolver itself, not the pipeline integration)
+- `compiler/entity_graph.py` — the real-corpus wiring described above
+- `compiler/linker.py` — the topic/mention graph this module resolves entities from (unchanged by the wiring — `entity_graph.py` reads the same `state.json` linker.py's own mention graph is built from, independently)

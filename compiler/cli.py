@@ -20,6 +20,7 @@ import active_learning
 import connectors_service
 import email_engine
 import rag_engine
+from entity_graph import entity_graph_payload
 from trust_eval_dataset import load_trust_eval_dataset
 
 
@@ -156,6 +157,10 @@ def cmd_review_correction_save() -> dict:
     return {"saved": True, "correction": asdict(correction)}
 
 
+def cmd_entity_graph() -> dict:
+    return entity_graph_payload()
+
+
 def cmd_connectors_catalog() -> dict:
     return {"connectors": connectors_service.catalog()}
 
@@ -244,6 +249,7 @@ COMMANDS = {
     "review-candidates": cmd_review_candidates,
     "review-corrections-list": cmd_review_corrections_list,
     "review-correction-save": cmd_review_correction_save,
+    "entity-graph": cmd_entity_graph,
     "connectors-catalog": cmd_connectors_catalog,
     "connectors-oauth-start": cmd_connectors_oauth_start,
     "connectors-oauth-callback": cmd_connectors_oauth_callback,
