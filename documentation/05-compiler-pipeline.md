@@ -150,11 +150,18 @@ Aborts Docusaurus build if compiler exits non-zero.
 
 `/api/build/stream` spawns the same `main.py` via `build_runner.py`:
 
-- Query param: `force` (default `false`) — forwarded to `main.py` as `--force`
+- Query params: `force` (default `false`, forwarded to `main.py` as `--force`) and
+  `timeout_seconds` (optional override for the run's time limit)
 - Requires `OPENAI_API_KEY` in the server's environment; `main.py` exits `1` immediately otherwise
 - Streams SSE events: `start`, `log`, `done`, `error`
 - Only one build at a time (`409` if lock held)
 - Strips ANSI escape codes from Rich output before streaming
+- **Timed out builds:** the run is killed (SIGTERM, then SIGKILL after a 10s grace
+  period) if it exceeds `DEFAULT_BUILD_TIMEOUT_SECONDS` (1800s / 30 min), or the
+  `COMPILER_BUILD_TIMEOUT_SECONDS` env var / `timeout_seconds` query param when set.
+  A timeout yields an `error` event followed by `done` with `success: false` and
+  `code: -1`, so a stuck LLM call or hung subprocess can't hold `_build_lock`
+  forever and block every future build.
 
 ## Next
 

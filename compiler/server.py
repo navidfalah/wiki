@@ -349,8 +349,14 @@ async def build_status() -> dict[str, bool]:
 
 
 @app.get("/api/build/stream")
-async def build_stream(force: bool = False) -> StreamingResponse:
-    """Run main.py and stream compiler logs via Server-Sent Events."""
+async def build_stream(force: bool = False, timeout_seconds: float | None = None) -> StreamingResponse:
+    """Run main.py and stream compiler logs via Server-Sent Events.
+
+    `timeout_seconds` overrides the default build timeout (see
+    `build_runner.DEFAULT_BUILD_TIMEOUT_SECONDS`); the run is killed and
+    reported as failed if it's exceeded, so a hung pipeline can't hold the
+    build lock forever.
+    """
     if _build_lock.locked():
         raise HTTPException(status_code=409, detail="A build is already running")
 
@@ -358,6 +364,7 @@ async def build_stream(force: bool = False) -> StreamingResponse:
         async with _build_lock:
             async for event in stream_compiler_build(
                 force=force,
+                timeout_seconds=timeout_seconds,
             ):
                 yield event
 
