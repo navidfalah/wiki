@@ -50,6 +50,7 @@ interface RunDetail extends RunSummary {
 let runs: RunSummary[] = [];
 let selectedId: string | null = null;
 let pollTimer: number | undefined;
+let buildIsRunning = false;
 
 const STATUS_TONES: Record<string, string> = {
   running: 'bg-amber-50 text-amber-700',
@@ -82,26 +83,35 @@ function formatTime(iso: string): string {
 function renderList() {
   const container = document.getElementById('pipeline-runs-list')!;
   if (!runs.length) {
-    container.innerHTML = '<p class="p-5 text-sm text-gray-500">No pipeline runs yet. Run the compiler from the Dashboard.</p>';
+    container.innerHTML = '<p class="p-5 text-sm text-gray-500">No pipeline runs yet. Click "Run compiler" above to start one.</p>';
     return;
   }
   container.innerHTML = runs
     .map((run) => {
       const active = run.id === selectedId;
       return `
-      <button
-        type="button"
-        data-run-id="${escapeHtml(run.id)}"
-        class="flex w-full flex-col gap-1 px-5 py-3 text-left transition-colors hover:bg-gray-50 ${active ? 'bg-accent/5' : ''}">
-        <div class="flex items-center justify-between gap-2">
-          <span class="truncate text-sm font-medium text-gray-900">${escapeHtml(run.id)}</span>
-          ${statusBadge(run.status)}
-        </div>
-        <div class="flex items-center justify-between gap-2 text-xs text-gray-500">
-          <span>${escapeHtml(formatTime(run.started_at))}${run.force ? ' · forced' : ''}</span>
-          <span>${escapeHtml(formatDuration(run.started_at, run.finished_at))}</span>
-        </div>
-      </button>`;
+      <div class="group relative flex w-full items-start gap-2 px-5 py-3 transition-colors hover:bg-gray-50 ${active ? 'bg-accent/5' : ''}">
+        <button
+          type="button"
+          data-run-id="${escapeHtml(run.id)}"
+          class="flex min-w-0 flex-1 flex-col gap-1 text-left">
+          <div class="flex items-center justify-between gap-2">
+            <span class="truncate text-sm font-medium text-gray-900">${escapeHtml(run.id)}</span>
+            ${statusBadge(run.status)}
+          </div>
+          <div class="flex items-center justify-between gap-2 text-xs text-gray-500">
+            <span>${escapeHtml(formatTime(run.started_at))}${run.force ? ' · forced' : ''}</span>
+            <span>${escapeHtml(formatDuration(run.started_at, run.finished_at))}</span>
+          </div>
+        </button>
+        <button
+          type="button"
+          data-delete-run-id="${escapeHtml(run.id)}"
+          title="${run.status === 'running' && buildIsRunning ? 'Stop and delete this run' : 'Delete this run'}"
+          class="mt-0.5 shrink-0 rounded-md p-1 text-gray-300 opacity-0 hover:bg-red-50 hover:text-red-600 group-hover:opacity-100 disabled:cursor-not-allowed disabled:opacity-0">
+          ✕
+        </button>
+      </div>`;
     })
     .join('');
 
@@ -110,6 +120,39 @@ function renderList() {
       selectedId = btn.dataset.runId ?? null;
       renderList();
       loadDetail();
+    });
+  });
+
+  container.querySelectorAll<HTMLButtonElement>('button[data-delete-run-id]').forEach((btn) => {
+    btn.addEventListener('click', async (event) => {
+      event.stopPropagation();
+      const id = btn.dataset.deleteRunId;
+      if (!id) return;
+      const run = runs.find((r) => r.id === id);
+      const confirmMessage =
+        run?.status === 'running' && buildIsRunning
+          ? `Run ${id} is still in progress. Deleting it will stop the build. Continue?`
+          : `Delete run ${id}? This cannot be undone.`;
+      if (!window.confirm(confirmMessage)) return;
+      btn.disabled = true;
+      try {
+        const res = await fetch(`${apiBase}/api/pipelines/${encodeURIComponent(id)}`, { method: 'DELETE' });
+        if (!res.ok) {
+          const data = await res.json().catch(() => ({}));
+          throw new Error(data.detail ?? `Request failed (${res.status})`);
+        }
+        runs = runs.filter((r) => r.id !== id);
+        if (selectedId === id) {
+          selectedId = runs.length ? runs[0].id : null;
+          document.getElementById('pipeline-run-detail')!.innerHTML =
+            '<p class="text-sm text-gray-500">Select a run to see its steps.</p>';
+        }
+        renderList();
+        if (selectedId) loadDetail();
+      } catch (err: any) {
+        window.alert(err.message ?? 'Could not delete this run.');
+        btn.disabled = false;
+      }
     });
   });
 }
@@ -274,15 +317,120 @@ async function loadDetail() {
   }
 }
 
+// --- Run / stop the compiler from this page -------------------------------
+// Reuses the same /api/build/* endpoints as the Dashboard's "Run compiler"
+// panel. Only one build can run at a time backend-side, so a build started
+// from the Dashboard (or another tab) is picked up here via syncBuildStatus().
+
+let buildEventSource: EventSource | null = null;
+
+function setBuildMessage(message: string) {
+  document.getElementById('pipeline-build-message')!.textContent = message;
+}
+
+function setBuildButtonsRunning(running: boolean) {
+  buildIsRunning = running;
+  const runButton = document.getElementById('pipeline-run-build') as HTMLButtonElement;
+  const stopButton = document.getElementById('pipeline-stop-build') as HTMLButtonElement;
+  const badge = document.getElementById('pipeline-build-badge')!;
+  runButton.disabled = running;
+  stopButton.classList.toggle('hidden', !running);
+  stopButton.disabled = false;
+  badge.classList.toggle('hidden', !running);
+  renderList();
+}
+
+async function syncBuildStatus() {
+  if (buildEventSource) return; // we own the live stream; don't fight our own state
+  try {
+    const res = await fetch(`${apiBase}/api/build/status`);
+    if (!res.ok) return;
+    const data = await res.json();
+    setBuildButtonsRunning(Boolean(data.running));
+  } catch {
+    // ignore -- list polling already surfaces connectivity issues
+  }
+}
+
+function initBuildControls() {
+  const runButton = document.getElementById('pipeline-run-build') as HTMLButtonElement;
+  const stopButton = document.getElementById('pipeline-stop-build') as HTMLButtonElement;
+  const forceCheckbox = document.getElementById('pipeline-force-rebuild') as HTMLInputElement;
+
+  stopButton.addEventListener('click', async () => {
+    stopButton.disabled = true;
+    try {
+      const res = await fetch(`${apiBase}/api/build/stop`, { method: 'POST' });
+      const data = await res.json();
+      if (!data.stopped) setBuildMessage('Nothing to stop — no build is running.');
+    } catch {
+      setBuildMessage('ERROR: Could not reach the API to stop the build.');
+    }
+  });
+
+  runButton.addEventListener('click', async () => {
+    try {
+      const res = await fetch(`${apiBase}/api/build/status`);
+      const status = await res.json();
+      if (status.running) {
+        setBuildMessage('A build is already running.');
+        setBuildButtonsRunning(true);
+        return;
+      }
+    } catch {
+      setBuildMessage(`Cannot reach API at ${apiBase}.`);
+      return;
+    }
+
+    setBuildMessage('Starting…');
+    setBuildButtonsRunning(true);
+
+    const params = new URLSearchParams();
+    if (forceCheckbox.checked) params.set('force', 'true');
+    const source = new EventSource(`${apiBase}/api/build/stream?${params.toString()}`);
+    buildEventSource = source;
+
+    source.onmessage = (event) => {
+      let payload: any;
+      try {
+        payload = JSON.parse(event.data);
+      } catch {
+        return;
+      }
+      if (payload.type === 'start' || payload.type === 'log') {
+        setBuildMessage(payload.message);
+      } else if (payload.type === 'error') {
+        setBuildMessage(`Error: ${payload.message}`);
+      } else if (payload.type === 'done') {
+        setBuildMessage(payload.message ?? (payload.success ? 'Finished.' : 'Failed.'));
+        setBuildButtonsRunning(false);
+        source.close();
+        buildEventSource = null;
+        loadList();
+      }
+    };
+    source.onerror = () => {
+      if (source.readyState === EventSource.CLOSED) return;
+      setBuildMessage('Lost connection to the build stream.');
+      setBuildButtonsRunning(false);
+      source.close();
+      buildEventSource = null;
+    };
+  });
+}
+
 async function tick() {
   await loadList();
   await loadDetail();
+  await syncBuildStatus();
   const anyRunning = runs.some((r) => r.status === 'running');
   pollTimer = window.setTimeout(tick, anyRunning ? 2000 : 8000);
 }
 
 window.addEventListener('beforeunload', () => {
   if (pollTimer) window.clearTimeout(pollTimer);
+  buildEventSource?.close();
 });
 
+initBuildControls();
 tick();

@@ -10,7 +10,7 @@ tags:
   - nova-widget
   - reading-cycle-interval
   - teabuddy
-last_updated: "2026-09-01T21:24:12.515893+00:00"
+last_updated: "2026-09-02T06:40:54.275133+00:00"
 sidebar_label: MQTT Export
 slug: /mqtt-export
 ---
@@ -21,17 +21,18 @@ slug: /mqtt-export
 
 ## Overview
 
-The [MQTT](./mqtt.md) Export is an optional local telemetry export feature for the [Nova Widget](./nova-widget.md), designed to operate without requiring a cloud connection. It is fully compatible with [Home Assistant](./home-assistant.md) hobbyist setups and is owned by Mira Chen (Draft v2 status).
+The [MQTT](./mqtt.md) Export feature provides an optional local MQTT export mechanism for the [Nova Widget](./nova-widget.md), requiring no cloud infrastructure. It is fully compatible with [Home Assistant](./home-assistant.md) hobbyist setups and is owned by [Mira Chen](./aurora-nova-widget-v2.md) (Draft v2 status).
 
 ## Key Details
 
 ### Topic Structure
-The [MQTT](./mqtt.md) export organizes data using the following topic structure:
+The MQTT export utilizes the following hierarchical topic structure:
 * `aurora/{device_id}/telemetry`
 * `aurora/{device_id}/battery`
 * `aurora/{device_id}/mesh/neighbors`
 
 ### Payload Example
+A standard telemetry payload contains the following fields:
 ```json
 {
   "soil_moisture_pct": 42,
@@ -43,26 +44,25 @@ The [MQTT](./mqtt.md) export organizes data using the following topic structure:
 ```
 
 ### Non-Goals
-* [TeaBuddy](./teabuddy.md) steep events (managed as a separate product)
-* Cloud broker hosting by [Aurora Labs](./aurora-labs.md)
+* [TeaBuddy](./teabuddy.md) steep events (which belong to a different product).
+* Cloud broker hosting by [Aurora Labs](./aurora-labs.md).
 
 ## Related Entities
 
-* **Mira Chen:** Feature owner and author of the draft specification.
-* **Nova Widget:** The [hardware](./hardware.md)/software device utilizing the local MQTT export.
-* **Home Assistant:** The hobbyist automation platform compatible with this local export feature.
-* **Aurora Labs:** The organization behind the hardware, though they do not provide cloud broker hosting for this feature.
-* **TeaBuddy:** A separate product explicitly excluded from this export mechanism.
+- **Nova Widget**: The primary device utilizing this optional local MQTT export feature.
+- **Home Assistant**: The hobbyist platform compatible with the local MQTT export.
+- **Aurora Labs**: The organization developing the Nova Widget and declining cloud broker hosting.
+- **Mira Chen**: The owner of the Draft v2 MQTT export schema.
 
 ## Related Concepts
 
-* **Local MQTT Export:** Direct, cloud-free data transmission via the [MQTT](./mqtt.md) protocol.
-* **Reading Cycle Interval:** The frequency at which data readings and exports occur.
-* **[MeshSync](./meshsync.md):** Associated protocol concept referenced in the feature's design tags.
+- **Local MQTT Export**: Cloud-free telemetry transmission directly from device to local broker.
+- **Reading Cycle Interval**: The frequency at which data readings and exports occur.
+- **[MeshSync](./meshsync.md)**: Related protocol technology context referenced alongside Nova Widget and MQTT.
 
 ## Contradictions
 
-&gt; **Contradiction:** Kickoff slides previously showed hourly export batching, whereas the current specification defines a 15-minute interval per reading cycle.
+&gt; **Contradiction:** Kickoff slides showed hourly export batching, whereas the current specification establishes a 15-minute interval per reading cycle.
 
 ## References & Trust
 

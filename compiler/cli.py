@@ -73,12 +73,52 @@ def cmd_email_detail() -> dict:
     return email_engine.get_email_detail(file_path)
 
 
+def _email_fields(payload: dict) -> tuple[str, str, list[str], list[str], str, str]:
+    subject = str(payload.get("subject", "")).strip()
+    from_addr = str(payload.get("from", "")).strip()
+    to_addrs = [str(addr).strip() for addr in (payload.get("to") or []) if str(addr).strip()]
+    cc_addrs = [str(addr).strip() for addr in (payload.get("cc") or []) if str(addr).strip()]
+    date = str(payload.get("date", "")).strip()
+    body = str(payload.get("body", ""))
+    if not subject:
+        raise ValueError("'subject' is required")
+    if not from_addr:
+        raise ValueError("'from' is required")
+    return subject, from_addr, to_addrs, cc_addrs, date, body
+
+
+def cmd_email_create() -> dict:
+    payload = _read_stdin_json()
+    subject, from_addr, to_addrs, cc_addrs, date, body = _email_fields(payload)
+    return email_engine.create_email(subject, from_addr, to_addrs, cc_addrs, date, body)
+
+
+def cmd_email_update() -> dict:
+    payload = _read_stdin_json()
+    file_path = str(payload.get("path", ""))
+    if not file_path:
+        raise ValueError("'path' is required")
+    subject, from_addr, to_addrs, cc_addrs, date, body = _email_fields(payload)
+    return email_engine.update_email(file_path, subject, from_addr, to_addrs, cc_addrs, date, body)
+
+
+def cmd_email_delete() -> dict:
+    payload = _read_stdin_json()
+    file_path = str(payload.get("path", ""))
+    if not file_path:
+        raise ValueError("'path' is required")
+    return email_engine.delete_email(file_path)
+
+
 COMMANDS = {
     "chat": cmd_chat,
     "chat-status": cmd_chat_status,
     "chat-stream": cmd_chat_stream,
     "emails-list": cmd_emails_list,
     "email-detail": cmd_email_detail,
+    "email-create": cmd_email_create,
+    "email-update": cmd_email_update,
+    "email-delete": cmd_email_delete,
 }
 
 # Commands that write their own stdout (NDJSON events) instead of returning

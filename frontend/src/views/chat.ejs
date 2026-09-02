@@ -5,28 +5,102 @@
   Ask a question and get an answer grounded in, and cited to, the compiled wiki pages it came from.
 </p>
 
-<div class="mt-6 flex flex-col gap-4 md:flex-row">
-  <aside class="flex shrink-0 flex-col gap-2 md:w-56">
-    <button id="chat-new-session" type="button" class="rounded-lg bg-accent px-3 py-2 text-sm font-medium text-white hover:bg-accent-dark">+ New chat</button>
-    <div id="chat-session-list" class="flex flex-col gap-1 overflow-y-auto rounded-xl border border-gray-200 bg-white p-2 shadow-card md:max-h-[520px]"></div>
+<div class="mt-6 flex flex-col gap-4 md:h-[calc(100vh-11rem)] md:flex-row md:min-h-[560px]">
+  <aside class="flex shrink-0 flex-col gap-2 md:w-64">
+    <button id="chat-new-session" type="button" class="flex items-center justify-center gap-1.5 rounded-lg border border-accent/30 bg-accent/5 px-3 py-2 text-sm font-medium text-accent-dark transition-colors hover:bg-accent hover:text-white">
+      <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
+      New chat
+    </button>
+
+    <div class="relative">
+      <svg class="pointer-events-none absolute left-2.5 top-1/2 -translate-y-1/2 text-gray-400" viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
+      <input id="chat-session-search" type="text" placeholder="Search chats…" class="w-full rounded-lg border border-gray-200 bg-white py-1.5 pl-8 pr-2.5 text-sm text-gray-700 placeholder:text-gray-400 focus:border-accent focus:outline-none focus:ring-2 focus:ring-accent/20" />
+    </div>
+
+    <div id="chat-session-list" class="scrollbar-thin flex flex-1 flex-col gap-0.5 overflow-y-auto rounded-xl border border-gray-200 bg-white p-1.5 shadow-card md:max-h-none"></div>
   </aside>
 
   <div class="flex min-w-0 flex-1 flex-col gap-3">
     <div class="flex flex-wrap items-center justify-between gap-2 rounded-xl border border-gray-200 bg-white px-3 py-2 shadow-card">
       <input id="chat-title-input" type="text" class="min-w-0 flex-1 rounded-md border border-transparent px-1.5 py-1 text-sm font-medium text-gray-900 hover:border-gray-200 focus:border-accent focus:outline-none focus:ring-2 focus:ring-accent/20" />
-      <div class="flex items-center gap-2">
+      <div class="flex items-center gap-1.5">
         <div class="relative">
-          <button id="chat-resources-toggle" type="button" class="rounded-lg border border-gray-300 bg-white px-2.5 py-1 text-xs font-medium text-gray-600 hover:bg-gray-50">Resources: All</button>
-          <div id="chat-resources-panel" class="hidden absolute right-0 z-10 mt-1 max-h-72 w-72 overflow-y-auto rounded-lg border border-gray-200 bg-white p-2 shadow-lg"></div>
+          <button id="chat-mode-toggle" type="button" class="flex items-center gap-1.5 rounded-lg border border-gray-300 bg-white px-2.5 py-1.5 text-xs font-medium text-gray-600 hover:bg-gray-50">
+            <svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 21v-7"></path><path d="M4 10V3"></path><path d="M12 21v-9"></path><path d="M12 8V3"></path><path d="M20 21v-5"></path><path d="M20 12V3"></path><path d="M1 14h6"></path><path d="M9 8h6"></path><path d="M17 16h6"></path></svg>
+            <span id="chat-mode-label">Mode: Hybrid + rerank</span>
+          </button>
+          <div id="chat-mode-panel" class="scrollbar-thin hidden absolute right-0 z-10 mt-1.5 w-80 overflow-y-auto rounded-lg border border-gray-200 bg-white p-3 shadow-panel">
+            <p class="mb-1.5 text-[10px] font-semibold uppercase tracking-wide text-gray-400">Retrieval</p>
+            <div id="chat-mode-retrieval-options" class="flex flex-col gap-1.5">
+              <label class="flex items-start gap-2 rounded px-1.5 py-1 hover:bg-gray-50">
+                <input type="radio" name="chat-retrieval-mode" value="bm25" class="mt-0.5 text-accent focus:ring-accent/30" />
+                <span>
+                  <span class="block text-xs font-medium text-gray-900">BM25 only</span>
+                  <span class="block text-[11px] text-gray-500">Keyword ranking, no API key needed.</span>
+                </span>
+              </label>
+              <label class="flex items-start gap-2 rounded px-1.5 py-1 hover:bg-gray-50">
+                <input type="radio" name="chat-retrieval-mode" value="hybrid" class="mt-0.5 text-accent focus:ring-accent/30" />
+                <span>
+                  <span class="block text-xs font-medium text-gray-900">Hybrid</span>
+                  <span class="block text-[11px] text-gray-500">BM25 fused with embedding similarity.</span>
+                </span>
+              </label>
+              <label class="flex items-start gap-2 rounded px-1.5 py-1 hover:bg-gray-50">
+                <input type="radio" name="chat-retrieval-mode" value="hybrid_rerank" class="mt-0.5 text-accent focus:ring-accent/30" />
+                <span>
+                  <span class="block text-xs font-medium text-gray-900">Hybrid + LLM rerank</span>
+                  <span class="block text-[11px] text-gray-500">Most accurate, most expensive.</span>
+                </span>
+              </label>
+            </div>
+            <p class="mb-1.5 mt-3 border-t border-gray-100 pt-3 text-[10px] font-semibold uppercase tracking-wide text-gray-400">Answer</p>
+            <div id="chat-mode-answer-options" class="flex flex-col gap-1.5">
+              <label class="flex items-start gap-2 rounded px-1.5 py-1 hover:bg-gray-50">
+                <input type="radio" name="chat-answer-mode" value="auto" class="mt-0.5 text-accent focus:ring-accent/30" />
+                <span>
+                  <span class="block text-xs font-medium text-gray-900">Auto</span>
+                  <span class="block text-[11px] text-gray-500">LLM writes an answer when configured.</span>
+                </span>
+              </label>
+              <label class="flex items-start gap-2 rounded px-1.5 py-1 hover:bg-gray-50">
+                <input type="radio" name="chat-answer-mode" value="extractive" class="mt-0.5 text-accent focus:ring-accent/30" />
+                <span>
+                  <span class="block text-xs font-medium text-gray-900">Extractive only</span>
+                  <span class="block text-[11px] text-gray-500">Always quote retrieved passages directly.</span>
+                </span>
+              </label>
+            </div>
+            <a href="/rag-architecture" class="mt-3 block border-t border-gray-100 pt-2 text-center text-[11px] text-gray-400 hover:text-accent">Advanced tuning &rarr;</a>
+          </div>
         </div>
-        <button id="chat-delete-session" type="button" class="rounded-lg border border-gray-300 bg-white px-2.5 py-1 text-xs font-medium text-red-600 hover:bg-red-50">Delete</button>
+        <div class="relative">
+          <button id="chat-resources-toggle" type="button" class="flex items-center gap-1.5 rounded-lg border border-gray-300 bg-white px-2.5 py-1.5 text-xs font-medium text-gray-600 hover:bg-gray-50">
+            <svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="22 3 2 3 10 12.46 10 19 14 21 14 12.46 22 3"></polygon></svg>
+            <span>Resources: All</span>
+          </button>
+          <div id="chat-resources-panel" class="scrollbar-thin hidden absolute right-0 z-10 mt-1.5 max-h-72 w-72 overflow-y-auto rounded-lg border border-gray-200 bg-white p-2 shadow-panel"></div>
+        </div>
+        <button id="chat-delete-session" type="button" title="Delete this chat" class="flex items-center justify-center rounded-lg border border-gray-300 bg-white p-1.5 text-gray-500 hover:border-red-200 hover:bg-red-50 hover:text-red-600">
+          <svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"></path><path d="M10 11v6"></path><path d="M14 11v6"></path><path d="M9 6V4a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2"></path></svg>
+        </button>
       </div>
     </div>
-    <div id="chat-status" class="text-xs text-gray-500"></div>
-    <div id="chat-messages" class="flex min-h-[300px] flex-col gap-3 rounded-xl border border-gray-200 bg-white p-4 shadow-card"></div>
-    <form id="chat-form" class="flex gap-2">
-      <input id="chat-input" type="text" placeholder="Ask a question about the wiki…" class="flex-1 rounded-lg border border-gray-300 px-3 py-2 text-sm focus:border-accent focus:outline-none focus:ring-2 focus:ring-accent/20" />
-      <button type="submit" class="rounded-lg bg-accent px-4 py-2 text-sm font-medium text-white hover:bg-accent-dark">Ask</button>
+
+    <div id="chat-status" class="flex items-center gap-1.5 text-xs text-gray-500"></div>
+
+    <div class="relative min-h-0 flex-1">
+      <div id="chat-messages" class="scrollbar-thin flex h-full flex-col gap-4 overflow-y-auto rounded-xl border border-gray-200 bg-gray-50/60 p-4 shadow-card"></div>
+      <button id="chat-scroll-bottom" type="button" class="hidden absolute bottom-3 right-3 items-center justify-center rounded-full border border-gray-200 bg-white p-2 text-gray-500 shadow-panel hover:text-accent">
+        <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"></line><polyline points="19 12 12 19 5 12"></polyline></svg>
+      </button>
+    </div>
+
+    <form id="chat-form" class="flex items-end gap-2 rounded-xl border border-gray-200 bg-white p-2 shadow-card focus-within:border-accent/40 focus-within:ring-2 focus-within:ring-accent/20">
+      <textarea id="chat-input" rows="1" placeholder="Ask a question about the wiki… (Shift+Enter for a new line)" class="max-h-40 min-h-[2.5rem] flex-1 resize-none border-0 bg-transparent px-2 py-2 text-sm text-gray-900 placeholder:text-gray-400 focus:outline-none focus:ring-0"></textarea>
+      <button id="chat-send-btn" type="submit" title="Send" class="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-accent text-white transition-colors hover:bg-accent-dark disabled:cursor-not-allowed disabled:bg-gray-200 disabled:text-gray-400">
+        <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="22" y1="2" x2="11" y2="13"></line><polygon points="22 2 15 22 11 13 2 9 22 2"></polygon></svg>
+      </button>
     </form>
   </div>
 </div>

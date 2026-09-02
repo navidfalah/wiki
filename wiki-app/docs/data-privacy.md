@@ -10,7 +10,7 @@ tags:
   - meshsync
   - sensenode
   - teabuddy
-last_updated: "2026-09-01T21:22:33.091998+00:00"
+last_updated: "2026-09-02T06:39:11.792351+00:00"
 sidebar_label: Data Privacy
 slug: /data-privacy
 ---
@@ -20,29 +20,25 @@ slug: /data-privacy
 # Data Privacy
 
 ## Overview
-Data privacy and [confidentiality](./confidentiality.md) guidelines govern how information, telemetry, and materials are handled by participants testing products such as the [Aurora Nova Widget](./aurora-nova-widget.md). These terms outline data storage behavior, optional export configurations, and general confidentiality obligations for [beta testing](./beta-testing.md).
+Data privacy practices and [confidentiality](./confidentiality.md) guidelines for [beta testing](./beta-testing.md) programs—specifically concerning products like the [Aurora Nova Widget](./aurora-nova-widget.md)—dictate strict local storage of telemetry data, explicit rules on optional data exportation, and protection of proprietary [firmware](./firmware.md) and source code.
 
 ## Key Details
-- **Telemetry Handling:** All device telemetry remains strictly local by default.
-- **Data Export:** Optional [MQTT export](./mqtt-export.md) functionality is available and must be user-configured.
-- **Confidentiality Scope:** Beta [firmware](./firmware.md), partial [MeshSync](./meshsync.md) source code, and [power budget](./power-budget.md) spreadsheets are classified as confidential under beta agreements.
-- **[Hardware](./hardware.md) Limitations:** The device carries an IP54 splash-resistant rating and must not be submerged; outdoor burial (similar to [SenseNode SN-400](./sensenode-sn-400.md)-style deployment) is not supported.
-- **Endorsement Rules:** Beta testers are permitted to mention products like [TeaBuddy](./teabuddy.md), but such mentions must not imply an official [Aurora Labs](./aurora-labs.md) partnership.
+* **Telemetry Data:** All device telemetry remains stored locally by default.
+* **Data Export:** Users have the option to configure an [MQTT export](./mqtt-export.md), but it is strictly optional and user-controlled.
+* **Confidentiality Scope:** Under beta tester agreements, items such as beta firmware, partial [MeshSync](./meshsync.md) source code, and [power budget](./power-budget.md) spreadsheets are designated as confidential.
+* **[Hardware](./hardware.md) Limitations & Safety:** The device maintains an IP54 splash-resistant rating and must not be submerged. Outdoor burial (similar to [SenseNode SN-400](./sensenode-sn-400.md)-style deployments) is not supported.
+* **Endorsement Restrictions:** Beta testers are permitted to mention products like [TeaBuddy](./teabuddy.md), but such mentions must not imply an official partnership with Aurora.
 
 ## Related Entities
-- Aurora Nova Widget
-- TeaBuddy
-- SenseNode SN-400
-- MeshSync
+* **Aurora Nova Widget**
+* **MeshSync**
+* **SenseNode**
+* **TeaBuddy**
 
 ## Related Concepts
-- [Beta Testing](./beta-testing.md)
-- Telemetry
-- Confidentiality Agreements
-- MQTT Export
-
-## Contradictions
-*(No contradictions present in the provided source material.)*
+* **Beta Tester Confidentiality**
+* **[Hardware Safety](./hardware-safety.md) Rating**
+* **Endorsement Restrictions**
 
 ## References & Trust
 

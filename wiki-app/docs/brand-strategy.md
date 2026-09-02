@@ -10,44 +10,38 @@ tags:
   - mira-chen
   - teabuddy
   - trademark-clearance
-last_updated: "2026-09-01T21:22:16.677626+00:00"
+last_updated: "2026-09-02T06:38:54.475022+00:00"
 sidebar_label: Brand Strategy
 slug: /brand-strategy
 ---
 
 <!-- AUTO-GENERATED — compiled by the LLM Wiki compiler from data/raw/ sources into compiler/temp_output/, then linked here. Edits to this file are overwritten on the next compile: edit sources under data/raw/, or manual cross-links in data/link_overrides.json, instead. -->
 
-# [Brand Strategy](./brand-strategy.md)
+# Brand Strategy
 
 ## Overview
-This wiki page outlines the brand strategy, naming conventions, and trademark clearance guidelines resulting from legal counsel review for collaborative and individual product offerings between [Aurora Labs](./aurora-labs.md) and [TeaBuddy](./teabuddy.md).
+Brand strategy encompasses trademark clearance, naming guidelines, and co-marketing rules for collaborative [Partnerships](./partnerships.md) between organizations such as [Aurora Labs](./aurora-labs.md) and [TeaBuddy](./teabuddy.md). [Legal](./legal.md) counsel provides preliminary clearance guidelines to ensure brand differentiation, avoid internal or existing conflicts, and govern visual placement in shared marketing initiatives.
 
 ## Key Details
-* **Trademark Preliminary Clearances:**
-  * **[MeshSync](./meshsync.md):** Cleared with a caveat regarding similar mesh [IoT](./iot.md) marks.
-  * **TeaBuddy:** Cleared in class 21 kitchen gadgets.
-  * **"Puck":** The standalone mark is crowded; the identifier must be used together as "[TeaBuddy Puck](./teabuddy.md)".
-* **Naming Restrictions & Alternatives:**
-  * **"SteepSync":** Avoid (previously rejected internally by Alex).
-  * **"[Nova](./nova-widget.md)":** Avoid standalone usage due to conflicts with an existing tech mark; use "[Nova Widget](./nova-widget.md)" instead.
-* **Co-Marketing Guidelines:**
-  * Co-marketing is approved provided that logos are separated by a minimum distance of 24px.
+- **Trademark Clearances & Naming Guidelines:**
+  - **[MeshSync](./meshsync.md):** Approved with a caveat regarding similar mesh [IoT](./iot.md) marks.
+  - **TeaBuddy:** Approved in class 21 (kitchen gadgets).
+  - **"Puck":** Considered too crowded when used alone; must be used together as "[TeaBuddy Puck](./teabuddy.md)".
+  - **"SteepSync":** Prohibited (previously rejected internally by Alex).
+  - **"[Nova](./aurora-nova-widget-v2.md)":** The standalone term conflicts with an existing tech mark; must use "[Nova Widget](./nova-widget.md)" instead.
+- **Co-Marketing Guidelines:**
+  - Joint marketing efforts are permitted under the condition that respective logos are separated by a minimum distance of 24 pixels.
 
 ## Related Entities
-* **Aurora Labs**
-* **TeaBuddy**
-* **[Mira Chen](./nova-widget.md)** (Aurora Labs)
-* **Alex Kim** (TeaBuddy)
-* **Outside Counsel**
+- **Aurora Labs** (represented by [Mira Chen](./aurora-nova-widget-v2.md))
+- **TeaBuddy** (represented by Alex Kim)
+- **Outside Counsel** (legal reviewer issuing preliminary clearance)
 
 ## Related Concepts
-* **[Brand Strategy](./brand-strategy.md)**
-* **Trademark Clearance**
-* **Naming Conventions**
-* **Co-Marketing Guidelines**
-
-## Contradictions
-*(No contradictions noted in the provided sources)*
+- Trademark Clearance
+- Brand Naming and Nomenclature
+- Co-Marketing Guidelines
+- IoT and Kitchen Gadget Classifications
 
 ## References & Trust
 

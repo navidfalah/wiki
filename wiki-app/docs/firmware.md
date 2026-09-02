@@ -8,7 +8,7 @@ tags:
   - meshsync
   - nova-widget
   - wiki
-last_updated: "2026-09-01T21:22:54.663159+00:00"
+last_updated: "2026-09-02T06:39:34.310652+00:00"
 sidebar_label: Firmware
 slug: /firmware
 ---
@@ -18,23 +18,24 @@ slug: /firmware
 # Firmware
 
 ## Overview
-This page documents the firmware baseline and related [Hardware](./hardware.md) context for the [Nova Widget](./nova-widget.md) (Hardware Revision C). 
+This document outlines the firmware baseline and related [Hardware Specifications](./hardware-specifications.md) for the [Nova Widget](./nova-widget.md) (Hardware Revision C), detailing its operational intervals, underlying software versions, and system architecture parameters.
 
 ## Key Details
-- **Firmware Baseline:** [MeshSync](./meshsync.md) 0.3.8
+- **Firmware Baseline:** [MeshSync](./meshsync.md) version 0.3.8
 - **Default Interval:** 15 minutes
-- **Hardware Integration:** Designed to operate on the Nova Widget hardware revision C, featuring an nRF52840 MCU, a CR2032 battery holder (rev C fix for rattle), and a 30mm capacitive soil probe.
+- **Hardware Integration:** Designed for the Nova Widget Revision C featuring an nRF52840 MCU, a pebble-shaped PETG beta enclosure (codenamed Jonah), a silicone 50A gasket providing IP54 splash resistance, and a CR2032 battery holder.
 
 ## Related Entities
-- **Nova Widget:** The target device running the MeshSync firmware (Hardware Revision C).
-- **Jonah:** Codename/reference associated with the pebble-shaped PETG beta enclosure.
+- **MeshSync:** The protocol/software suite utilized for the baseline firmware (version 0.3.8).
+- **Nova Widget:** The target device running the firmware (Revision C).
+- **Jonah:** Codenamed pebble-shaped PETG beta enclosure for the device.
 
 ## Related Concepts
-- **MeshSync:** The underlying protocol/software version (0.3.8) used for synchronization on the device firmware baseline.
-- **IP54 Splash Resistance:** Environmental protection provided by the silicone 50A gasket.
+- **Splash Resistance:** IP54 protection enabled by the silicone 50A gasket, operating alongside the firmware scheduling.
+- **Polling Intervals:** The default 15-minute operational interval managed by the firmware baseline for sensor readings (such as the 30mm capacitive soil probe).
 
 ## Contradictions
-*(No contradictions present in the current source material)*
+*(No contradictions present in the current data source.)*
 
 ## References & Trust
 

@@ -10,6 +10,10 @@ testable on its own.
 
 from __future__ import annotations
 
+import re
+from datetime import datetime, timezone
+from email.message import EmailMessage
+from email.utils import format_datetime
 from pathlib import Path
 from typing import Any
 
@@ -22,6 +26,50 @@ from trust import load_trust_config, resolve_trust
 
 class NotAnEmailError(ValueError):
     """Raised when a detail lookup is asked for a non-.eml raw source."""
+
+
+def _resolve_raw_path(raw_dir: Path, file_path: str) -> Path:
+    candidate = (raw_dir / file_path).resolve()
+    if not str(candidate).startswith(str(raw_dir.resolve())):
+        raise NotAnEmailError(f"Invalid raw file path: {file_path}")
+    return candidate
+
+
+def _slugify(text: str) -> str:
+    slug = re.sub(r"[^a-z0-9]+", "-", text.lower()).strip("-")
+    return slug or "email"
+
+
+def _unique_eml_path(raw_dir: Path, subject: str) -> Path:
+    emails_dir = raw_dir / "emails"
+    emails_dir.mkdir(parents=True, exist_ok=True)
+    prefix = datetime.now().strftime("%Y-%m-%d")
+    slug = _slugify(subject)
+    candidate = emails_dir / f"{prefix}-{slug}.eml"
+    counter = 2
+    while candidate.exists():
+        candidate = emails_dir / f"{prefix}-{slug}-{counter}.eml"
+        counter += 1
+    return candidate
+
+
+def _build_eml_bytes(
+    subject: str,
+    from_addr: str,
+    to_addrs: list[str],
+    cc_addrs: list[str],
+    date: str,
+    body: str,
+) -> bytes:
+    msg = EmailMessage()
+    msg["Subject"] = subject or "(no subject)"
+    msg["From"] = from_addr or "(unknown sender)"
+    msg["To"] = ", ".join(to_addrs) or "(unknown recipient)"
+    if cc_addrs:
+        msg["Cc"] = ", ".join(cc_addrs)
+    msg["Date"] = date.strip() if date and date.strip() else format_datetime(datetime.now(timezone.utc))
+    msg.set_content(body or "")
+    return msg.as_bytes()
 
 
 def _summary(parsed: ParsedEmail, rel: str) -> dict[str, Any]:
@@ -84,9 +132,7 @@ def get_email_detail(
     raw_dir = raw_dir or RAW_DIR
     docs_dir = docs_dir or OUTPUT_DIR
 
-    candidate = (raw_dir / file_path).resolve()
-    if not str(candidate).startswith(str(raw_dir.resolve())):
-        raise NotAnEmailError(f"Invalid raw file path: {file_path}")
+    candidate = _resolve_raw_path(raw_dir, file_path)
     if not candidate.is_file():
         raise FileNotFoundError(f"Raw file not found: {file_path}")
     if candidate.suffix.lower() not in EMAIL_EXTENSIONS:
@@ -120,3 +166,57 @@ def get_email_detail(
         }
     )
     return summary
+
+
+def create_email(
+    subject: str,
+    from_addr: str,
+    to_addrs: list[str],
+    cc_addrs: list[str],
+    date: str,
+    body: str,
+    raw_dir: Path | None = None,
+) -> dict[str, Any]:
+    """Write a new .eml source under raw_dir/emails/ and return its detail."""
+    raw_dir = raw_dir or RAW_DIR
+    target = _unique_eml_path(raw_dir, subject)
+    target.write_bytes(_build_eml_bytes(subject, from_addr, to_addrs, cc_addrs, date, body))
+    rel = str(target.relative_to(raw_dir)).replace("\\", "/")
+    return get_email_detail(rel, raw_dir=raw_dir)
+
+
+def update_email(
+    file_path: str,
+    subject: str,
+    from_addr: str,
+    to_addrs: list[str],
+    cc_addrs: list[str],
+    date: str,
+    body: str,
+    raw_dir: Path | None = None,
+) -> dict[str, Any]:
+    """Overwrite an existing .eml source in place and return its new detail."""
+    raw_dir = raw_dir or RAW_DIR
+    candidate = _resolve_raw_path(raw_dir, file_path)
+    if not candidate.is_file():
+        raise FileNotFoundError(f"Raw file not found: {file_path}")
+    if candidate.suffix.lower() not in EMAIL_EXTENSIONS:
+        raise NotAnEmailError(f"Not an email source: {file_path}")
+
+    candidate.write_bytes(_build_eml_bytes(subject, from_addr, to_addrs, cc_addrs, date, body))
+    rel = str(candidate.relative_to(raw_dir)).replace("\\", "/")
+    return get_email_detail(rel, raw_dir=raw_dir)
+
+
+def delete_email(file_path: str, raw_dir: Path | None = None) -> dict[str, Any]:
+    """Delete an existing .eml source."""
+    raw_dir = raw_dir or RAW_DIR
+    candidate = _resolve_raw_path(raw_dir, file_path)
+    if not candidate.is_file():
+        raise FileNotFoundError(f"Raw file not found: {file_path}")
+    if candidate.suffix.lower() not in EMAIL_EXTENSIONS:
+        raise NotAnEmailError(f"Not an email source: {file_path}")
+
+    rel = str(candidate.relative_to(raw_dir)).replace("\\", "/")
+    candidate.unlink()
+    return {"deleted": True, "path": rel}

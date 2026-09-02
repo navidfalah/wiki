@@ -10,7 +10,7 @@ tags:
   - ble-proxy-update
   - data-loss-on-factory-reset
   - default-read-interval
-last_updated: "2026-09-01T21:24:25.823383+00:00"
+last_updated: "2026-09-02T06:41:06.792717+00:00"
 sidebar_label: Nova Widget
 slug: /nova-widget
 ---
@@ -21,53 +21,57 @@ slug: /nova-widget
 
 ## Overview
 
-The [Nova Widget](./nova-widget.md) Widget (developed under the working name **Nova Widget**, and referenced as the **[Aurora Nova Widget v2 beta](./nova-widget.md) unit**) is an open-source, local-first [IoT](./iot.md) sensor designed primarily for home gardeners and small-acreage farmers. Created by [Aurora Labs](./aurora-labs.md)—founded by [Mira Chen](./nova-widget.md) and Jonah Park—the product emphasizes user data ownership, operating without mandatory cloud accounts, subscriptions, or cameras/GPS. 
+The **[Nova](./aurora-nova-widget-v2.md) Widget** (developed under the working name **[Aurora Nova Widget v2](./aurora-nova-widget-v2.md)**) is an open-source, local-first [IoT](./iot.md) sensor designed by [Aurora Labs](./aurora-labs.md) for home gardeners and small-acreage farmers. Guided by the mission statement *"Open [sensors](./sensors.md) for people who own their data,"* the device features no mandatory cloud accounts, no camera, and no GPS, instead relying on direct local exports via CSV or [MQTT](./mqtt.md) (compatible with [Home Assistant](./home-assistant.md)). 
 
-The sensor monitors capacitive soil moisture, air temperature, and ambient light (via a simple photodiode). It connects via [Bluetooth Low Energy](./bluetooth-low-energy.md) ([BLE](./ble.md)) to a phone for setup and utilizes a custom local mesh protocol called **[MeshSync](./meshsync.md)** for range extension. Data is made available via CSV export or local [MQTT](./mqtt.md) (compatible with [Home Assistant](./home-assistant.md) hobbyist setups), avoiding any cloud broker hosting by Aurora Labs.
+The device core features:
+- Capacitive soil moisture sensing
+- Air temperature monitoring
+- Ambient light detection via a simple photodiode
+- [Bluetooth Low Energy](./bluetooth-low-energy.md) ([BLE](./ble.md)) for phone setup and a custom mesh network protocol called **[MeshSync](./meshsync.md)** for extended range
+
+---
 
 ## Key Details
 
-### Hardware & Mechanical Specifications
-- **MCU:** nRF52840.
-- **Enclosure & IP Rating:** 3D printed PETG in a pebble shape for the beta phase (with injection molding planned later). Incorporates a silicone 50A gasket providing an **IP54 splash** rating (an IP65-tooled variant was deferred due to a $7,850 quote).
-- **[Sensors](./sensors.md):** Capacitive soil probe (30 mm length), air temperature sensor, and ambient light photodiode.
-- **Power & Battery:** Powered by **CR2032** coin cells ([hardware](./hardware.md) revision C fixes a battery rattle present in earlier drafts). *Note: [Documentation](./documentation.md) explicitly warns against printing or using CR2450 cells, a misprint that previously caused support ticket #2201.*
-- **[Power Budget](./power-budget.md):** 
-  - Sleep mode target: 4.2 µA.
-  - Sample + TX: 12 mA peak.
-  - Rejoin spike: 110–340 µA (noted as a known issue).
-  - Lifespan expectations: Marketing claims 2 years, whereas engineering estimates 18 months at 10 nodes.
+### Hardware & Electrical Specifications
+- **Microcontroller (MCU):** nRF52840
+- **Enclosure:** 3D-printed PETG (pebble shape) with a silicone 50A gasket providing an IP54 splash rating (an IP65 variant was deferred due to tooling costs).
+- **[Battery Specifications](./battery-specifications.md):** Powered by a CR2032 coin cell ([Hardware](./hardware.md) Revision C includes a revised holder to fix battery rattle). 
+- **Power Profile:** 
+  - Sleep current: 4.2 µA
+  - Sample + TX current: 12 mA peak
 
-### Firmware & Networking (MeshSync)
-- **Mesh Protocol:** Custom protocol named **MeshSync**, led by Mira Chen. 
-- **Capacity:** Theoretically supports up to 32 nodes, though [beta testing](./beta-testing.md) has successfully reached 8 nodes (with reports of instability past that point). 
-- **Read Intervals:** [Firmware](./firmware.md) baseline defaults to a **15-minute** reading cycle (though initial kickoff notes targeted hourly readings).
-- **Firmware Iterations:** Firmware builds such as 0.3.8 and 0.3.9 (e.g., build candidate addressing MeshSync relay [battery drain](./battery-drain.md) in [MESH-118](./mesh-118.md)) have been trialed in batch 4 beta retests.
-- **OTA & Updates:** Over-the-air updates require signed firmware images (ed25519) with rollback protection, alongside a BLE proxy update feature via the phone app when a mesh node is unreachable. [OTA updates](./ota-updates.md) are not shipped in the current beta phase.
+### Firmware & Networking
+- **Mesh Protocol:** Custom protocol named **MeshSync**, designed by [Mira Chen](./aurora-nova-widget-v2.md). It supports a theoretical maximum of 32 nodes (though [beta testing](./beta-testing.md) noted instability past 8 nodes, and developers recommend flashing [firmware](./firmware.md) version 0.3.9 before adding more than 6 nodes to prevent relay [battery drain](./battery-drain.md) issues).
+- **Reading Intervals:** The default read interval is **15 minutes** (updated from the initial hourly kickoff proposal).
+- **[OTA Updates](./ota-updates.md):** Signed firmware images using ed25519 with rollback protection. Over-the-air updates support BLE proxying via a phone app when a mesh node is unreachable, though OTA is not shipping in the initial beta phase.
+- **Local Data Export:** Optional local MQTT telemetry publishing follows the topic structure `aurora/{device_id}/telemetry`, `aurora/{device_id}/battery`, and `aurora/{device_id}/mesh/neighbors`.
 
-### Known Issues & Troubleshooting
-- **NOVA-59 (Wifi State Loss):** Under firmware 0.3.8, unclean power losses (such as a power outage) can cause the widget to fail to rejoin home Wi-Fi, getting stuck blinking blue. Factory resetting resolves this but wipes accumulated sensor history. 
-- *Workaround:* Instead of a full factory reset, users can hold the side button for 3 seconds for a soft Wi-Fi-only reset to preserve history. Setting a static DHCP reservation on the router also helps prevent connection drops due to IP changes.
+---
 
 ## Related Entities
 
-- **Aurora Labs:** The maker entity founded by Mira Chen and Jonah Park ("Open sensors for people who own their data").
-- **Mira Chen:** Co-founder responsible for firmware, MeshSync, power profiling, and [MQTT export](./mqtt-export.md) schemas.
-- **Jonah Park:** Co-founder responsible for PCB design, sensors, mechanical structures, and hardware revisions.
-- **Kevin Ostrander:** Beta tester (batch 4) who reported the Wi-Fi reconnection bug (NOVA-59).
-- **Sam Rivera:** Developer associated with [TeaBuddy](./teabuddy.md), who shared insights on single-device BLE DFU.
+- **Aurora Labs:** The organization founded by Mira Chen and Jonah Park.
+- **Mira Chen:** Co-founder responsible for firmware, the [MeshSync protocol](./meshsync-protocol.md), and power profiling.
+- **Jonah Park:** Co-founder responsible for PCB design, sensors, and mechanical hardware.
+- **[TeaBuddy](./teabuddy.md):** An unrelated, single-device BLE product by Sam Rivera that uses simple BLE DFU and does not share codebases with Aurora Labs.
+- **[SenseNode](./sensenode-sn-400.md) (SN-400):** A competitor comparison reference noted for having a superior IP67 waterproof rating.
+
+---
 
 ## Related Concepts
 
-- **MeshSync:** The proprietary local mesh network protocol used by Nova Widget nodes to extend range without cloud dependency.
-- **Local MQTT Export:** Optional local telemetry schema publishing topics like `aurora/{device_id}/telemetry`, `aurora/{device_id}/battery`, and `aurora/{device_id}/mesh/neighbors` for Home Assistant compatibility.
-- **BLE Proxy Update:** A mechanism allowing phone apps to update unreachable mesh nodes.
+- **MeshSync:** The proprietary multi-hop local [mesh networking](./mesh-networking.md) protocol used by Nova Widget nodes.
+- **Local-First IoT:** A design philosophy emphasizing local data export (MQTT/CSV) over mandatory cloud dashboard subscriptions.
+- **Battery Longevity:** Engineering efforts focused on achieving multi-month to multi-year lifespans on coin-cell batteries using optimized sleep and sampling intervals.
+
+---
 
 ## Contradictions
 
-&gt; **Contradiction:** Discrepancies exist regarding the default data sampling intervals. Early kickoff notes and slides specified **hourly** readings to meet a 2-year battery target, whereas technical specifications, hardware revision C baseline, and MQTT schema drafts state a **15-minute** reading cycle.
+&gt; **Contradiction:** [Battery life](./battery-life.md) projections vary across [documentation](./documentation.md). Early kickoff notes and marketing material initially targeted a **2-year lifespan on a CR2032 battery with hourly readings**, while engineering power budgets and later specifications estimate **18 months** (factoring in a 10-node mesh network and 15-minute intervals). Furthermore, older draft documents briefly referenced using a CR2450 battery, which [hardware specs](./hardware-specs.md) and labels explicitly clarify is **wrong** (misprints have caused support tickets).
 
-&gt; **Contradiction:** Battery cell specifications experienced documentation conflicts. While initial brainstorming and incorrect notes referenced CR2450 batteries, engineering specs, hardware revision C notes, and manufacturing guidelines explicitly clarify that the device uses **CR2032** cells and warn that referencing CR2450 is incorrect.
+&gt; **Contradiction:** The default reading interval shifted during development. The initial May kickoff notes specified **hourly readings**, whereas subsequent hardware and MQTT schema specifications standardize the default read interval to **15 minutes**.
 
 ## References & Trust
 

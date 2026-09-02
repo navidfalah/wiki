@@ -10,7 +10,7 @@ tags:
   - ip54-vs-ip65-tooling-mitigation
   - meshsync
   - mira-chen
-last_updated: "2026-09-01T21:22:56.821868+00:00"
+last_updated: "2026-09-02T06:39:36.347944+00:00"
 sidebar_label: Fundraising
 slug: /fundraising
 ---
@@ -20,35 +20,32 @@ slug: /fundraising
 # Fundraising
 
 ## Overview
-This wiki page covers the fundraising efforts, traction, and strategic updates for [Aurora Labs](./aurora-labs.md) as outlined in draft [investor updates](./investor-updates.md) from July 2026. The primary funding objective is securing a bridge round to support tooling and [firmware](./firmware.md) development.
+This wiki page covers the fundraising efforts and current business status for [Aurora Labs](./aurora-labs.md), as outlined in the investor update draft prepared by CEO Mira Chen in July 2026. The update highlights recent [product traction](./product-traction.md), ongoing engineering and [documentation](./documentation.md) challenges, and the primary financial ask required to accelerate manufacturing and engineering.
 
 ## Key Details
-- **Funding Ask:** Seeking a $500k bridge financing round dedicated to injection molds and hiring 2 FTE (Full-Time Equivalent) firmware engineers.
-- **Traction Metrics:**
-  - 47 [beta testing](./beta-testing.md) [Nova Widget](./nova-widget.md) units currently deployed in the field.
-  - Shipped [MeshSync](./meshsync.md) 0.3.8, featuring a rejoin fix that unblocks 8-node deployments.
-  - A [Wiki Compiler](./wiki-compiler.md) demo successfully impressed a seed investor, drawing a mention of the "karpathy pattern."
-- **Current Challenges:**
-  - IP65 tooling costs ($8k) have been deferred; the company is shipping an IP54 beta version accompanied by clear splash-resistance [documentation](./documentation.md).
-  - Competitor [SenseNode SN-400](./sensenode-sn-400.md) continues to win the outdoor waterproof narrative with its IP67 rating.
-  - Documentation reconciliation is required due to conflicting battery claims (2 years versus 18 months); a [Power Budget](./power-budget.md) spreadsheet is slated for publication in Q3.
-- **Ecosystem Interactions:**
-  - Alex Kim reached out regarding co-marketing at Maker Faire, which has been deferred until the Aurora beta officially ships. 
-  - There is no firmware merge with external projects, maintaining only a shared CR2032 supply chain connection.
+- **Current Ask:** $500k bridge financing specifically earmarked for injection molding tooling and hiring 2 full-time equivalent (FTE) [firmware](./firmware.md) engineers.
+- **Product Traction:**
+  - 47 beta [Nova Widget](./nova-widget.md) units currently deployed in the field.
+  - [MeshSync](./meshsync.md) 0.3.8 successfully shipped, featuring a rejoin fix that unblocks 8-node deployments.
+  - A [Wiki Compiler](./wiki-compiler.md) demo successfully impressed a seed investor, which included a mention of the "karpathy pattern".
+- **Challenges & Mitigation:**
+  - **Tooling:** IP65 tooling cost of $8k has been deferred; the company is shipping an IP54 beta version accompanied by clear splash-resistance language.
+  - **Competitors:** [SenseNode SN-400](./sensenode-sn-400.md) continues to dominate the outdoor waterproof narrative with its IP67 rating.
+  - **Documentation:** A known contradiction exists regarding [battery life](./battery-life.md) claims (stating both 2 years vs. 18 months). This is being addressed by publishing a comprehensive [power budget](./power-budget.md) spreadsheet in Q3.
 
 ## Related Entities
-- **Aurora Labs**
-- **[Mira Chen](./nova-widget.md)**
-- **Alex Kim**
-- **SenseNode SN-400**
-- **[TeaBuddy](./teabuddy.md)**
+- **Aurora Labs:** The underlying company developing the Nova Widget, MeshSync, and [hardware](./hardware.md) tooling.
+- **Mira Chen:** CEO of Aurora Labs and author of the investor update draft.
+- **Alex Kim:** Reached out regarding potential co-marketing at Maker Faire (deferred until the Aurora beta ships; shared a joke about the CR2032 supply chain with no firmware merge).
+- **SenseNode (SN-400):** Competitor product maintaining an outdoor waterproof narrative with an IP67 rating.
 
 ## Related Concepts
-- **Bridge Financing**
-- **Injection Mold Tooling**
-- **MeshSync**
-- **Documentation Reconciliation**
-- **IP54 vs IP65 Tooling Mitigation**
+- **Bridge Financing:** Short-term fundraising (in this case, a $500k ask) intended to sustain operations and hit critical milestones like injection molds and staffing.
+- **Documentation Reconciliation:** Resolving internal contradictions—such as conflicting battery life estimates—by releasing transparent engineering artifacts like power budget spreadsheets.
+- **Hardware Tooling Mitigation:** Managing upfront capital expenses by deferring higher-tier ingress protection tooling (such as moving from IP65 to an IP54 interim release).
+
+## Contradictions
+&gt; **Contradiction:** Internal product documentation contains conflicting claims regarding battery life, stating both a 2-year lifespan and an 18-month lifespan. Aurora Labs plans to resolve this discrepancy by publishing an official power budget spreadsheet in Q3.
 
 ## References & Trust
 

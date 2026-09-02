@@ -10,7 +10,7 @@ tags:
   - nova-widget
   - packaging-firmware
   - sam-rivera
-last_updated: "2026-09-01T21:24:28.983045+00:00"
+last_updated: "2026-09-02T06:41:10.461063+00:00"
 sidebar_label: "Packaging & Firmware"
 slug: /packaging-firmware
 ---
@@ -20,28 +20,29 @@ slug: /packaging-firmware
 # Packaging & Firmware
 
 ## Overview
-This wiki page documents product details regarding packaging, [firmware](./firmware.md) specifications, and recent updates from the [TeaBuddy](./teabuddy.md) startup team, captured during a Slack `#product` export on July 6, 2026.
+This page documents product discussions regarding tea preparation times, [firmware](./firmware.md) versions, and packaging copy discrepancies within the [TeaBuddy](./teabuddy.md) startup. It captures real-time coordination among product, QA, and leadership teams regarding print proofs, [firmware updates](./firmware-updates.md), and beta performance metrics.
 
 ## Key Details
-- **Packaging Copy:** The herbal box copy currently states "5 min" in print proof v3, which conflicts with current firmware and [documentation](./documentation.md) specifications. Sam Rivera has rejected using a sticker overlay and insists the print proof must be fixed.
-- **Firmware & Documentation Specs:** The firmware is configured for 7 minutes, and the project wiki reflects a 7-minute duration following the last compile run.
-- **Marketing Materials:** The marketing PDF still indicates a 5-minute duration.
-- **Beta NPS & Pairing:** The raw Beta Net Promoter Score (NPS) stands at 42, with pairing complaints noting a decrease following firmware version 0.9.3.
-- **Operations:** Team members have discussed trade show logistics, specifically declining a shared booth with [Aurora Mira](./nova-widget.md) unless they pay half, as well as noting unrelated industrial design elements like the [Nova widget](./nova-widget.md)'s pebble shape.
+* **Preparation Time Discrepancies:** The herbal box copy in print proof v3 specifies a 5-minute brewing time, while the current firmware mandates 7 minutes. The internal wiki indicates 7 minutes following the last compile.
+* **Packaging Correction:** Alex Kim proposed using a sticker overlay to address the incorrect print proof, but Sam Rivera rejected this approach, demanding that the print be fixed properly instead.
+* **Beta NPS and Firmware:** Beta Net Promoter Score (NPS) stands at 42. Pairing complaints have decreased following the rollout of firmware version 0.9.3.
+* **Trade Show Coordination:** [Aurora Mira](./aurora-nova-widget-v2.md) inquired about a shared booth setup; Sam Rivera declined unless they cover half of the associated costs.
+* **Miscellaneous Product Notes:** The [Nova Widget](./nova-widget.md) features a pebble shape, though the team noted the need to stay focused and avoid distractions.
 
 ## Related Entities
-- **Alex Kim**
-- **Jamie QA**
-- **Sam Rivera**
-- **Aurora Mira**
+* **Alex Kim:** Product team member dealing with box copy and print proofs.
+* **Jamie QA:** Quality assurance team member tracking firmware, marketing materials, and beta metrics.
+* **Sam Rivera:** Leadership/decision-maker who vetoed sticker overlays and shared booth terms.
+* **Aurora Mira:** Contact inquiring about a shared exhibition booth.
+* **Nova Widget:** A pebble-shaped product concept discussed by the team.
 
 ## Related Concepts
-- **Beta NPS**
-- **Firmware 0.9.3**
-- **Print Proofs**
+* **Firmware Versioning:** Tracking release cycles (such as version 0.9.3) and their direct impact on user pairing issues and device behavior.
+* **Print Proof Management:** Managing physical packaging iterations (v3) to align with technical specifications.
+* **Beta NPS:** Measuring early user satisfaction and sentiment during the testing phase.
 
 ## Contradictions
-&gt; **Contradiction:** There is a discrepancy in the brewing/steeping time specifications across different media. The print proof v3 for the herbal box and the marketing PDF indicate 5 minutes, whereas the current firmware and the project wiki specify 7 minutes.
+&gt; **Contradiction:** There is a direct conflict regarding the tea preparation duration across different materials: the herbal box packaging print proof (v3) states 5 minutes, the marketing PDF states 5 minutes, while the firmware and internal wiki both specify 7 minutes.
 
 ## References & Trust
 

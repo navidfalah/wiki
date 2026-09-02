@@ -10,7 +10,7 @@ tags:
   - contradiction-linter
   - cr2032
   - data-sync-frequency-contradiction
-last_updated: "2026-09-01T21:25:15.118821+00:00"
+last_updated: "2026-09-02T06:41:54.831979+00:00"
 sidebar_label: Project Management
 slug: /project-management
 ---
@@ -20,34 +20,27 @@ slug: /project-management
 # Project Management
 
 ## Overview
-Project management activities at [Aurora Labs](./aurora-labs.md) cover [sprint planning](./sprint-planning.md), retrospectives, [bug tracking](./bug-tracking.md), and [product design](./product-design.md) decisions for [hardware](./hardware.md) and software projects like the Aurora widget. Teams actively balance hardware constraints (such as [BLE](./ble.md) mesh stability and power budgets) with software features (like optional [MQTT](./mqtt.md) exports and [wiki automation](./wiki-automation.md) ideas). Cross-product partnership ideas with [TeaBuddy](./teabuddy.md) have been consistently rejected, and persistent naming debates—such as attempting to rename [MeshSync](./meshsync.md) to MeshSink—reappear across multiple sprints.
+Project management activities for [Aurora Labs](./aurora-labs.md) encompass [sprint planning](./sprint-planning.md), retrospectives, [bug tracking](./bug-tracking.md), and design decisions for [hardware](./hardware.md) and software projects (including the Aurora widget and [MeshSync protocol](./meshsync-protocol.md)). Team leadership consists of Jonah and [Mira](./aurora-nova-widget-v2.md), who manage [beta testing](./beta-testing.md), hardware choices like PETG injection molding, and product scoping.
 
 ## Key Details
-- **Sprint Planning & Retrospectives:** Aurora Labs operates on structured sprints (e.g., Sprint 14 retro and Sprint 15 planning). Key goals focus on stabilizing the 8-node mesh network and publishing comprehensive [power budget](./power-budget.md) spreadsheets.
-- **Hardware & Design Choices:** 
-  - The [Nova widget](./nova-widget.md) enclosure follows a pebble shape designed to feel like garden equipment rather than surveillance devices.
-  - PETG material is planned for beta injection molding if [fundraising](./fundraising.md) goals are met.
-  - Technical explorations include comparing nRF52840 versus nRF5340 chips for upcoming hardware revisions, and profiling rejoin spikes (noting current spikes from 110µA to 340µA on parent swaps during 8-node rejoins).
-- **Software & Data Features:**
-  - MeshSync remains the established name despite multiple joke proposals to rename it to MeshSink.
-  - [MQTT export](./mqtt-export.md) and CSV capabilities are planned as optional features, ensuring the dashboard is never mandatory per [Mira's](./nova-widget.md) requirements.
-- **Wiki & Tooling Automation:** Ideas on the backlog include pre-commit hooks for contradiction markers, automated Slack export ingestion, graph diffs between compiles, LLM-summarized support tickets, and orphan page linters.
+- **Hardware & Design Decisions:** The [Nova widget](./nova-widget.md) enclosure features an approved "pebble shape" designed to feel like garden equipment rather than surveillance devices. PETG material is planned for beta injection molding if [fundraising](./fundraising.md) goals are met.
+- **Mesh Network Stability:** MeshSync protocol testing has shown a rejoin storm at 8 nodes, which causes current spikes (110µA to 340µA on parent swap). Despite this, the stability is considered acceptable for beta testing.
+- **Feature Scope:** Optional [MQTT export](./mqtt-export.md) with CSV support is requested by Mira, keeping dashboards non-mandatory. Joint cross-[product ideas](./product-ideas.md) or [partnerships](./partnerships.md) (such as with [TeaBuddy](./teabuddy.md) or a mesh tea timer) have been repeatedly rejected.
+- **Wiki & Automation:** Current administrative and [documentation](./documentation.md) efforts focus on pre-commit hooks, auto-ingesting Slack exports, handling orphan pages, and maintaining a shared glossary covering items like CR2032 batteries, [BLE](./ble.md), and MeshSync.
 
 ## Related Entities
-- **Aurora Labs:** The primary organization conducting sprint planning and product development.
-- **Mira:** Core team member who fixed a sleep regression in two hours and evaluates mesh stability limits.
-- **Jonah:** Core team member who advocated for the pebble-shaped enclosure and tracks mesh telemetry with RSSI and hop counts.
-- **TeaBuddy:** A separate team/product whose partnership requests and mesh tea timer ideas have been unanimously rejected by Aurora leadership.
-- **[SenseNode SN-400](./sensenode-sn-400.md):** A competing device used for comparison [documentation](./documentation.md) updates.
+- **Aurora Labs:** The primary organization running Sprints 14 and 15.
+- **Jonah & Mira:** Key project leads and decision-makers.
+- **MeshSync:** The core mesh synchronization protocol (proposals to rename it to "MeshSink" have been rejected multiple times).
+- **TeaBuddy:** A separate team/product whose partnership and feature requests have been unanimously rejected for v1.
 
 ## Related Concepts
-- **MeshSync:** The core synchronization protocol/name that remains strictly preserved against repeated rename attempts.
-- **BLE ([Bluetooth Low Energy](./bluetooth-low-energy.md)):** Wireless protocol utilized for [mesh networking](./mesh-networking.md) and node communication.
-- **CR2032:** Standard coin cell battery reference tied to hardware power budgets.
-- **Contradiction Linter:** An automated tool proposed to scan documentation and battery claims for inconsistencies.
+- **Sprint Retrospectives & Planning:** Regular cadence of tracking velocity, addressing lab stability (e.g., stable at 6 nodes, working toward 8 nodes), and clearing backlog items.
+- **Contradiction Management:** Automated detection and linting of inconsistencies in documentation and battery/power claims.
+- **Local-First Manifesto:** Cross-product documentation initiative sharing values between Aurora and TeaBuddy.
 
 ## Contradictions
-&gt; **Contradiction:** Documentation inconsistencies persist regarding data synchronization frequencies. While official specifications mandate a 15-minute sync interval, ongoing documentation errors frequently revert the default setting to hourly.
+&gt; **Contradiction:** Documentation discrepancies exist regarding data sync frequencies. While the formal specification mandates a 15-minute sync interval, documentation files continue to incorrectly state an hourly default. Team voice memos and retrospectives flag this as an issue that must be fixed prior to beta release.
 
 ## References & Trust
 

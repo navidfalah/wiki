@@ -10,7 +10,7 @@ tags:
   - costtooling-tradeoff
   - cr2032
   - engineering-timeline
-last_updated: "2026-09-01T21:23:17.619631+00:00"
+last_updated: "2026-09-02T06:39:57.405524+00:00"
 sidebar_label: Hardware Specifications
 slug: /hardware-specifications
 ---
@@ -20,52 +20,50 @@ slug: /hardware-specifications
 # Hardware Specifications
 
 ## Overview
-This document outlines the [hardware](./hardware.md) specifications, [electrical design](./electrical-design.md), and mechanical attributes for the [Aurora Nova Widget](./aurora-nova-widget.md) (including the v2 beta unit and [Nova Widget Mini](./nova-widget-mini.md) variant). The device is an open-source soil moisture and temperature sensor utilizing local [MeshSync](./meshsync.md) technology without mandatory cloud connectivity.
+This document outlines the [hardware](./hardware.md) specifications, electrical components, power budgeting, and physical enclosures for the [Aurora Nova Widget](./aurora-nova-widget.md) (including the [Nova Widget Mini](./nova-widget-mini.md) and v2 beta units). The device is an open-source soil moisture and temperature sensor utilizing a local [MeshSync](./meshsync.md) mesh network with no mandatory cloud dependency.
 
 ## Key Details
 
-### Electrical & Power Specifications
-* **Microcontroller (MCU):** nRF52840
-* **Battery Type:** CR2032 (single coin cell). 
-* **[Power Budget](./power-budget.md) (DRAFT / Target):**
-  * Sleep Mode: 4.2 µA
-  * Sample + TX: 12 mA peak (based on a 15-minute default interval)
-  * Rejoin Spike: 110–340 µA (known issue)
-* **Battery Longevity:** Marketing claims up to 2 years, whereas engineering estimates 18 months at 10 active nodes.
-* **Hardware Revision C Updates:** Includes a revised CR2032 battery holder designed to eliminate rattle.
+### Electrical & Core Components
+- **MCU:** nRF52840
+- **Probe:** Capacitive soil probe (30mm length)
+- **Battery Type:** CR2032 × 1. 
+  - *Note:* Hardware revision C features an updated battery holder that fixes a known rattle issue.
+- **Reading Interval:** 15-minute default interval. (Older [documentation](./documentation.md) referencing an hourly interval was a kickoff mistake).
 
-### Mechanical & Environmental
-* **Enclosure:** PETG beta material molded in a pebble shape.
-* **Ingress Protection:** IP54 splash-resistant rating utilizing a silicone 50A gasket. 
-* **Soil Probe:** Capacitive soil probe with a 30mm length.
-* **Tooling / Cost Tradeoffs:** An IP65-tooled variant was deferred due to a $7,850 tooling quote, prioritizing local mesh capabilities and open export paths instead.
+### Power Budget & Battery Life
+- **Sleep Current:** 4.2 µA (target)
+- **Sample + TX Current:** 12 mA peak at a 15-minute interval
+- **Rejoin Spike:** 110–340 µA (identified as a known issue)
+- **Battery Lifespan Expectations:**
+  - Marketing claims up to 2 years.
+  - Engineering estimates 18 months at 10 nodes.
 
-### Firmware & Operational Baseline
-* **Default Reading Interval:** 15 minutes (some older kickoff [documentation](./documentation.md) incorrectly stated hourly intervals).
-* **MeshSync Baseline:** Version 0.3.8 (or default 15 min interval). Theoretical capacity is up to 32 nodes, though [beta testing](./beta-testing.md) is currently stable up to 6–8 nodes.
+### Enclosure & Weatherproofing
+- **Enclosure:** PETG beta unit, pebble shape.
+- **Gasket:** Silicone 50A, providing an **IP54** splash-resistant rating (not submersible). An IP65 tooled variant was deferred due to a $7,850 tooling quote, though it remains on the roadmap.
+
+### Mesh & Sensor Limits
+- **Node Limits:** 
+  - Theoretical maximum: 32 nodes.
+  - Beta tested and stable up to 6–8 nodes (running 8 or more nodes can cause rejoin loops).
 
 ## Related Entities
-* **Aurora Nova Widget / [Nova Widget v2](./nova-widget-v2.md) / Nova Widget Mini:** The primary open-source hardware product family.
-* **[Mira Chen](./nova-widget.md):** [Firmware](./firmware.md) owner.
-* **Jonah Park:** Hardware owner / support agent.
-* **Alex:** Team member whose blog post historically contained a battery specification error.
-* **[SenseNode](./sensenode-sn-400.md) (SN-400):** A competing sensor product featuring an IP67 rating for outdoor submersion.
-* **[TeaBuddy](./teabuddy.md):** An unrelated, local-first kitchen product from a different company.
+- **Aurora Nova Widget (v2 & Mini):** The primary open-source sensor product lines.
+- **[SenseNode SN-400](./sensenode-sn-400.md):** A competing competitor device offering IP67 outdoor submersion.
+- **[TeaBuddy](./teabuddy.md):** An unrelated local-first kitchen product from a different company.
 
 ## Related Concepts
-* **MeshSync:** Local [mesh networking](./mesh-networking.md) protocol used by the widget.
-* **IP54 vs. IP67:** Splash resistance versus complete submersion capability.
+- **MeshSync:** Local mesh protocol running on a default 15-minute reading interval.
+- **Cost/Tooling Tradeoff:** The engineering and business decision to use an IP54 PETG enclosure rather than paying for an IP65/IP67 waterproof tooling mold during the beta phase.
 
 ## Contradictions
 
-&gt; **Contradiction:** Battery Type Discrepancy
-&gt; Early blog posts and documentation (including a post by Alex) incorrectly cited the battery type as **CR2450**. Corrected documentation, [hardware specs](./hardware-specs.md) (Rev C), and engineering team logs confirm that the device exclusively uses the **CR2032** battery.
+&gt; **Contradiction:** Battery Specification Discrepancies
+&gt; Some early blog posts, marketing materials, and Alex's blog incorrectly cited the battery as a CR2450. Internal engineering documentation, hardware revision C specs, and team sync transcripts confirm the correct battery is the **CR2032**.
 
-&gt; **Contradiction:** Sensor Node Beta Limit
-&gt; [Product briefs](./product-briefs.md) and MeshSync theoretical limits mention up to 32 nodes, and early specs tested up to 8 nodes with instability. Current beta recommendations advise capping installations at **6 nodes** until MeshSync version 0.3.9 to avoid rejoin loops (ticket #2099).
-
-&gt; **Contradiction:** Default Reading Interval
-&gt; While certain kickoff documentation and older notes referenced an hourly reading interval, the standard operational default is **15 minutes**.
+&gt; **Contradiction:** Battery Lifespan Estimates
+&gt; Marketing materials claim a 2-year battery lifespan, whereas engineering assessments specify an 18-month minimum lifespan when operating with 10 nodes.
 
 ## References & Trust
 

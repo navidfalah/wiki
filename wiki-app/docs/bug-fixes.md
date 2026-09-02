@@ -10,7 +10,7 @@ tags:
   - radio-wake-time
   - relay-radio-sleep-timer
   - wiki
-last_updated: "2026-09-01T21:22:18.183468+00:00"
+last_updated: "2026-09-02T06:38:55.972614+00:00"
 sidebar_label: Bug Fixes
 slug: /bug-fixes
 ---
@@ -20,24 +20,26 @@ slug: /bug-fixes
 # Bug Fixes
 
 ## Overview
-This page documents engineering bug fixes and [firmware updates](./firmware-updates.md) related to [Aurora Labs](./aurora-labs.md) [hardware](./hardware.md) and mesh communication systems, specifically tracking issues surrounding [battery drain](./battery-drain.md) and relay radio performance in the field.
+This page documents critical software bug fixes and investigations across engineering projects at [Aurora Labs](./aurora-labs.md), focusing on [hardware](./hardware.md) power optimization, mesh network performance, and [firmware](./firmware.md) release candidates.
 
 ## Key Details
-- **[MeshSync](./meshsync.md) Battery Drain Issue:** Investigated via field report batch 4 and confirmed on the bench by Jonah Park.
-- **Root Cause:** The relay radio's sleep timer resets on every received packet, meaning a busy mesh network prevents the radio from ever entering sleep mode.
-- **Ticket / Draft Fix:** Tracked under `MESH-118`.
-- **Mitigation:** Drops the radio wake time from 400ms to 80ms per hop.
-- **Next Steps:** A 0.3.9 candidate build is scheduled for release by Friday for [Mira Chen](./nova-widget.md) to retest on the batch 4 units.
+- **[MeshSync](./meshsync.md) [Battery Drain](./battery-drain.md) Investigation**: Bench testing confirmed that the relay radio's sleep timer was resetting on every received packet. In a busy mesh network, this prevented the radio from ever entering a sleep state, causing excessive battery drain.
+- **Ticket Reference**: [MESH-118](./mesh-118.md)
+- **Proposed Fix**: The draft fix in MESH-118 reduces the radio wake time from 400ms to 80ms per hop.
+- **Release Plans**: A `0.3.9` candidate build is scheduled for release to facilitate retesting on batch 4 units.
 
 ## Related Entities
-- **Jonah Park** (`jonah.park@auroralabs.example`) — Engineering team member who diagnosed the bench issue and drafted the fix.
-- **Mira Chen** (`mira.chen@auroralabs.example`) — Engineering team member responsible for retesting candidate builds on field units.
-- **Aurora Labs** — Organization overseeing the engineering and deployment of the units.
+- **Jonah Park**: Engineering team member who confirmed the bench test results and drafted the MESH-118 fix.
+- **[Mira Chen](./aurora-nova-widget-v2.md)**: Engineering team member responsible for retesting candidate builds on batch 4 units.
+- **Aurora Labs**: Organization managing the engineering teams and field report batches.
 
 ## Related Concepts
-- **Mesh Networks:** Communication topology affected by continuous packet receipt preventing sleep cycles.
-- **Radio Sleep Timers:** Low-power mechanisms disrupted by high network traffic.
-- **Firmware Candidate Builds:** Version 0.3.9 release pipeline for bug validation.
+- **Mesh Networks**: Decentralized network architectures where continuous packet traffic can adversely affect node [power management](./power-management.md) if sleep timers are misconfigured.
+- **Radio Sleep Timers**: Power-saving firmware features designed to power down communication hardware during idle periods.
+- **Firmware Release Candidates**: Pre-production software builds subjected to targeted retesting before official deployment.
+
+## Contradictions
+*(No contradictions reported in current sources)*
 
 ## References & Trust
 

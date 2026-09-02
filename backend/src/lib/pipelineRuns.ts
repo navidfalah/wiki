@@ -64,3 +64,30 @@ export function getPipelineRun(id: string): PipelineRunDetail | null {
     return null;
   }
 }
+
+/** Deletes a run's history entry: its JSON file plus its row in index.json.
+ * If the run is still actually in progress, the caller (see the
+ * /api/pipelines/:id route) stops the build first -- a run's "running"
+ * status can otherwise be stale leftover state from a process that
+ * crashed without calling finish(). */
+export function deletePipelineRun(id: string): { removed: boolean; reason?: 'not_found' } {
+  if (!RUN_ID_RE.test(id)) return { removed: false, reason: 'not_found' };
+  const filePath = path.join(PIPELINE_RUNS_DIR, `${id}.json`);
+  if (!fs.existsSync(filePath)) return { removed: false, reason: 'not_found' };
+
+  fs.unlinkSync(filePath);
+
+  if (fs.existsSync(PIPELINE_RUNS_INDEX)) {
+    try {
+      const entries = JSON.parse(fs.readFileSync(PIPELINE_RUNS_INDEX, 'utf-8'));
+      if (Array.isArray(entries)) {
+        const filtered = entries.filter((e) => e?.id !== id);
+        fs.writeFileSync(PIPELINE_RUNS_INDEX, JSON.stringify(filtered, null, 2));
+      }
+    } catch {
+      // Index is a cache of the per-run files; leave it be if unreadable.
+    }
+  }
+
+  return { removed: true };
+}

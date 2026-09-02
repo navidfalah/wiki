@@ -10,7 +10,7 @@ tags:
   - ip54-vs-ip65-tooling-mitigation
   - meshsync
   - mira-chen
-last_updated: "2026-09-01T21:23:32.374217+00:00"
+last_updated: "2026-09-02T06:40:13.675348+00:00"
 sidebar_label: Investor Updates
 slug: /investor-updates
 ---
@@ -20,36 +20,39 @@ slug: /investor-updates
 # Investor Updates
 
 ## Overview
-This page compiles draft investor update materials for [Aurora Labs](./aurora-labs.md), detailing recent [product traction](./product-traction.md), ongoing operational and [documentation](./documentation.md) challenges, external engagements, and current [fundraising](./fundraising.md) asks.
+This page compiles draft investor communication materials and operational updates for [Aurora Labs](./aurora-labs.md), outlining recent traction milestones, active product and [Documentation](./documentation.md) challenges, external outreach, and current [Fundraising](./fundraising.md) asks as of July 2026.
 
 ## Key Details
-* **Traction:**
+* **Company / Author:** Aurora Labs (CEO draft voice by Mira Chen, dated 2026-07-04).
+* **Traction Highlights:**
   * 47 beta [Nova Widget](./nova-widget.md) units currently deployed in the field.
-  * [MeshSync](./meshsync.md) 0.3.8 successfully shipped, featuring a rejoin fix that unblocks 8-node deployments.
-  * A [wiki compiler](./wiki-compiler.md) demo impressed a seed investor, noting the "karpathy pattern."
-* **Challenges & Mitigations:**
-  * IP65 tooling ($8k) has been deferred; the company is shipping an IP54 beta with clear splash-resistance documentation.
-  * Competitor [SenseNode SN-400](./sensenode-sn-400.md) continues to win the outdoor waterproof narrative with its IP67 rating.
-  * Publishing a comprehensive [power budget](./power-budget.md) spreadsheet in Q3 to reconcile conflicting battery longevity claims.
+  * [MeshSync](./meshsync.md) version 0.3.8 shipped, featuring a rejoin fix that unblocks 8-node deployments.
+  * A [Wiki Compiler](./wiki-compiler.md) demo impressed seed investors, notable for a Karpathy pattern mention.
+* **Challenges & Mitigation:**
+  * **IP65 Tooling:** $8k tooling cost deferred; shipping the IP54 beta variant instead, accompanied by clear splash-resistance messaging.
+  * **Competitor Landscape:** [SenseNode SN-400](./sensenode-sn-400.md) continues to dominate the outdoor waterproof narrative with an IP67 rating.
 * **[TeaBuddy](./teabuddy.md) Tangent:**
-  * Alex Kim reached out regarding co-marketing at Maker Faire, which has been deferred until the Aurora beta ships.
-  * There was no [firmware](./firmware.md) merge; discussions were limited to a shared CR2032 supply chain joke.
-* **Fundraising Ask:**
-  * Seeking a $500k bridge round to fund injection molding and 2 full-time equivalent (FTE) firmware engineers.
+  * Alex Kim reached out regarding co-marketing opportunities at Maker Faire, which were deferred until the Aurora beta ships.
+  * No [Firmware](./firmware.md) merge occurred; discussions were limited to a shared CR2032 supply chain joke.
+* **Financing Ask:** Seeking a $500k bridge round dedicated to injection mold tooling and 2 FTE firmware engineers.
 
 ## Related Entities
 * **Aurora Labs**
-* **[Mira Chen](./nova-widget.md)** (CEO / Author of the draft)
-* **Alex Kim** (TeaBuddy representative)
+* **Mira Chen**
+* **Alex Kim**
+* **TeaBuddy**
+* **Nova Widget**
 * **SenseNode SN-400**
+* **MeshSync**
 
 ## Related Concepts
-* **MeshSync 0.3.8**
-* **IP54 vs IP65 Tooling Mitigation**
 * **Bridge Financing**
+* **IP54 vs IP65 Tooling Mitigation**
+* **Documentation Reconciliation**
+* **Co-Marketing**
 
 ## Contradictions
-&gt; **Contradiction:** Internal documentation contains conflicting claims regarding [battery life](./battery-life.md), stating both a 2-year lifespan and an 18-month lifespan. This is scheduled for reconciliation via a Q3 power budget spreadsheet publication.
+&gt; **Contradiction:** Internal documentation contains conflicting [Battery Life](./battery-life.md) claims, showing both a 2-year and an 18-month duration. This discrepancy is scheduled to be resolved by publishing an official [Power Budget](./power-budget.md) spreadsheet in Q3.
 
 ## References & Trust
 

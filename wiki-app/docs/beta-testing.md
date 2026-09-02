@@ -10,7 +10,7 @@ tags:
   - beta-tester-confidentiality
   - beta-testing
   - beta-testing-program
-last_updated: "2026-09-01T21:22:10.295169+00:00"
+last_updated: "2026-09-02T06:38:48.201123+00:00"
 sidebar_label: Beta Testing
 slug: /beta-testing
 ---
@@ -20,37 +20,32 @@ slug: /beta-testing
 # Beta Testing
 
 ## Overview
-The beta testing program encompasses early-access releases, [firmware](./firmware.md) distribution, tester demographics, and compliance for [hardware](./hardware.md) and software projects, notably involving the [Aurora Nova Widget](./aurora-nova-widget.md) by [Aurora Labs](./aurora-labs.md). The program relies on structured firmware candidate batches, telemetry management, and [confidentiality](./confidentiality.md) agreements to evaluate pre-release performance and gather Net Promoter Score (NPS) metrics.
+The beta testing program encompasses early-stage [hardware](./hardware.md) and software evaluations for projects like the [Aurora Nova Widget](./aurora-nova-widget.md) by [Aurora Labs](./aurora-labs.md), alongside internal product quality tracking for initiatives such as [TeaBuddy](./teabuddy.md). The testing cycles focus on [firmware](./firmware.md) stability, [mesh networking](./mesh-networking.md) performance, user feedback collection (NPS), and compliance with [confidentiality](./confidentiality.md) and safety guidelines.
 
 ## Key Details
-- **Nova Widget Beta Program:** 
-  - Firmware builds are distributed in targeted batches (such as batch 3 and batch 4 retests).
-  - Firmware candidate 0.3.9 addresses [MeshSync](./meshsync.md) relay [battery drain](./battery-drain.md) issues (tracked as [MESH-118](./mesh-118.md)), and users are instructed to flash before adding more than 6 nodes to a mesh.
-  - Previous updates (such as firmware 0.3.8) adjusted the default read interval to 15 minutes.
-- **Beta Tester Demographics & Metrics:**
-  - Beta cohorts consist of compact groups (e.g., 12 recipients in batch 3, consisting of 3 farmers and hobbyists).
-  - Beta NPS raw scores have reached 42, with pairing complaints notably decreasing following firmware version 0.9.3.
-- **[Hardware Specifications](./hardware-specifications.md) & Safety:**
-  - Devices deployed in the beta are IP54 splash-resistant only; they must not be submerged, and outdoor burial ([SenseNode SN-400](./sensenode-sn-400.md)-style) is not supported.
-- **Legal & Confidentiality:**
-  - Under beta agreement excerpts, beta firmware, partial MeshSync sources, and [power budget](./power-budget.md) spreadsheets are classified as confidential.
-  - Telemetry remains local with optional user-configured [MQTT export](./mqtt-export.md).
+- **Nova Widget Beta Batches:** 
+  - **Batch 3:** Utilizes firmware 0.3.8, with a default read interval of 15 minutes. Issues can be reported via GitHub (`aurora-labs/meshsync #442`) or support channels (see [release-notes-0.3.9.txt](../static/media/release-notes-0.3.9-b38073c1c1.txt)).
+  - **Batch 4 / Firmware 0.3.9:** Addresses [MeshSync](./meshsync.md) relay [battery drain](./battery-drain.md) issues (Ticket [MESH-118](./mesh-118.md)). Testers are advised to flash the firmware before adding more than 6 nodes to a mesh network.
+- **Tester Demographics:** Early beta lists typically consist of a targeted group (e.g., 12 participants, comprising 3 farmers and a remainder of hobbyists).
+- **Metrics & Feedback:** Beta Net Promoter Score (NPS) has been recorded around 42, with pairing complaints notably decreasing following firmware version 0.9.3.
+- **Confidentiality & Safety:** 
+  - Under Section 4 of the beta agreement, beta firmware, partial MeshSync source code, and [power budget](./power-budget.md) spreadsheets are strictly confidential.
+  - Devices are IP54 splash-resistant only and must not be submerged or used for outdoor burial ([SenseNode SN-400](./sensenode-sn-400.md)-style).
+  - Telemetry data remains local by default, with optional user-configured [MQTT Export](./mqtt-export.md).
 
 ## Related Entities
-- **Aurora Labs:** The organization managing beta invites (`beta@auroralabs.example`) and [firmware releases](./firmware-releases.md).
-- **Alex Kim:** Product team member tracking box copy, firmware compile discrepancies, and nova widget designs.
-- **Jamie QA:** Quality assurance team member monitoring firmware versions, NPS metrics, and [documentation](./documentation.md) contradictions.
-- **Sam Rivera:** Team lead handling shipping decisions, print errors, and shared booth negotiations.
-- **[Aurora Mira](./nova-widget.md):** Contact involved in shared booth discussions.
-- **[TeaBuddy](./teabuddy.md):** Fictional startup/puck demo referenced alongside the beta testing ecosystem.
+- **Aurora Labs:** Organization managing the Nova Widget beta program (`beta@auroralabs.example`, `support@auroralabs.example`).
+- **Alex Kim & Jamie QA:** Product and quality assurance team members tracking metrics, [documentation](./documentation.md), and firmware iterations.
+- **TeaBuddy:** Fictional startup/product intersecting with team discussions and Maker Faire demos.
+- **[Aurora Nova Widget v2](./aurora-nova-widget-v2.md):** Stakeholder involved in shared booth coordination and power number disclosures.
 
 ## Related Concepts
-- **MeshSync:** Protocol and repository (GitHub `aurora-labs/meshsync #442`) used for node [networking](./networking.md) and relay battery drain management.
-- **Firmware Flashing:** Pre-deployment requirement for beta testers prior to expanding mesh networks beyond 6 nodes.
-- **Beta NPS:** Satisfaction metric tracked during testing phases.
+- **MeshSync:** Protocol and synchronization utility tested during beta phases, with specific node limits and battery drain optimizations.
+- **Firmware Flashing:** Mandatory pre-test procedure required before scaling mesh network nodes beyond 6 devices.
+- **Beta NPS:** Satisfaction tracking metric utilized to gauge user experience improvements across updates.
 
 ## Contradictions
-&gt; **Contradiction:** Discrepancies exist regarding device operational parameters and documentation. The herbal box print proof v3 and marketing PDF state a 5-minute duration, whereas firmware configurations and compiled wiki sources indicate 7 minutes. Similarly, batch 3 documentation notes a default read interval of 15 minutes, while older PDF documentation states an hourly interval.
+&gt; **Contradiction:** Discrepancies exist regarding documentation and specifications across channels. For instance, print proofs/marketing PDFs have listed brew/operation times as 5 minutes, whereas compiled firmware and wiki updates specify 7 minutes. Similarly, older documentation referenced hourly read intervals, which were officially updated to a 15-minute default interval during Batch 3 rollouts.
 
 ## References & Trust
 

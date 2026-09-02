@@ -10,7 +10,7 @@ tags:
   - potato99
   - rejoin-storm
   - sensenode
-last_updated: "2026-09-01T21:24:18.006002+00:00"
+last_updated: "2026-09-02T06:40:59.521954+00:00"
 sidebar_label: Node Management
 slug: /node-management
 ---
@@ -20,26 +20,28 @@ slug: /node-management
 # Node Management
 
 ## Overview
-Node management within the `aurora-labs/meshsync` project encompasses the configuration, stability, and scaling behaviors of network nodes. A notable issue tracked in GitHub issue #442 highlights challenges with multi-hour silence and rejoin storms occurring when networks scale up to 8 nodes, even after flashing units with version 0.3.8.
+Node management within the `aurora-labs/meshsync` project encompasses network scaling, stability, and parent election [protocols](./protocols.md). Recent GitHub issue tracking (Issue #442) highlights ongoing challenges with multi-node setups running version 0.3.8, specifically concerning prolonged network silences and rejoin storms when networks exceed six nodes.
 
 ## Key Details
-- **Rejoin Storm Issue:** Users report prolonged multi-hour silence and rejoin storms once an 8th node is added to a network running version 0.3.8.
-- **Current Workaround:** Maintainers recommend capping the network at a maximum of 6 nodes until further patches are released.
-- **[Debugging](./debugging.md) & Telemetry:** Users experiencing these issues are advised to send RSSI logs to support.
-- **Upcoming Fixes:** The [Release 0.3.9](./release-039.md) milestone has been moved up to address these stability issues via a complete parent election rewrite.
+- **Issue #442 ("Rejoin storm persists at 8 nodes on 0.3.8")**: Open bug report concerning multi-hour silence occurring specifically after the addition of an 8th node in deployments using [firmware](./firmware.md) version 0.3.8.
+- **Workaround**: Developers recommend capping network deployments at a maximum of 6 nodes until a permanent fix is released.
+- **[Troubleshooting](./troubleshooting.md) Requirements**: Users experiencing the issue are asked to submit RSSI logs to support@.
+- **Upcoming Fixes**: In response to the persistent rejoin storm, milestone 0.3.9 has been moved up to incorporate a complete rewrite of the parent election mechanism.
 
 ## Related Entities
-- **@potato99:** GitHub user who originally reported the persistent rejoin storm on version 0.3.8 after adding an 8th node.
-- **@[mira-chen](./nova-widget.md):** Maintainer/developer who requested RSSI logs, provided the 6-node workaround, and announced the accelerated 0.3.9 milestone featuring a parent election rewrite.
-- **@meshfan:** Community contributor noting that version 0.3.8 is an improvement but still incomplete.
-- **@teaguy:** GitHub commenter who chimed in on the thread.
-- **[SenseNode](./sensenode-sn-400.md):** Alternative ecosystem/user mentioned in discussions regarding network complexity comparisons.
-- **[aurora](./nova-widget.md)-labs/[meshsync](./meshsync.md):** The GitHub repository tracking the mesh synchronization and node management bugs.
+- **@potato99**: GitHub user who originally reported the multi-hour silence and rejoin storm issue on version 0.3.8.
+- **@[mira-chen](./aurora-nova-widget-v2.md)**: [Aurora Labs](./aurora-labs.md) maintainer/developer managing the issue, requesting RSSI logs, suggesting the 6-node cap workaround, and advancing the 0.3.9 parent election rewrite.
+- **@meshfan**: Community commenter noting that while version 0.3.8 is an improvement, the issue remains unresolved.
+- **@teaguy**: Commenter on the GitHub thread who noted a potential repository mismatch.
+- **[SenseNode](./sensenode-sn-400.md)**: Alternative system/user referenced by community members regarding mesh complexity comparisons.
 
 ## Related Concepts
-- **Parent Election:** The mechanism by which nodes determine their network hierarchy and routing paths, currently scheduled for a rewrite in version 0.3.9 to solve scaling bugs.
-- **Rejoin Storm:** A network phenomenon where multiple nodes repeatedly attempt to reconnect simultaneously, leading to cascading delays and prolonged network silence.
-- **RSSI Logs:** Received Signal Strength Indication logs used by support to diagnose connection and range issues during node scaling events.
+- **Rejoin Storm**: A network phenomenon where multiple nodes repeatedly attempt to reconnect or synchronize simultaneously, leading to network congestion, packet loss, and extended periods of silence.
+- **Parent Election**: The algorithmic process by which nodes in a mesh network select their primary routing parent or gateway. A rewrite of this system is planned for version 0.3.9 to address scaling limitations.
+- **Firmware Versioning (0.3.8 / 0.3.9)**: The iterative release cycle dealing directly with power, stability, and scaling bugs in beta [hardware](./hardware.md).
+
+## Contradictions
+*(No contradictions present in the current data source.)*
 
 ## References & Trust
 

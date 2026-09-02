@@ -45,7 +45,7 @@ export function parseFrontmatter(content: string): FrontmatterMeta {
       }
       inTags = false;
     }
-    const match = line.match(/^(\w+):\s*(.+)$/);
+    const match = line.match(/^(\w+):\s*(.*)$/);
     if (match) {
       const key = match[1];
       let value = match[2].trim();

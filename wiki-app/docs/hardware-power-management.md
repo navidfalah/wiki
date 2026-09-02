@@ -10,7 +10,7 @@ tags:
   - radio-wake-time
   - relay-radio-sleep-timer
   - wiki
-last_updated: "2026-09-01T21:23:08.356748+00:00"
+last_updated: "2026-09-02T06:39:47.192326+00:00"
 sidebar_label: Hardware Power Management
 slug: /hardware-power-management
 ---
@@ -20,25 +20,25 @@ slug: /hardware-power-management
 # Hardware Power Management
 
 ## Overview
-[Hardware](./hardware.md) [Power Management](./power-management.md) at [Aurora Labs](./aurora-labs.md) encompasses the optimization and [troubleshooting](./troubleshooting.md) of [power consumption](./power-consumption.md) across [networking](./networking.md) hardware, specifically addressing [battery drain](./battery-drain.md) issues in field units. Investigations focus on radio sleep timers, packet reception behaviors, and hop timing parameters to maximize operational lifespan.
+[Hardware](./hardware.md) [power management](./power-management.md) encompasses strategies and fixes implemented to optimize energy consumption and [battery life](./battery-life.md) across mesh network devices. Investigations into [battery drain](./battery-drain.md) issues—notably highlighted in field reports—focus on optimizing radio sleep timers and wake durations to prevent continuous power draw during heavy network activity.
 
 ## Key Details
-* **Relay Radio Sleep Timer Issue:** Bench testing confirmed that the relay radio's sleep timer incorrectly resets upon every received packet. Consequently, a busy mesh network prevents the radio from entering sleep mode, causing severe battery drain.
-* **Proposed Fix (`MESH-118`):** A draft fix under ticket [`MESH-118`](./mesh-118.md) reduces the radio wake time from 400ms down to 80ms per hop to mitigate excessive power consumption.
-* **Release Schedule:** A 0.3.9 candidate build incorporating this fix is scheduled for Friday, intended for retesting on batch 4 units.
+- **Relay Radio Sleep Timer Issue:** Bench testing confirmed that the relay radio's sleep timer erroneously resets upon the receipt of every individual packet. Consequently, in a busy mesh network, the radio is kept continuously awake, leading to accelerated battery drain.
+- **Proposed Fix ([MESH-118](./mesh-118.md)):** A draft fix under ticket **MESH-118** addresses the issue by dropping the radio wake time significantly, reducing it from 400ms down to 80ms per hop.
+- **Release Timeline:** A [Release 0.3.9](./release-039.md) candidate build incorporating this fix is scheduled for release by Friday to allow retesting on batch 4 units.
 
 ## Related Entities
-* [Jonah Park](jonah-park) — Aurora Labs engineer who confirmed the bench test results and drafted the `MESH-118` fix.
-* [Mira Chen](mira-chen) — Aurora Labs team member responsible for retesting the 0.3.9 candidate build on batch 4 units.
-* [`MESH-118`](./mesh-118.md) — Engineering ticket tracking the radio wake time reduction.
+- **Jonah Park:** [Aurora Labs](./aurora-labs.md) engineer who confirmed the bench test results and drafted the MESH-118 fix.
+- **Mira Chen:** [Aurora Labs](./aurora-labs.md) team member responsible for retesting candidate builds on batch 4 units.
+- **Aurora Labs:** The organization developing and testing the mesh synchronization hardware and software.
 
 ## Related Concepts
-* **Radio Wake Time:** The duration a radio remains active per hop during transmission and reception; optimized from 400ms to 80ms to save power.
-* **Relay Radio Sleep Timer:** The automated timer responsible for putting the relay radio into a low-power sleep state, which was found to be perpetually resetting in busy mesh environments.
-* **Mesh Networks:** Distributed wireless network topologies that experienced high battery drain due to constant packet reception resetting sleep cycles.
+- **Mesh-118:** The engineering tracking ticket for the relay radio wake time reduction.
+- **Radio Sleep Timer:** The mechanism responsible for putting the hardware radio into a low-power state.
+- **Radio Wake Time:** The duration the hardware radio remains active per network hop.
 
 ## Contradictions
-*(No contradictions noted in the current source material.)*
+*No contradictions currently identified in the available records.*
 
 ## References & Trust
 

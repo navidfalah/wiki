@@ -44,15 +44,21 @@ from pathlib import Path
 from typing import Any, Iterator
 
 import hybrid_retrieval
+import rag_settings
 from doc_utils import parse_frontmatter, strip_frontmatter
 from llm_client import LLMClient
-from models import OUTPUT_DIR
+from models import OUTPUT_DIR, PROJECT_ROOT
 from text_chunking import split_text_into_chunks
 from vector_store import VectorRecord, VectorStore
 
 _WORD_RE = re.compile(r"[a-z0-9]+")
 _HEADING_LINE_RE = re.compile(r"^(#{1,6})\s+(.*)$")
 _PASSAGE_MAX_CHARS = 900
+
+# Backs RagSettings.use_vector_store (see rag_settings.py / the RAG
+# Architecture settings page) -- a single persistent store shared across
+# calls, so repeated questions don't re-embed the whole corpus each time.
+VECTOR_STORE_FILE = PROJECT_ROOT / "data" / "vector_store.sqlite"
 
 CHAT_SYSTEM_PROMPT = (
     "You are the knowledge assistant for a personal wiki compiled from the "
@@ -193,11 +199,19 @@ def retrieve_hybrid(
     llm: LLMClient | None = None,
     rerank: bool = True,
     vector_store: VectorStore | None = None,
+    enable_embeddings: bool = True,
+    bm25_config: hybrid_retrieval.BM25Config = hybrid_retrieval.DEFAULT_BM25_CONFIG,
 ) -> list[ScoredPassage]:
     """BM25, optionally fused with embedding similarity (reciprocal rank
     fusion) and reranked by the LLM, when one is configured. Degrades one
     tier at a time — hybrid+rerank -> hybrid -> BM25-only — on any failure,
     so this is always safe to call regardless of API availability.
+
+    enable_embeddings=False (the RAG Architecture page's "BM25 only" mode,
+    see rag_settings.py) skips the embedding/fusion tier entirely and
+    returns straight BM25 ranking, same as retrieve() but still eligible
+    for the rerank tier below. bm25_config carries the k1/b tuning from
+    that same settings page through to hybrid_retrieval.bm25_rank().
 
     vector_store, when given, backs the embedding tier with a persistent
     VectorStore (task #11) instead of re-embedding the whole corpus from
@@ -212,32 +226,33 @@ def retrieve_hybrid(
     docs, by_id = _index_corpus(corpus)
     shortlist_k = max(top_k * 3, top_k)
 
-    bm25_top = hybrid_retrieval.bm25_rank(query, docs, top_k=shortlist_k)
+    bm25_top = hybrid_retrieval.bm25_rank(query, docs, top_k=shortlist_k, config=bm25_config)
     client = llm or LLMClient()
     if not client.available:
         return [ScoredPassage(by_id[r.doc_id], r.score) for r in bm25_top[:top_k]]
 
     fused = bm25_top
-    try:
-        if vector_store is not None:
-            sync_corpus_to_vector_store(corpus, client, vector_store)
-            query_embedding = client.embed_text(query)
-            live_ids = {d.id for d in docs}
-            # Search the whole store, not just shortlist_k — a store can
-            # hold entries the brute-force ranking would put outside the
-            # top shortlist_k *before* filtering out ids from other
-            # corpora, which would wrongly shrink this corpus's results.
-            store_hits = [
-                (record_id, score)
-                for record_id, score in vector_store.search(query_embedding, top_k=vector_store.count())
-                if record_id in live_ids
-            ][:shortlist_k]
-            embedding_top = [hybrid_retrieval.RankedDoc(record_id, score) for record_id, score in store_hits]
-        else:
-            embedding_top = hybrid_retrieval.embedding_rank(query, docs, client.embed_text, top_k=shortlist_k)
-        fused = hybrid_retrieval.reciprocal_rank_fusion([bm25_top, embedding_top], top_k=shortlist_k)
-    except RuntimeError:
-        pass  # embeddings unavailable/failed — fall back to BM25-only fusion input
+    if enable_embeddings:
+        try:
+            if vector_store is not None:
+                sync_corpus_to_vector_store(corpus, client, vector_store)
+                query_embedding = client.embed_text(query)
+                live_ids = {d.id for d in docs}
+                # Search the whole store, not just shortlist_k — a store can
+                # hold entries the brute-force ranking would put outside the
+                # top shortlist_k *before* filtering out ids from other
+                # corpora, which would wrongly shrink this corpus's results.
+                store_hits = [
+                    (record_id, score)
+                    for record_id, score in vector_store.search(query_embedding, top_k=vector_store.count())
+                    if record_id in live_ids
+                ][:shortlist_k]
+                embedding_top = [hybrid_retrieval.RankedDoc(record_id, score) for record_id, score in store_hits]
+            else:
+                embedding_top = hybrid_retrieval.embedding_rank(query, docs, client.embed_text, top_k=shortlist_k)
+            fused = hybrid_retrieval.reciprocal_rank_fusion([bm25_top, embedding_top], top_k=shortlist_k)
+        except RuntimeError:
+            pass  # embeddings unavailable/failed — fall back to BM25-only fusion input
 
     if rerank and fused:
         docs_by_id = {d.id: d for d in docs}
@@ -310,16 +325,22 @@ def _retrieve(
     *,
     docs_dir: Path | None,
     llm: LLMClient | None,
-    top_k: int,
+    top_k: int | None,
     doc_scope: list[str] | None,
 ) -> dict[str, Any]:
     """Shared corpus-build + retrieve + dedupe-sources step used by both
     answer_question() and answer_question_stream(). Returns either
     {"early": {...}} (the empty/no_match response, ready to return as-is)
-    or {"scored": [...], "sources": [...], "client": LLMClient}."""
+    or {"scored": [...], "sources": [...], "client": LLMClient, "settings": RagSettings}.
+
+    top_k=None (the default for every caller except the retrieval eval
+    scripts) picks up the RAG Architecture page's saved top_k instead of a
+    hardcoded value -- see rag_settings.py.
+    """
     query = (query or "").strip()
     docs_dir = docs_dir or OUTPUT_DIR
     corpus = _filter_corpus(build_corpus(docs_dir), doc_scope)
+    settings = rag_settings.load_rag_settings()
 
     if not query:
         return {"early": {"answer": "Ask a question about anything in the wiki.", "sources": [], "mode": "empty"}}
@@ -337,7 +358,17 @@ def _retrieve(
         }
 
     client = llm or LLMClient()
-    scored = retrieve_hybrid(query, corpus, top_k=top_k, llm=client)
+    vector_store = VectorStore(VECTOR_STORE_FILE) if settings.use_vector_store else None
+    scored = retrieve_hybrid(
+        query,
+        corpus,
+        top_k=top_k if top_k is not None else settings.top_k,
+        llm=client,
+        rerank=settings.enable_rerank,
+        enable_embeddings=settings.enable_embeddings,
+        bm25_config=hybrid_retrieval.BM25Config(k1=settings.bm25_k1, b=settings.bm25_b),
+        vector_store=vector_store,
+    )
     if not scored:
         return {
             "early": {
@@ -350,7 +381,7 @@ def _retrieve(
             }
         }
 
-    return {"scored": scored, "sources": _deduped_sources(scored), "client": client}
+    return {"scored": scored, "sources": _deduped_sources(scored), "client": client, "settings": settings}
 
 
 def answer_question(
@@ -359,7 +390,7 @@ def answer_question(
     history: list[dict[str, str]] | None = None,
     docs_dir: Path | None = None,
     llm: LLMClient | None = None,
-    top_k: int = 5,
+    top_k: int | None = None,
     doc_scope: list[str] | None = None,
 ) -> dict[str, Any]:
     """Answer a question over the compiled wiki.
@@ -371,16 +402,18 @@ def answer_question(
     - "empty": nothing has been compiled yet
     - "no_match": the corpus has nothing relevant to the query
     - "generated": an LLM wrote the answer from retrieved context
-    - "extractive": no LLM configured (or the call failed) — the retrieved
-      passages are returned directly as the answer
+    - "extractive": no LLM configured (or the call failed), or the RAG
+      Architecture page's answer mode is pinned to "extractive" — the
+      retrieved passages are returned directly as the answer
     """
     retrieval = _retrieve(query, docs_dir=docs_dir, llm=llm, top_k=top_k, doc_scope=doc_scope)
     if "early" in retrieval:
         return retrieval["early"]
 
     scored, sources, client = retrieval["scored"], retrieval["sources"], retrieval["client"]
+    force_extractive = retrieval["settings"].answer_mode == "extractive"
 
-    if client.available:
+    if client.available and not force_extractive:
         prompt = _build_prompt(query.strip(), scored, history)
         try:
             answer = client.generate_response(prompt, CHAT_SYSTEM_PROMPT, temperature=0.1)
@@ -397,7 +430,7 @@ def answer_question_stream(
     history: list[dict[str, str]] | None = None,
     docs_dir: Path | None = None,
     llm: LLMClient | None = None,
-    top_k: int = 5,
+    top_k: int | None = None,
     doc_scope: list[str] | None = None,
 ) -> Iterator[dict[str, Any]]:
     """Streaming counterpart to answer_question(). Yields event dicts:
@@ -414,9 +447,10 @@ def answer_question_stream(
         return
 
     scored, sources, client = retrieval["scored"], retrieval["sources"], retrieval["client"]
+    force_extractive = retrieval["settings"].answer_mode == "extractive"
     yield {"type": "sources", "sources": sources}
 
-    if client.available:
+    if client.available and not force_extractive:
         prompt = _build_prompt(query.strip(), scored, history)
         try:
             full_text = ""

@@ -1,13 +1,5 @@
 [
   {
-    "id": "e1027a44-96ce-4990-a30c-7979e7bf92c0",
-    "title": "New chat",
-    "created_at": "2026-09-01T21:15:07.221Z",
-    "updated_at": "2026-09-01T21:15:07.221Z",
-    "resource_scope": null,
-    "message_count": 0
-  },
-  {
     "id": "5f1685c9-d834-4f54-98ff-dbd815d300c3",
     "title": "Imported chat",
     "created_at": "2026-09-01T21:03:22.869Z",
@@ -22,5 +14,13 @@
     "updated_at": "2026-09-01T21:30:53.015Z",
     "resource_scope": null,
     "message_count": 0
+  },
+  {
+    "id": "e1027a44-96ce-4990-a30c-7979e7bf92c0",
+    "title": "What topics does the wiki cover?",
+    "created_at": "2026-09-01T21:15:07.221Z",
+    "updated_at": "2026-09-02T07:03:10.887Z",
+    "resource_scope": null,
+    "message_count": 2
   }
 ]

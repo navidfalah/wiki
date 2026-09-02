@@ -10,7 +10,7 @@ tags:
   - contradiction-flagging
   - icebox
   - jamie-qa
-last_updated: "2026-09-01T21:24:51.559447+00:00"
+last_updated: "2026-09-02T06:41:32.953391+00:00"
 sidebar_label: Product Management
 slug: /product-management
 ---
@@ -20,29 +20,36 @@ slug: /product-management
 # Product Management
 
 ## Overview
-Product management encompasses cross-functional coordination, feature prioritization, [Backlog Grooming](./backlog-grooming.md), and resolving [Documentation](./documentation.md) or messaging discrepancies across projects like [TeaBuddy](./teabuddy.md) and [Aurora Nova Widget](./aurora-nova-widget.md). Teams track milestones through Slack discussions, backlog items, and beta metrics to maintain product alignment and quality control.
+This wiki page compiles recent updates, [backlog grooming](./backlog-grooming.md) notes, and cross-functional product discussions for [TeaBuddy](./teabuddy.md) and related product lines, covering product operations, packaging issues, telemetry metrics, and prioritization.
 
 ## Key Details
-- **TeaBuddy Herbal Box Copy Issue:** Print proof v3 incorrectly lists brewing time as 5 minutes instead of the updated standard, causing friction between engineering and marketing assets.
-- **Beta Metrics:** TeaBuddy's raw beta Net Promoter Score (NPS) stands at 42, with pairing complaints notably decreasing following the release of [Firmware](./firmware.md) version 0.9.3.
-- **Backlog Priorities:**
-  - *Aurora P0 Items:* Publish [Power Budget](./power-budget.md) spreadsheet, 0.3.9 rejoin hardening, and the [SenseNode SN-400](./sensenode-sn-400.md) comparison page.
-  - *TeaBuddy P0 Items:* Android v1.1 beta, TB-142 cancel bug verification, and a comprehensive box copy audit for all presets.
-- **[Partnerships](./partnerships.md) & Logistics:** Sam Rivera rejected a shared booth request with [Aurora Mira](./aurora-nova-widget.md) unless they cover half the costs. Sticker overlays for incorrect packaging were ruled out in favor of fixing the print directly.
+- **TeaBuddy Packaging Issue**: The herbal box copy currently reads "5 minutes" in print proof v3, creating a discrepancy across [documentation](./documentation.md) and assets.
+  - [Firmware](./firmware.md) brew time: 7 minutes.
+  - Marketing PDF: 5 minutes.
+  - Wiki documentation: 7 minutes (updated after the last compile).
+  - Sam Rivera rejected using a sticker overlay and requested the print file be fixed directly.
+- **Beta Metrics**: TeaBuddy beta Net Promoter Score (NPS) raw score stands at 42, with pairing complaints decreasing following the release of version 0.9.3.
+- **[Partnerships](./partnerships.md)**: [Aurora Mira](./aurora-nova-widget-v2.md) inquired about a shared booth; Sam Rivera declined unless they cover half the cost.
+- **Backlog Grooming (July 10)**:
+  - *Aurora P0 priorities*: Publish [power budget](./power-budget.md) spreadsheet, 0.3.9 rejoin hardening, and comparison page for the [SenseNode SN-400](./sensenode-sn-400.md).
+  - *TeaBuddy P0 priorities*: Android v1.1 beta, TB-142 cancel bug verification, and a box copy audit for all presets.
+  - *Shared Icebox*: Plant Whisperer app (#47), contradiction linter, and wiki index auto-refresh.
+  - *Quick Wins*: Add 40 extended dummy raw files for compiler stress tests and fix forum scrape thread #9102.
+  - *Stale Items*: Rename [MeshSync](./meshsync.md) to MeshSink (rejected again) and KarpathyGarden product name (rejected again).
 
 ## Related Entities
-- **Alex Kim:** Product team member focused on copy corrections, widget evaluation, and release coordination.
-- **Jamie QA:** Quality assurance team member tracking firmware versions, documentation discrepancies, and beta metrics.
-- **Sam Rivera:** Decision-maker handling shipping constraints, print approvals, and booth partnership negotiations.
-- **Aurora Mira:** External entity requesting a shared booth arrangement.
+- **Alex Kim**: Product team member focused on copy, widget design, and documentation updates.
+- **Jamie QA**: Quality assurance team member tracking firmware builds, bugs, and beta NPS metrics.
+- **Sam Rivera**: Leadership/stakeholder enforcing print corrections and partnership decisions regarding Aurora Mira.
+- **Aurora Mira**: External entity inquiring about a shared exhibition booth.
 
 ## Related Concepts
-- **Backlog Grooming:** The process of organizing, prioritizing, and maintaining action items across P0 priorities, quick wins, and the shared icebox.
-- **Contradiction Flagging:** Identifying and reconciling conflicting specifications between [Hardware](./hardware.md) firmware, marketing materials, and internal wikis.
-- **Shared Icebox:** A holding category for lower-priority or future ideas, including the Plant Whisperer app, a contradiction linter, and [Wiki Automation](./wiki-automation.md) tools.
+- **Backlog Grooming**: Prioritization process dividing tasks into P0 priorities, shared iceboxes, quick wins, and stale items.
+- **Beta NPS**: Customer satisfaction tracking for beta releases (currently at 42 for TeaBuddy).
+- **Firmware vs. Marketing Discrepancies**: Managing conflicting information across device firmware, marketing materials, and internal wikis.
 
 ## Contradictions
-&gt; **Contradiction:** There is an active discrepancy regarding brewing time documentation across project artifacts: firmware specifies 7 minutes, the marketing PDF states 5 minutes, and the internal wiki indicates 7 minutes following the last compile. Additionally, the herbal box print proof v3 incorrectly lists 5 minutes.
+&gt; **Contradiction:** There is a persistent discrepancy regarding the TeaBuddy steep/brew time: the firmware is configured for 7 minutes and the wiki lists 7 minutes following the last compile, whereas the marketing PDF and print proof v3 incorrectly state 5 minutes.
 
 ## References & Trust
 

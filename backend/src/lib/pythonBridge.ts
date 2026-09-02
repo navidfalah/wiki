@@ -87,7 +87,13 @@ export function streamCompilerBuild(res: Response, options: CompilerBuildOptions
     buffer = lines.pop() ?? '';
     for (const line of lines) {
       const cleaned = stripAnsi(line).replace(/\r$/, '');
-      if (cleaned) sseEvent(res, 'log', { message: cleaned });
+      if (!cleaned) continue;
+      const runIdMatch = cleaned.match(/^@@RUN_ID@@(.+)$/);
+      if (runIdMatch) {
+        sseEvent(res, 'run_id', { run_id: runIdMatch[1] });
+        continue;
+      }
+      sseEvent(res, 'log', { message: cleaned });
     }
   };
   child.stdout.on('data', handleChunk);

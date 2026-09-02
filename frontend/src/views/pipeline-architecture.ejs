@@ -1,0 +1,79 @@
+<%- include('partials/head', { title, apiBase, active }) %>
+
+<h1 class="text-2xl font-semibold tracking-tight text-gray-900">Pipeline Architecture</h1>
+<p class="mt-1 max-w-2xl text-sm text-gray-600">
+  Configure how the compiler processes raw sources into wiki pages. These are saved defaults --
+  every future run on the <a href="/pipelines" class="text-generated underline">Pipelines</a> page uses them automatically.
+</p>
+
+<div class="mt-6 grid gap-6 lg:grid-cols-[minmax(0,1.3fr)_minmax(0,1fr)]">
+  <section class="rounded-xl border border-gray-200 bg-white shadow-card">
+    <div class="border-b border-gray-100 px-5 py-4">
+      <h2 class="text-base font-semibold text-gray-900">Pipeline stages</h2>
+      <p class="mt-0.5 text-xs text-gray-500">1. Read → 2. Extract → 3. Synthesize → 4. Index → 5. Cross-link. These toggles change stage 2 (extraction) and stage 3 (synthesis) behavior.</p>
+    </div>
+
+    <div class="flex flex-col divide-y divide-gray-100">
+      <label class="flex items-start gap-3 px-5 py-4">
+        <input data-field="critic_pass" type="checkbox" class="mt-0.5 rounded border-gray-300 text-accent focus:ring-accent/30" />
+        <span>
+          <span class="block text-sm font-medium text-gray-900">Critic pass</span>
+          <span class="block text-xs text-gray-500">After synthesis, run a second LLM pass that strips sentences it can't ground in the source chunks. Roughly doubles per-page cost.</span>
+        </span>
+      </label>
+
+      <div id="critic-suboptions" class="hidden flex-col gap-4 bg-gray-50 px-5 py-4 pl-11">
+        <label class="flex flex-col gap-1 max-w-xs">
+          <span class="text-xs font-medium text-gray-600">Critic samples (self-consistency)</span>
+          <input data-field="critic_samples" type="number" min="1" step="1" class="rounded-lg border border-gray-300 px-2.5 py-1.5 text-sm focus:border-accent focus:outline-none focus:ring-2 focus:ring-accent/20" />
+          <span class="text-xs text-gray-500">Run the critic this many times per page; only strip a sentence a majority flagged. 1 = single deterministic pass.</span>
+        </label>
+        <label class="flex items-start gap-3">
+          <input data-field="critic_regenerate" type="checkbox" class="mt-0.5 rounded border-gray-300 text-accent focus:ring-accent/30" />
+          <span>
+            <span class="block text-sm font-medium text-gray-900">Regenerate heavily-stripped pages</span>
+            <span class="block text-xs text-gray-500">When the critic strips more than 20% of a page, regenerate it once with the critic's findings fed back into the prompt.</span>
+          </span>
+        </label>
+      </div>
+
+      <label class="flex items-start gap-3 px-5 py-4">
+        <input data-field="use_corrections" type="checkbox" class="mt-0.5 rounded border-gray-300 text-accent focus:ring-accent/30" />
+        <span>
+          <span class="block text-sm font-medium text-gray-900">Use active-learning corrections</span>
+          <span class="block text-xs text-gray-500">Feed prior human review corrections into the extraction prompt as few-shot examples.</span>
+        </span>
+      </label>
+
+      <label class="flex items-start gap-3 px-5 py-4">
+        <input data-field="redact_pii" type="checkbox" class="mt-0.5 rounded border-gray-300 text-accent focus:ring-accent/30" />
+        <span>
+          <span class="block text-sm font-medium text-gray-900">Redact PII before extraction</span>
+          <span class="block text-xs text-gray-500">Strip SSNs, credit cards, API keys, phone numbers, and IPv4 addresses from chunk text before it's sent to the LLM. Does not redact email addresses or names.</span>
+        </span>
+      </label>
+    </div>
+
+    <div class="flex items-center justify-between border-t border-gray-100 px-5 py-4">
+      <p id="pipeline-arch-saved-hint" class="text-xs text-gray-400"></p>
+      <button id="save-pipeline-arch-btn" type="button" class="rounded-lg bg-generated px-4 py-2 text-sm font-medium text-white hover:opacity-90">
+        Save
+      </button>
+    </div>
+  </section>
+
+  <section class="rounded-xl border border-gray-200 bg-white shadow-card">
+    <div class="border-b border-gray-100 px-5 py-4">
+      <h2 class="text-base font-semibold text-gray-900">Active data sources</h2>
+      <p class="mt-0.5 text-xs text-gray-500">
+        Uncheck a top-level <code>data/raw/</code> folder to leave it out of every build. Excluded files
+        are skipped, not deleted -- their topics come back automatically once re-enabled, no rebuild needed.
+      </p>
+    </div>
+    <div id="pipeline-arch-folders" class="flex flex-col divide-y divide-gray-100">
+      <p class="p-5 text-sm text-gray-500">Loading…</p>
+    </div>
+  </section>
+</div>
+
+<%- include('partials/foot', { clientScript }) %>

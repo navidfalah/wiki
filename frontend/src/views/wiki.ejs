@@ -4,7 +4,7 @@
   <div>
     <h1 class="text-2xl font-semibold tracking-tight text-gray-900">Wiki</h1>
     <p class="mt-1 max-w-2xl text-sm text-gray-600">
-      Every compiled wiki page. Click one to open it, or use the actions to edit, view, or remove it.
+      Every compiled wiki page, auto-sorted into folders by topic. Switch to file mode to see them all in one layer.
     </p>
   </div>
   <span class="hidden shrink-0 rounded-full bg-gray-100 px-3 py-1 text-xs font-medium text-gray-500 sm:inline-block">
@@ -12,18 +12,55 @@
   </span>
 </div>
 
-<input
-  id="wiki-search"
-  type="search"
-  placeholder="Search files…"
-  class="mt-4 w-full max-w-sm rounded-lg border border-gray-300 px-3 py-1.5 text-sm focus:border-accent focus:outline-none focus:ring-2 focus:ring-accent/20"
-/>
+<div class="mt-4 flex flex-wrap items-center gap-3">
+  <input
+    id="wiki-search"
+    type="search"
+    placeholder="Search files…"
+    class="w-full max-w-sm rounded-lg border border-gray-300 px-3 py-1.5 text-sm focus:border-accent focus:outline-none focus:ring-2 focus:ring-accent/20"
+  />
 
-<div id="wiki-file-grid" class="mt-6 grid grid-cols-2 gap-3 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5">
+  <div id="wiki-mode-toggle" class="ml-auto inline-flex rounded-lg border border-gray-200 bg-gray-100 p-0.5 text-sm">
+    <button type="button" data-mode="folders" class="wiki-mode-btn rounded-md px-3 py-1 font-medium transition-colors">
+      📁 Folders
+    </button>
+    <button type="button" data-mode="files" class="wiki-mode-btn rounded-md px-3 py-1 font-medium transition-colors">
+      📄 All files
+    </button>
+  </div>
+</div>
+
+<nav id="wiki-breadcrumb" class="mt-4 hidden items-center gap-1.5 text-sm text-gray-500">
+  <button type="button" id="wiki-breadcrumb-back" class="font-medium text-accent hover:underline">Wiki</button>
+  <span>/</span>
+  <span id="wiki-breadcrumb-current" class="font-medium text-gray-700"></span>
+</nav>
+
+<div id="wiki-folder-grid" class="mt-6 grid grid-cols-2 gap-3 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5">
+  <% folders.forEach(function(folder) { %>
+    <button
+      type="button"
+      class="wiki-folder-tile group flex flex-col items-center gap-1.5 rounded-xl border border-gray-200 bg-white p-4 text-center shadow-card transition-shadow hover:shadow-md"
+      data-category="<%= folder.name %>"
+      data-title="<%= folder.name.toLowerCase() %>">
+      <span class="flex h-12 w-12 items-center justify-center rounded-xl bg-accent/10 text-xl text-accent">📁</span>
+      <span class="line-clamp-2 w-28 text-xs font-medium text-gray-800"><%= folder.name %></span>
+      <span class="text-[10px] font-medium tracking-wide text-gray-400">
+        <%= folder.pages.length %> page<%= folder.pages.length === 1 ? '' : 's' %>
+      </span>
+    </button>
+  <% }); %>
+  <% if (folders.length === 0) { %>
+    <p class="col-span-full py-10 text-center text-sm text-gray-400">No compiled pages yet. Run the compiler.</p>
+  <% } %>
+</div>
+
+<div id="wiki-file-grid" class="mt-6 hidden grid-cols-2 gap-3 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5">
   <% pages.forEach(function(page) { %>
     <div
       class="wiki-file-tile group relative flex flex-col items-center gap-1.5 rounded-xl border border-gray-200 bg-white p-4 text-center shadow-card transition-shadow hover:shadow-md"
       data-title="<%= page.title.toLowerCase() %>"
+      data-category="<%= page.category %>"
       data-slug="<%= page.slug %>">
 
       <div class="absolute right-2 top-2 flex gap-1 opacity-0 transition-opacity group-hover:opacity-100 group-focus-within:opacity-100">
@@ -62,13 +99,111 @@
   <% } %>
 </div>
 
+<p id="wiki-empty-state" class="col-span-full hidden py-10 text-center text-sm text-gray-400">No matching pages.</p>
+
 <script>
-  document.getElementById('wiki-search').addEventListener('input', function (event) {
-    var needle = event.target.value.trim().toLowerCase();
-    document.querySelectorAll('.wiki-file-tile').forEach(function (tile) {
-      tile.style.display = !needle || tile.dataset.title.includes(needle) ? '' : 'none';
+  (function () {
+    var STORAGE_KEY = 'wiki-view-mode';
+    var folderGrid = document.getElementById('wiki-folder-grid');
+    var fileGrid = document.getElementById('wiki-file-grid');
+    var breadcrumb = document.getElementById('wiki-breadcrumb');
+    var breadcrumbCurrent = document.getElementById('wiki-breadcrumb-current');
+    var breadcrumbBack = document.getElementById('wiki-breadcrumb-back');
+    var searchInput = document.getElementById('wiki-search');
+    var emptyState = document.getElementById('wiki-empty-state');
+    var modeButtons = document.querySelectorAll('.wiki-mode-btn');
+
+    var mode = localStorage.getItem(STORAGE_KEY) === 'files' ? 'files' : 'folders';
+    var activeFolder = null; // category name, when drilled into a folder while in "folders" mode
+
+    function updateModeButtons() {
+      modeButtons.forEach(function (btn) {
+        var isActive = btn.dataset.mode === mode;
+        btn.classList.toggle('bg-white', isActive);
+        btn.classList.toggle('shadow-sm', isActive);
+        btn.classList.toggle('text-gray-900', isActive);
+        btn.classList.toggle('text-gray-500', !isActive);
+      });
+    }
+
+    function applyFilter(container, selector, needle) {
+      var visible = 0;
+      container.querySelectorAll(selector).forEach(function (tile) {
+        var matches = !needle || tile.dataset.title.indexOf(needle) !== -1;
+        tile.style.display = matches ? '' : 'none';
+        if (matches) visible += 1;
+      });
+      return visible;
+    }
+
+    function render() {
+      var needle = searchInput.value.trim().toLowerCase();
+      updateModeButtons();
+
+      if (mode === 'files') {
+        folderGrid.classList.add('hidden');
+        fileGrid.classList.remove('hidden');
+        fileGrid.classList.add('grid');
+        breadcrumb.classList.add('hidden');
+        fileGrid.querySelectorAll('.wiki-file-tile').forEach(function (tile) {
+          tile.style.display = '';
+        });
+        var visible = applyFilter(fileGrid, '.wiki-file-tile', needle);
+        emptyState.classList.toggle('hidden', visible !== 0 || fileGrid.children.length === 0);
+        return;
+      }
+
+      // folders mode
+      if (activeFolder) {
+        folderGrid.classList.add('hidden');
+        fileGrid.classList.remove('hidden');
+        fileGrid.classList.add('grid');
+        breadcrumb.classList.remove('hidden');
+        breadcrumbCurrent.textContent = activeFolder;
+        var visibleInFolder = 0;
+        fileGrid.querySelectorAll('.wiki-file-tile').forEach(function (tile) {
+          var matches = tile.dataset.category === activeFolder && (!needle || tile.dataset.title.indexOf(needle) !== -1);
+          tile.style.display = matches ? '' : 'none';
+          if (matches) visibleInFolder += 1;
+        });
+        emptyState.classList.toggle('hidden', visibleInFolder !== 0);
+      } else {
+        folderGrid.classList.remove('hidden');
+        folderGrid.classList.add('grid');
+        fileGrid.classList.add('hidden');
+        breadcrumb.classList.add('hidden');
+        var visibleFolders = applyFilter(folderGrid, '.wiki-folder-tile', needle);
+        emptyState.classList.toggle('hidden', visibleFolders !== 0 || folderGrid.children.length === 0);
+      }
+    }
+
+    modeButtons.forEach(function (btn) {
+      btn.addEventListener('click', function () {
+        mode = btn.dataset.mode;
+        activeFolder = null;
+        localStorage.setItem(STORAGE_KEY, mode);
+        searchInput.value = '';
+        render();
+      });
     });
-  });
+
+    document.querySelectorAll('.wiki-folder-tile').forEach(function (tile) {
+      tile.addEventListener('click', function () {
+        activeFolder = tile.dataset.category;
+        searchInput.value = '';
+        render();
+      });
+    });
+
+    breadcrumbBack.addEventListener('click', function () {
+      activeFolder = null;
+      render();
+    });
+
+    searchInput.addEventListener('input', render);
+
+    render();
+  })();
 
   var apiBase = document.querySelector('meta[name="api-base"]')?.getAttribute('content') ?? '';
 

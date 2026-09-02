@@ -21,7 +21,6 @@
           <input id="force-rebuild" type="checkbox" class="rounded border-gray-300 text-accent focus:ring-accent/30" />
           Rebuild all files
         </label>
-        <button id="clear-log" type="button" class="inline-flex items-center justify-center gap-2 rounded-lg border border-gray-300 bg-white px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50">Clear log</button>
         <button id="stop-build" type="button" class="hidden inline-flex items-center justify-center gap-2 rounded-lg border border-red-300 bg-white px-4 py-2 text-sm font-medium text-red-600 hover:bg-red-50">Stop</button>
         <button id="run-build" type="button" class="inline-flex items-center justify-center gap-2 rounded-lg bg-accent px-4 py-2 text-sm font-medium text-white hover:bg-accent-dark">Run compiler</button>
       </div>
@@ -56,8 +55,9 @@
       </div>
     </div>
     <div class="p-4">
-      <pre id="build-log" class="h-64 overflow-auto rounded-lg bg-gray-900 p-3 font-mono text-xs text-gray-100">Ready. Click "Run compiler" to start.</pre>
-      <p class="mt-2 text-xs text-gray-500">Stopping (or a crash) is safe to resume from — the next non-forced run only reprocesses what didn't finish, it doesn't start over.</p>
+      <div id="build-steps" class="flex flex-col gap-1.5"></div>
+      <p id="build-message" class="mt-2 text-xs text-gray-500">Click &quot;Run compiler&quot; to start.</p>
+      <p class="mt-1 text-xs text-gray-400">Stopping (or a crash) is safe to resume from — the next non-forced run only reprocesses what didn't finish, it doesn't start over.</p>
     </div>
   </section>
 

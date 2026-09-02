@@ -10,7 +10,7 @@ tags:
   - nova-widget
   - product-naming
   - wiki
-last_updated: "2026-09-01T21:22:15.105886+00:00"
+last_updated: "2026-09-02T06:38:53.011035+00:00"
 sidebar_label: Brand Identity
 slug: /brand-identity
 ---
@@ -20,38 +20,36 @@ slug: /brand-identity
 # Brand Identity
 
 ## Overview
-This document outlines the internal brainstorming, naming conventions, taglines, and [hardware](./hardware.md) form factor discussions for [Aurora Labs](./aurora-labs.md) and its associated products. These notes are strictly for internal use and are not intended for customer-facing communication.
+The brand identity and [product naming](./product-naming.md) initiatives encompass decisions regarding approved names, rejected brainstorms, taglines, and internal debates surrounding the physical form factor of [hardware](./hardware.md) products.
 
 ## Key Details
-* **Approved Names:**
-  * [Nova Widget](./nova-widget.md) (Kept)
-  * Aurora Labs (Kept)
-* **Rejected Names:**
-  * SoilPal
-  * GritNode
-  * PetalPing
-  * CloudFree Sensor (considered too on the nose)
-  * KarpathyGarden
-* **Tagline Iterations:**
-  * *"Sense without surrender"* (Evaluated as cringe)
-  * *"Your data, your dirt"* (Evaluated as worse)
-  * *"Open [sensors](./sensors.md) for people who own their data"* (Currently considered the best option)
-* **Hardware Form Factor Debate:**
-  * Jonah advocates for a pebble shape.
-  * Mira advocates for a hexagonal shape.
-  * The internal debate regarding the physical form factor is ongoing.
+- **Approved Names:** 
+  - [Nova Widget](./nova-widget.md) (kept)
+  - [Aurora Labs](./aurora-labs.md) (kept)
+- **Rejected Names:**
+  - SoilPal
+  - GritNode
+  - PetalPing
+  - CloudFree Sensor (considered too on the nose)
+  - KarpathyGarden
+- **Taglines Explored:**
+  - "Sense without surrender" (noted as cringe)
+  - "Your data, your dirt" (noted as worse)
+  - "Open [sensors](./sensors.md) for people who own their data" (retained as the leading option)
 
 ## Related Entities
-* **Aurora Labs**
-* **Nova Widget**
-* **Jonah**
-* **Mira**
+- **Aurora Labs**
+- **Nova Widget**
+- **Jonah**
+- **[Mira](./aurora-nova-widget-v2.md)**
 
 ## Related Concepts
-* **[Product Naming](./product-naming.md)**
-* **Hardware Form Factor**
-* **Taglines**
-* **Data Ownership**
+- **Product Naming**
+- **Hardware Form Factor**
+- **Taglines**
+
+## Contradictions
+&gt; **Contradiction:** There is an ongoing internal disagreement regarding the hardware form factor: Jonah prefers a pebble shape, whereas Mira advocates for a hexagonal shape.
 
 ## References & Trust
 

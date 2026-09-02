@@ -2,15 +2,15 @@
 id: hardware-reliability
 title: Hardware Reliability
 tags:
-  - aurora-beta-probe
-  - capacitive-soil-probe-corrosion
-  - hardware-reliability
+  - aurorabetaprobe
+  - capacitivesoilprobecorrosion
+  - hardwarereliability
   - jonah
   - mira
-  - nova-widget
+  - novawidget
   - sensenode
-  - sensenode-sn-400
-last_updated: "2026-09-01T21:23:09.817675+00:00"
+  - sensenodesn400
+last_updated: "2026-09-02T06:39:48.541184+00:00"
 sidebar_label: Hardware Reliability
 slug: /hardware-reliability
 ---
@@ -20,24 +20,27 @@ slug: /hardware-reliability
 # Hardware Reliability
 
 ## Overview
-[Hardware](./hardware.md) reliability regarding field-deployed [sensors](./sensors.md)—specifically capacitive [soil probes](./soil-probes.md)—focuses on material degradation, lifespan in acidic environments, and replacement costs across various hardware models including the [SenseNode SN-400](./sensenode-sn-400.md), [Nova Widget](./nova-widget.md), and the [Aurora beta probe](./nova-widget.md).
+[Hardware](./hardware.md) reliability is a critical factor in long-term sensor deployment, particularly in environments prone to chemical degradation such as acidic soil. Recent studies and forum compilations highlight varying lifespans and corrosion resistance across different capacitive [soil probes](./soil-probes.md) and related hardware components.
 
 ## Key Details
-- **Cheap Probes:** Typically fail within 6 to 9 months when deployed in acidic soil conditions.
-- **SenseNode SN-400:** Utilizes a coated probe design to improve durability; replacement units cost $12.
-- **Aurora Beta Probe:** Features a gold-flashed PCB, though long-term field reliability remains untested.
+- **Soil Probe Lifespan:** Inexpensive capacitive soil probes typically fail within 6 to 9 months when deployed in acidic soil conditions.
+- **[SenseNode SN-400](./sensenode-sn-400.md):** This unit utilizes a coated probe designed to withstand environmental degradation, with replacement parts priced at $12.
+- **[Aurora Beta Probe](./aurora-nova-widget-v2.md):** Features a gold-flashed printed circuit board (PCB), though its long-term reliability remains untested in the field.
 
 ## Related Entities
-- **SenseNode (SenseNode SN-400):** Manufacturer of the coated probe solution.
-- **Nova Widget:** Referenced in hardware discussions alongside SenseNode.
-- **Aurora Beta Probe:** Experimental hardware featuring a gold-flashed PCB.
-- **Jonah:** Team member tracking total cost of ownership comparisons.
-- **[Mira](./nova-widget.md):** Team member prioritizing [documentation](./documentation.md) for the hardware page.
+- **SenseNode** / **SenseNode SN-400**
+- **[Nova Widget](./nova-widget.md)**
+- **Aurora Beta Probe**
+- **Jonah**
+- **[Mira](./aurora-nova-widget-v2.md)**
 
 ## Related Concepts
 - Capacitive soil probe corrosion
-- Total cost of ownership (TCO)
-- Field sensor durability in acidic soils
+- Total cost of ownership
+- Hardware longevity and failure rates
+
+## Contradictions
+*(No direct contradictions found in the current dataset.)*
 
 ## References & Trust
 

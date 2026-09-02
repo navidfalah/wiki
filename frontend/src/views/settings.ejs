@@ -2,7 +2,7 @@
 
 <h1 class="text-2xl font-semibold tracking-tight text-gray-900">Settings</h1>
 <p class="mt-1 max-w-2xl text-sm text-gray-600">
-  Configure LLM providers, API keys, and the local Gemma model used by the compiler pipeline.
+  Configure LLM providers, API keys, model choice, sampling (temperature, top-p, max tokens, reasoning effort), and the local Gemma model used by the compiler pipeline.
 </p>
 
 <div class="mt-6 grid gap-6 lg:grid-cols-[minmax(0,1.3fr)_minmax(0,1fr)]">
@@ -69,10 +69,33 @@
     </div>
     <div class="mt-2 grid gap-2 sm:grid-cols-2">
       <input type="text" data-field="base_url" placeholder="Base URL" class="rounded-lg border border-gray-300 px-2.5 py-1.5 text-sm focus:border-accent focus:outline-none focus:ring-2 focus:ring-accent/20" />
-      <input type="text" data-field="model" placeholder="Model" class="rounded-lg border border-gray-300 px-2.5 py-1.5 text-sm focus:border-accent focus:outline-none focus:ring-2 focus:ring-accent/20" />
+      <input type="text" data-field="model" placeholder="Model" autocomplete="off" class="rounded-lg border border-gray-300 px-2.5 py-1.5 text-sm focus:border-accent focus:outline-none focus:ring-2 focus:ring-accent/20" />
     </div>
     <input type="password" data-field="api_key" placeholder="API key" autocomplete="off" class="mt-2 w-full rounded-lg border border-gray-300 px-2.5 py-1.5 text-sm focus:border-accent focus:outline-none focus:ring-2 focus:ring-accent/20" />
     <p data-field="key-hint" class="mt-1 text-xs text-gray-400"></p>
+
+    <details class="mt-2 rounded-lg border border-gray-100 bg-gray-50 px-3 py-2">
+      <summary class="cursor-pointer select-none text-xs font-medium text-gray-600">Advanced generation settings</summary>
+      <div class="mt-2 grid gap-2 sm:grid-cols-2">
+        <label class="flex flex-col gap-1">
+          <span class="text-xs font-medium text-gray-600">Temperature (0-2)</span>
+          <input type="number" data-field="temperature" min="0" max="2" step="0.1" class="rounded-lg border border-gray-300 px-2.5 py-1.5 text-sm focus:border-accent focus:outline-none focus:ring-2 focus:ring-accent/20" />
+        </label>
+        <label class="flex flex-col gap-1">
+          <span class="text-xs font-medium text-gray-600">Top-p (0-1, optional)</span>
+          <input type="number" data-field="top_p" min="0" max="1" step="0.05" placeholder="Provider default" class="rounded-lg border border-gray-300 px-2.5 py-1.5 text-sm focus:border-accent focus:outline-none focus:ring-2 focus:ring-accent/20" />
+        </label>
+        <label class="flex flex-col gap-1">
+          <span class="text-xs font-medium text-gray-600">Max output tokens (optional)</span>
+          <input type="number" data-field="max_tokens" min="1" step="1" placeholder="Provider default" class="rounded-lg border border-gray-300 px-2.5 py-1.5 text-sm focus:border-accent focus:outline-none focus:ring-2 focus:ring-accent/20" />
+        </label>
+        <label class="flex flex-col gap-1">
+          <span class="text-xs font-medium text-gray-600">Reasoning effort</span>
+          <select data-field="reasoning_effort" class="rounded-lg border border-gray-300 px-2.5 py-1.5 text-sm focus:border-accent focus:outline-none focus:ring-2 focus:ring-accent/20"></select>
+        </label>
+      </div>
+      <p class="mt-1.5 text-xs text-gray-400">Reasoning effort only applies to reasoning models (e.g. OpenAI's o-series / gpt-5-thinking) -- leave it off for everything else.</p>
+    </details>
   </div>
 </template>
 

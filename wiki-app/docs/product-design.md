@@ -10,7 +10,7 @@ tags:
   - product-design
   - widget-design-philosophy
   - wiki
-last_updated: "2026-09-01T21:24:45.681850+00:00"
+last_updated: "2026-09-02T06:41:27.351828+00:00"
 sidebar_label: Product Design
 slug: /product-design
 ---
@@ -20,22 +20,22 @@ slug: /product-design
 # Product Design
 
 ## Overview
-This wiki page captures foundational product design decisions, manufacturing notes, naming conventions, and specific feature requirements for upcoming [beta-testing](./beta-testing.md) releases, synthesized from voice memo transcriptions.
+This wiki page outlines key product design decisions, [hardware](./hardware.md) considerations, synchronization requirements, and feature preferences based on recent team notes and voice memos.
 
 ## Key Details
 - **Widget Design Philosophy:** The widget should evoke the feel of garden equipment rather than surveillance technology.
-- **Manufacturing & Materials:** Jonah specified using PETG for beta phase injection molding, with plans to revisit this if additional [fundraising](./fundraising.md) is raised.
-- **Naming:** The feature name "Mesh Sync" is locked in; no further [product-naming](./product-naming.md) is permitted.
-- **Exports & Dashboards:** [Mira](./nova-widget.md) requested [MQTT export](./mqtt-export.md) capabilities alongside optional CSV exports. The dashboard must remain strictly optional and never mandatory for users.
+- **Hardware & Manufacturing:** Jonah noted that PETG material should be used for the beta phase, with injection molding planned for a later stage if the team successfully raises funds.
+- **[Product Naming](./product-naming.md):** The working name "Mesh Sync" is confirmed and should remain unchanged.
+- **Exports and Dashboards:** According to [Mira](./aurora-nova-widget-v2.md), [MQTT Export](./mqtt-export.md) and optional CSV export should be supported, and the dashboard must never be made mandatory.
 
 ## Related Entities
-- **Jonah:** Team member responsible for manufacturing and materials input (PETG specification).
-- **Mira:** Stakeholder providing requirements for data exports (MQTT, optional CSV) and dashboard usage.
+- **Jonah:** Team member who provided the hardware and manufacturing specifications (PETG for beta, injection molding for post-raise).
+- **Mira:** Team member who specified the requirements for MQTT export, optional CSV export, and non-mandatory dashboard access.
+- **Mesh Sync:** The official and final product name.
 
 ## Related Concepts
-- **Widget Design:** Crafting user-facing [hardware](./hardware.md) aesthetics to feel approachable ("garden equipment" paradigm).
-- **Manufacturing Phases:** Moving from rapid prototyping/beta injection molding (PETG) to future production options.
-- **Data Synchronization:** Managing backend update frequencies and communication [protocols](./protocols.md).
+- **Widget Design:** Designing physical interfaces to feel organic and approachable (like garden equipment) rather than intrusive.
+- **Data Export & Telemetry:** Supporting flexible data [Protocols](./protocols.md) (MQTT, optional CSV) and ensuring user-facing dashboards remain optional.
 
 ## Contradictions
 &gt; **Contradiction:** There is an unresolved discrepancy regarding the data synchronization frequency, specifically between hourly updates versus fifteen-minute intervals. This must be resolved before releasing to beta testers.

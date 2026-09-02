@@ -9,7 +9,7 @@ tags:
   - mesh-118
   - relay-radio-sleep-timer
   - wiki
-last_updated: "2026-09-01T21:24:02.185721+00:00"
+last_updated: "2026-09-02T06:40:42.177296+00:00"
 sidebar_label: MESH-118
 slug: /mesh-118
 ---
@@ -19,35 +19,25 @@ slug: /mesh-118
 # MESH-118
 
 ## Overview
-
-MESH-118 is an internal engineering task and tracking identifier at [Aurora Labs](./aurora-labs.md) focused on the relay radio sleep timer and a [battery drain](./battery-drain.md) regression check for the [Release 0.3.9](./release-039.md) release candidate. The draft test plan for validating the fix was coordinated by Lena Ito ahead of Jonah's build.
+MESH-118 is a tracking ticket at [Aurora Labs](./aurora-labs.md) concerning the relay radio sleep timer and an associated [battery drain](./battery-drain.md) regression. A draft test plan was proposed to validate the [Release 0.3.9](./release-039.md) candidate fix prior to its integration build.
 
 ## Key Details
-
-- **Scope of Testing:** 
-  - Conducted across 6 bench units.
-  - Tested with [mesh networking](./mesh-networking.md) sizes of 3, 6, and 9 nodes (with 9 nodes intentionally set over the flash-before warning threshold to observe degradation behavior).
-  - [Battery drain](./battery-drain.md) is measured hourly over a 48-hour period for each configuration.
-- **Pass Bar:** The [battery drain](./battery-drain.md) must be within 10% of the 0.3.7 baseline (established pre-relay-mode) at 6 nodes or fewer.
-- **Exclusions:** The 12-node stress configuration from the original MESH-102 ticket is explicitly out of scope for this pass, as it belongs to a separate mesh-capacity workstream rather than the battery regression check.
-- **Timeline:** Results and the attached drain-rate CSV were scheduled to be posted upon the close of the 48-hour test window.
+- **Scope of Testing:** 6 bench units tested across mesh sizes of 3, 6, and 9 nodes. The 9-node configuration intentionally exceeds the flash-before warning threshold to observe degradation behavior.
+- **Duration & Metrics:** Battery drain is measured hourly for 48 hours per configuration.
+- **Pass Criteria:** Drain must remain within 10% of the 0.3.7 baseline (pre-relay-mode) at 6 nodes or fewer.
+- **Out of Scope:** The 12-node stress configuration originating from the MESH-102 ticket is excluded from this pass, as it belongs to a separate mesh-capacity workstream rather than being a battery regression check.
+- **Deliverables:** Results and the drain-rate CSV attachment are scheduled to be posted upon the completion of the 48-hour window.
 
 ## Related Entities
-
-- **Aurora Labs:** The organization conducting the engineering work and [QA testing](./qa-testing.md).
-- **Lena Ito:** QA team member (`lena.ito@auroralabs.example`) who drafted and distributed the MESH-118 retest plan.
-- **Jonah Park:** Engineering team member responsible for landing the build (`jonah.park@auroralabs.example`).
-- **[Mira Chen](./nova-widget.md):** Copied stakeholder on the QA [standup notes](./standup-notes.md) (`mira.chen@auroralabs.example`).
+- **Aurora Labs:** The organization managing the engineering team and testing workflows.
+- **Lena Ito:** QA team member (`lena.ito@auroralabs.example`) who authored the retest plan and email notification.
+- **Jonah Park:** Engineering team member responsible for the build containing the fix.
+- **[Mira Chen](./aurora-nova-widget-v2.md):** Copied stakeholder on the QA communications.
 
 ## Related Concepts
-
-- **Relay Radio Sleep Timer:** The specific feature component being fixed and retested under MESH-118.
-- **Battery Drain Regression Check:** The primary validation goal to ensure recent updates do not negatively impact device battery longevity compared to the 0.3.7 baseline.
-- **Mesh-Capacity Workstream:** A separate tracking effort encompassing larger stress configurations, such as the 12-node setup from MESH-102.
-
-## Contradictions
-
-*No contradictions have been identified in the current source [documentation](./documentation.md) for MESH-118.*
+- **Relay Radio Sleep Timer:** The feature and ticket focus under evaluation for [battery management](./battery-management.md).
+- **Battery Drain Regression Check:** The primary testing objective to ensure [firmware updates](./firmware-updates.md) do not abnormally consume device power.
+- **Mesh Capacity Workstream:** A separate initiative handling heavier node stress configurations (such as the 12-node stress config from MESH-102).
 
 ## References & Trust
 

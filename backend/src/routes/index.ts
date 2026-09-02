@@ -6,6 +6,7 @@ import multer from 'multer';
 import { INDEX_JSON, OUTPUT_DIR, RAW_DIR, REVIEW_REPORT_PATH, STATE_FILE } from '../paths';
 import { HttpError, wrap } from '../lib/httpError';
 import { buildAnalytics, getTagDetail } from '../lib/analytics';
+import { buildAttentionReport } from '../lib/attentionEngine';
 import {
   appendChatSessionTurn,
   createChatSession,
@@ -22,6 +23,8 @@ import { createSession, deleteSession } from '../lib/sessions';
 import { createUser, deleteUser, ensureBootstrapAdmin, listUsers, UserError, verifyPassword } from '../lib/users';
 import { loadLlmSettings, LlmSettingsError, saveLlmSettings, toPublicSettings } from '../lib/llmSettings';
 import { CompanySettingsError, loadCompanySettings, saveCompanySettings } from '../lib/companySettings';
+import { loadPipelineSettings, PipelineSettingsError, savePipelineSettings } from '../lib/pipelineSettings';
+import { loadRagSettings, RagSettingsError, saveRagSettings } from '../lib/ragSettings';
 import {
   collectSourceMetadata,
   parseFrontmatter,
@@ -30,13 +33,14 @@ import {
   loadTopicIndex,
   synthesizedPagesForTopics,
 } from '../lib/docUtils';
+import { categorizePages } from '../lib/docCategories';
 import {
   buildKnowledgeGraphPayload,
   loadLinkOverrides,
   saveLinkOverrides,
   validateConnections,
 } from '../lib/linkOverrides';
-import { getPipelineRun, listPipelineRuns } from '../lib/pipelineRuns';
+import { deletePipelineRun, getPipelineRun, listPipelineRuns } from '../lib/pipelineRuns';
 import { isBuildRunning, runCli, stopBuild, streamChat, streamCompilerBuild } from '../lib/pythonBridge';
 import { createFolder, deleteFile, deleteFolder, discoverRawFolders, FolderError, moveFile, uploadFiles } from '../lib/rawFolders';
 import {
@@ -388,6 +392,65 @@ export function registerRoutes(app: Express): void {
     }),
   );
 
+  function emailPayload(body: any) {
+    return {
+      subject: body?.subject,
+      from: body?.from,
+      to: Array.isArray(body?.to) ? body.to : String(body?.to ?? '').split(',').map((s: string) => s.trim()).filter(Boolean),
+      cc: Array.isArray(body?.cc) ? body.cc : String(body?.cc ?? '').split(',').map((s: string) => s.trim()).filter(Boolean),
+      date: body?.date,
+      body: body?.body,
+    };
+  }
+
+  app.post(
+    '/api/emails',
+    wrap(async (req, res) => {
+      try {
+        const result = await runCli('email-create', emailPayload(req.body));
+        logEvent(req.user?.username, 'Created email', result.path);
+        res.status(201).json(result);
+      } catch (err: any) {
+        if (err.errorType === 'not_an_email') throw new HttpError(400, err.message);
+        if (!err.errorType) throw new HttpError(400, err.message);
+        throw err;
+      }
+    }),
+  );
+
+  app.put(
+    '/api/emails/*',
+    wrap(async (req, res) => {
+      const relPath = (req.params as any)[0] as string;
+      try {
+        const result = await runCli('email-update', { path: relPath, ...emailPayload(req.body) });
+        logEvent(req.user?.username, 'Updated email', relPath);
+        res.json(result);
+      } catch (err: any) {
+        if (err.errorType === 'not_an_email') throw new HttpError(400, err.message);
+        if (err.errorType === 'not_found') throw new HttpError(404, err.message);
+        if (!err.errorType) throw new HttpError(400, err.message);
+        throw err;
+      }
+    }),
+  );
+
+  app.delete(
+    '/api/emails/*',
+    wrap(async (req, res) => {
+      const relPath = (req.params as any)[0] as string;
+      try {
+        const result = await runCli('email-delete', { path: relPath });
+        logEvent(req.user?.username, 'Deleted email', relPath);
+        res.json(result);
+      } catch (err: any) {
+        if (err.errorType === 'not_an_email') throw new HttpError(400, err.message);
+        if (err.errorType === 'not_found') throw new HttpError(404, err.message);
+        throw err;
+      }
+    }),
+  );
+
   // --- Docs ------------------------------------------------------------------
 
   app.get(
@@ -412,9 +475,15 @@ export function registerRoutes(app: Express): void {
             id: meta.id ?? null,
             slug: meta.slug ?? null,
             size_bytes: fs.statSync(filePath).size,
+            tags: meta.tags_list ?? [],
           };
         });
-      res.json({ directory: OUTPUT_DIR, total: pages.length, pages });
+      const categories = categorizePages(pages);
+      const pagesWithCategory = pages.map(({ tags: _tags, ...page }) => ({
+        ...page,
+        category: categories.get(page.path) ?? null,
+      }));
+      res.json({ directory: OUTPUT_DIR, total: pagesWithCategory.length, pages: pagesWithCategory });
     }),
   );
 
@@ -491,17 +560,29 @@ export function registerRoutes(app: Express): void {
   app.get('/api/build/status', (_req, res) => res.json({ running: isBuildRunning() }));
 
   app.get('/api/build/stream', (req, res) => {
+    // Query params, when given, override the Pipeline Architecture page's
+    // saved defaults (loadPipelineSettings()) for this one run -- e.g. the
+    // Pipelines page's "Rebuild all files" checkbox always sends `force`
+    // explicitly. Anything the caller doesn't specify falls back to what
+    // was last saved on that settings page, so a configured pipeline
+    // architecture applies to every build without re-selecting it each time.
+    const pipelineDefaults = loadPipelineSettings();
     const force = req.query.force === 'true';
-    const excludeFolders = String(req.query.exclude_folders ?? '')
-      .split(',')
-      .map((s) => s.trim())
-      .filter(Boolean);
-    const criticPass = req.query.critic_pass === 'true';
-    const criticSamplesRaw = Number(req.query.critic_samples);
+    const excludeFolders =
+      req.query.exclude_folders !== undefined
+        ? String(req.query.exclude_folders)
+            .split(',')
+            .map((s) => s.trim())
+            .filter(Boolean)
+        : pipelineDefaults.excluded_folders;
+    const criticPass = req.query.critic_pass !== undefined ? req.query.critic_pass === 'true' : pipelineDefaults.critic_pass;
+    const criticSamplesRaw = req.query.critic_samples !== undefined ? Number(req.query.critic_samples) : pipelineDefaults.critic_samples;
     const criticSamples = Number.isFinite(criticSamplesRaw) && criticSamplesRaw > 0 ? Math.floor(criticSamplesRaw) : undefined;
-    const criticRegenerate = req.query.critic_regenerate === 'true';
-    const useCorrections = req.query.use_corrections === 'true';
-    const redactPii = req.query.redact_pii === 'true';
+    const criticRegenerate =
+      req.query.critic_regenerate !== undefined ? req.query.critic_regenerate === 'true' : pipelineDefaults.critic_regenerate;
+    const useCorrections =
+      req.query.use_corrections !== undefined ? req.query.use_corrections === 'true' : pipelineDefaults.use_corrections;
+    const redactPii = req.query.redact_pii !== undefined ? req.query.redact_pii === 'true' : pipelineDefaults.redact_pii;
 
     logEvent(
       req.user?.username,
@@ -548,6 +629,23 @@ export function registerRoutes(app: Express): void {
       const run = getPipelineRun(req.params.id);
       if (!run) throw new HttpError(404, `Pipeline run not found: ${req.params.id}`);
       res.json({ ...run, llm_backend: describeLlmBackend() });
+    }),
+  );
+
+  app.delete(
+    '/api/pipelines/:id',
+    wrap((req, res) => {
+      const run = getPipelineRun(req.params.id);
+      if (!run) throw new HttpError(404, `Pipeline run not found: ${req.params.id}`);
+      const wasRunning = run.status === 'running' && isBuildRunning();
+      if (wasRunning) {
+        stopBuild();
+        logEvent(req.user?.username, 'Stopped compiler run', req.params.id);
+      }
+      const result = deletePipelineRun(req.params.id);
+      if (!result.removed) throw new HttpError(404, `Pipeline run not found: ${req.params.id}`);
+      logEvent(req.user?.username, 'Deleted pipeline run', req.params.id);
+      res.json({ removed: true, id: req.params.id, stopped: wasRunning });
     }),
   );
 
@@ -605,6 +703,13 @@ export function registerRoutes(app: Express): void {
       if (!detail) throw new HttpError(404, `Tag not found: ${req.params.tag}`);
       res.json(detail);
     }),
+  );
+
+  // --- Attention (missed relations / missed data feed) ---------------------
+
+  app.get(
+    '/api/attention',
+    wrap((_req, res) => res.json(buildAttentionReport(OUTPUT_DIR))),
   );
 
   // --- Resources -----------------------------------------------------------
@@ -758,6 +863,52 @@ export function registerRoutes(app: Express): void {
         res.json(toPublicSettings(saved));
       } catch (err) {
         if (err instanceof LlmSettingsError) throw new HttpError(400, err.message);
+        throw err;
+      }
+    }),
+  );
+
+  // --- Pipeline architecture (persisted default build flags) ---------------
+
+  app.get(
+    '/api/settings/pipeline',
+    wrap((_req, res) => {
+      res.json(loadPipelineSettings());
+    }),
+  );
+
+  app.put(
+    '/api/settings/pipeline',
+    wrap((req, res) => {
+      try {
+        const saved = savePipelineSettings(req.body);
+        logEvent(req.user?.username, 'Updated pipeline architecture settings');
+        res.json(saved);
+      } catch (err) {
+        if (err instanceof PipelineSettingsError) throw new HttpError(400, err.message);
+        throw err;
+      }
+    }),
+  );
+
+  // --- RAG architecture (retrieval tiers, BM25 tuning, answer mode) --------
+
+  app.get(
+    '/api/settings/rag',
+    wrap((_req, res) => {
+      res.json(loadRagSettings());
+    }),
+  );
+
+  app.put(
+    '/api/settings/rag',
+    wrap((req, res) => {
+      try {
+        const saved = saveRagSettings(req.body);
+        logEvent(req.user?.username, 'Updated RAG architecture settings');
+        res.json(saved);
+      } catch (err) {
+        if (err instanceof RagSettingsError) throw new HttpError(400, err.message);
         throw err;
       }
     }),

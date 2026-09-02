@@ -8,7 +8,7 @@ tags:
   - parent-election
   - teabuddy
   - wiki
-last_updated: "2026-09-01T21:24:16.082801+00:00"
+last_updated: "2026-09-02T06:40:57.651180+00:00"
 sidebar_label: Networking
 slug: /networking
 ---
@@ -18,31 +18,30 @@ slug: /networking
 # Networking
 
 ## Overview
-This wiki page covers networking specifications and protocol definitions, specifically detailing the [MeshSync Protocol](./meshsync-protocol.md) header (v0.3 excerpt). It establishes constraints for node scaling, safe node limits, synchronization intervals, and node roles within the network architecture.
+This wiki page covers the networking specifications and [protocols](./protocols.md) for the [MeshSync](./meshsync.md) system, specifically focusing on the v0.3 protocol header configurations, node limits, role definitions, and parent election mechanisms.
 
 ## Key Details
-- **Protocol Version:** [MeshSync Protocol](./meshsync-protocol.md) header v0.3 (`meshsync.h`)
-- **Node Limits:**
-  - Maximum nodes (`MESHSYNC_MAX_NODES`): 32
-  - Beta safe nodes (`MESHSYNC_BETA_SAFE_NODES`): 6
-- **Intervals:** 
-  - Default interval minimum (`MESHSYNC_DEFAULT_INTERVAL_MIN`): 15 minutes
-  - Hourly intervals are deprecated in favor of the minute-based default interval.
+- **Protocol Version:** [MeshSync protocol](./meshsync-protocol.md) header v0.3 (`meshsync.h`)
+- **Node Limits & Intervals:**
+  - `MESHSYNC_MAX_NODES`: 32
+  - `MESHSYNC_BETA_SAFE_NODES`: 6
+  - `MESHSYNC_DEFAULT_INTERVAL_MIN`: 15 minutes (hourly intervals are officially deprecated)
 - **Node Roles (`meshsync_role_t`):**
   - `MESHSYNC_ROLE_PARENT`
   - `MESHSYNC_ROLE_CHILD`
   - `MESHSYNC_ROLE_LOST` (rejoin storm state)
-- **Parent Election:** Utilizes an RSSI-weighted random backoff mechanism (referenced from the July 3 whiteboard).
+- **Parent Election:** Determined via an RSSI-weighted random backoff method (referenced from the whiteboard on July 3).
 
 ## Related Entities
-- **[Aurora Nova Widget](./nova-widget.md):** Associated protocol and system context (referenced in tag metadata).
-- **[TeaBuddy](./teabuddy.md):** Integration request was formally denied per the partnership memo.
+- **[Aurora](./aurora-nova-widget-v2.md)**: Associated with the MeshSync protocol and system environment.
+- **[TeaBuddy](./teabuddy.md)**: Integration requests with TeaBuddy have been denied (refer to the partnership memo).
 
 ## Related Concepts
-- Protocol headers
-- Node role management
-- Parent election algorithms
-- Network synchronization intervals
+- **Parent Election**: The mechanism by which nodes select their parent using RSSI-weighted random backoff.
+- **Rejoin Storm State**: Managed via the `MESHSYNC_ROLE_LOST` role during network disruptions or reconnection phases.
+
+## Contradictions
+*(No contradictions present in the current source material)*
 
 ## References & Trust
 

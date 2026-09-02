@@ -3,14 +3,14 @@ id: power-consumption
 title: Power Consumption
 tags:
   - aurora
-  - duty-cale-limits
+  - duty-cycle-limits
   - mira-chen
   - power-consumption
   - rejoin-spikes
   - sensenode
   - total-cost-of-ownership-tco
   - wiki
-last_updated: "2026-09-01T21:24:39.486043+00:00"
+last_updated: "2026-09-02T06:41:21.625996+00:00"
 sidebar_label: Power Consumption
 slug: /power-consumption
 ---
@@ -20,30 +20,30 @@ slug: /power-consumption
 # Power Consumption
 
 ## Overview
-This document examines power consumption comparisons between [LoRaWAN](./lorawan.md) and [MeshSync](./meshsync.md) technologies, based on research by [Mira Chen](./nova-widget.md) conducted on July 6, 2026. The evaluation is based on a baseline scenario involving 10 sensor nodes, one gateway, and a 15-minute sample interval.
+This page documents the power consumption analysis comparing [LoRaWAN](./lorawan.md) and [MeshSync](./meshsync.md) technologies, based on research conducted by Mira Chen in July 2026. The evaluation considers a baseline deployment of 10 [Sensors](./sensors.md) nodes and one gateway operating at a 15-minute sample interval.
 
 ## Key Details
-- **LoRaWAN ([SenseNode](./sensenode-sn-400.md)-class):**
-  - Affected by duty cycle limits in the EU, which necessitate either a longer effective interval or higher peak power.
-  - The gateway operates as an always-on device requiring approximately 2W of wall power.
-- **MeshSync ([Aurora](./nova-widget.md)):**
-  - Each node is powered by a CR2032 coin cell battery.
-  - Rejoin spikes negatively impact efficiency at scale; although version 0.3.8 made improvements, the issue is not entirely solved.
-- **Conclusion Draft:**
-  - Mesh wins on Total Cost of Ownership (TCO) due to the absence of a subscription fee and the lack of a gateway wall wart.
+- **Test Baseline:** 10 sensor nodes, 1 gateway, with a 15-minute sample interval.
+- **LoRaWAN ([SenseNode SN-400](./sensenode-sn-400.md)-class):** 
+  - Subject to duty cycle limits in the EU, resulting in a longer effective interval or higher peak power requirements.
+  - Gateway is always-on, consuming approximately 2W of wall power.
+- **MeshSync (Aurora):** 
+  - Powered by a CR2032 coin cell [Battery Specifications](./battery-specifications.md) per node.
+  - Rejoin spikes negatively impact [Power Management](./power-management.md) efficiency at scale; version 0.3.8 improved this issue but did not completely solve it.
+- **Conclusion Slide Draft:** "Mesh wins on TCO without subscription + no gateway wall wart"
 
 ## Related Entities
-- **Mira Chen** (Author of the LoRaWAN vs MeshSync power comparison research)
-- **SenseNode** (Class of devices representing LoRaWAN sensor nodes)
-- **Aurora** (MeshSync technology platform utilizing CR2032-powered nodes)
+- [Mira Chen](mira-chen)
+- [SenseNode](sensenode)
+- [Aurora](aurora)
 
 ## Related Concepts
-- **Duty Cycle Limits** (Regulatory constraints impacting LoRaWAN transmission frequency and power)
-- **Rejoin Spikes** (Power consumption surges during network reconnection in MeshSync systems)
-- **Total Cost of Ownership (TCO)** (Financial metric favoring MeshSync due to subscription and [hardware](./hardware.md) power savings)
+- [Duty Cycle Limits](duty-cycle-limits)
+- [Rejoin Spikes](rejoin-spikes)
+- [Total Cost of Ownership (TCO)](total-cost-of-ownership-tco)
 
 ## Contradictions
-&gt; **Contradiction:** An old research tab bookmark previously claimed that mesh networks always consume lower power, which is proven false at scale (8+ nodes) under current conditions.
+&gt; **Contradiction:** An old research tab bookmark claimed that mesh networks always exhibit lower power consumption; however, this is **false at 8+ nodes today**.
 
 ## References & Trust
 

@@ -1,0 +1,102 @@
+<%- include('partials/head', { title, apiBase, active }) %>
+
+<h1 class="text-2xl font-semibold tracking-tight text-gray-900">RAG Architecture</h1>
+<p class="mt-1 max-w-2xl text-sm text-gray-600">
+  Choose how <a href="/chat" class="text-generated underline">Chat</a> retrieves and answers from the compiled wiki.
+  Changes apply to the next question asked -- no rebuild required.
+</p>
+
+<div class="mt-6 grid gap-6 lg:grid-cols-[minmax(0,1.3fr)_minmax(0,1fr)]">
+  <section class="rounded-xl border border-gray-200 bg-white shadow-card">
+    <div class="border-b border-gray-100 px-5 py-4">
+      <h2 class="text-base font-semibold text-gray-900">Retrieval strategy</h2>
+      <p class="mt-0.5 text-xs text-gray-500">Each tier below is optional and layers on top of the one before it.</p>
+    </div>
+
+    <div id="retrieval-mode-options" class="flex flex-col divide-y divide-gray-100">
+      <label class="flex items-start gap-3 px-5 py-4">
+        <input type="radio" name="retrieval_mode" value="bm25" class="mt-1 text-accent focus:ring-accent/30" />
+        <span>
+          <span class="block text-sm font-medium text-gray-900">BM25 only</span>
+          <span class="block text-xs text-gray-500">Keyword ranking (Okapi BM25), stdlib only -- no API key needed. Fastest, works with zero setup.</span>
+        </span>
+      </label>
+      <label class="flex items-start gap-3 px-5 py-4">
+        <input type="radio" name="retrieval_mode" value="hybrid" class="mt-1 text-accent focus:ring-accent/30" />
+        <span>
+          <span class="block text-sm font-medium text-gray-900">Hybrid (BM25 + embeddings)</span>
+          <span class="block text-xs text-gray-500">Fuses BM25 with embedding similarity via reciprocal rank fusion. Needs an embedding-capable LLM profile.</span>
+        </span>
+      </label>
+      <label class="flex items-start gap-3 px-5 py-4">
+        <input type="radio" name="retrieval_mode" value="hybrid_rerank" class="mt-1 text-accent focus:ring-accent/30" />
+        <span>
+          <span class="block text-sm font-medium text-gray-900">Hybrid + LLM rerank</span>
+          <span class="block text-xs text-gray-500">Hybrid retrieval, then a chat-model call reorders the shortlist by relevance. Most accurate, most expensive.</span>
+        </span>
+      </label>
+    </div>
+
+    <div class="border-t border-gray-100 px-5 py-4">
+      <h3 class="text-sm font-semibold text-gray-900">Answer mode</h3>
+      <div class="mt-3 flex flex-col gap-3">
+        <label class="flex items-start gap-3">
+          <input type="radio" name="answer_mode" value="auto" class="mt-1 text-accent focus:ring-accent/30" />
+          <span>
+            <span class="block text-sm font-medium text-gray-900">Auto</span>
+            <span class="block text-xs text-gray-500">The chat model writes a grounded answer when one is configured; falls back to quoting the retrieved passages otherwise.</span>
+          </span>
+        </label>
+        <label class="flex items-start gap-3">
+          <input type="radio" name="answer_mode" value="extractive" class="mt-1 text-accent focus:ring-accent/30" />
+          <span>
+            <span class="block text-sm font-medium text-gray-900">Extractive only</span>
+            <span class="block text-xs text-gray-500">Always return the retrieved passages directly, even if a chat model is configured. No generation, no hallucination risk.</span>
+          </span>
+        </label>
+      </div>
+    </div>
+
+    <div class="flex items-center justify-between border-t border-gray-100 px-5 py-4">
+      <p id="rag-arch-saved-hint" class="text-xs text-gray-400"></p>
+      <button id="save-rag-arch-btn" type="button" class="rounded-lg bg-generated px-4 py-2 text-sm font-medium text-white hover:opacity-90">
+        Save
+      </button>
+    </div>
+  </section>
+
+  <section class="rounded-xl border border-gray-200 bg-white shadow-card">
+    <div class="border-b border-gray-100 px-5 py-4">
+      <h2 class="text-base font-semibold text-gray-900">Tuning</h2>
+      <p class="mt-0.5 text-xs text-gray-500">Advanced parameters -- the defaults work well for most corpora.</p>
+    </div>
+
+    <div class="flex flex-col gap-4 p-5">
+      <label class="flex flex-col gap-1 max-w-xs">
+        <span class="text-xs font-medium text-gray-600">Results per question (top_k)</span>
+        <input data-field="top_k" type="number" min="1" step="1" class="rounded-lg border border-gray-300 px-2.5 py-1.5 text-sm focus:border-accent focus:outline-none focus:ring-2 focus:ring-accent/20" />
+      </label>
+
+      <div class="grid grid-cols-2 gap-4">
+        <label class="flex flex-col gap-1">
+          <span class="text-xs font-medium text-gray-600">BM25 k1</span>
+          <input data-field="bm25_k1" type="number" min="0" step="0.1" class="rounded-lg border border-gray-300 px-2.5 py-1.5 text-sm focus:border-accent focus:outline-none focus:ring-2 focus:ring-accent/20" />
+        </label>
+        <label class="flex flex-col gap-1">
+          <span class="text-xs font-medium text-gray-600">BM25 b</span>
+          <input data-field="bm25_b" type="number" min="0" max="1" step="0.05" class="rounded-lg border border-gray-300 px-2.5 py-1.5 text-sm focus:border-accent focus:outline-none focus:ring-2 focus:ring-accent/20" />
+        </label>
+      </div>
+
+      <label class="flex items-start gap-3 border-t border-gray-100 pt-4">
+        <input data-field="use_vector_store" type="checkbox" class="mt-0.5 rounded border-gray-300 text-accent focus:ring-accent/30" />
+        <span>
+          <span class="block text-sm font-medium text-gray-900">Persistent vector store</span>
+          <span class="block text-xs text-gray-500">Cache embeddings in SQLite across questions instead of re-embedding the whole wiki every time. Only matters for the hybrid modes.</span>
+        </span>
+      </label>
+    </div>
+  </section>
+</div>
+
+<%- include('partials/foot', { clientScript }) %>

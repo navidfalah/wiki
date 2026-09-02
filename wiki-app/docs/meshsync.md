@@ -10,7 +10,7 @@ tags:
   - aurora-nova-widget-v2-beta
   - auroralabs
   - duty-cycle-limits
-last_updated: "2026-09-01T21:24:10.732542+00:00"
+last_updated: "2026-09-02T06:40:52.677057+00:00"
 sidebar_label: MeshSync
 slug: /meshsync
 ---
@@ -21,39 +21,46 @@ slug: /meshsync
 
 ## Overview
 
-MeshSync is a proprietary mesh synchronization [firmware](./firmware.md) and communication protocol developed by [Aurora Labs](./aurora-labs.md) for the [Aurora Nova Widget v2 beta](./nova-widget.md) and related [hardware](./hardware.md). It enables multi-node sensor communication (such as soil moisture and temperature telemetry) without requiring a cloud subscription or an always-on gateway wall wart. MeshSync relies on CR2032 coin cell batteries per node and supports local integration through optional [MQTT export](./mqtt-export.md) schema v2.
+MeshSync is a [mesh networking](./mesh-networking.md) [firmware](./firmware.md) and synchronization system developed by [Aurora Labs](./aurora-labs.md) for the [Aurora Nova Widget v2 beta](./aurora-nova-widget-v2.md) (and related devices). It is designed to provide local, non-cloud-dependent sensor data aggregation, leveraging a peer-to-peer mesh topology powered by CR2032 coin cell batteries per node. While MeshSync offers benefits such as avoiding subscription fees and eliminating the need for an always-on gateway wall wart, it faces challenges with stability, power spikes, and rejoin storms at scale.
 
 ## Key Details
 
-- **Default Read Interval:** Configured to **15 minutes** for reading cycles.
-- **Power & [Battery Life](./battery-life.md):** Uses CR2032 batteries (earlier teardowns or typos incorrectly referenced CR2450). Engineering estimates 18 months of battery life at 10 nodes, while marketing references up to 2 years. Rejoin operations cause [power consumption](./power-consumption.md) spikes (historically dropping from 340µA to 180µA in firmware 0.3.8, with targets near 110µA).
-- **Scalability and Known Issues:** 
-  - Officially recommended to cap deployments at **6 nodes** during beta to prevent rejoin storms and multi-hour network silence.
-  - Expanding to 8+ nodes remains unstable in field reports (tracked under ticket #2099 and GitHub issue #442).
-  - Firmware 0.3.9 introduces a parent election rewrite to address rejoin loops and reduce relay radio wake times from 400ms to 80ms per hop.
-- **MQTT Export Schema v2:** An optional, local-only export feature compatible with [Home Assistant](./home-assistant.md) setups. Topic structures include `aurora/{device_id}/telemetry`, `aurora/{device_id}/battery`, and `aurora/{device_id}/mesh/neighbors`.
+- **Firmware Versions:** Firmware version 0.3.8 introduced rejoin storm mitigation for meshes exceeding 6 nodes, parent election logging via debug UART, and local [MQTT export](./mqtt-export.md) schema v2 support. Version 0.3.9 is in development with a planned parent election rewrite to address multi-hour outages at 8+ nodes.
+- **Read Intervals:** The default read interval is **15 minutes**. 
+- **Power and Battery:** 
+  - Nodes use **CR2032** batteries (older [documentation](./documentation.md) or teardowns incorrectly referenced CR2450 or estimated a 2-year lifespan, whereas engineering estimates closer to 18 months at 10 nodes).
+  - Rejoin power spikes reduce efficiency (previously dropping from 340µA to 180µA, remaining above the 110µA target).
+  - In relay mode, [battery drain](./battery-drain.md) increases roughly 30% faster than spec because the relay radio sleep timer resets on every received packet. A draft fix in [MESH-118](./mesh-118.md) drops radio wake time from 400ms to 80ms per hop.
+- **MQTT Export Schema v2:** An optional local broker feature compatible with [Home Assistant](./home-assistant.md) hobbyist setups. Standard topic structures include:
+  - `aurora/{device_id}/telemetry`
+  - `aurora/{device_id}/battery`
+  - `aurora/{device_id}/mesh/neighbors`
+- **Known Issues:** 
+  - Deployments with 8 or more nodes experience instability and multi-hour network silence (rejoin storms), tracked under ticket #2099 and GitHub issue #442. 
+  - Workaround involves capping deployments at 6 nodes during the beta phase.
 
 ## Related Entities
 
-- **[Mira Chen](./nova-widget.md):** Firmware owner and lead engineer.
-- **Jonah Park:** QA sign-off and firmware contributor handling hardware bench testing and radio sleep optimizations.
-- **Alex:** Teardown author who previously misidentified [battery specifications](./battery-specifications.md).
-- **[TeaBuddy](./teabuddy.md) / TeaBuddyHQ:** A separate kitchen/appliance project exploring tea timer synchronization, which is explicitly out of scope for Aurora v1.
-- **[SenseNode](./sensenode-sn-400.md):** A competing [LoRaWAN](./lorawan.md)-class sensor solution utilizing gateway wall power and subscription models, serving as a comparison point for mesh complexity.
+- **Aurora Labs:** The organization developing MeshSync and the Nova Widget line.
+- **[Mira Chen](./aurora-nova-widget-v2.md):** Firmware owner and lead engineer working on MeshSync performance, battery tests, and vendor logistics.
+- **Jonah Park:** QA sign-off and engineering lead handling bench tests, sleep timers, and parent election rewrites.
+- **Alex:** Teardown author who incorrectly noted the use of CR2450 batteries instead of CR2032.
+- **[TeaBuddy](./teabuddy.md) / TeaBuddyHQ:** A separate kitchen/appliance project whose team inquired about syncing tea timers across a house using MeshSync (deemed out of scope for Aurora v1).
+- **[SenseNode](./sensenode-sn-400.md):** A competing [LoRaWAN](./lorawan.md)-class sensor network product utilizing gateway wall warts and subscription services.
 
 ## Related Concepts
 
-- **Parent Election:** The mechanism by which nodes discover and connect to network parents, logged via debug UART (RSSI + hop count).
-- **Rejoin Storms:** Network congestion and latency issues that occur when multiple nodes attempt to reconnect or re-elect parents simultaneously at scale (8+ nodes).
-- **Local MQTT Export:** Broker-less telemetry integration allowing users to ingest data directly into [home automation](./home-automation.md) platforms like Home Assistant.
+- **Aurora MQTT Schema v2:** Local broker export standard providing JSON telemetry packets containing metrics such as `soil_moisture_pct`, `temp_c`, `battery_mv`, and `mesh_hops`.
+- **Duty Cycle Limits:** Regulatory and performance constraints (such as those affecting LoRaWAN in Europe) contrasted against local mesh behavior.
+- **Audit Trail Documentation:** The internal tracking requirements for part shipments, air freight surcharge waivers, and specification changes.
+- **Home Assistant Integration:** Community-driven and local-broker setups utilizing Mosquitto and MQTT topic subscriptions for Nova Widgets.
 
 ## Contradictions
 
-&gt; **Contradiction:** Kickoff slides and old blog posts incorrectly stated that the default read interval was **hourly**, whereas the official specification and firmware defaults mandate a **15-minute** interval.
-
-&gt; **Contradiction:** Early research notes and promotional materials assumed mesh networks inherently draw lower power across all scales; however, real-world deployment data demonstrates that rejoin storms and relay radio wake behavior make mesh power consumption higher than alternative setups at 8+ nodes.
-
-&gt; **Contradiction:** An early teardown by Alex suggested the hardware used a CR2450 battery, whereas engineering [documentation](./documentation.md) and product specs confirm the use of a CR2032 cell.
+&gt; **Contradiction:** 
+&gt; - **Read Intervals:** Kickoff slides and old blog posts stated an hourly read interval, whereas the official specification and firmware default enforce a **15-minute** reading cycle.
+&gt; - **Mesh Power Efficiency:** Initial research bookmark notes claimed mesh configurations always exhibit lower [power consumption](./power-consumption.md) than LoRaWAN, which is proven false at scale when operating with 8+ nodes due to rejoin and relay power spikes.
+&gt; - **Battery Spec:** Marketing and early design materials (including Alex's teardown) suggested a 2-year [battery life](./battery-life.md) and CR2450 cells, while engineering assessments specify an 18-month lifespan using CR2032 coin cells.
 
 ## References & Trust
 

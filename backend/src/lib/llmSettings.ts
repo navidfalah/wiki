@@ -25,6 +25,8 @@ const ENV_FILE = path.join(PROJECT_ROOT, '.env');
 export type Purpose = 'default' | 'thinking' | 'embedding';
 export const PURPOSES: Purpose[] = ['default', 'thinking', 'embedding'];
 
+export type ReasoningEffort = '' | 'minimal' | 'low' | 'medium' | 'high';
+
 export interface LlmProfile {
   id: string;
   label: string;
@@ -32,6 +34,16 @@ export interface LlmProfile {
   base_url: string;
   model: string;
   api_key: string;
+  /** Sampling temperature (0-2). Applied to the creative/synthesis calls that
+   *  don't hardcode their own temperature -- see compiler/llm_client.py. */
+  temperature: number;
+  /** Nucleus sampling (0-1). Omitted from the API call when left unset. */
+  top_p: number | null;
+  /** Response length cap. Omitted from the API call when left unset. */
+  max_tokens: number | null;
+  /** OpenAI reasoning-model effort (o-series/gpt-5-thinking style models).
+   *  Left blank for providers/models that don't support it. */
+  reasoning_effort: ReasoningEffort;
 }
 
 export interface LocalLlmConfig {
@@ -56,6 +68,26 @@ const DEFAULT_LOCAL_LLM: LocalLlmConfig = {
   chat_format: 'gemma',
 };
 
+const REASONING_EFFORTS: ReasoningEffort[] = ['', 'minimal', 'low', 'medium', 'high'];
+
+function clampNumber(value: unknown, { min, max }: { min: number; max: number }, fallback: number): number {
+  const n = Number(value);
+  if (!Number.isFinite(n)) return fallback;
+  return Math.min(max, Math.max(min, n));
+}
+
+/** Like clampNumber, but null/blank means "unset" rather than falling back to a default. */
+function parseOptionalNumber(value: unknown, { min, max }: { min: number; max: number }): number | null {
+  if (value === null || value === undefined || value === '') return null;
+  const n = Number(value);
+  if (!Number.isFinite(n)) return null;
+  return Math.min(max, Math.max(min, n));
+}
+
+function parseReasoningEffort(value: unknown): ReasoningEffort {
+  return REASONING_EFFORTS.includes(value as ReasoningEffort) ? (value as ReasoningEffort) : '';
+}
+
 function defaultSettings(): LlmSettings {
   const defaultProfile: LlmProfile = {
     id: 'default',
@@ -64,6 +96,10 @@ function defaultSettings(): LlmSettings {
     base_url: process.env.OPENAI_BASE_URL || 'https://api.openai.com/v1',
     model: process.env.OPENAI_MODEL || 'gpt-4o-mini',
     api_key: process.env.OPENAI_API_KEY || '',
+    temperature: 0.2,
+    top_p: null,
+    max_tokens: null,
+    reasoning_effort: '',
   };
   return {
     profiles: [defaultProfile],
@@ -93,6 +129,10 @@ export function loadLlmSettings(): LlmSettings {
     base_url: String(p.base_url ?? ''),
     model: String(p.model ?? ''),
     api_key: String(p.api_key ?? ''),
+    temperature: clampNumber(p.temperature, { min: 0, max: 2 }, 0.2),
+    top_p: parseOptionalNumber(p.top_p, { min: 0, max: 1 }),
+    max_tokens: parseOptionalNumber(p.max_tokens, { min: 1, max: 1_000_000 }),
+    reasoning_effort: parseReasoningEffort(p.reasoning_effort),
   }));
   const profileIds = new Set(profiles.map((p) => p.id));
   const firstId = profiles[0].id;
@@ -180,7 +220,11 @@ export function saveLlmSettings(input: any): LlmSettings {
     const api_key = incomingKey === MASKED_UNCHANGED || incomingKey === ''
       ? existingById.get(id)?.api_key ?? ''
       : incomingKey;
-    return { id, label, provider, base_url, model, api_key };
+    const temperature = clampNumber(p.temperature, { min: 0, max: 2 }, 0.2);
+    const top_p = parseOptionalNumber(p.top_p, { min: 0, max: 1 });
+    const max_tokens = parseOptionalNumber(p.max_tokens, { min: 1, max: 1_000_000 });
+    const reasoning_effort = parseReasoningEffort(p.reasoning_effort);
+    return { id, label, provider, base_url, model, api_key, temperature, top_p, max_tokens, reasoning_effort };
   });
   const profileIds = new Set(profiles.map((p) => p.id));
 
@@ -221,6 +265,15 @@ export function saveLlmSettings(input: any): LlmSettings {
 }
 
 /** Env vars to overlay onto the compiler subprocess's environment for this run. */
+/** Emits {PREFIX}_TEMPERATURE / _TOP_P / _MAX_TOKENS / _REASONING_EFFORT for a
+ *  sampling-capable purpose (not embeddings, which take none of these). */
+function applySamplingOverrides(overrides: Record<string, string>, prefix: string, profile: LlmProfile): void {
+  overrides[`${prefix}_TEMPERATURE`] = String(profile.temperature);
+  if (profile.top_p !== null) overrides[`${prefix}_TOP_P`] = String(profile.top_p);
+  if (profile.max_tokens !== null) overrides[`${prefix}_MAX_TOKENS`] = String(profile.max_tokens);
+  if (profile.reasoning_effort) overrides[`${prefix}_REASONING_EFFORT`] = profile.reasoning_effort;
+}
+
 export function envOverridesForSpawn(): Record<string, string> {
   const settings = loadLlmSettings();
   const byId = new Map(settings.profiles.map((p) => [p.id, p]));
@@ -231,6 +284,7 @@ export function envOverridesForSpawn(): Record<string, string> {
     overrides.OPENAI_API_KEY = defaultProfile.api_key;
     overrides.OPENAI_BASE_URL = defaultProfile.base_url;
     overrides.OPENAI_MODEL = defaultProfile.model;
+    applySamplingOverrides(overrides, 'OPENAI', defaultProfile);
   }
 
   const thinkingProfile = byId.get(settings.assignments.thinking);
@@ -238,6 +292,7 @@ export function envOverridesForSpawn(): Record<string, string> {
     overrides.THINKING_OPENAI_API_KEY = thinkingProfile.api_key;
     overrides.THINKING_OPENAI_BASE_URL = thinkingProfile.base_url;
     overrides.THINKING_OPENAI_MODEL = thinkingProfile.model;
+    applySamplingOverrides(overrides, 'THINKING', thinkingProfile);
   }
 
   const embeddingProfile = byId.get(settings.assignments.embedding);

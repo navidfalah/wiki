@@ -10,7 +10,7 @@ tags:
   - sensenode
   - teabuddy-puck
   - wiki
-last_updated: "2026-09-01T21:25:01.693384+00:00"
+last_updated: "2026-09-02T06:41:42.097696+00:00"
 sidebar_label: Product Support
 slug: /product-support
 ---
@@ -20,25 +20,43 @@ slug: /product-support
 # Product Support
 
 ## Overview
-This wiki page documents customer inquiries, support interactions, and engineering context regarding [hardware specifications](./hardware-specifications.md), durability ratings, and product comparisons across various devices such as the [Aurora Nova Widget](./aurora-nova-widget.md), [SenseNode SN-400](./sensenode-sn-400.md), and [TeaBuddy](./teabuddy.md) puck.
+
+Product support handles customer inquiries, technical [troubleshooting](./troubleshooting.md), and product clarification across various [hardware](./hardware.md) lines. A notable support interaction involving the [Aurora Nova Widget](./aurora-nova-widget.md) (Support Ticket #2222) highlights customer confusion regarding IP ratings compared to competing and sibling products.
 
 ## Key Details
-- **Support Ticket:** #2222 ("Waterproof confusion vs SenseNode")
-- **Status:** OPEN
+
+- **Support Ticket:** #2222 (Status: OPEN)
 - **Product:** Aurora Nova Widget
 - **Customer:** Gardener located in the Pacific Northwest
-- **Issue:** The customer installed the Aurora Nova Widget in a raised garden bed, resulting in unit #3 failing due to rain exposure, while a neighboring SenseNode device remained functional.
+- **Issue:** The customer installed units in a raised bed, resulting in unit #3 failing due to rain, while a neighboring [SenseNode SN-400](./sensenode-sn-400.md) unit remained functional.
+- **Agent:** Jonah (internal support)
+- **Technical Specifications & Rationale:**
+  - The Aurora Nova Widget has an **IP54** rating rather than **IP67**. 
+  - Support recommends using a protective cover for outdoor or wet installations.
+  - The discrepancy in water resistance compared to the SenseNode is attributed to a **cost/tooling tradeoff**. 
+  - The beta phase for the Aurora Nova Widget prioritized local mesh capabilities and open data export. An **IP65 roadmap** is planned for the future.
+  - A comparison page update addressing these distinctions is scheduled for sprint 15.
+- **Related Products:** 
+  - *SenseNode* (features a higher IP rating and survived the same conditions where the Aurora Nova Widget failed).
+  - *[TeaBuddy](./teabuddy.md) puck* (designed for splash-resistant kitchen use, representing a different product tier).
 
 ## Related Entities
-- **Aurora Nova Widget:** An [IoT](./iot.md) widget utilized in outdoor environments (such as raised garden beds) featuring an IP54 rating (with an IP65 roadmap) rather than IP67, focusing on local mesh capabilities and open data exports.
-- **SenseNode:** A competing or neighboring environmental node (specifically referenced as competitor SN-400 or related to ticket #1042) that features higher water resistance (IP67).
-- **TeaBuddy puck:** A separate kitchen-use device designed to be splash-resistant rather than fully waterproof.
-- **Jonah:** The internal support agent handling the ticket.
+
+- Aurora Nova Widget
+- SenseNode
+- TeaBuddy puck
+- Jonah
 
 ## Related Concepts
-- **IP Rating:** Ingress Protection standards determining dust and moisture resistance. The discrepancy between the Aurora Nova Widget (IP54) and SenseNode (IP67) led to customer confusion regarding outdoor survivability.
-- **Cost/Tooling Tradeoff:** The design rationale behind the Aurora Nova Widget's current hardware limitations, prioritizing local mesh and open exports over higher-tier waterproof casing during initial production.
-- **Product Roadmapping:** Future plans to upgrade durability standards, such as the planned IP65 roadmap for the Aurora Nova Widget and a comparison page update scheduled for sprint 15.
+
+- IP Rating
+- Cost/Tooling Tradeoff
+- Local Mesh
+- Open Export
+
+## Contradictions
+
+*(No contradictions present in the provided source material.)*
 
 ## References & Trust
 

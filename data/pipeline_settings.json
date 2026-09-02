@@ -1,0 +1,8 @@
+{
+  "critic_pass": true,
+  "critic_samples": 1,
+  "critic_regenerate": false,
+  "use_corrections": true,
+  "redact_pii": true,
+  "excluded_folders": []
+}

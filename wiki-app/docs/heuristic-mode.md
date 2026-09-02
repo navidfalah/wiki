@@ -9,7 +9,7 @@ tags:
   - nova-widget
   - teabuddy
   - wiki
-last_updated: "2026-09-01T21:23:25.809082+00:00"
+last_updated: "2026-09-02T06:40:05.928473+00:00"
 sidebar_label: Heuristic Mode
 slug: /heuristic-mode
 ---
@@ -20,34 +20,39 @@ slug: /heuristic-mode
 
 ## Overview
 
-Heuristic Mode is a feature of the [wiki compiler](./wiki-compiler.md) designed to process raw files and generate structured [documentation](./documentation.md) without requiring an LLM API key. Developed as part of the LLM Wiki pipeline testing (utilizing the Karpathy pattern), its primary objective is to transform 40+ raw files into a rich, interconnected knowledge graph that explicitly surfaces contradictions such as [battery life](./battery-life.md), herbal presets, and read intervals.
+Heuristic mode is a feature of the [Wiki Compiler](./wiki-compiler.md) pipeline designed to process raw data files and generate structured [Documentation](./documentation.md) without relying on an external Large Language Model (LLM) API key. Operating as part of the LLM Wiki pipeline test artifact, it ingests text and markdown files, extracts topics, builds cross-links between entity mentions, and generates Docusaurus-compatible pages.
 
 ## Key Details
 
-- **Data Processing:** Reads all `.txt` and `.md` files located under `data/raw/` to extract topics autonomously.
-- **Output Generation:** Automatically generates Docusaurus-compatible pages under `wiki-app/docs/`.
-- **Cross-Linking:** Builds automated cross-links based on entity mentions throughout the text (including references to [Nova Widget](./nova-widget.md), [TeaBuddy](./teabuddy.md), [MeshSync](./meshsync.md), and others).
+- **File Ingestion:** Reads all `.txt` and `.md` files located under the `data/raw/` directory.
+- **API Independence:** Extracts topics and builds pages without requiring an LLM API key.
+- **Output Generation:** Automatically generates Docusaurus pages under the `wiki-app/docs/` directory.
+- **Cross-Linking:** Constructs cross-links based on detected entity mentions, such as [Nova Widget](./nova-widget.md), [TeaBuddy](./teabuddy.md), and [MeshSync](./meshsync.md).
 - **Test Data Layout:** 
   - `data/raw/samples/` contains `[SAMPLE]` prefixed files.
   - `data/raw/dummy-test/` contains `[DUMMY TEST DATA]` labeled files.
-  - Incorporates original junk data generated via `generate_junk_data.py`.
-- **Known Ingest Quirks:**
-  - Broken markdown exports test parser resilience.
-  - Forum HTML scrapes tend to lose nested content.
-  - Email threads often include wrong-thread noise.
+  - Includes original junk data generated via `generate_junk_data.py`.
+- **Primary Goal:** Transform over 40 raw files into a rich, interconnected graph that surfaces underlying contradictions—such as discrepancies concerning [Battery Life](./battery-life.md), herbal presets, and read intervals.
 
 ## Related Entities
 
-- [Nova Widget](./nova-widget.md)
-- [TeaBuddy](./teabuddy.md)
-- [MeshSync](./meshsync.md)
+- [Nova Widget](#)
+- [TeaBuddy](#)
+- [MeshSync](#)
 
 ## Related Concepts
 
-- LLM Wiki Pipeline
+- [Wiki Compiler](./wiki-compiler.md)
 - Karpathy Pattern
-- Knowledge Graph Compilation
-- Automated Cross-Linking
+- Cross-Linking
+- Ingest Quirks
+
+## Ingest Quirks
+
+The heuristic mode pipeline is tested against several known data irregularities and parser edge cases:
+- **Broken Markdown Exports:** Used specifically to test and verify parser resilience.
+- **Forum HTML Scrapes:** Result in the loss of nested content structures.
+- **Email Threads:** Frequently introduce wrong-thread noise into the dataset.
 
 ## References & Trust
 

@@ -10,7 +10,7 @@ tags:
   - open-sensors
   - project-kickoff
   - wiki
-last_updated: "2026-09-01T21:25:12.442878+00:00"
+last_updated: "2026-09-02T06:41:52.553029+00:00"
 sidebar_label: Project Kickoff
 slug: /project-kickoff
 ---
@@ -20,29 +20,24 @@ slug: /project-kickoff
 # Project Kickoff
 
 ## Overview
-
-The project kickoff meeting establishes the foundation for building open [sensors](./sensors.md) tailored for gardeners who value data ownership. The initial meeting took place on June 15, 2026, with attendees [Mira Chen](./nova-widget.md) and Jonah Park.
+The project kickoff meeting took place on June 15, 2026, establishing the foundational vision, product concept, and technical architecture for a new line of garden-focused monitoring [hardware](./hardware.md). The core mission centers on delivering open-source [sensors](./sensors.md) designed specifically for gardeners who prioritize ownership of their personal data.
 
 ## Key Details
-
 - **Date:** June 15, 2026
-- **Mission/Why:** To provide open sensors for gardeners who own their data.
-- **Product Idea:** [Nova Widget](./nova-widget.md) — a soil moisture and temperature sensor utilizing [MeshSync](./meshsync.md) for extended range.
-- **Technical Decisions:** 
-  - **MCU:** nRF52840
-  - **Battery Target:** 18 months
+- **Product Name:** [Nova Widget](./nova-widget.md)
+- **Product Features:** Soil moisture and temperature sensing, utilizing [MeshSync](./meshsync.md) technology for extended wireless range.
+- **Microcontroller (MCU):** nRF52840
+- **[Battery Life](./battery-life.md) Target:** 18 months
 
 ## Related Entities
-
-- **Mira Chen:** Attendee and participant in the project kickoff.
-- **Jonah Park:** Attendee and participant in the project kickoff.
-- **Nova Widget:** The primary product concept introduced during the kickoff.
+- **Mira Chen:** Attendee and participant in the kickoff meeting.
+- **Jonah Park:** Attendee and participant in the kickoff meeting.
+- **Nova Widget:** The primary hardware product conceived during the kickoff.
 
 ## Related Concepts
-
-- **Open Sensors:** Devices designed to ensure gardeners retain complete ownership of their data.
-- **MeshSync:** A [networking](./networking.md) technology used by the Nova Widget to improve operational range.
-- **[Hardware Architecture](./hardware-architecture.md):** Utilizing the nRF52840 microcontroller to achieve an 18-month battery target.
+- **Open Sensors:** Devices built for gardeners who own their data.
+- **MeshSync:** The underlying protocol/technology used to extend range for the sensors.
+- **Data Ownership:** The core philosophical driver behind the product's open design.
 
 ## References & Trust
 

@@ -10,7 +10,7 @@ tags:
   - jonah-park
   - local-mesh-without-subscription
   - mira-chen
-last_updated: "2026-09-01T21:24:30.835920+00:00"
+last_updated: "2026-09-02T06:41:12.430082+00:00"
 sidebar_label: Partnerships
 slug: /partnerships
 ---
@@ -20,28 +20,31 @@ slug: /partnerships
 # Partnerships
 
 ## Overview
-This wiki page outlines the strategic partnerships, competitive positioning, and technical specifications of [Aurora Labs](./aurora-labs.md), as discussed during the July 2, 2026 investor call.
+This wiki page covers the strategic positioning, technical metrics, and partnership details for [Aurora Labs](./aurora-labs.md) as discussed during an investor call fragment on July 2, 2026. The information provides context on Aurora Labs' competitive moat against [SenseNode SN-400](./sensenode-sn-400.md), [battery life](./battery-life.md) metrics, [hardware](./hardware.md) progression, and collaborative arrangements.
 
 ## Key Details
-- **[TeaBuddy](./teabuddy.md) Partnership:** Aurora Labs maintains a co-marketing-only partnership with TeaBuddy. The arrangement stems from a personal friendship between Alex and individuals at TeaBuddy; there are no plans to merge the companies.
-- **Competitive Moat:** Aurora Labs differentiates itself from [SenseNode SN-400](./sensenode-sn-400.md) through local mesh functionality without requiring a subscription, partial open [firmware](./firmware.md), and community integrations.
-- **[Battery Life](./battery-life.md):** Engineering specifications project 18 months of battery life at 10 nodes with 15-minute reads. Marketing materials round this figure up to two years, with the underlying calculation spreadsheet being published publicly.
-- **Mesh Performance:** An earlier eight-node mesh issue was successfully mitigated in firmware version 0.3.8, though six nodes are recommended for [Beta Testing](./beta-testing.md) customers.
-- **[Hardware](./hardware.md) Protection (IP Rating):** Devices currently feature an IP54 rating during the beta phase, which will progress to IP65 once tooling is fully funded.
+* **[TeaBuddy](./teabuddy.md) Partnership:** The relationship with TeaBuddy is strictly a co-marketing partnership. The connection stems from a personal friendship involving Alex. There are no plans for a corporate or product merger.
+* **Competitive Moat:** Aurora Labs differentiates itself from SenseNode through local mesh connectivity that operates without a subscription, partial open [firmware](./firmware.md), and community integrations.
+* **Battery Life:** Engineering specifications support 18 months of battery life at 10 nodes with 15-minute reads. Marketing materials round this figure up to two years, and the underlying spreadsheet is published for transparency.
+* **Mesh Network Stability:** Previous issues with the 8-node mesh have been mitigated in firmware version 0.3.8, though beta customers are recommended to use six nodes.
+* **Hardware Protection (IP Rating):** According to Jonah Park, devices are currently at IP54 for the beta phase, with a progression to IP65 planned once tooling is funded.
 
 ## Related Entities
-- **Aurora Labs:** The company developing the local mesh technology and hardware.
-- **SenseNode:** The primary competitor referenced during the investor call.
-- **TeaBuddy:** Co-marketing partner of Aurora Labs.
-- **Mira Chen:** Company representative detailing engineering specs, battery life, and partnerships on the investor call.
-- **Jonah Park:** Company representative providing updates on IP ratings and tooling.
-- **Alex:** Individual connected to the personal relationship driving the TeaBuddy partnership.
+* **Aurora Labs:** The company developing the local mesh technology and hardware.
+* **SenseNode:** Competitor referenced during the investor call.
+* **TeaBuddy:** Partner organization involved in the co-marketing agreement.
+* **Mira Chen:** Company representative who addressed investor questions regarding the moat, battery life, mesh issues, and the TeaBuddy partnership.
+* **Jonah Park:** Company representative who provided details regarding the IP rating progression.
+* **Alex:** Individual connected to the TeaBuddy partnership through personal friendship.
 
 ## Related Concepts
-- **Co-marketing Partnership:** A collaborative promotional arrangement without corporate merger or equity combination.
-- **Local Mesh Networks:** Decentralized device communication operating independently of subscriptions.
-- **IP Rating Progression:** The upgrade path of enclosure protection ratings from IP54 (beta) to IP65 (funded tooling).
-- **Firmware Iteration:** Software versioning (such as v0.3.8) used to resolve hardware-mesh limitations.
+* **Co-marketing:** A collaborative marketing arrangement between Aurora Labs and TeaBuddy without any underlying structural or corporate merger.
+* **Local Mesh Networks:** Subscription-free [networking](./networking.md) infrastructure forming a core part of Aurora Labs' competitive moat.
+* **Firmware Development:** Iterative software updates (such as version 0.3.8) addressing node stability and open-source partial availability.
+* **Ingress Protection (IP) Ratings:** Hardware durability progression from IP54 (beta) to IP65 (funded tooling).
+
+## Contradictions
+*(No contradictions present in the provided source chunks)*
 
 ## References & Trust
 

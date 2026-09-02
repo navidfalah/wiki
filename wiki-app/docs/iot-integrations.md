@@ -9,7 +9,7 @@ tags:
   - teabuddy
   - telemetry-export
   - wiki
-last_updated: "2026-09-01T21:23:37.686511+00:00"
+last_updated: "2026-09-02T06:40:18.678261+00:00"
 sidebar_label: IoT Integrations
 slug: /iot-integrations
 ---
@@ -19,34 +19,33 @@ slug: /iot-integrations
 # IoT Integrations
 
 ## Overview
-This guide covers the community-driven [Home Assistant](./home-assistant.md) integration for the [Nova Widget](./nova-widget.md), detailing prerequisites, quick start configurations, and known behavioral quirks regarding telemetry export and [MQTT](./mqtt.md) brokers.
+This page outlines the community guide for integrating [Nova](./aurora-nova-widget-v2.md) Widgets with [Home Assistant](./home-assistant.md), detailing prerequisites, quick start steps, known operational quirks, and community workarounds for unsupported devices.
 
 ## Key Details
 - **Prerequisites:**
   - [MeshSync](./meshsync.md) version 0.3.8 or higher.
-  - A local MQTT broker, such as Mosquitto.
-  - [Aurora](./nova-widget.md) MQTT schema v2.
+  - A local [MQTT](./mqtt.md) broker (Mosquitto).
+  - [Aurora](./aurora-nova-widget-v2.md) MQTT schema v2.
 - **Quick Start Steps:**
-  1. Enable [MQTT export](./mqtt-export.md) in the device settings (use the UART command `mqtt on` until official app support is added).
-  2. Subscribe to the MQTT topic: `aurora/+/telemetry`.
-  3. Map the soil moisture data to a percentage (`%`) entity within your [home automation](./home-automation.md) platform.
+  1. Enable [MQTT Export](./mqtt-export.md) in the device settings (use the UART command `mqtt on` until official app support is added).
+  2. Subscribe to the `aurora/+/telemetry` topic.
+  3. Map soil moisture to a percentage (`%`) entity.
 - **Known Quirks:**
-  - Rejoin events can flood logs when operating at 8 nodes; filter the `mesh/neighbors` topic to mitigate this.
-  - The default polling interval is 15 minutes. Avoid using hourly automation templates found in older blog posts.
+  - Rejoin events can flood logs when running 8 nodes; filter the `mesh/neighbors` topic to mitigate this.
+  - The default reporting interval is 15 minutes. Avoid using hourly automation templates from older blog posts.
 
 ## Related Entities
-- **MeshSync:** Required service/tool (v0.3.8+) for managing mesh network synchronization.
-- **Mosquitto:** Local MQTT broker used for handling messaging between devices.
-- **Nova Widget:** The core [hardware](./hardware.md) device being integrated via community guides.
-- **[TeaBuddy](./teabuddy.md):** A community-discussed accessory with no official integration.
+- **MeshSync** (v0.3.8+)
+- **Mosquitto** (Local MQTT broker)
+- **Nova Widgets**
 
 ## Related Concepts
-- **Aurora MQTT Schema v2:** The standardized data structure required for telemetry communication.
-- **Telemetry Export:** The mechanism of sending device metrics (like soil moisture) to a local broker.
-- **UART Commands:** Low-level device configuration methods (e.g., `mqtt on`) used prior to full app support.
+- **Aurora MQTT Schema v2**
+- **Telemetry Export**
+- **MQTT Integration & Automation**
 
 ## Contradictions
-&gt; **Contradiction:** The TeaBuddy section mentions a community hack where a microphone listens for a buzz to indicate status, but explicitly notes that this is a joke post and should not be ingested as technical specification.
+&gt; **Contradiction:** The [TeaBuddy](./teabuddy.md) integration status contains a community hack involving a microphone listening for a buzz, which is explicitly noted as a joke post and should not be ingested as a system specification.
 
 ## References & Trust
 

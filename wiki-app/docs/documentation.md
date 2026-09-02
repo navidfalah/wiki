@@ -10,7 +10,7 @@ tags:
   - mira
   - wiki
   - wiki-ingestion
-last_updated: "2026-09-01T21:22:36.302861+00:00"
+last_updated: "2026-09-02T06:39:15.116655+00:00"
 sidebar_label: Documentation
 slug: /documentation
 ---
@@ -20,25 +20,27 @@ slug: /documentation
 # Documentation
 
 ## Overview
-Documentation practices, specifications, and corrections are critical for maintaining accurate project records. A sync fragment from June 2026 highlights discrepancies between marketing claims, engineering requirements, and public blog posts regarding [battery specifications](./battery-specifications.md) and project timelines.
+Documentation management, specification alignment, and [wiki ingestion](./wiki-management.md) are critical components for maintaining accurate technical records across engineering and marketing teams. A June 2026 sync fragment highlights the importance of capturing corrections—such as [battery specifications](./battery-specifications.md) and engineering timelines—directly into internal documentation systems like the wiki.
 
 ## Key Details
-- **Engineering Timeline & Specs:** A specification indicates a 15-minute default interval. While marketing may suggest a two-year timeline, engineering requires an 18-month minimum at ten nodes.
-- **Battery Specification Correction:** Jonah noted that Alex's blog incorrectly listed the battery as a CR2450. The correct specification is CR2032.
-- **[Wiki Maintenance](./wiki-maintenance.md):** Mira recommended ingesting the battery correction into the wiki to ensure accurate documentation.
-- **Lost Action Items:** Due to recording corruption during the sync fragment, certain action items were lost:
-  - Revalidate battery math.
-  - Reply to the [Hardware](./hardware.md) Habit comment.
+- **Engineering Timeline:** Marketing may propose aggressive timelines (e.g., two years), but engineering requirements dictate an eighteen-month minimum at ten nodes.
+- **Battery Specification Correction:** An external blog post by Alex incorrectly specified the battery type as CR2450; the actual component used is the CR2032. 
+- **Wiki Ingestion:** The team emphasized the need to ingest corrections regarding technical specifications (such as the battery correction) into the wiki to ensure single-source-of-truth accuracy.
+- **Lost Action Items:** Due to a recording corruption during the sync, critical action items including revalidating battery math and replying to a [Hardware](./hardware.md) Habit comment were left unresolved.
 
 ## Related Entities
-- **Alex:** Author of a blog post containing incorrect hardware details.
-- **Jonah:** Identified the battery specification error in Alex's blog.
-- **Mira:** Suggested ingesting the battery correction into the wiki and discussed engineering timeline specifications.
+- **Alex:** Author of a blog post containing an incorrect battery specification.
+- **Jonah:** Team member who identified the battery discrepancy from Alex's blog.
+- **[Mira](./aurora-nova-widget-v2.md):** Team member who recommended ingesting corrections into the wiki and noted engineering timeline constraints.
+- **Hardware Habit:** Platform or commenter associated with an unaddressed comment action item.
 
 ## Related Concepts
-- **Battery Specification:** The distinction between CR2450 and CR2032 components used in the [hardware design](./hardware-design.md).
-- **Engineering Timeline:** The variance between marketing projections (two years) and [engineering constraints](./engineering-constraints.md) (eighteen months minimum at ten nodes).
-- **Wiki Ingestion:** The process of updating and correcting documentation based on team syncs and verified details.
+- **Wiki Ingestion:** The process of updating internal documentation repositories with verified corrections and team notes.
+- **Battery Specifications:** Hardware components (specifically CR2032 versus CR2450) requiring precise documentation.
+- **Engineering Timelines:** Managing product lifecycle expectations between engineering minimums and marketing projections.
+
+## Contradictions
+*(No contradictions present in the current source material.)*
 
 ## References & Trust
 

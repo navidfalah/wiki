@@ -10,7 +10,7 @@ tags:
   - mira
   - wiki
   - wiki-ingestion
-last_updated: "2026-09-01T21:22:39.368092+00:00"
+last_updated: "2026-09-02T06:39:18.056693+00:00"
 sidebar_label: Engineering Constraints
 slug: /engineering-constraints
 ---
@@ -20,26 +20,29 @@ slug: /engineering-constraints
 # Engineering Constraints
 
 ## Overview
-This wiki page outlines the core engineering constraints, specifications, and corrections discussed during team syncs regarding product development, [hardware specifications](./hardware-specifications.md), and project timelines.
+This wiki page captures critical engineering constraints discussed during team syncs regarding timelines, component specifications, and [Documentation](./documentation.md) maintenance. 
 
 ## Key Details
-- **Timeline Constraints:** While marketing may project a two-year window, engineering requires an 18-month minimum timeline at 10 nodes.
-- **Polling Defaults:** The spec mandates a fifteen-minute default, though initial kickoff discussions mentioned an hourly schedule.
-- **Battery Specification Correction:** An error in Alex's blog incorrectly referenced the CR2450 battery; the actual component used is the CR2032 (2032). 
-- **[Wiki Maintenance](./wiki-maintenance.md):** The team identified a need to ingest the battery specification correction directly into the wiki.
+* **Timeline Constraints:** While marketing estimates a two-year timeline, engineering requires an 18-month minimum timeline at ten nodes.
+* **[Battery Specifications](./battery-specifications.md):** Alex's blog previously stated an incorrect battery model (CR2450). The correct specification is the CR2032 (two-oh-three-two). 
+* **Wiki Ingestion:** The team noted that corrections regarding component specifications (such as the battery correction) should be ingested into the wiki.
+* **Lost Action Items:** Due to a recording corruption during the sync fragment, the following action items were lost:
+  * Revalidate battery math
+  * Reply to the [Hardware](./hardware.md) Habit comment
 
 ## Related Entities
-- **Alex:** Author of the blog post containing the incorrect battery specification.
-- **Jonah:** Team member who flagged the battery discrepancy from Alex's blog.
-- **[Mira](./nova-widget.md):** Team member who highlighted the specification and marketing timeline discrepancies.
+* **Alex:** Author of the blog post containing the incorrect battery specification.
+* **Jonah:** Team member who identified the battery discrepancy and discussed kickoff details.
+* **Mira:** Team member who noted specification details and recommended ingesting corrections into the wiki.
+* **Hardware Habit:** Platform or publication with a comment needing a reply (action item currently lost to corruption).
 
 ## Related Concepts
-- **Battery Specification:** Component standardization (CR2032 vs. CR2450) requiring math revalidation.
-- **Project Timeline:** Balancing marketing goals with engineering minimums (18 months at 10 nodes).
-- **Wiki Ingestion:** The process of capturing and updating technical corrections from team communications.
+* **Engineering Timeline:** The discrepancy between product release goals (marketing's two-year outlook) and structural engineering requirements (eighteen months minimum at ten nodes).
+* **Component Specification:** Accurate documentation of hardware parts (such as choosing CR2032 over CR2450).
+* **Wiki Ingestion:** The process of updating and maintaining accurate technical knowledge bases from team syncs and corrections.
 
 ## Contradictions
-&gt; **Contradiction:** There is a discrepancy regarding polling frequency defaults; the specification dictates a fifteen-minute default, whereas the kickoff meeting referenced an hourly schedule.
+* *None noted in current sources.*
 
 ## References & Trust
 

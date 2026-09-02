@@ -82,10 +82,76 @@ function setBadge(status: 'idle' | 'running' | 'success' | 'error' | 'stopped') 
   badge.textContent = labels[status];
 }
 
-function appendLog(line: string) {
-  const log = el('build-log');
-  log.textContent += `\n${line}`;
-  log.scrollTop = log.scrollHeight;
+function setMessage(text: string) {
+  el('build-message').textContent = text;
+}
+
+// Fixed 5-step sequence main.py always runs, in order -- see
+// _step_banner() calls in compiler/main.py. Hardcoded here so the
+// dashboard can show all 5 as "pending" placeholders before a run (or
+// before its first step has reported in), not just the ones seen so far.
+const BUILD_STEP_NAMES = ['1. Data Reading', '2. Extraction', '3. Synthesis', '4. Indexing', '5. Cross-linking'];
+
+interface LiveStep {
+  name: string;
+  status: 'running' | 'success' | 'error';
+  detail: string | null;
+  error: string | null;
+}
+
+function stepIcon(status: string): string {
+  if (status === 'success') return '✓';
+  if (status === 'error') return '✕';
+  if (status === 'running') return '●';
+  return '';
+}
+
+function stepTone(status: string): string {
+  if (status === 'success') return 'border-emerald-200 bg-emerald-50 text-emerald-700';
+  if (status === 'error') return 'border-red-200 bg-red-50 text-red-700';
+  if (status === 'running') return 'border-amber-200 bg-amber-50 text-amber-700 animate-pulse';
+  return 'border-gray-200 bg-gray-50 text-gray-300';
+}
+
+function renderBuildSteps(liveSteps: LiveStep[]) {
+  const byName = new Map(liveSteps.map((s) => [s.name, s]));
+  el('build-steps').innerHTML = BUILD_STEP_NAMES.map((name) => {
+    const step = byName.get(name);
+    const status = step?.status ?? 'pending';
+    return `
+      <div class="flex items-center gap-2.5 rounded-lg border px-3 py-1.5 ${stepTone(status)}">
+        <span class="flex h-4 w-4 shrink-0 items-center justify-center text-[10px] font-bold">${stepIcon(status)}</span>
+        <span class="min-w-0 flex-1 text-xs font-medium">${escapeHtml(name.replace(/^\d+\.\s*/, ''))}</span>
+        ${step?.detail ? `<span class="truncate text-[11px] opacity-80">${escapeHtml(step.detail)}</span>` : ''}
+        ${step?.error ? `<span class="truncate text-[11px]">${escapeHtml(step.error)}</span>` : ''}
+      </div>`;
+  }).join('');
+}
+
+let buildPollTimer: number | undefined;
+let currentRunId: string | null = null;
+
+function stopBuildPolling() {
+  if (buildPollTimer) {
+    window.clearInterval(buildPollTimer);
+    buildPollTimer = undefined;
+  }
+}
+
+async function pollBuildSteps() {
+  if (!currentRunId) return;
+  try {
+    const run = await apiFetch(`/api/pipelines/${encodeURIComponent(currentRunId)}`);
+    renderBuildSteps(run.steps ?? []);
+  } catch {
+    /* transient -- keep the last rendered state and try again next tick */
+  }
+}
+
+function startBuildPolling() {
+  stopBuildPolling();
+  pollBuildSteps();
+  buildPollTimer = window.setInterval(pollBuildSteps, 1200);
 }
 
 // --- Sources-to-include picker --------------------------------------------
@@ -198,21 +264,18 @@ function runOptionsParams(): Record<string, string> {
 function initBuild() {
   const runButton = el('run-build') as HTMLButtonElement;
   const stopButton = el('stop-build') as HTMLButtonElement;
-  const clearButton = el('clear-log');
   const forceCheckbox = el('force-rebuild') as HTMLInputElement;
 
-  clearButton.addEventListener('click', () => {
-    el('build-log').textContent = 'Ready. Click "Run compiler" to start.';
-  });
+  renderBuildSteps([]);
 
   stopButton.addEventListener('click', async () => {
     stopButton.disabled = true;
     try {
       const res = await fetch(`${apiBase}/api/build/stop`, { method: 'POST' });
       const data = await res.json();
-      if (!data.stopped) appendLog('Nothing to stop — no build is running.');
+      if (!data.stopped) setMessage('Nothing to stop — no build is running.');
     } catch {
-      appendLog('ERROR: Could not reach the API to stop the build.');
+      setMessage('Could not reach the API to stop the build.');
     }
   });
 
@@ -220,15 +283,17 @@ function initBuild() {
     try {
       const status = await apiFetch('/api/build/status');
       if (status.running) {
-        appendLog('ERROR: A build is already running.');
+        setMessage('A build is already running.');
         return;
       }
-    } catch (err: any) {
-      appendLog(`ERROR: Cannot reach API at ${apiBase}.`);
+    } catch {
+      setMessage(`Cannot reach API at ${apiBase}.`);
       return;
     }
 
-    el('build-log').textContent = '';
+    currentRunId = null;
+    renderBuildSteps([]);
+    setMessage('Starting compiler pipeline…');
     setBadge('running');
     runButton.disabled = true;
     stopButton.classList.remove('hidden');
@@ -245,15 +310,17 @@ function initBuild() {
       try {
         payload = JSON.parse(event.data);
       } catch {
-        appendLog(event.data);
         return;
       }
-      if (payload.type === 'start' || payload.type === 'log') {
-        appendLog(payload.message);
+      if (payload.type === 'run_id') {
+        currentRunId = payload.run_id;
+        startBuildPolling();
       } else if (payload.type === 'error') {
-        appendLog(`ERROR: ${payload.message}`);
+        setMessage(`Error: ${payload.message}`);
       } else if (payload.type === 'done') {
-        appendLog(payload.message ?? (payload.success ? 'Finished.' : 'Failed.'));
+        stopBuildPolling();
+        pollBuildSteps(); // one last fetch -- the process has exited, so this is guaranteed to see the final step state
+        setMessage(payload.message ?? (payload.success ? 'Finished.' : 'Failed.'));
         setBadge(payload.stopped ? 'stopped' : payload.success ? 'success' : 'error');
         runButton.disabled = false;
         stopButton.classList.add('hidden');
@@ -266,7 +333,8 @@ function initBuild() {
     };
     source.onerror = () => {
       if (source.readyState === EventSource.CLOSED) return;
-      appendLog('ERROR: Lost connection to the build stream.');
+      stopBuildPolling();
+      setMessage('Lost connection to the build stream.');
       setBadge('error');
       runButton.disabled = false;
       stopButton.classList.add('hidden');

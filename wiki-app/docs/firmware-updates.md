@@ -10,7 +10,7 @@ tags:
   - read-interval
   - teabuddy
   - wiki
-last_updated: "2026-09-01T21:22:53.484536+00:00"
+last_updated: "2026-09-02T06:39:33.009280+00:00"
 sidebar_label: Firmware Updates
 slug: /firmware-updates
 ---
@@ -20,31 +20,34 @@ slug: /firmware-updates
 # Firmware Updates
 
 ## Overview
-[Firmware](./firmware.md) update releases for devices such as the [Aurora Nova Widget](./aurora-nova-widget.md) managed by [Aurora Labs](./aurora-labs.md). These updates address critical [bug fixes](./bug-fixes.md), including [battery drain](./battery-drain.md) issues, and introduce configuration adjustments like default read intervals.
+[Firmware](./firmware.md) update releases for the [Aurora Nova Widget](./aurora-nova-widget.md) managed by [Aurora Labs](./aurora-labs.md) introduce critical [bug fixes](./bug-fixes.md), including resolutions for [hardware](./hardware.md) relay [battery drain](./battery-drain.md) issues, alongside [documentation](./documentation.md) and default configuration updates.
 
 ## Key Details
-- **Firmware 0.3.9 Candidate:** 
-  - Released for batch 4 retest.
-  - Addresses the [MeshSync](./meshsync.md) relay battery drain issue reported under ticket [MESH-118](./mesh-118.md).
-  - Instructions: Flash before adding more than 6 nodes to a mesh.
-  - Associated attachments: [release-notes-0.3.9.txt](../static/media/release-notes-0.3.9-b38073c1c1.txt)
-- **Firmware 0.3.8:**
-  - Distributed to beta invite batch 3.
-  - Instructions: Flash before adding more than 6 nodes.
-- **Default Read Interval:** Configured to 15 minutes.
+* **Firmware 0.3.9 Candidate:** 
+  * Released for the batch 4 retest.
+  * Addresses the [MeshSync](./meshsync.md) relay battery drain issue tracked under ticket [MESH-118](./mesh-118.md).
+  * Recommended to flash before adding more than 6 nodes to a mesh network.
+  * Includes [release notes](./release-notes.md): [release-notes-0.3.9.txt](../static/media/release-notes-0.3.9-b38073c1c1.txt).
+* **Firmware 0.3.8:**
+  * Distributed to batch 3 beta testers.
+  * Requires flashing before adding more than 6 nodes.
+  * Sets the default read interval to 15 minutes.
+* **Support & Reporting:**
+  * Report issues to `support@auroralabs.example` or via GitHub at `aurora-labs/meshsync #442`.
+  * Documentation is maintained at `wiki.auroralabs.example`.
 
 ## Related Entities
-- **Aurora Labs:** The organization issuing the [firmware updates](./firmware-updates.md) and [beta testing](./beta-testing.md) invitations.
-- **Aurora Nova Widget:** The [hardware](./hardware.md) device receiving the firmware updates.
-- **[TeaBuddy](./teabuddy.md):** Mentioned in connection with a puck demo at Maker Faire.
+* **Aurora Labs:** Organization developing the firmware and managing the beta test batches.
+* **Aurora Nova Widget:** The hardware device receiving the firmware updates.
+* **[TeaBuddy](./teabuddy.md):** Mentioned as a puck demo at Maker Faire (unrelated project).
 
 ## Related Concepts
-- **MeshSync:** Mesh network synchronization tool associated with GitHub issue #442 and ticket MESH-118.
-- **[Beta Testing](./beta-testing.md):** Managed via beta tester email groups (`beta-testers@auroralabs.example`).
-- **[Documentation](./documentation.md):** Compiled from raw sources and hosted on the wiki (`wiki.auroralabs.example`).
+* **Firmware Flashing:** The process of updating device software prior to scaling network node counts beyond 6 nodes.
+* **MeshSync:** The [mesh networking](./mesh-networking.md) protocol and utility associated with relay battery drain issues (MESH-118).
+* **Read Interval:** The configured polling frequency, established at 15 minutes for current firmware versions.
 
 ## Contradictions
-&gt; **Contradiction:** Documentation regarding the default read interval contains conflicting information. Beta batch 3 communications state that the default read interval is 15 minutes, explicitly noting to "ignore old PDF saying hourly."
+&gt; **Contradiction:** Beta documentation contains conflicting information regarding device read intervals. While batch 3 instructions explicitly state that the default read interval is 15 minutes and advise ignoring older PDF documentation stating an hourly interval, earlier documentation sources may still reference the hourly schedule.
 
 ## References & Trust
 

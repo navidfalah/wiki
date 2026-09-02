@@ -46,6 +46,26 @@ def _utc_now_iso() -> str:
     return datetime.now(UTC).isoformat()
 
 
+def _env_float(name: str, default: float | None) -> float | None:
+    raw = os.getenv(name)
+    if raw is None or raw == "":
+        return default
+    try:
+        return float(raw)
+    except ValueError:
+        return default
+
+
+def _env_int(name: str, default: int | None) -> int | None:
+    raw = os.getenv(name)
+    if raw is None or raw == "":
+        return default
+    try:
+        return int(float(raw))
+    except ValueError:
+        return default
+
+
 def make_cache_key(system_prompt: str, prompt: str, model: str, temperature: float = 0.2) -> str:
     """Stable hash for an exact system_prompt + prompt + model + temperature combination.
 
@@ -148,6 +168,10 @@ class LLMClient:
         cache_enabled: bool = True,
         max_retries: int = 3,
         retry_base_delay: float = 1.0,
+        temperature: float | None = None,
+        top_p: float | None = None,
+        max_tokens: int | None = None,
+        reasoning_effort: str | None = None,
     ) -> None:
         self.api_key = api_key if api_key is not None else os.getenv("OPENAI_API_KEY", "")
         self.base_url = base_url or os.getenv(
@@ -160,6 +184,17 @@ class LLMClient:
         self.max_retries = max(1, max_retries)
         self.retry_base_delay = max(0.1, retry_base_delay)
         self._client: Any = None
+
+        # Default sampling params for calls that don't pin their own
+        # temperature (see generate_response/stream_response) -- this is how
+        # the Settings page's per-profile "temperature" (and top_p/max_tokens/
+        # reasoning_effort) reach the API. Call sites that hardcode a
+        # temperature (e.g. temperature=0.0 for deterministic extraction)
+        # intentionally ignore these.
+        self.default_temperature = temperature if temperature is not None else _env_float("OPENAI_TEMPERATURE", 0.2)
+        self.top_p = top_p if top_p is not None else _env_float("OPENAI_TOP_P", None)
+        self.max_tokens = max_tokens if max_tokens is not None else _env_int("OPENAI_MAX_TOKENS", None)
+        self.reasoning_effort = reasoning_effort if reasoning_effort is not None else os.getenv("OPENAI_REASONING_EFFORT") or None
 
         # Pipeline callers (see main.py's step_* functions) set current_step
         # before invoking a step so every LLM call made within it — chat
@@ -185,6 +220,10 @@ class LLMClient:
             "OPENAI_BASE_URL", "https://api.openai.com/v1"
         )
         model = os.getenv(f"{prefix}_OPENAI_MODEL") or os.getenv("OPENAI_MODEL", "gpt-4o-mini")
+        kwargs.setdefault("temperature", _env_float(f"{prefix}_TEMPERATURE", None))
+        kwargs.setdefault("top_p", _env_float(f"{prefix}_TOP_P", None))
+        kwargs.setdefault("max_tokens", _env_int(f"{prefix}_MAX_TOKENS", None))
+        kwargs.setdefault("reasoning_effort", os.getenv(f"{prefix}_REASONING_EFFORT") or None)
         return cls(api_key=api_key, base_url=base_url, model=model, **kwargs)
 
     @property
@@ -248,14 +287,29 @@ class LLMClient:
         return self._client
 
     def _chat_completion_with_retries(self, messages: list[dict[str, Any]], *, temperature: float) -> str:
-        """Call chat.completions.create with the shared retry/backoff policy."""
+        """Call chat.completions.create with the shared retry/backoff policy.
+
+        top_p/max_tokens/reasoning_effort ride along from the profile's
+        instance defaults (self.top_p etc.) rather than as call-site
+        parameters -- callers already vary temperature per call, but these
+        three are set once per profile in the Settings page and apply
+        uniformly to every call this client makes.
+        """
         last_error: Exception | None = None
         for attempt in range(1, self.max_retries + 1):
             try:
+                extra: dict[str, Any] = {}
+                if self.top_p is not None:
+                    extra["top_p"] = self.top_p
+                if self.max_tokens is not None:
+                    extra["max_tokens"] = self.max_tokens
+                if self.reasoning_effort:
+                    extra["reasoning_effort"] = self.reasoning_effort
                 response = self._get_client().chat.completions.create(
                     model=self.model,
                     temperature=temperature,
                     messages=messages,
+                    **extra,
                 )
                 usage = getattr(response, "usage", None)
                 self._record_usage(
@@ -285,20 +339,23 @@ class LLMClient:
         prompt: str,
         system_prompt: str,
         *,
-        temperature: float = 0.2,
+        temperature: float | None = None,
         use_cache: bool | None = None,
     ) -> str:
         """
         Call the chat completions API with cache lookup, retries, and error handling.
 
         Checks the local SQLite cache for an exact (system_prompt, prompt, model)
-        match before making a network request.
+        match before making a network request. temperature defaults to the
+        profile's configured temperature (self.default_temperature) when not
+        given explicitly.
         """
         if not self.available:
             raise RuntimeError(
                 "No OPENAI_API_KEY set. Add a key to .env or pass api_key= to LLMClient."
             )
 
+        temperature = self.default_temperature if temperature is None else temperature
         cache_on = self.cache_enabled if use_cache is None else use_cache
         cache_key = make_cache_key(system_prompt, prompt, self.model, temperature)
 
@@ -330,7 +387,7 @@ class LLMClient:
         prompt: str,
         system_prompt: str,
         *,
-        temperature: float = 0.2,
+        temperature: float | None = None,
         use_cache: bool | None = None,
     ) -> Iterator[str]:
         """Like generate_response(), but yields text deltas as they arrive
@@ -338,13 +395,15 @@ class LLMClient:
         cached response as a single chunk. On a real API call, the full
         streamed text is written to the same cache generate_response() uses
         once the stream finishes, so a repeated question is still a cache
-        hit next time (streamed or not).
+        hit next time (streamed or not). temperature defaults to the
+        profile's configured temperature when not given explicitly.
         """
         if not self.available:
             raise RuntimeError(
                 "No OPENAI_API_KEY set. Add a key to .env or pass api_key= to LLMClient."
             )
 
+        temperature = self.default_temperature if temperature is None else temperature
         cache_on = self.cache_enabled if use_cache is None else use_cache
         cache_key = make_cache_key(system_prompt, prompt, self.model, temperature)
 
@@ -362,11 +421,19 @@ class LLMClient:
         last_error: Exception | None = None
         for attempt in range(1, self.max_retries + 1):
             try:
+                extra: dict[str, Any] = {}
+                if self.top_p is not None:
+                    extra["top_p"] = self.top_p
+                if self.max_tokens is not None:
+                    extra["max_tokens"] = self.max_tokens
+                if self.reasoning_effort:
+                    extra["reasoning_effort"] = self.reasoning_effort
                 stream = self._get_client().chat.completions.create(
                     model=self.model,
                     temperature=temperature,
                     messages=messages,
                     stream=True,
+                    **extra,
                 )
                 full_text = ""
                 for chunk in stream:
@@ -458,7 +525,7 @@ class LLMClient:
         system_prompt: str,
         *,
         prompt: str = "Describe this image.",
-        temperature: float = 0.2,
+        temperature: float | None = None,
         use_cache: bool | None = None,
     ) -> str:
         """
@@ -474,6 +541,7 @@ class LLMClient:
                 "No OPENAI_API_KEY set. Add a key to .env or pass api_key= to LLMClient."
             )
 
+        temperature = self.default_temperature if temperature is None else temperature
         image_bytes = image_path.read_bytes()
         mime = IMAGE_MIME_TYPES.get(image_path.suffix.lower(), "application/octet-stream")
         cache_on = self.cache_enabled if use_cache is None else use_cache
@@ -509,7 +577,7 @@ class LLMClient:
             )
         return content
 
-    def complete(self, system: str, user: str, temperature: float = 0.2) -> str:
+    def complete(self, system: str, user: str, temperature: float | None = None) -> str:
         """Backward-compatible alias: system=user order matches prior API."""
         return self.generate_response(user, system, temperature=temperature)
 

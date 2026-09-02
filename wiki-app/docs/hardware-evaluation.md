@@ -10,7 +10,7 @@ tags:
   - parent-swap
   - rejoin-storm
   - teabuddy
-last_updated: "2026-09-01T21:23:06.696480+00:00"
+last_updated: "2026-09-02T06:39:45.536046+00:00"
 sidebar_label: Hardware Evaluation
 slug: /hardware-evaluation
 ---
@@ -20,26 +20,24 @@ slug: /hardware-evaluation
 # Hardware Evaluation
 
 ## Overview
-This page captures [hardware](./hardware.md) evaluation notes and insights stemming from [MeshSync](./meshsync.md) debug sessions and team discussions involving [Nova Widget](./nova-widget.md) and Jonah. A primary focus is assessing microcontrollers like the nRF52840 and nRF5340 for future hardware revisions in light of ongoing network performance observations such as rejoin storms and parent-swap current spikes.
+This page documents [hardware](./hardware.md) evaluation efforts and related [firmware](./firmware.md)/mesh [debugging](./debugging.md) discussions between team members [Mira](./aurora-nova-widget-v2.md) and Jonah, originating from a [MeshSync](./meshsync.md) debug session on June 12. Topics include current power draw during mesh operations, plans for future revision hardware, and unrelated feature inquiries.
 
 ## Key Details
-- **Microcontroller Comparison:** The team has proposed comparing the `nRF52840` versus the `nRF5340` to determine suitability for the next hardware revision.
-- **Rejoin Storms & Power Spikes:** Rejoin storms continue to reproduce consistently at 8 nodes. Specifically, a parent swap triggers a current spike from 110 µA up to 340 µA.
-- **[Debugging](./debugging.md) & Telemetry:** Jonah suggested logging every rejoin event along with RSSI and hop count metrics, while Mira considers the current behavior acceptable ("fine for beta").
-- **Whiteboard Notes:** A whiteboard capture from the session noted the open design question: *"PARENT? CHILD? WHO DECIDES???"*
+- **Rejoin Storms:** Rejoin storms continue to reproduce at a scale of 8 nodes. A parent swap triggers a current spike from 110 µA up to 340 µA.
+- **Logging Improvements:** Jonah requested that every rejoin be logged along with its RSSI and hop count.
+- **Hardware Comparison:** An action item was established to compare the nRF52840 and nRF5340 microcontrollers for the next hardware revision.
+- **Power and Performance Stance:** Mira evaluated the current parent swap power spike as "fine for beta."
+- **[TeaBuddy](./teabuddy.md) Inquiry:** The teabuddy team inquired about using the mesh network to synchronize tea timers across a house, which Mira firmly rejected for v1 ("absolutely not v1").
 
 ## Related Entities
-- **Jonah:** Engineering team member advocating for detailed telemetry (logging rejoins with RSSI and hop count) and hardware evaluation.
-- **Mira:** Engineering team member who considers current beta performance acceptable and ruled out external feature requests like tea timer synchronization for v1.
-- **[TeaBuddy](./teabuddy.md) Team:** Internal or adjacent group that inquired about synchronizing tea timers across a house using the mesh network.
+- **Jonah:** Team member advocating for granular logging (RSSI + hop count on rejoins) and future hardware comparisons.
+- **Mira:** Team member overseeing project scope and staging acceptance, deeming the beta power spikes acceptable and rejecting out-of-scope features like house-wide tea timer synchronization.
+- **Teabuddy Team:** Internal team that proposed an unapproved v1 use case for the mesh network.
 
 ## Related Concepts
-- **Rejoin Storm:** A network phenomenon occurring at 8 nodes where devices repeatedly attempt to rejoin the mesh.
-- **Parent Swap:** The transition of a node from one parent router to another, observed to cause a power draw spike from 110 µA to 340 µA.
-- **MeshSync:** The underlying mesh synchronization protocol and debugging focus.
-
-## Contradictions
-*There are no direct contradictions present in the current evaluation notes.*
+- **Rejoin Storm:** Network stability issue occurring at 8 nodes, characterized by power spikes during parent switches.
+- **Parent Swap:** Network topology event causing a current consumption spike from 110 µA to 340 µA.
+- **nRF52840 / nRF5340:** Candidate chipsets under consideration for the next hardware revision.
 
 ## References & Trust
 

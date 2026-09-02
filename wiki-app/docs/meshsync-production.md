@@ -10,7 +10,7 @@ tags:
   - order-delay-resolution
   - powercell-supply-co
   - rosa-delgado
-last_updated: "2026-09-01T21:24:05.438943+00:00"
+last_updated: "2026-09-02T06:40:45.472233+00:00"
 sidebar_label: MeshSync Production
 slug: /meshsync-production
 ---
@@ -20,24 +20,32 @@ slug: /meshsync-production
 # MeshSync Production
 
 ## Overview
-[MeshSync](./meshsync.md) production is currently impacted by a supply chain delay involving order #PC-88213 from PowerCell Supply Co., which provides the necessary CR2477 cells for MeshSync batch 5.
+[MeshSync](./meshsync.md) Production details supply chain coordination and order delays affecting batch manufacturing at [Aurora Labs](./aurora-labs.md), specifically concerning battery cell components supplied by external vendors for MeshSync batch units.
 
 ## Key Details
-* **Affected Order:** #PC-88213 for 2,400 CR2477 cells (earmarked for MeshSync batch 5).
-* **Cause of Delay:** A customs hold in Shenzhen experienced by the cathode supplier of PowerCell Supply Co.
-* **Timeline Impact:** A 9-business-day delay, moving the revised ship date from June 9th to June 18th, 2026.
-* **Proposed Resolution Options:**
-  1. Wait for the complete order to arrive on June 18th, 2026.
-  2. Air-ship 600 cells from the Ontario warehouse by June 8th, 2026, to cover field units for batch 5, followed by the remaining 1,800 cells via truck on the delayed schedule.
-* **Cost Impact:** No cost change; the accommodations are covered by PowerCell Supply Co.
+- **Order Affected:** #PC-88213 (2,400 CR2477 cells designated for MeshSync batch 5).
+- **Cause of Delay:** A customs hold on cathode supplies in Shenzhen impacting PowerCell Supply Co.
+- **Delay Timeline:** A 9-business-day delay shifting the revised ship date from June 9th to June 18th, 2026.
+- **Vendor Remediation Options:**
+  1. Wait for the full order to ship by June 18th.
+  2. Air-ship an initial partial allocation of 600 cells from the Ontario warehouse by June 8th to cover immediate batch 5 field units, with the remaining 1,800 cells following by truck.
+- **Cost Impact:** No cost change; absorbed by the vendor.
 
 ## Related Entities
-* **[Aurora Labs](./aurora-labs.md):** The organization manufacturing MeshSync (represented by [Mira Chen](./nova-widget.md) and Grace Liu).
-* **PowerCell Supply Co.:** The vendor supplying the CR2477 cells (represented by Rosa Delgado).
+- **Aurora Labs:** The recipient organization managing [firmware](./firmware.md) retest windows and manufacturing batches.
+- **PowerCell Supply Co.:** The vendor supplying battery cells.
+- **[Mira Chen](./aurora-nova-widget-v2.md):** Contact at Aurora Labs receiving the vendor communication.
+- **Grace Liu:** Copied contact at Aurora Labs.
+- **Rosa Delgado:** Account Manager at PowerCell Supply Co. communicating the delay.
 
 ## Related Concepts
-* **Supply Chain Delay:** Disruptions caused by international customs holds affecting production timelines and [firmware](./firmware.md) retest windows.
-* **Inventory Management:** Split-shipment options involving air freight versus bulk truck freight.
+- [Supply Chain Management](./supply-chain-management.md)
+- Customs holds
+- Inventory management
+- Vendor logistics and mitigation strategies
+
+## Contradictions
+*(No contradictions present in the current source data)*
 
 ## References & Trust
 

@@ -10,7 +10,7 @@ tags:
   - jonah
   - meshsync
   - meshsync-routing-table-invalidation
-last_updated: "2026-09-01T21:22:43.332224+00:00"
+last_updated: "2026-09-02T06:39:22.312746+00:00"
 sidebar_label: Firmware Architecture
 slug: /firmware-architecture
 ---
@@ -20,48 +20,36 @@ slug: /firmware-architecture
 # Firmware Architecture
 
 ## Overview
-The [firmware](./firmware.md) architecture for the [Aurora Labs Nova](./nova-widget.md) Widget v2 is designed to support low-power operations, self-healing [mesh networking](./mesh-networking.md), and robust device management on a Nordic nRF52840 MCU. While initial [beta testing](./beta-testing.md) releases prioritize core sensor reading intervals and mesh telemetry, upcoming iterations incorporate over-the-air ([OTA updates](./ota-updates.md)) update capabilities, security features, and alternative update vectors like [Bluetooth Low Energy](./bluetooth-low-energy.md) ([BLE](./ble.md)) proxy updates.
+The [firmware](./firmware.md) architecture for the [Nova Widget v2](./nova-widget-v2.md) (developed by [Aurora Labs](./aurora-labs.md)) runs on a Nordic nRF52840 MCU and governs sensor reading intervals, [power consumption](./power-consumption.md) targets, self-healing [mesh networking](./mesh-networking.md) via [MeshSync](./meshsync.md), and over-the-air (OTA) update mechanics.
 
 ## Key Details
-
-### Reading Interval & Sensor Operations
-- **Default Reading Interval:** Set to every 15 minutes when the mesh is active. It is configurable between 5 minutes and 24 hours via the companion app.
-- **[Power Management](./power-management.md) & Targets:** 
-  - Target average current is **&lt; 85 µA**, inclusive of mesh overhead in a 10-node deployment.
-  - Marketing [battery life](./battery-life.md) target is **24 months** at 15-minute intervals in a moderate mesh ($\le$ 5 nodes).
-  - Internal engineering battery life target is **18 months minimum** at 10 nodes (revalidated from earlier hourly default kickoffs).
-
-### MeshSync and Networking
-- Devices form a self-healing mesh network with a maximum hop count of 4.
-- A USB-powered gateway node bridges mesh data to [MQTT](./mqtt.md).
-- [MeshSync](./meshsync.md) handles network coordination, though flashing updates introduces risks such as routing table invalidation.
-
-### OTA Updates & Firmware Deployment
-- **Status:** Deferred to version 2.1 (not shipping in the initial beta).
-- **Requirements (Design Sketch):**
-  - Signed firmware images using ed25519.
-  - Rollback protection implemented after a mesh-wide upgrade.
-  - BLE proxy updates via a phone app when a mesh node is unreachable.
-- **Risks & Open Questions:**
-  - Risk of bricking if a parent node dies mid-push.
-  - Potential MeshSync routing table invalidation during the flashing process.
-  - Open question on whether [OTA updates](./ota-updates.md) should require explicit user consent per node or support batch "update all" commands.
-  - Sam Rivera ([TeaBuddy](./teabuddy.md)) offered to share a test harness for simpler single-device BLE DFU, which Aurora initially deferred.
+- **MCU & Connectivity:** Built on the Nordic nRF52840 using a 2.4 GHz PCB trace antenna to support a self-healing mesh with a maximum hop count of 4. A USB-powered gateway node bridges the mesh network to [MQTT](./mqtt.md).
+- **Reading Interval:** The default sensor reading interval is **every 15 minutes** when the mesh is active (configurable from 5 minutes to 24 hours via the companion app).
+- **Power & Battery Targets:** 
+  - Target average current is **&lt; 85 µA** including mesh overhead in a 10-node deployment.
+  - Marketing targets a **24-month** [battery life](./battery-life.md) at 15-minute intervals in a moderate mesh ($\le$ 5 nodes).
+  - Internal engineering targets **18 months minimum** at 10 nodes (do not publish externally).
+- **[OTA Updates](./ota-updates.md) (Deferred to v2.1):** 
+  - Requirements include signed firmware images using ed25519, rollback protection after mesh-wide upgrades, and a [BLE](./ble.md) proxy update feature via a phone app when a mesh node is unreachable.
+  - Identified risks include potential brick scenarios if a parent node dies mid-push, and MeshSync routing table invalidation during flashing.
+  - Sam Rivera ([TeaBuddy](./teabuddy.md)) offered to share a test harness for simpler single-device BLE DFU, but Aurora deferred.
 
 ## Related Entities
-- **Aurora Labs:** The organization developing the [Nova Widget v2](./nova-widget-v2.md) and its firmware architecture.
-- **Nordic nRF52840:** The microcontroller unit (MCU) powering the Nova Widget v2.
-- **[Mira Chen](./nova-widget.md):** Author of the product spec draft and OTA update design sketch.
+- **Aurora Labs:** Creator and manufacturer of the Nova Widget v2.
+- **[Mira Chen](./aurora-nova-widget-v2.md):** Author of the [product specifications](./product-specifications.md) and OTA update design sketches.
 - **Jonah:** Team member interested in an optional solar trickle charger module.
-- **Sam Rivera:** TeaBuddy contact who offered a single-device BLE DFU test harness.
+- **Sam Rivera:** Contact at TeaBuddy who offered a single-device BLE DFU test harness.
+- **Nordic nRF52840:** The microcontroller utilized for the widget.
 
 ## Related Concepts
-- **MeshSync:** The protocol/mechanism governing self-healing mesh topology, routing tables, and data overhead.
-- **BLE DFU / Proxy Update:** A secondary update mechanism utilizing Bluetooth Low Energy via phone apps for unreachable nodes.
-- **Ed25519:** Cryptographic signature standard planned for verifying signed firmware images.
+- **MeshSync:** The self-healing mesh protocol used for device communication and data routing.
+- **BLE Proxy Update:** A method allowing users to update unreachable mesh nodes locally via a phone application over [Bluetooth Low Energy](./bluetooth-low-energy.md).
+- **Ed25519:** The digital signature scheme intended for verifying signed firmware images.
 
 ## Contradictions
-&gt; **Contradiction:** Kickoff notes originally mentioned an hourly default reading interval, whereas the [product specification](./product-specification.md) draft updated the default reading interval to 15 minutes for beta feedback, requiring revalidation of the battery section.
+&gt; **Contradiction:** Early kickoff notes mentioned an hourly default reading interval, whereas the beta [product specification](./product-specification.md) explicitly changes the default reading interval to 15 minutes.
+&gt; 
+&gt; **Contradiction:** Open issues in the product spec state that OTA updates are "deferred to v2.1," yet separate design sketches dated July 2026 explicitly detail OTA update requirements, risks, and design considerations (not shipping in beta).
 
 ## References & Trust
 

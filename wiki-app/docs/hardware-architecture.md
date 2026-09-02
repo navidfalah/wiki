@@ -10,7 +10,7 @@ tags:
   - nrf52840
   - open-sensors
   - wiki
-last_updated: "2026-09-01T21:22:59.687506+00:00"
+last_updated: "2026-09-02T06:39:38.984750+00:00"
 sidebar_label: Hardware Architecture
 slug: /hardware-architecture
 ---
@@ -20,24 +20,25 @@ slug: /hardware-architecture
 # Hardware Architecture
 
 ## Overview
-The [hardware](./hardware.md) architecture focuses on creating open-source [sensors](./sensors.md) designed specifically for gardeners who prioritize data ownership. The flagship product under this initiative is the [Nova Widget](./nova-widget.md), a soil moisture and temperature sensor engineered for long-term deployment and reliable localized communication.
+The [hardware](./hardware.md) architecture focuses on developing open-source [sensors](./sensors.md) tailored for gardeners who prioritize data ownership. The flagship product under this architecture is the [Nova Widget](./nova-widget.md), a specialized device designed to monitor soil moisture and temperature while utilizing local [mesh networking](./mesh-networking.md) to extend operational range.
 
 ## Key Details
-- **Flagship Product:** Nova Widget (soil moisture and temperature sensor)
-- **Microcontroller Unit (MCU):** nRF52840
-- **Communication Protocol / Range Extension:** [MeshSync](./meshsync.md) for extended range
-- **[Power Management](./power-management.md):** Battery target of 18 months
+- **Flagship Product:** Nova Widget (soil moisture and temperature sensor).
+- **Microcontroller Unit (MCU):** nRF52840.
+- **Connectivity:** [MeshSync protocol](./meshsync-protocol.md) utilized for extended range.
+- **Power Target:** 18-month [battery life](./battery-life.md).
 
 ## Related Entities
-- **[Mira Chen](./nova-widget.md):** Attendee and contributor in the [project kickoff](./project-kickoff.md)
-- **Jonah Park:** Attendee and contributor in the project kickoff
+- **Mira Chen** (Project attendee and contributor)
+- **Jonah Park** (Project attendee and contributor)
+- **Nova Widget** (Primary hardware product)
 
 ## Related Concepts
-- **Open Sensors:** Garden-focused data-ownership hardware initiative
-- **MeshSync:** Wireless [mesh networking](./mesh-networking.md) technology utilized for range extension
+- **MeshSync:** Communication protocol used for range extension and mesh networking.
+- **Open Sensors:** The overarching initiative to build user-owned gardening hardware and data systems.
 
 ## Contradictions
-*(No known contradictions in the current source material)*
+*(No contradictions reported in current sources)*
 
 ## References & Trust
 

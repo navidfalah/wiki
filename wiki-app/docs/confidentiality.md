@@ -2,15 +2,13 @@
 id: confidentiality
 title: Confidentiality
 tags:
-  - aurora-nova-widget
-  - beta-tester-confidentiality
+  - auroranovawidget
+  - betatesterconfidentiality
   - confidentiality
-  - endorsement-restrictions
-  - hardware-safety-rating
   - meshsync
   - sensenode
   - teabuddy
-last_updated: "2026-09-01T21:22:27.283174+00:00"
+last_updated: "2026-09-02T06:39:05.208289+00:00"
 sidebar_label: Confidentiality
 slug: /confidentiality
 ---
@@ -20,27 +18,28 @@ slug: /confidentiality
 # Confidentiality
 
 ## Overview
-The confidentiality guidelines for beta testers of the [Aurora Nova Widget](./aurora-nova-widget.md) outline proprietary materials, safety limitations, data handling policies, and endorsement restrictions under the beta tester agreement.
+The confidentiality requirements and related terms for participants testing the [Aurora Nova Widget](./aurora-nova-widget.md) beta program are outlined in the official beta tester agreement. This framework governs sensitive [hardware](./hardware.md) and software components, safety guidelines, telemetry handling, and product mention restrictions.
 
 ## Key Details
-* **Confidentiality Materials:** Under Section 4 of the agreement, beta [firmware](./firmware.md), the [MeshSync](./meshsync.md) source partial, and [power budget](./power-budget.md) spreadsheets are strictly confidential.
-* **[Hardware Safety](./hardware-safety.md) (Section 7):** The device carries an IP54 splash-resistant rating and must not be submerged. Outdoor burial in a [SenseNode SN-400](./sensenode-sn-400.md)-style manner is explicitly not supported.
-* **Data Management (Section 9):** Telemetry data remains local by default, with optional [MQTT export](./mqtt-export.md) available via user configuration.
-* **Endorsement Rules (Section 12):** Beta testers are permitted to mention [TeaBuddy](./teabuddy.md) or other products, provided there is no implied Aurora partnership.
+- **Confidentiality Scope (Section 4):** Beta [firmware](./firmware.md), the partial [MeshSync](./meshsync.md) source code, and [power budget](./power-budget.md) spreadsheets are strictly confidential.
+- **Safety Restrictions (Section 7):** The device is rated IP54 splash-resistant only and must not be submerged. Outdoor burial (similar to [SenseNode SN-400](./sensenode-sn-400.md)-style applications) is not supported.
+- **Data & Telemetry (Section 9):** All telemetry remains local by default, with optional [MQTT Export](./mqtt-export.md) available only via user configuration.
+- **Endorsement and Product Mentions (Section 12):** Beta testers are permitted to mention [TeaBuddy](./teabuddy.md) or other products, but such mentions must not imply an official Aurora partnership.
 
 ## Related Entities
-* **Aurora Nova Widget:** The primary product subject to the beta agreement.
-* **MeshSync:** Component with source partials protected under confidentiality.
-* **TeaBuddy:** Another product that beta testers are allowed to mention under specific endorsement guidelines.
-* **SenseNode:** Reference style for outdoor burial that is not supported by the widget hardware.
+- **Aurora Nova Widget:** The primary product subject to the beta tester agreement and confidentiality terms.
+- **TeaBuddy:** A product that beta testers are allowed to mention without implying an Aurora partnership.
+- **SenseNode:** Referenced as a style of outdoor burial that is incompatible with the Aurora Nova Widget's [Hardware Safety](./hardware-safety.md) rating.
 
 ## Related Concepts
-* **Beta Tester Agreement:** The legal framework governing the confidentiality and usage terms for early access participants.
-* **Hardware Safety Ratings:** Specifications detailing environmental protection limits, such as IP54 splash-resistance.
-* **Telemetry Data:** User data handling policies ensuring local retention with optional user-configured MQTT export.
+- **Beta Firmware:** Covered under Section 4 confidentiality protections.
+- **MeshSync:** Software component whose partial source code is classified as confidential.
+- **Power Budget Spreadsheets:** [Documentation](./documentation.md) included under the confidential materials list.
+- **Telemetry:** Local data collection framework with optional user-configured MQTT export.
+- **IP54 Splash-Resistance:** The official hardware safety rating limiting liquid exposure.
 
 ## Contradictions
-*(No contradictions present in the provided source material.)*
+*(None present in the provided source material)*
 
 ## References & Trust
 

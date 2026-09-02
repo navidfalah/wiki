@@ -10,7 +10,7 @@ tags:
   - mira
   - project-status
   - rejoin-regressions
-last_updated: "2026-09-01T21:25:16.732441+00:00"
+last_updated: "2026-09-02T06:41:56.676416+00:00"
 sidebar_label: Project Status
 slug: /project-status
 ---
@@ -20,30 +20,34 @@ slug: /project-status
 # Project Status
 
 ## Overview
-This wiki page documents the project status for [Aurora Labs](./aurora-labs.md) based on the standup update from July 1. It outlines recent releases, ongoing challenges, current blockers, and upcoming action items for the team.
+This wiki page summarizes the project status for [Aurora Labs](./aurora-labs.md) based on the standup update from July 1. It outlines recent releases, [hardware](./hardware.md) updates, [documentation](./documentation.md) milestones, blockers, wins, and upcoming tasks for the team.
 
 ## Key Details
-- **Releases & [Documentation](./documentation.md):** Version 0.3.8 is out, and the team is actively monitoring GitHub issues for any rejoin regressions. A wiki with [Heuristic Mode](./heuristic-mode.md) has been compiled, growing to over 40 pages.
-- **[Hardware](./hardware.md) & Vendors:** The gasket vendor quote for IP65 remains at $8,000, and the board has instructed the team to wait.
+- **Releases:** Version 0.3.8 is officially out, with the team actively monitoring GitHub issues for any rejoin regressions.
+- **Hardware & Procurement:** The gasket vendor quote for IP65 remains at $8k, and the board has instructed the team to wait.
+- **Documentation:** A wiki has been compiled featuring [Heuristic Mode](./heuristic-mode.md), now boasting over 40 pages.
 - **Wins:** 
-  - Gained 3 new beta testers from thread #9102.
-  - Alex sent a joke gift (a pebble-shaped stress ball) to [TeaBuddy](./teabuddy.md).
-- **Todo:** Run the extended dummy data generator prior to the upcoming demo.
+  - Gained 3 new [Beta Testing](./beta-testing.md) testers from thread #9102.
+  - Alex sent a joke gift—a pebble-shaped stress ball—via [TeaBuddy](./teabuddy.md).
+- **Blockers:**
+  - Alex's blog [Battery Life](./battery-life.md) typo (referencing CR2450) is still indexed somewhere.
+  - The homelab forum scrape parser is currently broken on nested quotes.
+- **To-Do Items:**
+  - Run the extended dummy data generator prior to the upcoming demo.
 
 ## Related Entities
-- **Aurora Labs:** The organization conducting the standup and managing the project.
-- **Alex:** Team member associated with the blog battery typo and the stress ball joke gift.
-- **Jonah:** Team member tracking the gasket vendor quote.
-- **[Mira](./nova-widget.md):** Team member monitoring GitHub issues for version 0.3.8 rejoin regressions.
-- **Teabuddy:** Recipient of the stress ball gift from Alex.
+- **Aurora Labs**
+- **[Mira](./aurora-nova-widget-v2.md)**
+- **Jonah**
+- **Alex**
+- **TeaBuddy**
 
 ## Related Concepts
-- **Heuristic Mode:** A feature recently utilized in compiling the project wiki.
-- **Rejoin Regressions:** Potential bugs monitored via GitHub issues following the 0.3.8 release.
-- **Homelab Forum Scrape Parser:** A data parsing tool currently experiencing technical issues.
-
-## Contradictions
-*(No contradictions reported in the current source material.)*
+- **Rejoin regressions**
+- **Heuristic mode**
+- **Homelab forum scrape parser**
+- **Extended dummy data generator**
+- **IP65 gasket vendor quote**
 
 ## References & Trust
 

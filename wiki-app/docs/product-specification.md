@@ -7,9 +7,9 @@ tags:
   - jonah
   - meshsync
   - mira
-  - product-specification
+  - product-spec
   - wiki
-last_updated: "2026-09-01T21:24:55.168512+00:00"
+last_updated: "2026-09-02T06:41:36.288641+00:00"
 sidebar_label: Product Specification
 slug: /product-specification
 ---
@@ -19,26 +19,26 @@ slug: /product-specification
 # Product Specification
 
 ## Overview
-This wiki page compiles specifications, component details, and current engineering status for [Aurora Labs](./aurora-labs.md) products, incorporating updates regarding [hardware](./hardware.md) components, IP ratings, and [MeshSync](./meshsync.md) performance metrics.
+The Product Specification outlines core [hardware](./hardware.md) requirements, [firmware](./firmware.md) stability metrics, and operational parameters for [Aurora Labs](./aurora-labs.md)' hardware and [MeshSync Protocol](./meshsync-protocol.md). Recent updates from team syncs highlight ongoing testing phases, including beta hardware readiness, node stability, and component specifications.
 
 ## Key Details
-- **MeshSync Stability:** MeshSync is currently stable at 8 nodes, though engineers are still observing a power spike to 110 µA when a node rejoins the network.
-- **Enclosure & IP Ratings:** Gasket samples have arrived. The IP54 rating is deemed sufficient for the [beta testing](./beta-testing.md) release, while upgrading to IP65 requires an $8k tooling investment as noted in the [product specifications](./product-specifications.md).
-- **Battery Component:** The device utilizes CR2032 [batteries](./battery-life.md) (corrections supersede previous teardown notes that incorrectly referenced CR2450).
+- **MeshSync Performance:** MeshSync is stable at 8 nodes, though reconnecting nodes experience a power spike up to 110 µA.
+- **Enclosure & IP Ratings:** Gasket samples have arrived. An IP54 rating is acceptable for the beta release, but achieving an IP65 rating requires a dedicated $8,000 tool as noted in the specifications.
+- **Battery Components:** The hardware utilizes CR2032 batteries (correcting previous teardown references to CR2450).
 
 ## Related Entities
-- **Aurora Labs:** The organization developing the hardware and [MeshSync protocol](./meshsync-protocol.md).
-- **[Mira](./nova-widget.md):** Engineering team member who flagged MeshSync metrics, IP rating tool costs, telemetry intervals, and [battery specifications](./battery-specifications.md).
-- **Jonah:** Engineering team member who reviewed gasket samples and clarified specification discrepancies.
-- **Alex:** Team member whose previous teardown report contained an error regarding the battery type.
+- **Aurora Labs:** The organization developing the MeshSync protocol and hardware.
+- **[Mira](./aurora-nova-widget-v2.md):** Team member managing MeshSync metrics, gasket tooling requirements, and wiki [documentation](./documentation.md) updates.
+- **Jonah:** Team member tracking gasket samples, IP rating trade-offs, and specification discrepancies.
+- **Alex:** Team member who conducted the hardware teardown.
 
 ## Related Concepts
-- **MeshSync:** Node [networking](./networking.md) protocol currently stable at 8 nodes with specific power rejoin behavior.
-- **Ingress Protection (IP) Ratings:** Standards governing moisture and dust resistance (IP54 for beta vs. IP65 for production).
-- **Telemetry Reporting Intervals:** Data reporting frequency for beta testers.
+- **MeshSync:** A node-based mesh synchronization protocol currently stabilizing around 8 nodes.
+- **IP Rating Requirements:** Environmental sealing standards (IP54 for beta vs. IP65 for production).
+- **Hardware Component Specifications:** Detailed bill of materials decisions, such as battery selection (CR2032).
 
 ## Contradictions
-&gt; **Contradiction:** There is a discrepancy regarding the default telemetry reporting interval promised to beta testers. The product specification document states a 15-minute default, whereas the [project kickoff](./project-kickoff.md) notes specified an hourly default.
+&gt; **Contradiction:** There is a conflict regarding the default reporting interval for beta testers. The official product specification states a 15-minute default, whereas the [project kickoff](./project-kickoff.md) documentation specified an hourly default interval.
 
 ## References & Trust
 

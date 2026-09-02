@@ -8,7 +8,7 @@ tags:
   - reverse-mesh
   - self-maintaining-wiki
   - wiki
-last_updated: "2026-09-01T21:22:58.452510+00:00"
+last_updated: "2026-09-02T06:39:37.772828+00:00"
 sidebar_label: Groceries
 slug: /groceries
 ---
@@ -18,31 +18,26 @@ slug: /groceries
 # Groceries
 
 ## Overview
-This page compiles a personal note containing a quick grocery shopping list alongside various [project ideas](./project-ideas.md), late-night thoughts, a reminder, and an incomplete [hardware design](./hardware-design.md) note.
+This page captures a collection of notes, grocery items, [Project Ideas](./project-ideas.md), and late-night thoughts recorded in early June 2026. It serves as a personal capture space for immediate errands and exploratory tech concepts.
 
 ## Key Details
-- **Grocery List:**
-  - Milk
-  - Batteries (CR2032 x4) — designated for [Nova](./nova-widget.md) prototypes
-  - Coffee
-  - "That one cheese"
-- **Project Idea #47 ("Plant Whisperer"):** An app that yells at the user when soil is dry, potentially connecting to the [Nova widget](./nova-widget.md). Proposed monetization strategy involves stickers.
-- **Project Idea #48 ("Reverse Mesh"):** Utilizing phones as network nodes (questioned as a potentially bad idea).
-- **Late-Night Thoughts:** Exploration of a self-maintaining wiki concept (inspired by an LLM wiki pattern, referencing a "Karpathy thing").
-- **Reminders & Miscellaneous:**
-  - Call the dentist on Thursday.
-  - Unfinished enclosure design thought: "the enclosure needs to be more like a pebble and less like a..."
+* **Shopping List:**
+  * Milk
+  * Batteries: CR2032 x4 (designated for [Nova](./aurora-nova-widget-v2.md) prototypes)
+  * Coffee
+  * "That one cheese"
+* **Reminders & Tasks:**
+  * Call the dentist on Thursday.
+* **Enclosure Design:**
+  * Unfinished thought on [Hardware Design](./hardware-design.md): *"the enclosure needs to be more like a pebble and less like a"*
 
 ## Related Entities
-- **Nova:** A project or hardware line associated with widget connectivity and CR2032 battery prototypes.
+* **Nova:** A hardware or widget project associated with CR2032 batteries and potential app integrations.
 
 ## Related Concepts
-- **Plant Whisperer:** Soil moisture monitoring application concept with audio alerts.
-- **Reverse Mesh:** Decentralized [networking](./networking.md) concept using mobile phones.
-- **Self-Maintaining Wiki:** An autonomous [documentation](./documentation.md) pattern driven by language models.
-
-## Contradictions
-*(No contradictions present in the provided source material)*
+* **Plant Whisperer (Project Idea #47):** An application concept designed to yell at users when soil is dry, with potential connectivity to the [Nova Widget](./nova-widget.md) and sticker-based monetization.
+* **Reverse Mesh (Project Idea #48):** A network concept utilizing phones as nodes (annotated with skepticism as a "bad idea").
+* **Self-Maintaining Wiki:** A late-night concept (noted around 2 AM) inspired by Andrej Karpathy's work, exploring the "LLM wiki pattern" where a wiki maintains itself.
 
 ## References & Trust
 

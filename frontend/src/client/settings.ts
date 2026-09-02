@@ -1,14 +1,73 @@
 const apiBase = document.querySelector('meta[name="api-base"]')?.getAttribute('content') ?? '';
 const UNCHANGED = '__unchanged__';
 
+type Provider = 'openai' | 'gemini' | 'local' | 'custom';
+type ReasoningEffort = '' | 'minimal' | 'low' | 'medium' | 'high';
+
 interface Profile {
   id: string;
   label: string;
-  provider: 'openai' | 'gemini' | 'local' | 'custom';
+  provider: Provider;
   base_url: string;
   model: string;
   api_key: string; // masked when loaded from the server
   has_key?: boolean;
+  temperature: number;
+  top_p: number | null;
+  max_tokens: number | null;
+  reasoning_effort: ReasoningEffort;
+}
+
+// Starting points for the model picker -- a curated list per provider so
+// users aren't stuck guessing exact model ids, but the input stays a plain
+// text field (via <datalist>) so any custom/self-hosted model id still works.
+const MODEL_PRESETS: Record<Provider, string[]> = {
+  openai: [
+    'gpt-5', 'gpt-5-mini', 'gpt-5-nano',
+    'gpt-4.1', 'gpt-4.1-mini', 'gpt-4.1-nano',
+    'gpt-4o', 'gpt-4o-mini',
+    'o3', 'o3-mini', 'o1', 'o1-mini',
+    'gpt-3.5-turbo',
+  ],
+  gemini: [
+    'gemini-3-pro', 'gemini-3.5-flash-lite',
+    'gemini-2.5-pro', 'gemini-2.5-flash', 'gemini-2.5-flash-lite',
+    'gemini-2.0-flash', 'gemini-2.0-flash-lite',
+    'gemini-1.5-pro', 'gemini-1.5-flash',
+  ],
+  local: [
+    'gemma-4-it', 'gemma-2-9b-it', 'gemma-2-27b-it',
+    'llama-3.1-8b-instruct', 'llama-3.1-70b-instruct', 'llama-3-70b-instruct',
+    'mistral-7b-instruct', 'qwen2.5-7b-instruct', 'qwen2.5-14b-instruct',
+    'phi-3-mini-4k-instruct',
+  ],
+  custom: [
+    'deepseek-chat', 'deepseek-reasoner',
+    'mistral-large-latest', 'mixtral-8x7b-instruct',
+    'llama-3.1-70b-instruct', 'qwen2.5-72b-instruct',
+    'grok-2-latest', 'command-r-plus',
+  ],
+};
+
+const REASONING_EFFORTS: { value: ReasoningEffort; label: string }[] = [
+  { value: '', label: 'Off (default)' },
+  { value: 'minimal', label: 'Minimal' },
+  { value: 'low', label: 'Low' },
+  { value: 'medium', label: 'Medium' },
+  { value: 'high', label: 'High' },
+];
+
+/** Creates one <datalist> per provider (once) so model inputs can reference
+ *  them via the `list` attribute while staying plain, freely-editable text inputs. */
+function ensureModelDatalists() {
+  for (const provider of Object.keys(MODEL_PRESETS) as Provider[]) {
+    const id = `model-presets-${provider}`;
+    if (document.getElementById(id)) continue;
+    const datalist = document.createElement('datalist');
+    datalist.id = id;
+    datalist.innerHTML = MODEL_PRESETS[provider].map((m) => `<option value="${m}"></option>`).join('');
+    document.body.appendChild(datalist);
+  }
 }
 
 type Purpose = 'default' | 'thinking' | 'embedding';
@@ -63,19 +122,48 @@ function renderProfiles() {
       renderAssignments();
     });
 
+    const modelInput = row.querySelector('[data-field="model"]') as HTMLInputElement;
+    modelInput.value = profile.model;
+    modelInput.setAttribute('list', `model-presets-${profile.provider}`);
+    modelInput.addEventListener('input', () => (profile.model = modelInput.value));
+
     const providerSelect = row.querySelector('[data-field="provider"]') as HTMLSelectElement;
     providerSelect.value = profile.provider;
     providerSelect.addEventListener('change', () => {
       profile.provider = providerSelect.value as Profile['provider'];
+      modelInput.setAttribute('list', `model-presets-${profile.provider}`);
     });
 
     const baseUrlInput = row.querySelector('[data-field="base_url"]') as HTMLInputElement;
     baseUrlInput.value = profile.base_url;
     baseUrlInput.addEventListener('input', () => (profile.base_url = baseUrlInput.value));
 
-    const modelInput = row.querySelector('[data-field="model"]') as HTMLInputElement;
-    modelInput.value = profile.model;
-    modelInput.addEventListener('input', () => (profile.model = modelInput.value));
+    const temperatureInput = row.querySelector('[data-field="temperature"]') as HTMLInputElement;
+    temperatureInput.value = String(profile.temperature);
+    temperatureInput.addEventListener('input', () => {
+      const n = Number(temperatureInput.value);
+      profile.temperature = Number.isFinite(n) ? n : profile.temperature;
+    });
+
+    const topPInput = row.querySelector('[data-field="top_p"]') as HTMLInputElement;
+    topPInput.value = profile.top_p === null ? '' : String(profile.top_p);
+    topPInput.addEventListener('input', () => {
+      profile.top_p = topPInput.value === '' ? null : Number(topPInput.value);
+    });
+
+    const maxTokensInput = row.querySelector('[data-field="max_tokens"]') as HTMLInputElement;
+    maxTokensInput.value = profile.max_tokens === null ? '' : String(profile.max_tokens);
+    maxTokensInput.addEventListener('input', () => {
+      maxTokensInput.value === '' ? (profile.max_tokens = null) : (profile.max_tokens = Number(maxTokensInput.value));
+    });
+
+    const reasoningSelect = row.querySelector('[data-field="reasoning_effort"]') as HTMLSelectElement;
+    reasoningSelect.innerHTML = REASONING_EFFORTS.map(
+      (r) => `<option value="${r.value}" ${profile.reasoning_effort === r.value ? 'selected' : ''}>${r.label}</option>`,
+    ).join('');
+    reasoningSelect.addEventListener('change', () => {
+      profile.reasoning_effort = reasoningSelect.value as ReasoningEffort;
+    });
 
     const keyInput = row.querySelector('[data-field="api_key"]') as HTMLInputElement;
     keyInput.placeholder = profile.has_key ? profile.api_key : 'API key';
@@ -212,6 +300,10 @@ function addProfile() {
     model: '',
     api_key: '',
     has_key: false,
+    temperature: 0.2,
+    top_p: null,
+    max_tokens: null,
+    reasoning_effort: '',
   };
   state.profiles.push(profile);
   renderProfiles();
@@ -231,6 +323,10 @@ async function save() {
         base_url: p.base_url,
         model: p.model,
         api_key: editedKeys[p.id] !== undefined && editedKeys[p.id] !== '' ? editedKeys[p.id] : UNCHANGED,
+        temperature: p.temperature,
+        top_p: p.top_p,
+        max_tokens: p.max_tokens,
+        reasoning_effort: p.reasoning_effort,
       })),
       assignments: state.assignments,
       local_llm: state.local_llm,
@@ -260,4 +356,5 @@ async function save() {
 document.getElementById('add-profile-btn')?.addEventListener('click', addProfile);
 document.getElementById('save-settings-btn')?.addEventListener('click', save);
 
+ensureModelDatalists();
 load();

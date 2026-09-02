@@ -6,7 +6,7 @@ tags:
   - iot-devices
   - meshsync
   - wiki
-last_updated: "2026-09-01T21:23:35.866588+00:00"
+last_updated: "2026-09-02T06:40:17.058240+00:00"
 sidebar_label: IoT Devices
 slug: /iot-devices
 ---
@@ -16,27 +16,23 @@ slug: /iot-devices
 # IoT Devices
 
 ## Overview
-This page documents updates, specifications, and community interactions regarding [IoT](./iot.md) devices and related [firmware releases](./firmware-releases.md) from [Aurora Labs](./aurora-labs.md), specifically focusing on the [MeshSync protocol](./meshsync-protocol.md) and [hardware](./hardware.md) requirements.
+The discussion around [IoT](./iot.md) devices features updates from [Aurora Labs](./aurora-labs.md) regarding their [MeshSync](./meshsync.md) [firmware](./firmware.md)/software ecosystem, specifically version 0.3.8. Community engagement highlights [hardware](./hardware.md) configurations, node limits, and [battery specifications](./battery-specifications.md) for supported IoT setups.
 
 ## Key Details
-- **MeshSync Version 0.3.8 Release:** Released by Aurora Labs in July 2026, featuring rejoin fixes and the introduction of [MQTT](./mqtt.md) schema v2. [Documentation](./documentation.md) is available on the project wiki.
-- **Node Limits:** 
-  - Recommended maximum of 6 nodes during the [Beta Testing](./beta-testing.md) phase.
-  - Node limits of up to 8 are currently showing improvements.
-- **[Hardware Specifications](./hardware-specifications.md):** 
-  - Supported coin cell [Battery Life](./battery-life.md) type: CR2032 (clarifying and correcting an old blog typo that referenced CR2450).
+- **MeshSync 0.3.8 Release:** Features rejoin fixes and the introduction of [MQTT](./mqtt.md) schema v2. [Documentation](./documentation.md) is available on the official wiki.
+- **Node Limits:** The beta version recommends a maximum of 6 nodes, though configurations of up to 8 nodes are showing improvements.
+- **[Hardware Specifications](./hardware-specifications.md):** Compatible devices utilize CR2032 coin cell batteries (a previous blog typo regarding CR2450 has been corrected).
 
 ## Related Entities
-- **Aurora Labs:** The organization and developer behind MeshSync and associated [IoT Systems](./iot-systems.md) software/[Hardware Design](./hardware-design.md) guidelines.
-- **Maker Faire:** Upcoming event mentioned by Aurora Labs for community engagement.
+- **Aurora Labs:** The organization/entity behind MeshSync and associated IoT development.
+- **Maker Faire:** An upcoming event where Aurora Labs anticipates meeting community members.
 
 ## Related Concepts
-- **MeshSync:** A protocol/software tool for [IoT Devices](./iot-devices.md) synchronization, currently at version 0.3.8.
-- **MQTT Schema v2:** The messaging protocol schema implemented in the latest MeshSync release.
-- **Hardware Power Requirements:** Use of CR2032 coin cell batteries for supported [IoT Sensors](./iot-sensors.md).
+- **MQTT Schema v2:** A messaging protocol schema update implemented in MeshSync 0.3.8 for IoT device communication.
+- **Node Mesh Networks:** Localized device routing and connection stability tested during the MeshSync beta phase.
 
 ## Contradictions
-*No direct contradictions were identified in the provided sources.*
+*(None present in the provided sources)*
 
 ## References & Trust
 

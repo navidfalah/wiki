@@ -1,8 +1,56 @@
 {
   "id": "e1027a44-96ce-4990-a30c-7979e7bf92c0",
-  "title": "New chat",
+  "title": "What topics does the wiki cover?",
   "created_at": "2026-09-01T21:15:07.221Z",
-  "updated_at": "2026-09-01T21:15:07.221Z",
+  "updated_at": "2026-09-02T07:03:10.887Z",
   "resource_scope": null,
-  "messages": []
+  "messages": [
+    {
+      "role": "user",
+      "content": "What topics does the wiki cover?",
+      "at": "2026-09-02T07:03:10.887Z"
+    },
+    {
+      "role": "assistant",
+      "content": "Based on the wiki excerpts, the wiki covers:\n* Internet of Things (IoT) systems, embedded hardware, power management, and personal knowledge management workflows [1].",
+      "sources": [
+        {
+          "doc_path": "iot-systems.md",
+          "title": "IoT Systems",
+          "heading": "Overview",
+          "score": 5,
+          "slug": "iot-systems"
+        },
+        {
+          "doc_path": "heuristic-mode.md",
+          "title": "Heuristic Mode",
+          "heading": "Overview",
+          "score": 4,
+          "slug": "heuristic-mode"
+        },
+        {
+          "doc_path": "wiki-compiler.md",
+          "title": "Wiki Compiler",
+          "heading": "Overview",
+          "score": 3,
+          "slug": "wiki-compiler"
+        },
+        {
+          "doc_path": "sprint-retrospective.md",
+          "title": "Sprint Retrospective",
+          "heading": "Key Details",
+          "score": 2,
+          "slug": "sprint-retrospective"
+        },
+        {
+          "doc_path": "meeting-notes.md",
+          "title": "Meeting Notes",
+          "heading": "Overview",
+          "score": 1,
+          "slug": "meeting-notes"
+        }
+      ],
+      "at": "2026-09-02T07:03:10.887Z"
+    }
+  ]
 }

@@ -8,13 +8,31 @@ const router = Router();
 interface DocListItem {
   path: string;
   title: string;
+  category: string | null;
 }
 
 async function loadPageList(token?: string) {
   const data = await apiGet<{ pages: DocListItem[] }>('/api/docs', token);
   return data.pages
-    .map((p) => ({ title: p.title, slug: p.path.replace(/\.md$/, '') }))
+    .map((p) => ({ title: p.title, slug: p.path.replace(/\.md$/, ''), category: p.category || 'General Reference' }))
     .sort((a, b) => a.title.localeCompare(b.title));
+}
+
+function groupByCategory<T extends { category: string }>(pages: T[]): { name: string; pages: T[] }[] {
+  const groups = new Map<string, T[]>();
+  for (const page of pages) {
+    if (!groups.has(page.category)) groups.set(page.category, []);
+    groups.get(page.category)!.push(page);
+  }
+  return [...groups.entries()]
+    .map(([name, pages]) => ({ name, pages }))
+    .sort((a, b) => {
+      if (a.name === 'Overview') return -1;
+      if (b.name === 'Overview') return 1;
+      if (a.name === 'General Reference') return 1;
+      if (b.name === 'General Reference') return -1;
+      return a.name.localeCompare(b.name);
+    });
 }
 
 function isNotFound(err: any): boolean {
@@ -24,7 +42,8 @@ function isNotFound(err: any): boolean {
 router.get('/', async (req, res, next) => {
   try {
     const pages = await loadPageList(getToken(req));
-    res.render('wiki', { apiBase: PUBLIC_API_URL, title: 'Wiki', active: 'Wiki', pages });
+    const folders = groupByCategory(pages);
+    res.render('wiki', { apiBase: PUBLIC_API_URL, title: 'Wiki', active: 'Wiki', pages, folders });
   } catch (err) {
     next(err);
   }

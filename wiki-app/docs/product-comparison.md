@@ -8,7 +8,7 @@ tags:
   - product-comparison
   - sensenode-sn-400
   - wiki
-last_updated: "2026-09-01T21:24:44.088051+00:00"
+last_updated: "2026-09-02T06:41:25.791296+00:00"
 sidebar_label: Product Comparison
 slug: /product-comparison
 ---
@@ -18,14 +18,14 @@ slug: /product-comparison
 # Product Comparison
 
 ## Overview
-This wiki page provides a product comparison based on support inquiries regarding outdoor use cases, ingress protection ratings, and software features such as cloud fees.
+This wiki page provides a product comparison based on support ticket inquiries regarding outdoor usage specifications and features between the [Nova Widget](./nova-widget.md) and the [SenseNode SN-400](./sensenode-sn-400.md), alongside related ecosystem features like [MeshSync](./meshsync.md).
 
 ## Key Details
-- **Outdoor Use & Ingress Protection:** 
-  - **[SenseNode SN-400](./sensenode-sn-400.md):** Features an IP67 rating, making it fully dust-tight and capable of withstanding water immersion, which is well-suited for outdoor environments.
-  - **[Nova Widget](./nova-widget.md):** Currently features an IP54 beta rating, offering limited protection against dust and splashing water.
-- **Software & Fees:** 
-  - **[MeshSync](./meshsync.md):** Operates with no cloud fee.
+- **Outdoor Use / IP Ratings:** 
+  - **SenseNode SN-400:** Features an IP67 rating, making it fully dust-tight and protected against temporary water immersion, suitable for outdoor deployments.
+  - **Nova Widget:** Currently features an IP54 beta rating, offering limited splash and dust resistance which may be less optimal for harsh outdoor environments compared to the SenseNode SN-400.
+- **Ecosystem Features:**
+  - **MeshSync:** Operates with no cloud fee, providing a cost-effective synchronization option.
 
 ## Related Entities
 - Nova Widget
@@ -33,12 +33,10 @@ This wiki page provides a product comparison based on support inquiries regardin
 - MeshSync
 
 ## Related Concepts
-- IP Rating (Ingress Protection)
-- Outdoor deployment
-- Cloud subscription fees
-
-## Contradictions
-*(No contradictions reported in the current dataset.)*
+- IP Rating
+- Outdoor Use
+- Cloud Fees
+- [Product Specifications](./product-specifications.md)
 
 ## References & Trust
 
