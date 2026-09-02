@@ -38,7 +38,9 @@ the file extension and delegates:
 | `.png .jpg .jpeg .gif .webp .bmp` | `media_ingest.build_image_chunk()` | An LLM-generated caption + embedded `![...](...)` |
 | `.mp3 .wav .m4a .ogg .flac .aac` | `media_ingest.build_audio_chunk()` | An LLM-generated transcript + `[Listen to ...](...)` link |
 | `.pdf .csv .tsv .json .xml .html .htm .yaml .yml .log` | `media_ingest.build_file_chunks()` | Extracted text (PDF via `pypdf`; CSV/TSV/JSON/XML/HTML/YAML/log via stdlib) |
-| `.docx .xlsx .pptx .zip .rtf .odt .ods .odp .rar .7z .tar .gz .tgz .epub .mp4 .mov .avi .mkv .m4v` | `media_ingest.build_file_chunks()` | Metadata + a `[Download ...](...)` link — no content parsing |
+| `.docx .xlsx .pptx` | `media_ingest.build_file_chunks()` | Extracted text (paragraphs+tables / sheet cells / slide text+notes, via `python-docx`/`openpyxl`/`python-pptx`) |
+| `.zip` | `media_ingest.build_file_chunks()` | A file listing (name + size per entry) via stdlib `zipfile` — not recursive extraction |
+| `.rtf .odt .ods .odp .rar .7z .tar .gz .tgz .epub .mp4 .mov .avi .mkv .m4v` | `media_ingest.build_file_chunks()` | Metadata + a `[Download ...](...)` link — no content parsing |
 
 `discover_raw_source_files()` (renamed from `discover_raw_text_files()`) now
 walks all of `data/raw/` and keeps any file whose extension is in one of
@@ -69,17 +71,40 @@ SQLite LLM cache on every later compile.
   comment in `_extract_pdf_text()`), the PDF is registered as an opaque
   attachment instead. `pypdf` is a plain dependency in `requirements.txt`, so
   this only matters if you're running outside the venv setup docs recommend.
-- **Everything else in `OPAQUE_FILE_EXTENSIONS`** — DOCX, XLSX, PPTX, ZIP,
-  RTF, ODT/ODS/ODP, RAR, 7z, TAR/GZ/TGZ, EPUB, and common video containers
-  (MP4, MOV, AVI, MKV, M4V) — is *not* parsed — no dependency was added for
-  them. They become a one-line chunk ("Attached file: ... — content not
-  parsed") plus a download link, so they still show up as an attachment on
-  the compiled page, just without extracted content. This opaque fallback is
-  deliberately generic: it's what lets the wiki accept practically any file
-  format dropped into `data/raw/` without needing a dedicated parser for
-  each one — add a parser in `media_ingest.build_file_chunks()` (or a new
-  entry in `TEXT_EXTRACTABLE_FILE_EXTENSIONS`) if you need real content
-  extraction for one of these.
+- **DOCX, XLSX, PPTX** get real content extraction too, via `python-docx`,
+  `openpyxl`, and `python-pptx` respectively (all plain dependencies in
+  `requirements.txt`):
+  - DOCX: every paragraph's text (document order) plus every table's cells,
+    rendered as `cell | cell | cell` rows.
+  - XLSX: every sheet's cell values as comma-joined rows under a `## Sheet:
+    <name>` heading, capped at 100 rows per sheet (a note says how many more
+    exist) so one huge spreadsheet can't blow up chunk size unboundedly.
+  - PPTX: every slide's shape text and table cells under a `## Slide N`
+    heading, plus speaker notes when present.
+  - Same graceful-degradation contract as PDF: a missing library, or a file
+    that fails to parse (corrupt, or not actually that format despite its
+    extension), degrades to the opaque attachment fallback below rather than
+    crashing the compile — see `_extract_docx_text()` / `_extract_xlsx_text()`
+    / `_extract_pptx_text()`.
+- **ZIP** gets a lightweight *manifest* — every entry's path and size, via
+  the standard library's `zipfile` (no extra dependency, and no ImportError
+  path to guard). This is deliberately **not** recursive extraction: ingesting
+  an archive's contents as first-class raw sources would need real
+  sandboxing against zip bombs/path traversal and its own place in the
+  incremental state/dedup model — a bigger feature than "make an archive's
+  contents visible." A corrupt/unreadable ZIP degrades to the opaque
+  fallback the same way.
+- **Everything else in `OPAQUE_FILE_EXTENSIONS`** — RTF, ODT/ODS/ODP, RAR,
+  7z, TAR/GZ/TGZ, EPUB, and common video containers (MP4, MOV, AVI, MKV,
+  M4V) — is *not* parsed — no dependency was added for them. They become a
+  one-line chunk ("Attached file: ... — content not parsed") plus a download
+  link, so they still show up as an attachment on the compiled page, just
+  without extracted content. This opaque fallback is deliberately generic:
+  it's what lets the wiki accept practically any file format dropped into
+  `data/raw/` without needing a dedicated parser for each one — add a parser
+  in `media_ingest.build_file_chunks()` (or a new entry in
+  `TEXT_EXTRACTABLE_FILE_EXTENSIONS`) if you need real content extraction
+  for one of these.
 
 ### Where the files go
 
@@ -195,6 +220,11 @@ captioning, audio transcription) is pure logic and unit-tested without any
 API key: `tests/test_media_ingest.py`, `tests/test_email_ingest.py`,
 `tests/test_trust.py`, `tests/test_llm_client_audio.py` (fakes the OpenAI
 `audio.transcriptions` client to test caching/retries without a real key).
+`tests/test_media_ingest.py` builds real minimal DOCX/XLSX/PPTX/ZIP files
+in-memory with the extraction libraries themselves (`python-docx`/
+`openpyxl`/`python-pptx`/stdlib `zipfile`) and asserts on the extracted
+text, plus covers every graceful-degradation path (invalid file bytes for
+each format, a corrupt ZIP) falling back to the opaque attachment.
 `tests/test_multimedia_pipeline.py` exercises the full chunk → extract →
 group → synthesize flow with a fake LLM, asserting that mixed source types
 (text + image + audio + email + file in one topic) all appear correctly in

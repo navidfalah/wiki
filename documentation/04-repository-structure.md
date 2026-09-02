@@ -48,10 +48,11 @@ data/
 **Recognized extensions under `data/raw/`:** `.txt` `.md` (text), `.eml`
 (email), `.png` `.jpg` `.jpeg` `.gif` `.webp` `.bmp` (image), `.mp3` `.wav`
 `.m4a` `.ogg` `.flac` `.aac` (audio), `.pdf` `.csv` `.tsv` `.json` `.xml`
-`.html` `.htm` `.yaml` `.yml` `.log` (file attachment, text extracted),
-`.docx` `.xlsx` `.pptx` `.zip` `.rtf` `.odt` `.ods` `.odp` `.rar` `.7z`
-`.tar` `.gz` `.tgz` `.epub` `.mp4` `.mov` `.avi` `.mkv` `.m4v` (file
-attachment, opaque). See
+`.html` `.htm` `.yaml` `.yml` `.log` `.docx` `.xlsx` `.pptx` `.zip` (file
+attachment, text extracted — PDF/DOCX/XLSX/PPTX via a parsing library, ZIP
+as a file listing, the rest via stdlib), `.rtf` `.odt` `.ods` `.odp` `.rar`
+`.7z` `.tar` `.gz` `.tgz` `.epub` `.mp4` `.mov` `.avi` `.mkv` `.m4v` (file
+attachment, opaque — metadata + download link only). See
 [19-multimedia-email-and-trust.md](./19-multimedia-email-and-trust.md).
 Everything else (and dotfiles like `.gitkeep`) is ignored.
 
