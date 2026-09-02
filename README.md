@@ -36,7 +36,7 @@ The sample domain is fictional **Aurora Labs** (open IoT sensors), cross-linked 
 
 ## Project overview
 
-LLM Wiki turns unstructured raw sources — meeting notes, `.eml` email threads, forum scrapes, half-finished specs, images, and PDF/CSV/JSON/DOCX/XLSX/PPTX/ZIP attachments — into a linked markdown wiki suitable for Docusaurus. The compiler uses an **OpenAI-compatible API** for extraction, synthesis, cross-linking, and image captioning (`OPENAI_API_KEY` required). See [documentation/19-multimedia-email-and-trust.md](./documentation/19-multimedia-email-and-trust.md) for how non-text sources and source-trust/citation tracking work.
+LLM Wiki turns unstructured raw sources — meeting notes, `.eml` email threads, forum scrapes, half-finished specs, images, audio recordings, and PDF/CSV/TSV/JSON/XML/HTML/YAML/DOCX/XLSX/PPTX/ZIP/RTF/archive/video attachments — into a linked markdown wiki suitable for Docusaurus. The compiler uses an **OpenAI-compatible API** for extraction, synthesis, cross-linking, image captioning, and audio transcription (`OPENAI_API_KEY` required). See [documentation/19-multimedia-email-and-trust.md](./documentation/19-multimedia-email-and-trust.md) for how non-text sources and source-trust/citation tracking work.
 
 Three dedicated "engine" modules sit on top of the base pipeline, each with its own dashboard page and unit tests, independent of one another: an **email knowledge engine** (browse ingested `.eml` threads on their own, see [documentation/20-email-resources-and-chat-engines.md](./documentation/20-email-resources-and-chat-engines.md)), a **resources engine** (every cited source deduped across pages, reusable independent of which page cites it), and a **RAG chat engine** (ask questions over the compiled wiki and get cited answers — works with or without an LLM configured). The dashboard defaults to a minimal, light-only theme.
 
@@ -45,7 +45,7 @@ Three dedicated "engine" modules sit on top of the base pipeline, each with its 
 ```mermaid
 flowchart TB
     subgraph input [Human input]
-        RAW["data/raw/<br/>text, .eml, images, PDF/CSV/JSON/DOCX/..."]
+        RAW["data/raw/<br/>text, .eml, images, audio, PDF/CSV/JSON/DOCX/..."]
     end
 
     subgraph compiler [Python compiler — compiler/]
@@ -127,7 +127,7 @@ wiki/
 │   └── wiki-build.yml           # CI: compile → build → GitHub Pages
 │
 ├── data/
-│   ├── raw/                     # Raw sources: text, .eml, images, files — you add here
+│   ├── raw/                     # Raw sources: text, .eml, images, audio, files — you add here
 │   ├── state.json               # Incremental compiler state (MD5 hashes, extractions)
 │   ├── link_overrides.json      # Manual knowledge-graph connection rules
 │   ├── source_trust.json        # Per-source trust level rules (trust.py)
@@ -600,7 +600,7 @@ cd compiler && python main.py --force
 
 ```
 data/
-├── raw/                         # All compiler input (text, .eml, images, files — recursive)
+├── raw/                         # All compiler input (text, .eml, images, audio, files — recursive)
 │   ├── notes/                   # Standups, scribbles (seed + generated)
 │   ├── transcripts/             # Meeting/support transcripts
 │   ├── articles/                # Spec fragments, blog scrapes
@@ -653,6 +653,7 @@ OPENAI_MODEL=gpt-4o-mini
 | `OPENAI_API_KEY` | **Yes** | OpenAI-compatible API key for the compiler |
 | `OPENAI_BASE_URL` | No | OpenAI-compatible API base URL |
 | `OPENAI_MODEL` | No | Model name (default `gpt-4o-mini`) |
+| `OPENAI_TRANSCRIPTION_MODEL` | No | Audio transcription model (default `whisper-1`) |
 
 The compiler loads `.env` from the repo root via `python-dotenv` in `llm_client.py`.
 

@@ -44,6 +44,7 @@ import { deletePipelineRun, getPipelineRun, listPipelineRuns } from '../lib/pipe
 import { isBuildRunning, runCli, stopBuild, streamChat, streamCompilerBuild } from '../lib/pythonBridge';
 import { createFolder, deleteFile, deleteFolder, discoverRawFolders, FolderError, moveFile, uploadFiles } from '../lib/rawFolders';
 import {
+  AUDIO_PREVIEW_EXTENSIONS,
   computeMd5,
   discoverRawSourceFiles,
   IMAGE_PREVIEW_EXTENSIONS,
@@ -266,6 +267,7 @@ export function registerRoutes(app: Express): void {
       const ext = path.extname(filePath).toLowerCase();
       const isText = TEXT_PREVIEW_EXTENSIONS.has(ext);
       const isImage = IMAGE_PREVIEW_EXTENSIONS.has(ext);
+      const isAudio = AUDIO_PREVIEW_EXTENSIONS.has(ext);
       const content = isText ? fs.readFileSync(filePath, 'utf-8') : null;
       const md5 = computeMd5(filePath);
       const state = loadState();
@@ -279,6 +281,7 @@ export function registerRoutes(app: Express): void {
         content,
         is_text: isText,
         is_image: isImage,
+        is_audio: isAudio,
         is_pdf: ext === '.pdf',
         mime: mimeTypeFor(filePath),
         raw_url: `/api/raw-files/raw/${rel.split('/').map(encodeURIComponent).join('/')}`,

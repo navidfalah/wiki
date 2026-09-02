@@ -1,10 +1,14 @@
-"""Ingest non-text raw sources: images and generic file attachments.
+"""Ingest non-text raw sources: images, audio, and generic file attachments.
 
-Images get an LLM-generated caption (vision-capable chat completion) and are
+Images get an LLM-generated caption (vision-capable chat completion), audio
+gets an LLM-generated transcript (speech-to-text completion), and both are
 copied into wiki-app/static/media/ so they can be embedded in the compiled
-page. Other file types are either text-extracted (PDF, CSV, JSON) or, when we
-have no parser for them, registered as an opaque downloadable attachment —
-still copied to static/media/ and linked, just without content extraction.
+page. Other file types are either text-extracted (PDF, CSV, TSV, JSON, XML,
+HTML, YAML, log) or, when we have no parser for them, registered as an opaque
+downloadable attachment — still copied to static/media/ and linked, just
+without content extraction. That opaque fallback is what lets the wiki accept
+practically any file format (archives, office docs, video, ...) without
+needing a dedicated parser for each one.
 
 Every public function here returns plain dicts shaped like the chunk dicts
 synthesizer.py already works with ({"chunk_index", "text", "source_type"}),
@@ -24,11 +28,46 @@ from text_chunking import split_text_into_chunks
 
 IMAGE_EXTENSIONS = {".png", ".jpg", ".jpeg", ".gif", ".webp", ".bmp"}
 
-# File types we can pull text out of directly (no LLM needed for extraction).
-TEXT_EXTRACTABLE_FILE_EXTENSIONS = {".pdf", ".csv", ".json"}
+AUDIO_EXTENSIONS = {".mp3", ".wav", ".m4a", ".ogg", ".flac", ".aac"}
 
-# File types we register as a downloadable attachment without parsing content.
-OPAQUE_FILE_EXTENSIONS = {".docx", ".xlsx", ".pptx", ".zip"}
+# File types we can pull text out of directly (no LLM needed for extraction).
+TEXT_EXTRACTABLE_FILE_EXTENSIONS = {
+    ".pdf",
+    ".csv",
+    ".json",
+    ".tsv",
+    ".xml",
+    ".html",
+    ".htm",
+    ".yaml",
+    ".yml",
+    ".log",
+}
+
+# File types we register as a downloadable attachment without parsing content
+# -- office docs, archives, and video, none of which have a text extractor
+# here, but are still useful as linked/downloadable resources.
+OPAQUE_FILE_EXTENSIONS = {
+    ".docx",
+    ".xlsx",
+    ".pptx",
+    ".zip",
+    ".rtf",
+    ".odt",
+    ".ods",
+    ".odp",
+    ".rar",
+    ".7z",
+    ".tar",
+    ".gz",
+    ".tgz",
+    ".epub",
+    ".mp4",
+    ".mov",
+    ".avi",
+    ".mkv",
+    ".m4v",
+}
 
 FILE_EXTENSIONS = TEXT_EXTRACTABLE_FILE_EXTENSIONS | OPAQUE_FILE_EXTENSIONS
 
@@ -96,6 +135,46 @@ def build_image_chunk(path: Path, rel_source: str, llm, static_dir: Path | None 
     return {"chunk_index": 0, "text": text, "source_type": "image", "media_link": link}
 
 
+def transcribe_audio(path: Path, llm) -> str:
+    """Ask the LLM (speech-to-text) to transcribe an audio file."""
+    return llm.transcribe_audio(path).strip()
+
+
+def build_audio_chunk(path: Path, rel_source: str, llm, static_dir: Path | None = None) -> dict:
+    """Build a single chunk dict for an audio file: transcript text + player link.
+
+    Unlike images (which require an LLM -- see synthesizer.py's require_llm
+    call), transcription degrades gracefully: no LLM configured, or the
+    transcription call itself failing, falls back to a metadata + download
+    chunk instead of crashing the compile, mirroring the PDF text-extraction
+    fallback below.
+    """
+    transcript = ""
+    if llm is not None and getattr(llm, "available", False):
+        try:
+            transcript = transcribe_audio(path, llm)
+        except Exception:
+            transcript = ""
+
+    dest = copy_media_to_static(path, static_dir)
+    link = docs_relative_media_link(dest, static_dir)
+
+    if transcript:
+        text = (
+            f"Audio file: `{rel_source}`\n\n"
+            f"Transcript: {transcript}\n\n"
+            f"[Listen to {path.name}]({link})"
+        )
+    else:
+        size_kb = path.stat().st_size / 1024
+        text = (
+            f"Audio file: `{rel_source}` ({path.suffix.lstrip('.').upper()}, {size_kb:.1f} KB) "
+            f"— transcription unavailable\n\n"
+            f"[Listen to {path.name}]({link})"
+        )
+    return {"chunk_index": 0, "text": text, "source_type": "audio", "media_link": link}
+
+
 def _extract_pdf_text(path: Path) -> str | None:
     """Best-effort PDF text extraction. Returns None if pypdf (or one of its
     own dependencies) isn't usable in this environment — deliberately broad
@@ -125,9 +204,9 @@ def _extract_pdf_text(path: Path) -> str | None:
     return text.strip() or None
 
 
-def _extract_csv_text(path: Path, *, max_rows: int = 50) -> str:
+def _extract_delimited_text(path: Path, *, delimiter: str = ",", max_rows: int = 50) -> str:
     with path.open(newline="", encoding="utf-8", errors="replace") as handle:
-        rows = list(csv.reader(handle))
+        rows = list(csv.reader(handle, delimiter=delimiter))
     preview = rows[:max_rows]
     lines = [", ".join(cell.strip() for cell in row) for row in preview]
     note = ""
@@ -136,9 +215,24 @@ def _extract_csv_text(path: Path, *, max_rows: int = 50) -> str:
     return "\n".join(lines) + note
 
 
+def _extract_csv_text(path: Path, *, max_rows: int = 50) -> str:
+    return _extract_delimited_text(path, delimiter=",", max_rows=max_rows)
+
+
+def _extract_tsv_text(path: Path, *, max_rows: int = 50) -> str:
+    return _extract_delimited_text(path, delimiter="\t", max_rows=max_rows)
+
+
 def _extract_json_text(path: Path) -> str:
     data = json.loads(path.read_text(encoding="utf-8"))
     return json.dumps(data, indent=2, ensure_ascii=False)[:FILE_CONTENT_MAX_CHARS]
+
+
+def _extract_plain_text_file(path: Path) -> str:
+    """Best-effort raw-text extraction for markup/config formats (XML, HTML,
+    YAML, log files) that need no dedicated parser -- the file's own content
+    already is the text worth chunking."""
+    return path.read_text(encoding="utf-8", errors="replace")[:FILE_CONTENT_MAX_CHARS]
 
 
 def _opaque_file_chunk(path: Path, rel_source: str, static_dir: Path | None, note: str = "") -> dict:
@@ -156,8 +250,9 @@ def _opaque_file_chunk(path: Path, rel_source: str, static_dir: Path | None, not
 def build_file_chunks(path: Path, rel_source: str, static_dir: Path | None = None) -> list[dict]:
     """Build chunk dict(s) for a generic file attachment.
 
-    PDF/CSV/JSON get their text extracted (and chunked like any raw text
-    source); everything else in FILE_EXTENSIONS becomes a single metadata +
+    Everything in TEXT_EXTRACTABLE_FILE_EXTENSIONS (PDF, CSV, TSV, JSON, XML,
+    HTML, YAML, log) gets its text extracted and chunked like any raw text
+    source; everything else in FILE_EXTENSIONS becomes a single metadata +
     download-link chunk with no content extraction.
     """
     suffix = path.suffix.lower()
@@ -167,8 +262,12 @@ def build_file_chunks(path: Path, rel_source: str, static_dir: Path | None = Non
         extracted = _extract_pdf_text(path)
     elif suffix == ".csv":
         extracted = _extract_csv_text(path)
+    elif suffix == ".tsv":
+        extracted = _extract_tsv_text(path)
     elif suffix == ".json":
         extracted = _extract_json_text(path)
+    elif suffix in {".xml", ".html", ".htm", ".yaml", ".yml", ".log"}:
+        extracted = _extract_plain_text_file(path)
 
     if extracted:
         dest = copy_media_to_static(path, static_dir)

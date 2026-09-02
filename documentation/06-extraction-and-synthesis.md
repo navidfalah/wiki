@@ -29,13 +29,14 @@ shared with `media_ingest.py` and `email_ingest.py`:
 
 ### Non-text sources
 
-`.eml`, image, and file-attachment sources don't go through
+`.eml`, image, audio, and file-attachment sources don't go through
 `split_text_into_chunks` directly on their raw bytes — `_chunks_for_file()`
 dispatches them to `email_ingest.build_email_chunks()` or
-`media_ingest.build_image_chunk()` / `build_file_chunks()` first, which
-produce ordinary chunk text (an email's headers+body, an image's caption, a
-PDF's extracted text) that *those* functions then paragraph-chunk the same
-way if it's long. See [19-multimedia-email-and-trust.md](./19-multimedia-email-and-trust.md).
+`media_ingest.build_image_chunk()` / `build_audio_chunk()` / `build_file_chunks()`
+first, which produce ordinary chunk text (an email's headers+body, an
+image's caption, an audio file's transcript, a PDF's extracted text) that
+*those* functions then paragraph-chunk the same way if it's long. See
+[19-multimedia-email-and-trust.md](./19-multimedia-email-and-trust.md).
 
 ### RawChunk structure
 

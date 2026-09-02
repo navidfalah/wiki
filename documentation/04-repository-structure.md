@@ -46,8 +46,12 @@ data/
 ```
 
 **Recognized extensions under `data/raw/`:** `.txt` `.md` (text), `.eml`
-(email), `.png` `.jpg` `.jpeg` `.gif` `.webp` `.bmp` (image), `.pdf` `.csv`
-`.json` `.docx` `.xlsx` `.pptx` `.zip` (file attachment). See
+(email), `.png` `.jpg` `.jpeg` `.gif` `.webp` `.bmp` (image), `.mp3` `.wav`
+`.m4a` `.ogg` `.flac` `.aac` (audio), `.pdf` `.csv` `.tsv` `.json` `.xml`
+`.html` `.htm` `.yaml` `.yml` `.log` (file attachment, text extracted),
+`.docx` `.xlsx` `.pptx` `.zip` `.rtf` `.odt` `.ods` `.odp` `.rar` `.7z`
+`.tar` `.gz` `.tgz` `.epub` `.mp4` `.mov` `.avi` `.mkv` `.m4v` (file
+attachment, opaque). See
 [19-multimedia-email-and-trust.md](./19-multimedia-email-and-trust.md).
 Everything else (and dotfiles like `.gitkeep`) is ignored.
 
@@ -58,7 +62,7 @@ compiler/
 ├── main.py                   # Full 5-step pipeline entry point
 ├── synthesizer.py            # Chunking, extraction, synthesis
 ├── text_chunking.py          # Shared paragraph-chunking (text/email/file)
-├── media_ingest.py           # Images + file attachments → chunks
+├── media_ingest.py           # Images, audio + file attachments → chunks
 ├── email_ingest.py           # .eml parsing → chunks
 ├── trust.py                  # Source trust levels + References & Trust section
 ├── linker.py                 # Topic index, cross-link injection, export

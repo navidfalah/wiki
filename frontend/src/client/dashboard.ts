@@ -26,6 +26,24 @@ function escapeHtml(text: string): string {
   return div.innerHTML;
 }
 
+const IMAGE_EXTS = new Set(['png', 'jpg', 'jpeg', 'gif', 'webp', 'bmp']);
+const AUDIO_EXTS = new Set(['mp3', 'wav', 'm4a', 'ogg', 'flac', 'aac']);
+const VIDEO_EXTS = new Set(['mp4', 'mov', 'avi', 'mkv', 'm4v']);
+const ARCHIVE_EXTS = new Set(['zip', 'rar', '7z', 'tar', 'gz', 'tgz']);
+const SPREADSHEET_EXTS = new Set(['xlsx', 'csv', 'tsv', 'ods']);
+
+function iconForFile(filePath: string): string {
+  const ext = filePath.includes('.') ? filePath.split('.').pop()!.toLowerCase() : '';
+  if (ext === 'pdf') return '📕';
+  if (IMAGE_EXTS.has(ext)) return '🖼';
+  if (AUDIO_EXTS.has(ext)) return '🎵';
+  if (VIDEO_EXTS.has(ext)) return '🎬';
+  if (ARCHIVE_EXTS.has(ext)) return '🗜';
+  if (SPREADSHEET_EXTS.has(ext)) return '📊';
+  if (ext === 'eml') return '✉️';
+  return '📄';
+}
+
 // --- Stat cards --------------------------------------------------------
 
 async function loadStatCards() {
@@ -567,7 +585,7 @@ function renderExplorer() {
       return `
       <div class="group relative flex flex-col items-center gap-1.5 rounded-lg p-3 text-center hover:bg-gray-50">
         <button data-preview="${escapeHtml(file.path)}" class="flex flex-col items-center gap-1.5">
-          <span class="relative flex h-12 w-12 items-center justify-center rounded-xl bg-gray-100 text-gray-500 text-xl">📄
+          <span class="relative flex h-12 w-12 items-center justify-center rounded-xl bg-gray-100 text-gray-500 text-xl">${iconForFile(file.path)}
             <span class="absolute -bottom-1 -right-1 h-3 w-3 rounded-full border-2 border-white ${processed ? 'bg-emerald-500' : 'bg-amber-500'}"></span>
           </span>
           <span class="line-clamp-2 w-24 text-xs font-medium text-gray-800">${escapeHtml(nameOf(file.path))}</span>
@@ -676,6 +694,10 @@ async function openPreview(filePath: string) {
       sourcePanel = `<div class="flex h-[65vh] items-center justify-center bg-gray-50 p-2"><img src="${escapeHtml(
         rawUrl,
       )}" alt="${escapeHtml(filePath)}" class="max-h-full max-w-full object-contain" /></div>`;
+    } else if (detail.is_audio) {
+      sourcePanel = `<div class="flex h-40 items-center justify-center bg-gray-50 p-4"><audio controls src="${escapeHtml(
+        rawUrl,
+      )}" class="w-full max-w-md"></audio></div>`;
     } else if (detail.is_text) {
       sourcePanel = `<pre class="max-h-[65vh] overflow-auto p-3 font-mono text-xs text-gray-800 whitespace-pre-wrap">${escapeHtml(detail.content ?? '')}</pre>`;
     } else {

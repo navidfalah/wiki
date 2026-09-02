@@ -20,7 +20,9 @@ OPENAI_MODEL=gpt-4o-mini
 |----------|----------|---------|---------|
 | `OPENAI_API_KEY` | No | empty | `llm_client.py` — enables LLM mode |
 | `OPENAI_BASE_URL` | No | OpenAI v1 URL | Compatible APIs |
-| `OPENAI_MODEL` | No | `gpt-4o-mini` | Chat completions |
+| `OPENAI_MODEL` | No | `gpt-4o-mini` | Chat completions, image captioning |
+| `OPENAI_EMBEDDING_MODEL` | No | `text-embedding-3-small` | Hybrid retrieval embeddings |
+| `OPENAI_TRANSCRIPTION_MODEL` | No | `whisper-1` | Audio transcription (`media_ingest.build_audio_chunk()`) |
 
 Loaded via `python-dotenv` when `llm_client` module imports.
 

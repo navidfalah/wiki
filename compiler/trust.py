@@ -43,11 +43,13 @@ TRUST_LABELS = {
 
 # Sensible defaults per source_type — a raw note is unverified prose from the
 # user, an email is a real (if informal) record, a caption is a model's guess
-# at what an image shows, and an extracted document sits in between.
+# at what an image shows (same for an audio transcript), and an extracted
+# document sits in between.
 DEFAULT_TRUST_BY_SOURCE_TYPE = {
     "text": "medium",
     "email": "medium",
     "image": "low",
+    "audio": "low",
     "file": "medium",
 }
 
