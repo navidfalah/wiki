@@ -3,6 +3,8 @@ import json
 
 import active_learning
 import cli
+import connectors_service
+from connectors.credential_store import CredentialStore, generate_secret_key
 
 
 def _stdin(monkeypatch, payload: dict) -> None:
@@ -78,3 +80,59 @@ def test_review_candidates_reflects_saved_corrections(tmp_path, monkeypatch):
     annotated = next(c for c in second["candidates"] if c["claim_id"] == some_claim["claim_id"])
     assert annotated["correction"] is not None
     assert annotated["correction"]["verdict"] == "confirm_correct"
+
+
+def _isolate_connectors(tmp_path, monkeypatch):
+    store = CredentialStore(store_dir=tmp_path / "store", secret_key=generate_secret_key())
+    monkeypatch.setattr(connectors_service, "_credential_store", lambda: store)
+    monkeypatch.setattr(connectors_service, "PENDING_DIR", tmp_path / "pending")
+    monkeypatch.setattr(connectors_service, "IMPORT_DIR", tmp_path / "raw" / "connectors")
+    return store
+
+
+def test_connectors_catalog_lists_the_known_connectors(tmp_path, monkeypatch):
+    _isolate_connectors(tmp_path, monkeypatch)
+    result = cli.cmd_connectors_catalog()
+    assert [c["id"] for c in result["connectors"]] == ["gmail", "google_drive", "imap"]
+
+
+def test_connectors_oauth_start_requires_connector_id(monkeypatch):
+    _stdin(monkeypatch, {})
+    try:
+        cli.cmd_connectors_oauth_start()
+        assert False, "expected ValueError"
+    except ValueError as exc:
+        assert "connector_id" in str(exc)
+
+
+def test_connectors_oauth_start_reports_missing_config(tmp_path, monkeypatch):
+    _isolate_connectors(tmp_path, monkeypatch)
+    for var in ("GMAIL_CLIENT_ID", "GMAIL_CLIENT_SECRET", "GMAIL_REDIRECT_URI"):
+        monkeypatch.delenv(var, raising=False)
+    _stdin(monkeypatch, {"connector_id": "gmail"})
+    try:
+        cli.cmd_connectors_oauth_start()
+        assert False, "expected ConnectorConfigError"
+    except connectors_service.ConnectorConfigError:
+        pass
+
+
+def test_connectors_imap_connect_and_disconnect_round_trip(tmp_path, monkeypatch):
+    _isolate_connectors(tmp_path, monkeypatch)
+    _stdin(monkeypatch, {"account_label": "me@example.com", "host": "imap.example.com", "password": "app-pw"})
+    connected = cli.cmd_connectors_imap_connect()
+    assert connected["connected"] is True
+
+    _stdin(monkeypatch, {"connector_id": "imap", "account_label": "me@example.com"})
+    disconnected = cli.cmd_connectors_disconnect()
+    assert disconnected["disconnected"] is True
+
+
+def test_connectors_items_list_reports_not_connected(tmp_path, monkeypatch):
+    _isolate_connectors(tmp_path, monkeypatch)
+    _stdin(monkeypatch, {"connector_id": "imap", "account_label": "nobody@example.com"})
+    try:
+        cli.cmd_connectors_items_list()
+        assert False, "expected ConnectorNotConnectedError"
+    except connectors_service.ConnectorNotConnectedError:
+        pass

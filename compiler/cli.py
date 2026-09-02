@@ -17,6 +17,7 @@ import sys
 from dataclasses import asdict
 
 import active_learning
+import connectors_service
 import email_engine
 import rag_engine
 from trust_eval_dataset import load_trust_eval_dataset
@@ -155,6 +156,82 @@ def cmd_review_correction_save() -> dict:
     return {"saved": True, "correction": asdict(correction)}
 
 
+def cmd_connectors_catalog() -> dict:
+    return {"connectors": connectors_service.catalog()}
+
+
+def cmd_connectors_oauth_start() -> dict:
+    payload = _read_stdin_json()
+    connector_id = str(payload.get("connector_id", "")).strip()
+    if not connector_id:
+        raise ValueError("'connector_id' is required")
+    return connectors_service.start_authorization(connector_id)
+
+
+def cmd_connectors_oauth_callback() -> dict:
+    payload = _read_stdin_json()
+    connector_id = str(payload.get("connector_id", "")).strip()
+    code = str(payload.get("code", "")).strip()
+    state = str(payload.get("state", "")).strip()
+    account_label = str(payload.get("account_label", "")).strip()
+    if not connector_id:
+        raise ValueError("'connector_id' is required")
+    if not code:
+        raise ValueError("'code' is required")
+    if not state:
+        raise ValueError("'state' is required")
+    return connectors_service.complete_authorization(connector_id, code, state, account_label)
+
+
+def cmd_connectors_imap_connect() -> dict:
+    payload = _read_stdin_json()
+    account_label = str(payload.get("account_label", "")).strip()
+    host = str(payload.get("host", "")).strip()
+    password = str(payload.get("password", ""))
+    port = int(payload.get("port") or 993)
+    mailbox = str(payload.get("mailbox") or "INBOX").strip()
+    return connectors_service.connect_imap(account_label, host, password, port=port, mailbox=mailbox)
+
+
+def cmd_connectors_items_list() -> dict:
+    payload = _read_stdin_json()
+    connector_id = str(payload.get("connector_id", "")).strip()
+    account_label = str(payload.get("account_label", "")).strip()
+    query = str(payload.get("query", ""))
+    limit = int(payload.get("limit") or 20)
+    if not connector_id:
+        raise ValueError("'connector_id' is required")
+    if not account_label:
+        raise ValueError("'account_label' is required")
+    return {"items": connectors_service.list_items(connector_id, account_label, query=query, limit=limit)}
+
+
+def cmd_connectors_item_import() -> dict:
+    payload = _read_stdin_json()
+    connector_id = str(payload.get("connector_id", "")).strip()
+    account_label = str(payload.get("account_label", "")).strip()
+    item_id = str(payload.get("item_id", "")).strip()
+    item_title = str(payload.get("item_title", ""))
+    if not connector_id:
+        raise ValueError("'connector_id' is required")
+    if not account_label:
+        raise ValueError("'account_label' is required")
+    if not item_id:
+        raise ValueError("'item_id' is required")
+    return connectors_service.import_item(connector_id, account_label, item_id, item_title=item_title)
+
+
+def cmd_connectors_disconnect() -> dict:
+    payload = _read_stdin_json()
+    connector_id = str(payload.get("connector_id", "")).strip()
+    account_label = str(payload.get("account_label", "")).strip()
+    if not connector_id:
+        raise ValueError("'connector_id' is required")
+    if not account_label:
+        raise ValueError("'account_label' is required")
+    return connectors_service.disconnect(connector_id, account_label)
+
+
 COMMANDS = {
     "chat": cmd_chat,
     "chat-status": cmd_chat_status,
@@ -167,6 +244,13 @@ COMMANDS = {
     "review-candidates": cmd_review_candidates,
     "review-corrections-list": cmd_review_corrections_list,
     "review-correction-save": cmd_review_correction_save,
+    "connectors-catalog": cmd_connectors_catalog,
+    "connectors-oauth-start": cmd_connectors_oauth_start,
+    "connectors-oauth-callback": cmd_connectors_oauth_callback,
+    "connectors-imap-connect": cmd_connectors_imap_connect,
+    "connectors-items-list": cmd_connectors_items_list,
+    "connectors-item-import": cmd_connectors_item_import,
+    "connectors-disconnect": cmd_connectors_disconnect,
 }
 
 # Commands that write their own stdout (NDJSON events) instead of returning
@@ -186,6 +270,12 @@ def main() -> int:
         return 1
     except FileNotFoundError as exc:
         print(json.dumps({"error": str(exc), "error_type": "not_found"}))
+        return 1
+    except connectors_service.ConnectorNotConnectedError as exc:
+        print(json.dumps({"error": str(exc), "error_type": "not_connected"}))
+        return 1
+    except connectors_service.ConnectorConfigError as exc:
+        print(json.dumps({"error": str(exc), "error_type": "not_configured"}))
         return 1
     except Exception as exc:  # noqa: BLE001 -- surface any failure as JSON, not a traceback
         print(json.dumps({"error": str(exc)}))

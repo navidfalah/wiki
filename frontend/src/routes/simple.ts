@@ -20,6 +20,7 @@ const pages: { path: string; view: string; title: string; active: string; client
   { path: '/analytics', view: 'analytics', title: 'Analytics', active: 'Analytics', clientScript: 'analytics' },
   { path: '/attention', view: 'attention', title: 'Attention', active: 'Attention', clientScript: 'attention' },
   { path: '/review', view: 'review', title: 'Review Queue', active: 'Review', clientScript: 'review' },
+  { path: '/connectors', view: 'connectors', title: 'Connectors', active: 'Connectors', clientScript: 'connectors' },
   { path: '/settings', view: 'settings', title: 'Settings', active: 'Settings', clientScript: 'settings' },
   { path: '/company', view: 'company', title: 'Company Profile', active: 'Company', clientScript: 'company' },
   { path: '/logs', view: 'logs', title: 'Logs', active: 'Logs', clientScript: 'logs' },
@@ -35,5 +36,22 @@ for (const page of pages) {
     });
   });
 }
+
+// The redirect_uri an OAuth connector sends the user back to after consent
+// -- one static path per connector id, matching what GMAIL_REDIRECT_URI /
+// GDRIVE_REDIRECT_URI must be registered as on the provider's OAuth client.
+const CONNECTOR_LABELS: Record<string, string> = { gmail: 'Gmail', google_drive: 'Google Drive' };
+
+router.get('/connectors/callback/:id', (req, res) => {
+  const connectorId = req.params.id;
+  res.render('connectors-callback', {
+    apiBase: PUBLIC_API_URL,
+    title: 'Finish connecting',
+    active: 'Connectors',
+    clientScript: 'connectors-callback',
+    connectorId,
+    connectorLabel: CONNECTOR_LABELS[connectorId] ?? connectorId,
+  });
+});
 
 export default router;
