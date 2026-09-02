@@ -48,6 +48,7 @@ cd ../wiki-app && npm install && npm start
 | Vector/graph storage + scalability benchmark | [31-vector-graph-storage-and-scalability.md](./documentation/31-vector-graph-storage-and-scalability.md) |
 | User study protocol (wiki+chat vs. plain search) | [32-user-study-protocol.md](./documentation/32-user-study-protocol.md) |
 | Docker deployment + local LLM (Ollama) | [33-docker-and-local-llm.md](./documentation/33-docker-and-local-llm.md) |
+| RAG architectures (Naive, HyDE, RAG-Fusion, GraphRAG-lite, Corrective) | [34-rag-architectures.md](./documentation/34-rag-architectures.md) |
 
 ## Also see
 

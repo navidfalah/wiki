@@ -9,8 +9,60 @@
 <div class="mt-6 grid gap-6 lg:grid-cols-[minmax(0,1.3fr)_minmax(0,1fr)]">
   <section class="rounded-xl border border-gray-200 bg-white shadow-card">
     <div class="border-b border-gray-100 px-5 py-4">
+      <h2 class="text-base font-semibold text-gray-900">Architecture</h2>
+      <p class="mt-0.5 text-xs text-gray-500">Which retrieval architecture Chat uses. "Retrieval strategy" below only applies to Hybrid.</p>
+    </div>
+
+    <div id="architecture-options" class="flex flex-col divide-y divide-gray-100">
+      <label class="flex items-start gap-3 px-5 py-4">
+        <input type="radio" name="architecture" value="hybrid" class="mt-1 text-accent focus:ring-accent/30" />
+        <span>
+          <span class="block text-sm font-medium text-gray-900">Hybrid retrieve-and-rerank</span>
+          <span class="block text-xs text-gray-500">BM25, optionally fused with embeddings and reranked by the chat model. Tuned by "Retrieval strategy" below.</span>
+        </span>
+      </label>
+      <label class="flex items-start gap-3 px-5 py-4">
+        <input type="radio" name="architecture" value="naive" class="mt-1 text-accent focus:ring-accent/30" />
+        <span>
+          <span class="block text-sm font-medium text-gray-900">Naive RAG</span>
+          <span class="block text-xs text-gray-500">The original retrieve-then-read pipeline (Lewis et al., 2020): a single BM25 pass, no rewriting or reranking. The baseline every other architecture is measured against.</span>
+        </span>
+      </label>
+      <label class="flex items-start gap-3 px-5 py-4">
+        <input type="radio" name="architecture" value="hyde" class="mt-1 text-accent focus:ring-accent/30" />
+        <span>
+          <span class="block text-sm font-medium text-gray-900">HyDE (hypothetical documents)</span>
+          <span class="block text-xs text-gray-500">Gao et al., 2022. The chat model first writes a hypothetical answer, then that passage -- not the raw question -- is embedded and matched against the wiki. Needs an LLM; falls back to BM25 otherwise.</span>
+        </span>
+      </label>
+      <label class="flex items-start gap-3 px-5 py-4">
+        <input type="radio" name="architecture" value="fusion" class="mt-1 text-accent focus:ring-accent/30" />
+        <span>
+          <span class="block text-sm font-medium text-gray-900">RAG-Fusion</span>
+          <span class="block text-xs text-gray-500">Rackauckas, 2024. The chat model generates a few alternative phrasings of the question; each is searched independently and the rankings are merged. Needs an LLM; falls back to BM25 otherwise.</span>
+        </span>
+      </label>
+      <label class="flex items-start gap-3 px-5 py-4">
+        <input type="radio" name="architecture" value="graph" class="mt-1 text-accent focus:ring-accent/30" />
+        <span>
+          <span class="block text-sm font-medium text-gray-900">GraphRAG-lite (link expansion)</span>
+          <span class="block text-xs text-gray-500">Follows this wiki's own cross-links outward from the best-matching pages to pull in linked passages a flat keyword search would miss. No API key needed.</span>
+        </span>
+      </label>
+      <label class="flex items-start gap-3 px-5 py-4">
+        <input type="radio" name="architecture" value="corrective" class="mt-1 text-accent focus:ring-accent/30" />
+        <span>
+          <span class="block text-sm font-medium text-gray-900">Corrective RAG (CRAG-lite)</span>
+          <span class="block text-xs text-gray-500">Yan et al., 2024. Grades the first search's relevance, then rewrites the question and searches again when the results aren't confidently relevant. Grading uses the chat model when configured, a keyword-coverage heuristic otherwise.</span>
+        </span>
+      </label>
+    </div>
+  </section>
+
+  <section id="retrieval-mode-section" class="rounded-xl border border-gray-200 bg-white shadow-card transition-opacity">
+    <div class="border-b border-gray-100 px-5 py-4">
       <h2 class="text-base font-semibold text-gray-900">Retrieval strategy</h2>
-      <p class="mt-0.5 text-xs text-gray-500">Each tier below is optional and layers on top of the one before it.</p>
+      <p class="mt-0.5 text-xs text-gray-500">Each tier below is optional and layers on top of the one before it. Only used by the Hybrid architecture above.</p>
     </div>
 
     <div id="retrieval-mode-options" class="flex flex-col divide-y divide-gray-100">
@@ -95,6 +147,7 @@
           <span class="block text-xs text-gray-500">Cache embeddings in SQLite across questions instead of re-embedding the whole wiki every time. Only matters for the hybrid modes.</span>
         </span>
       </label>
+      <p id="vector-store-hint" class="hidden text-xs text-amber-600">This setting only applies to the Hybrid architecture -- it has no effect while another architecture is selected above.</p>
     </div>
   </section>
 </div>

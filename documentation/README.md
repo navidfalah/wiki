@@ -41,6 +41,7 @@ Detailed project documentation, split by topic. Start with [01-overview.md](./01
 | [31-vector-graph-storage-and-scalability.md](./31-vector-graph-storage-and-scalability.md) | Persistent vector/graph stores + a real BM25-vs-naive-vector-store scalability benchmark (10 -> 10,000 docs) |
 | [32-user-study-protocol.md](./32-user-study-protocol.md) | User study protocol + instrument (wiki+chat vs. plain search) — no study run, honestly stated |
 | [33-docker-and-local-llm.md](./33-docker-and-local-llm.md) | Docker Compose deployment (compiler-api, wiki-app, optional Ollama) and switching to a local LLM |
+| [34-rag-architectures.md](./34-rag-architectures.md) | Researching and implementing distinct RAG architectures: Naive, HyDE, RAG-Fusion, GraphRAG-lite, Corrective RAG |
 
 ---
 
