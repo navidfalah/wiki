@@ -14,9 +14,12 @@ from __future__ import annotations
 
 import json
 import sys
+from dataclasses import asdict
 
+import active_learning
 import email_engine
 import rag_engine
+from trust_eval_dataset import load_trust_eval_dataset
 
 
 def _read_stdin_json() -> dict:
@@ -110,6 +113,48 @@ def cmd_email_delete() -> dict:
     return email_engine.delete_email(file_path)
 
 
+def cmd_review_candidates() -> dict:
+    """Active-learning review queue (task #9 / active_learning.py): the
+    pilot dataset's claim groups, run through trust propagation (task #2)
+    and select_review_candidates_for_dataset(), each candidate annotated
+    with whatever correction a human already saved for it (if any) so the
+    dashboard can show resolved items instead of re-flagging them forever.
+    """
+    dataset = load_trust_eval_dataset()
+    candidates = active_learning.select_review_candidates_for_dataset(dataset.claim_groups)
+    corrections_by_claim = {c.claim_id: c for c in active_learning.load_corrections()}
+    return {
+        "candidates": [
+            {**asdict(candidate), "correction": asdict(corrections_by_claim[candidate.claim_id]) if candidate.claim_id in corrections_by_claim else None}
+            for candidate in candidates
+        ],
+        "total": len(candidates),
+    }
+
+
+def cmd_review_corrections_list() -> dict:
+    corrections = active_learning.load_corrections()
+    return {"corrections": [asdict(c) for c in corrections], "total": len(corrections)}
+
+
+def cmd_review_correction_save() -> dict:
+    payload = _read_stdin_json()
+    claim_id = str(payload.get("claim_id", "")).strip()
+    group_id = str(payload.get("group_id", "")).strip()
+    verdict = str(payload.get("verdict", "")).strip()
+    note = str(payload.get("note", "")).strip()
+    quote = str(payload.get("quote", ""))
+    if not claim_id:
+        raise ValueError("'claim_id' is required")
+    if not group_id:
+        raise ValueError("'group_id' is required")
+    if verdict not in active_learning.VERDICTS:
+        raise ValueError(f"Unknown verdict {verdict!r}; must be one of {sorted(active_learning.VERDICTS)}")
+    correction = active_learning.Correction(claim_id=claim_id, group_id=group_id, verdict=verdict, note=note, quote_excerpt=quote[:200])
+    active_learning.save_correction(correction)
+    return {"saved": True, "correction": asdict(correction)}
+
+
 COMMANDS = {
     "chat": cmd_chat,
     "chat-status": cmd_chat_status,
@@ -119,6 +164,9 @@ COMMANDS = {
     "email-create": cmd_email_create,
     "email-update": cmd_email_update,
     "email-delete": cmd_email_delete,
+    "review-candidates": cmd_review_candidates,
+    "review-corrections-list": cmd_review_corrections_list,
+    "review-correction-save": cmd_review_correction_save,
 }
 
 # Commands that write their own stdout (NDJSON events) instead of returning

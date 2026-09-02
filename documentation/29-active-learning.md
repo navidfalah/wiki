@@ -13,7 +13,8 @@ a one-way, read-only report and becomes a feedback signal.
 | Module | `compiler/active_learning.py` |
 | Correction store | `data/review_corrections.json` (created on first use; same human-editable-JSON pattern as `data/link_overrides.json` / `data/source_trust.json`) |
 | Pipeline integration | `main.py --use-corrections` / `WIKI_USE_CORRECTIONS=true` |
-| Tests | `compiler/tests/test_active_learning.py` |
+| Dashboard | `/review` — `frontend/src/views/review.ejs` + `frontend/src/client/review.ts`, bridged via `compiler/cli.py`'s `review-candidates`/`review-corrections-list`/`review-correction-save` commands and `backend/src/routes/index.ts`'s `/api/review/*` routes |
+| Tests | `compiler/tests/test_active_learning.py`, `compiler/tests/test_cli.py` |
 
 ## Selection: what's worth reviewing
 
@@ -93,16 +94,33 @@ that `extract_chunk_topics()` actually includes the corrections block in
 the system prompt it sends when one is provided, and leaves the prompt
 unchanged when it isn't.
 
-**Not yet built:** a dashboard surface for a human to actually browse
-`select_review_candidates_for_dataset()`'s output and submit a
-`Correction` by clicking, rather than calling `save_correction()`
-programmatically — a "review queue" UI piece, not an algorithmic gap, and a
-reasonable follow-up alongside wiring `select_review_candidates()` against
-a *live compiled corpus* (via `resources_engine.py`'s deduped source list,
-or a new adapter that builds a claim-group-shaped graph from real
-`state.json` chunk extractions rather than only from
-`trust_eval_dataset.json`'s pilot structure) instead of only the pilot
-dataset shown above.
+**Now built: the review queue dashboard.** `/review` (`frontend/src/views/review.ejs`,
+`frontend/src/client/review.ts`) browses `select_review_candidates_for_dataset()`'s
+output and submits a `Correction` by clicking, instead of calling
+`save_correction()` programmatically. Three routes on the Node backend
+(`backend/src/routes/index.ts`) bridge to three new `compiler/cli.py`
+subcommands, the same JSON-in/JSON-out pattern chat and email already use:
+
+| Route | `cli.py` command | Does |
+|-------|-------------------|------|
+| `GET /api/review/candidates` | `review-candidates` | Runs `select_review_candidates_for_dataset()` against `trust_eval_dataset.json`, annotating each candidate with its saved `Correction` (if any) so already-reviewed claims show as resolved instead of being re-flagged forever |
+| `GET /api/review/corrections` | `review-corrections-list` | Every saved `Correction`, unfiltered |
+| `POST /api/review/corrections` | `review-correction-save` | Builds a `Correction` from `{claim_id, group_id, verdict, note, quote}` and calls `save_correction()` — same dedupe-by-`claim_id` behavior as the module itself |
+
+The page shows stat tiles (flagged / pending / reviewed / contradictions),
+filters by status and reason, and a per-candidate form (verdict dropdown +
+free-text note) that posts straight to `save_correction()` — no separate
+"apply" step. `compiler/tests/test_cli.py` covers the three new commands
+directly (including the unknown-verdict rejection and the
+correction-round-trips-into-the-next-candidates-call case) without going
+through HTTP.
+
+**Still a gap:** this wires the *review queue UI* against `select_review_candidates_for_dataset()`,
+which itself still only runs on `trust_eval_dataset.json`'s pilot structure — the
+other named follow-up above, wiring `select_review_candidates()` against a
+*live compiled corpus* (via `resources_engine.py`'s deduped source list, or a new
+adapter that builds a claim-group-shaped graph from real `state.json` chunk
+extractions), is not part of this task and remains open.
 
 ## Next
 

@@ -932,6 +932,36 @@ export function registerRoutes(app: Express): void {
     }),
   );
 
+  // --- Active-learning review queue (bridged to active_learning.py) --------
+
+  app.get(
+    '/api/review/candidates',
+    wrap(async (_req, res) => {
+      res.json(await runCli('review-candidates'));
+    }),
+  );
+
+  app.get(
+    '/api/review/corrections',
+    wrap(async (_req, res) => {
+      res.json(await runCli('review-corrections-list'));
+    }),
+  );
+
+  app.post(
+    '/api/review/corrections',
+    wrap(async (req, res) => {
+      const { claim_id: claimId, group_id: groupId, verdict, note, quote } = req.body ?? {};
+      try {
+        const result = await runCli('review-correction-save', { claim_id: claimId, group_id: groupId, verdict, note, quote });
+        logEvent(req.user?.username, 'Submitted review correction', `${claimId} → ${verdict}`);
+        res.json(result);
+      } catch (err: any) {
+        throw new HttpError(400, err.message);
+      }
+    }),
+  );
+
   // --- Review report -------------------------------------------------------
 
   app.get(
