@@ -48,6 +48,9 @@ cd ../wiki-app && npm install && npm start
 | Vector/graph storage + scalability benchmark | [31-vector-graph-storage-and-scalability.md](./documentation/31-vector-graph-storage-and-scalability.md) |
 | User study protocol (wiki+chat vs. plain search) | [32-user-study-protocol.md](./documentation/32-user-study-protocol.md) |
 | Docker deployment + local LLM (Ollama) | [33-docker-and-local-llm.md](./documentation/33-docker-and-local-llm.md) |
+| External connectors (Gmail, Drive, IMAP) | [34-external-connectors.md](./documentation/34-external-connectors.md) |
+| Review queue UI | [35-review-queue-ui.md](./documentation/35-review-queue-ui.md) |
+| Feature roadmap (R&D survey) | [36-feature-roadmap.md](./documentation/36-feature-roadmap.md) |
 
 ## Also see
 

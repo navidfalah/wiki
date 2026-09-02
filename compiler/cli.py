@@ -14,9 +14,12 @@ from __future__ import annotations
 
 import json
 import sys
+from dataclasses import asdict
 
+import active_learning
 import email_engine
 import rag_engine
+import trust_eval_dataset
 
 
 def _read_stdin_json() -> dict:
@@ -110,6 +113,53 @@ def cmd_email_delete() -> dict:
     return email_engine.delete_email(file_path)
 
 
+def cmd_review_queue() -> dict:
+    """Active-learning review queue (active_learning.py, task #9): claims
+    trust_propagation.py scored as low-confidence or an unresolved
+    contradiction, run against data/trust_eval_dataset.json -- the same
+    pilot dataset select_review_candidates_for_dataset() is demonstrated on
+    in documentation/29-active-learning.md. Merges in any correction a
+    human already recorded, so a re-opened queue shows what's been handled.
+    """
+    dataset = trust_eval_dataset.load_trust_eval_dataset()
+    claims_by_id = {claim.id: claim for group in dataset.claim_groups for claim in group.claims}
+    candidates = active_learning.select_review_candidates_for_dataset(dataset.claim_groups)
+    corrections_by_claim = {c.claim_id: asdict(c) for c in active_learning.load_corrections()}
+
+    items = []
+    for candidate in candidates:
+        claim = claims_by_id.get(candidate.claim_id)
+        items.append(
+            {
+                **asdict(candidate),
+                "source_type": claim.source_type if claim else None,
+                "date": claim.date if claim else None,
+                "correction": corrections_by_claim.get(candidate.claim_id),
+            }
+        )
+    return {"candidates": items, "verdicts": sorted(active_learning.VERDICTS)}
+
+
+def cmd_review_correct() -> dict:
+    payload = _read_stdin_json()
+    claim_id = str(payload.get("claim_id", "")).strip()
+    group_id = str(payload.get("group_id", "")).strip()
+    verdict = str(payload.get("verdict", "")).strip()
+    note = str(payload.get("note", "")).strip()
+    quote = str(payload.get("quote", ""))
+    if not claim_id or not group_id:
+        raise ValueError("'claim_id' and 'group_id' are required")
+    correction = active_learning.Correction(
+        claim_id=claim_id,
+        group_id=group_id,
+        verdict=verdict,
+        note=note,
+        quote_excerpt=quote[:200],
+    )
+    active_learning.save_correction(correction)
+    return {"saved": asdict(correction)}
+
+
 COMMANDS = {
     "chat": cmd_chat,
     "chat-status": cmd_chat_status,
@@ -119,6 +169,8 @@ COMMANDS = {
     "email-create": cmd_email_create,
     "email-update": cmd_email_update,
     "email-delete": cmd_email_delete,
+    "review-queue": cmd_review_queue,
+    "review-correct": cmd_review_correct,
 }
 
 # Commands that write their own stdout (NDJSON events) instead of returning

@@ -41,6 +41,9 @@ Detailed project documentation, split by topic. Start with [01-overview.md](./01
 | [31-vector-graph-storage-and-scalability.md](./31-vector-graph-storage-and-scalability.md) | Persistent vector/graph stores + a real BM25-vs-naive-vector-store scalability benchmark (10 -> 10,000 docs) |
 | [32-user-study-protocol.md](./32-user-study-protocol.md) | User study protocol + instrument (wiki+chat vs. plain search) — no study run, honestly stated |
 | [33-docker-and-local-llm.md](./33-docker-and-local-llm.md) | Docker Compose deployment (compiler-api, wiki-app, optional Ollama) and switching to a local LLM |
+| [34-external-connectors.md](./34-external-connectors.md) | Gmail/Google Drive/IMAP connectors: OAuth2+PKCE, encrypted credential storage — built and tested, not yet wired into the app |
+| [35-review-queue-ui.md](./35-review-queue-ui.md) | Review Queue dashboard page: browse active-learning candidates and submit corrections by clicking |
+| [36-feature-roadmap.md](./36-feature-roadmap.md) | R&D survey: what's built vs. wired vs. still a gap, ranked by effort and value |
 
 ---
 

@@ -93,19 +93,24 @@ that `extract_chunk_topics()` actually includes the corrections block in
 the system prompt it sends when one is provided, and leaves the prompt
 unchanged when it isn't.
 
-**Not yet built:** a dashboard surface for a human to actually browse
-`select_review_candidates_for_dataset()`'s output and submit a
-`Correction` by clicking, rather than calling `save_correction()`
-programmatically — a "review queue" UI piece, not an algorithmic gap, and a
-reasonable follow-up alongside wiring `select_review_candidates()` against
-a *live compiled corpus* (via `resources_engine.py`'s deduped source list,
-or a new adapter that builds a claim-group-shaped graph from real
-`state.json` chunk extractions rather than only from
-`trust_eval_dataset.json`'s pilot structure) instead of only the pilot
-dataset shown above.
+**Now built:** the dashboard "review queue" UI — `/review-queue` lists
+`select_review_candidates_for_dataset()`'s output and lets a human submit a
+`Correction` by clicking a verdict instead of calling `save_correction()`
+programmatically. See [35-review-queue-ui.md](./35-review-queue-ui.md).
+
+**Still not yet built:** wiring `select_review_candidates()` against a
+*live compiled corpus* (via `resources_engine.py`'s deduped source list, or
+a new adapter that builds a claim-group-shaped graph from real
+`state.json` chunk extractions) instead of only `trust_eval_dataset.json`'s
+pilot structure — the review queue UI still runs against the pilot
+dataset, same as the demonstration above. See
+[36-feature-roadmap.md](./36-feature-roadmap.md) for where this ranks
+against other remaining gaps.
 
 ## Next
 
 - [21](./21-trust-eval-dataset.md)–[23](./23-trust-propagation-evaluation.md) — the propagation scores this task's selection logic consumes
 - [27-temporal-modeling.md](./27-temporal-modeling.md) — the other module that independently flagged the same `nbc-3` annotation gap this task's real-data run surfaces again
 - [24-extraction-critic.md](./24-extraction-critic.md) — the other opt-in, few-shot-adjacent pipeline flag (`--critic-pass`), same "off by default, explicit opt-in" convention `--use-corrections` follows
+- [35-review-queue-ui.md](./35-review-queue-ui.md) — the dashboard UI built on top of this module's `select_review_candidates_for_dataset()`/`save_correction()`
+- [36-feature-roadmap.md](./36-feature-roadmap.md) — where the remaining "live corpus" gap ranks against other candidates
