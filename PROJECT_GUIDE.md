@@ -48,6 +48,8 @@ cd ../wiki-app && npm install && npm start
 | Vector/graph storage + scalability benchmark | [31-vector-graph-storage-and-scalability.md](./documentation/31-vector-graph-storage-and-scalability.md) |
 | User study protocol (wiki+chat vs. plain search) | [32-user-study-protocol.md](./documentation/32-user-study-protocol.md) |
 | Docker deployment + local LLM (Ollama) | [33-docker-and-local-llm.md](./documentation/33-docker-and-local-llm.md) |
+| External connectors (Gmail, Drive, IMAP) | [34-external-connectors.md](./documentation/34-external-connectors.md) |
+| Web search enrichment during synthesis | [35-web-search-enrichment.md](./documentation/35-web-search-enrichment.md) |
 
 ## Also see
 

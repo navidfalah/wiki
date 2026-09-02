@@ -321,7 +321,16 @@ The compiler requires a valid `OPENAI_API_KEY` (or compatible endpoint via `OPEN
 ```bash
 python main.py                 # Incremental run (only changed raw files)
 python main.py --force         # Reprocess every file regardless of MD5
+python main.py --web-search    # Also enrich synthesis with live internet search results
 ```
+
+`--web-search` (also `WIKI_WEB_SEARCH_ENABLED=true`) is off by default —
+when on, step 3 searches the internet once per topic being (re)generated
+and adds the hits as extra sources alongside `data/raw/`, tagged
+`source_type: web` and trusted "Low" by default. Toggle it per run from
+the Dashboard's "Run options" panel, or set a persistent default on the
+Pipeline Architecture page. See
+[documentation/35-web-search-enrichment.md](./documentation/35-web-search-enrichment.md).
 
 Incremental behavior:
 
@@ -653,6 +662,9 @@ OPENAI_MODEL=gpt-4o-mini
 | `OPENAI_API_KEY` | **Yes** | OpenAI-compatible API key for the compiler |
 | `OPENAI_BASE_URL` | No | OpenAI-compatible API base URL |
 | `OPENAI_MODEL` | No | Model name (default `gpt-4o-mini`) |
+| `WIKI_WEB_SEARCH_ENABLED` | No | `true` to enrich synthesis with live internet search by default (same as `--web-search`) |
+| `WIKI_WEB_SEARCH_PROVIDER` | No | `duckduckgo` (default, no key needed), `serpapi`, or `bing` |
+| `WIKI_WEB_SEARCH_API_KEY` | Only for `serpapi`/`bing` | API key for the chosen search provider |
 
 The compiler loads `.env` from the repo root via `python-dotenv` in `llm_client.py`.
 

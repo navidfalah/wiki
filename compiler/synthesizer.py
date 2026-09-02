@@ -99,7 +99,9 @@ Return ONLY the complete Markdown file (frontmatter + body). No commentary."""
 
 
 # "text" (a .txt/.md note), "email" (a .eml message), "image" (a captioned
-# image), or "file" (an extracted/attached PDF, CSV, JSON, or opaque file).
+# image), "file" (an extracted/attached PDF, CSV, JSON, or opaque file), or
+# "web" (a live internet search hit, see web_search.py -- not read from
+# data/raw/ at all, injected straight into group_chunks_by_topic()'s output).
 # See media_ingest.py / email_ingest.py for how non-text chunks are built,
 # and trust.py for how source_type feeds into the default trust level.
 SourceType = str

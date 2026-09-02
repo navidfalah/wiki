@@ -43,12 +43,16 @@ TRUST_LABELS = {
 
 # Sensible defaults per source_type — a raw note is unverified prose from the
 # user, an email is a real (if informal) record, a caption is a model's guess
-# at what an image shows, and an extracted document sits in between.
+# at what an image shows, an extracted document sits in between, and a live
+# web search hit (web_search.py, gated behind --web-search) is unvetted
+# third-party content pulled in automatically, so it starts at the same
+# "low" tier as an image caption.
 DEFAULT_TRUST_BY_SOURCE_TYPE = {
     "text": "medium",
     "email": "medium",
     "image": "low",
     "file": "medium",
+    "web": "low",
 }
 
 DEFAULT_CONFIG: dict = {

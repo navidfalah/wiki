@@ -2,8 +2,9 @@
  * Pipeline Architecture: persisted defaults for the compiler pipeline's
  * optional stages/behaviors -- the critic pass (extraction_critic.py),
  * active-learning corrections (active_learning.py), PII redaction
- * (pii_redaction.py), and which top-level data/raw/ folders participate at
- * all. These already exist as compiler/main.py CLI flags (also readable
+ * (pii_redaction.py), live internet search enrichment (web_search.py), and
+ * which top-level data/raw/ folders participate at all. These already
+ * exist as compiler/main.py CLI flags (also readable
  * from WIKI_* env vars, see main.py's argparse defaults) that
  * pythonBridge.ts's streamCompilerBuild() has always been able to pass
  * per-run; this file gives the Pipeline Architecture settings page a place
@@ -22,6 +23,7 @@ export interface PipelineSettings {
   critic_regenerate: boolean;
   use_corrections: boolean;
   redact_pii: boolean;
+  web_search: boolean;
   excluded_folders: string[];
 }
 
@@ -31,6 +33,7 @@ const DEFAULT_SETTINGS: PipelineSettings = {
   critic_regenerate: false,
   use_corrections: false,
   redact_pii: false,
+  web_search: false,
   excluded_folders: [],
 };
 
@@ -53,6 +56,7 @@ export function loadPipelineSettings(): PipelineSettings {
     critic_regenerate: Boolean(parsed.critic_regenerate),
     use_corrections: Boolean(parsed.use_corrections),
     redact_pii: Boolean(parsed.redact_pii),
+    web_search: Boolean(parsed.web_search),
     excluded_folders: Array.isArray(parsed.excluded_folders)
       ? parsed.excluded_folders.filter((f: unknown) => typeof f === 'string' && f.trim()).map((f: string) => f.trim())
       : [],
@@ -79,6 +83,7 @@ export function savePipelineSettings(input: any): PipelineSettings {
     critic_regenerate: Boolean(input.critic_regenerate),
     use_corrections: Boolean(input.use_corrections),
     redact_pii: Boolean(input.redact_pii),
+    web_search: Boolean(input.web_search),
     excluded_folders: Array.isArray(input.excluded_folders)
       ? input.excluded_folders.filter((f: unknown) => typeof f === 'string' && f.trim()).map((f: string) => f.trim())
       : [],

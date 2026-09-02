@@ -41,6 +41,8 @@ Detailed project documentation, split by topic. Start with [01-overview.md](./01
 | [31-vector-graph-storage-and-scalability.md](./31-vector-graph-storage-and-scalability.md) | Persistent vector/graph stores + a real BM25-vs-naive-vector-store scalability benchmark (10 -> 10,000 docs) |
 | [32-user-study-protocol.md](./32-user-study-protocol.md) | User study protocol + instrument (wiki+chat vs. plain search) — no study run, honestly stated |
 | [33-docker-and-local-llm.md](./33-docker-and-local-llm.md) | Docker Compose deployment (compiler-api, wiki-app, optional Ollama) and switching to a local LLM |
+| [34-external-connectors.md](./34-external-connectors.md) | Account-based connectors (Gmail, Google Drive, IMAP) — adapters and credential storage, not yet wired into the pipeline |
+| [35-web-search-enrichment.md](./35-web-search-enrichment.md) | Live internet search enrichment during synthesis — opt-in per run or as a persisted default, `source_type="web"` at "low" trust |
 
 ---
 

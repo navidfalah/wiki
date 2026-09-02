@@ -215,7 +215,8 @@ function updateRunOptionsCount() {
   const criticOn = (el('run-opt-critic-pass') as HTMLInputElement).checked;
   const correctionsOn = (el('run-opt-use-corrections') as HTMLInputElement).checked;
   const redactOn = (el('run-opt-redact-pii') as HTMLInputElement).checked;
-  const count = [criticOn, correctionsOn, redactOn].filter(Boolean).length;
+  const webSearchOn = (el('run-opt-web-search') as HTMLInputElement).checked;
+  const count = [criticOn, correctionsOn, redactOn, webSearchOn].filter(Boolean).length;
   el('run-options-count').textContent = count ? `(${count})` : '';
 }
 
@@ -234,7 +235,7 @@ function initRunOptions() {
   };
   syncCriticSubOptions();
 
-  ['run-opt-critic-pass', 'run-opt-use-corrections', 'run-opt-redact-pii'].forEach((id) =>
+  ['run-opt-critic-pass', 'run-opt-use-corrections', 'run-opt-redact-pii', 'run-opt-web-search'].forEach((id) =>
     el(id).addEventListener('change', () => {
       syncCriticSubOptions();
       updateRunOptionsCount();
@@ -249,6 +250,7 @@ function runOptionsParams(): Record<string, string> {
   const criticRegenerate = (el('run-opt-critic-regenerate') as HTMLInputElement).checked;
   const useCorrections = (el('run-opt-use-corrections') as HTMLInputElement).checked;
   const redactPii = (el('run-opt-redact-pii') as HTMLInputElement).checked;
+  const webSearch = (el('run-opt-web-search') as HTMLInputElement).checked;
 
   const params: Record<string, string> = {};
   if (criticPass) {
@@ -258,6 +260,7 @@ function runOptionsParams(): Record<string, string> {
   }
   if (useCorrections) params.use_corrections = 'true';
   if (redactPii) params.redact_pii = 'true';
+  if (webSearch) params.web_search = 'true';
   return params;
 }
 
