@@ -16,18 +16,22 @@ encrypted at rest, and nothing is fabricated or trusted implicitly.
 | Connectors | `gmail.py`, `google_drive.py` (OAuth2), `imap_email.py` (password) |
 | Catalog | `registry.py` |
 | Tests | `compiler/tests/test_connectors_*.py` (73 tests, all against fakes — no real network) |
+| Wiring (dashboard, API, pipeline import) | `compiler/connectors_service.py` + `/connectors` — see "What's wired up now" below |
 
-## Why this exists, and what it doesn't do yet
+## Why this exists, and what's now wired up
 
 This gives the project a real, tested primitive for pulling content from
 Gmail, Google Drive, or any IMAP mailbox — the same shape of connection
 the email-ingestion pipeline already has to a local `data/raw/` mailbox
-export, but live and per-account. **It is not wired into `server.py`,
-the dashboard, or the compile pipeline** — same posture as the
-vector/graph stores before task #16: the mechanism is real, tested, and
-ready to call; hooking a "connect Gmail" button into the dashboard, and
-feeding connector output into the compiler's ingestion step, is a
-follow-up, not assumed done here.
+export, but live and per-account. **It is now wired into the dashboard**
+via `compiler/connectors_service.py` (orchestration only — no network
+code of its own) plus a `/connectors` page: a "Connect an app" screen,
+the OAuth redirect/callback round trip, an IMAP connect form, browsing an
+account's items, and importing one into `data/raw/connectors/` so it
+flows through the normal compile pipeline. See "What's wired up now"
+below for the full shape; this section originally described the
+pre-wiring state (task #34 delivering only the tested primitive), kept
+here for history.
 
 ## The common interface
 
@@ -104,45 +108,63 @@ logic (including a deliberate CSRF-mismatch case that must raise), and
 Gmail/Drive/IMAP response parsing — all against fakes, never a real
 Google API or mail server.
 
-## Setting it up (for a future wiring)
+## Setting it up
 
 ```env
 CONNECTOR_SECRET_KEY=          # generate: python -c "from connectors.credential_store import generate_secret_key; print(generate_secret_key())"
 
 GMAIL_CLIENT_ID=
 GMAIL_CLIENT_SECRET=
-GMAIL_REDIRECT_URI=            # must match what's registered on the OAuth client
+GMAIL_REDIRECT_URI=            # must match what's registered on the OAuth client, e.g. https://<host>/connectors/callback/gmail
 
-DRIVE_CLIENT_ID=
-DRIVE_CLIENT_SECRET=
-DRIVE_REDIRECT_URI=
+GDRIVE_CLIENT_ID=
+GDRIVE_CLIENT_SECRET=
+GDRIVE_REDIRECT_URI=           # e.g. https://<host>/connectors/callback/google_drive
 ```
 
+(`.env.example` carries these, commented out, under "External connectors".)
 None of these were tested against a real Google Cloud OAuth client or a
 live Gmail/Drive account in this environment — the client-secret values
 are the user's to obtain from Google Cloud Console, same posture as the
-OpenAI/Gemini API keys already required elsewhere in `.env.example`.
+OpenAI/Gemini API keys already required elsewhere in `.env.example`. IMAP
+needs no env vars — host, port, mailbox, and app password are supplied
+per-account at connect time.
 
-## What a real wiring would still need to add
+## What's wired up now
 
-- A FastAPI route pair on `server.py` for the OAuth redirect/callback
-  (`build_authorization_request()` → redirect the user; the callback
-  handler calls `exchange_code()` and persists the result via
-  `CredentialStore.save()`).
-- A dashboard "Connect an app" screen driven by `registry.CONNECTOR_IDS`/
-  `CONNECTOR_DISPLAY_NAMES`.
-- A step that turns `Connector.list_items()`/`fetch_item()` output into
-  the same `Passage`/raw-document shape `main.py`'s ingestion pipeline
-  already consumes from `data/raw/`, so connector content flows through
-  the same extraction → trust → retrieval pipeline as everything else.
-- Token refresh on a schedule (`OAuth2Connector.ensure_fresh()` already
-  does the expiry check; something needs to call it before each use).
+| | |
+|---|---|
+| Orchestration | `compiler/connectors_service.py` — catalog, OAuth start/callback, IMAP connect, list/import items, disconnect. No network code of its own; everything network-facing still happens inside `connectors/*.py` through the same injected-callable seams that package's own tests use, so this module's tests (`test_connectors_service.py`) never touch a real network either. |
+| CLI bridge | `compiler/cli.py`: `connectors-catalog`, `connectors-oauth-start`, `connectors-oauth-callback`, `connectors-imap-connect`, `connectors-items-list`, `connectors-item-import`, `connectors-disconnect` |
+| Backend routes | `backend/src/routes/index.ts`: `GET /api/connectors`, `POST /api/connectors/:id/oauth/{start,callback}`, `POST /api/connectors/imap/connect`, `POST /api/connectors/:id/items`, `POST /api/connectors/:id/items/import`, `DELETE /api/connectors/:id/accounts/:accountLabel` |
+| Dashboard | `/connectors` (`frontend/src/views/connectors.ejs` + `client/connectors.ts`) — catalog cards, "Connect new account" (opens the provider's consent screen in a new tab), an inline IMAP connect form, per-account item browsing, and one-click import |
+| OAuth callback page | `/connectors/callback/:id` (`connectors-callback.ejs` + `client/connectors-callback.ts`) — this is the value each `*_REDIRECT_URI` above must point at; it reads `code`/`state` from the query string, asks for an account label (the provider doesn't hand back a display name from just an access token here), and posts to the callback route |
+| Imported content | `data/raw/connectors/<connector_id>/<account_label>/<title>__<item_id>.txt` — plain text with a short "imported via" header, picked up by `main.py`'s existing recursive `.txt`/`.md` scan of `data/raw/` with no separate ingestion path |
+| Tests | `compiler/tests/test_connectors_service.py` (15 tests, fakes only), `compiler/tests/test_cli.py`'s `connectors-*` cases |
 
-None of this is assumed done — it's the next task if the user wants
-connectors live rather than just available as a tested primitive.
+Two design points worth calling out:
+
+- **The Node↔Python bridge is stateless per call**, so the OAuth PKCE
+  verifier generated in `start_authorization()` can't just live in memory
+  until `complete_authorization()` runs — it's written to
+  `data/connectors/_pending/<connector>__<state>.json` (gitignored, 10
+  minute TTL, deleted on first use) keyed by the unguessable `state`
+  token `build_authorization_request()` generates. Not being able to
+  produce that file back is itself the CSRF check at this layer (see
+  `complete_authorization()`'s docstring); `oauth2.py`'s own
+  constant-time `state` comparison inside `exchange_code()` is exercised
+  directly by `test_connectors_oauth2.py`, unchanged.
+- **Token refresh happens on every list/import call**, not on a
+  schedule: `connectors_service._build_connector()` calls
+  `OAuth2Connector.ensure_fresh()` before building the Gmail/Drive
+  connector and persists a refreshed token back to `CredentialStore`
+  immediately, so there's no separate cron/scheduler to run — the
+  trade-off is a wasted expiry check on every call rather than a stale
+  token, which is the cheap direction to be wrong in.
 
 ## Next
 
-- [12-api-server.md](./12-api-server.md) — where an OAuth callback route would live
-- [11-wiki-app-and-dashboards.md](./11-wiki-app-and-dashboards.md) — where a "connect an app" screen would live
-- `compiler/connectors/` — the module itself
+- [12-api-server.md](./12-api-server.md) — the Node backend's route conventions this follows
+- [11-wiki-app-and-dashboards.md](./11-wiki-app-and-dashboards.md) — the `/connectors` page in context of the rest of the dashboard
+- `compiler/connectors/` — the underlying tested primitive, unchanged by this wiring
+- `compiler/connectors_service.py` — the wiring itself

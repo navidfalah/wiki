@@ -13,7 +13,8 @@ a one-way, read-only report and becomes a feedback signal.
 | Module | `compiler/active_learning.py` |
 | Correction store | `data/review_corrections.json` (created on first use; same human-editable-JSON pattern as `data/link_overrides.json` / `data/source_trust.json`) |
 | Pipeline integration | `main.py --use-corrections` / `WIKI_USE_CORRECTIONS=true` |
-| Tests | `compiler/tests/test_active_learning.py` |
+| Dashboard | Two independent UIs on the same module: `/review` — `frontend/src/views/review.ejs` + `frontend/src/client/review.ts`, bridged via `compiler/cli.py`'s `review-candidates`/`review-corrections-list`/`review-correction-save` commands and `backend/src/routes/index.ts`'s `/api/review/*` routes; and `/review-queue` — `frontend/src/views/review-queue.ejs` + `frontend/src/client/review-queue.ts`, bridged via `review-queue`/`review-correct` and `/api/review-queue/*` |
+| Tests | `compiler/tests/test_active_learning.py`, `compiler/tests/test_cli.py` |
 
 ## Selection: what's worth reviewing
 
@@ -93,19 +94,47 @@ that `extract_chunk_topics()` actually includes the corrections block in
 the system prompt it sends when one is provided, and leaves the prompt
 unchanged when it isn't.
 
-**Now built:** the dashboard "review queue" UI — `/review-queue` lists
-`select_review_candidates_for_dataset()`'s output and lets a human submit a
-`Correction` by clicking a verdict instead of calling `save_correction()`
-programmatically. See [35-review-queue-ui.md](./35-review-queue-ui.md).
+**Now built: two independent review-queue dashboards**, both built on top of
+`select_review_candidates_for_dataset()`/`save_correction()` and neither
+aware of the other.
 
-**Still not yet built:** wiring `select_review_candidates()` against a
-*live compiled corpus* (via `resources_engine.py`'s deduped source list, or
-a new adapter that builds a claim-group-shaped graph from real
-`state.json` chunk extractions) instead of only `trust_eval_dataset.json`'s
-pilot structure — the review queue UI still runs against the pilot
-dataset, same as the demonstration above. See
-[36-feature-roadmap.md](./36-feature-roadmap.md) for where this ranks
-against other remaining gaps.
+**Dashboard 1 — `/review-queue`.** `frontend/src/views/review-queue.ejs` +
+`frontend/src/client/review-queue.ts` list the candidates and let a human
+submit a `Correction` by clicking a verdict instead of calling
+`save_correction()` programmatically, bridged via `compiler/cli.py`'s
+`review-queue`/`review-correct` commands and `backend/src/routes/index.ts`'s
+`/api/review-queue` + `/api/review-queue/correct` routes. See
+[35-review-queue-ui.md](./35-review-queue-ui.md).
+
+**Dashboard 2 — the review queue dashboard.** `/review` (`frontend/src/views/review.ejs`,
+`frontend/src/client/review.ts`) browses `select_review_candidates_for_dataset()`'s
+output and submits a `Correction` by clicking, instead of calling
+`save_correction()` programmatically. Three routes on the Node backend
+(`backend/src/routes/index.ts`) bridge to three new `compiler/cli.py`
+subcommands, the same JSON-in/JSON-out pattern chat and email already use:
+
+| Route | `cli.py` command | Does |
+|-------|-------------------|------|
+| `GET /api/review/candidates` | `review-candidates` | Runs `select_review_candidates_for_dataset()` against `trust_eval_dataset.json`, annotating each candidate with its saved `Correction` (if any) so already-reviewed claims show as resolved instead of being re-flagged forever |
+| `GET /api/review/corrections` | `review-corrections-list` | Every saved `Correction`, unfiltered |
+| `POST /api/review/corrections` | `review-correction-save` | Builds a `Correction` from `{claim_id, group_id, verdict, note, quote}` and calls `save_correction()` — same dedupe-by-`claim_id` behavior as the module itself |
+
+The page shows stat tiles (flagged / pending / reviewed / contradictions),
+filters by status and reason, and a per-candidate form (verdict dropdown +
+free-text note) that posts straight to `save_correction()` — no separate
+"apply" step. `compiler/tests/test_cli.py` covers the three new commands
+directly (including the unknown-verdict rejection and the
+correction-round-trips-into-the-next-candidates-call case) without going
+through HTTP.
+
+**Still a gap:** both dashboards wire the *review queue UI* against
+`select_review_candidates_for_dataset()`, which itself still only runs on
+`trust_eval_dataset.json`'s pilot structure — wiring `select_review_candidates()`
+against a *live compiled corpus* (via `resources_engine.py`'s deduped source
+list, or a new adapter that builds a claim-group-shaped graph from real
+`state.json` chunk extractions) instead is not part of either task and
+remains open. See [36-feature-roadmap.md](./36-feature-roadmap.md) for where
+this ranks against other remaining gaps.
 
 ## Next
 
