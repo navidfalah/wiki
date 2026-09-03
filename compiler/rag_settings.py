@@ -22,13 +22,19 @@ RAG_SETTINGS_FILE = PROJECT_ROOT / "data" / "rag_settings.json"
 
 RetrievalMode = Literal["bm25", "hybrid", "hybrid_rerank"]
 AnswerMode = Literal["auto", "extractive"]
+Architecture = Literal["hybrid", "naive", "hyde", "fusion", "graph", "corrective"]
 
 _RETRIEVAL_MODES = ("bm25", "hybrid", "hybrid_rerank")
 _ANSWER_MODES = ("auto", "extractive")
+# "hybrid" is the pre-existing BM25/fusion/rerank stack, tuned by
+# retrieval_mode below; the rest are rag_architectures.py's ARCHITECTURES
+# registry, each a self-contained strategy that ignores retrieval_mode.
+_ARCHITECTURES = ("hybrid", "naive", "hyde", "fusion", "graph", "corrective")
 
 
 @dataclass(frozen=True)
 class RagSettings:
+    architecture: Architecture = "hybrid"
     retrieval_mode: RetrievalMode = "hybrid_rerank"
     top_k: int = 5
     bm25_k1: float = 1.5
@@ -62,6 +68,10 @@ def load_rag_settings() -> RagSettings:
     if not isinstance(raw, dict):
         return RagSettings()
 
+    architecture = raw.get("architecture")
+    if architecture not in _ARCHITECTURES:
+        architecture = "hybrid"
+
     retrieval_mode = raw.get("retrieval_mode")
     if retrieval_mode not in _RETRIEVAL_MODES:
         retrieval_mode = "hybrid_rerank"
@@ -75,6 +85,7 @@ def load_rag_settings() -> RagSettings:
         top_k = 5
 
     return RagSettings(
+        architecture=architecture,
         retrieval_mode=retrieval_mode,
         top_k=top_k,
         bm25_k1=float(_as_number(raw, "bm25_k1", 1.5, float)),

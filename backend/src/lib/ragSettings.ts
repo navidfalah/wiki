@@ -1,10 +1,15 @@
 /**
- * RAG Architecture: lets the wiki UI pick which of hybrid_retrieval.py's
- * three tiers run (BM25 always; embedding fusion and LLM reranking each
- * optional -- see rag_engine.py's module docstring), tune BM25's k1/b,
- * opt into vector_store.py's persistent embedding store instead of
- * re-embedding the corpus every call, and force extractive answers (skip
- * the chat model entirely) even when one is configured.
+ * RAG Architecture: lets the wiki UI pick which retrieval architecture chat
+ * uses. "hybrid" is hybrid_retrieval.py's three-tier stack (BM25 always;
+ * embedding fusion and LLM reranking each optional, chosen via
+ * retrieval_mode -- see rag_engine.py's module docstring); the other
+ * architecture values are compiler/rag_architectures.py's self-contained
+ * strategies (naive, HyDE, RAG-Fusion, GraphRAG-lite, Corrective RAG -- see
+ * documentation/38-rag-architectures.md), each ignoring retrieval_mode
+ * entirely. Also tunes BM25's k1/b, opts into vector_store.py's persistent
+ * embedding store instead of re-embedding the corpus every call (only
+ * meaningful for the "hybrid" architecture), and forces extractive answers
+ * (skip the chat model entirely) even when one is configured.
  *
  * Persisted to data/rag_settings.json, which compiler/rag_settings.py
  * reads directly -- unlike llmSettings.ts, there's no env-var mirroring
@@ -18,13 +23,16 @@ import { PROJECT_ROOT } from '../paths';
 
 export const RAG_SETTINGS_FILE = path.join(PROJECT_ROOT, 'data', 'rag_settings.json');
 
+export type Architecture = 'hybrid' | 'naive' | 'hyde' | 'fusion' | 'graph' | 'corrective';
 export type RetrievalMode = 'bm25' | 'hybrid' | 'hybrid_rerank';
 export type AnswerMode = 'auto' | 'extractive';
 
+const ARCHITECTURES: Architecture[] = ['hybrid', 'naive', 'hyde', 'fusion', 'graph', 'corrective'];
 const RETRIEVAL_MODES: RetrievalMode[] = ['bm25', 'hybrid', 'hybrid_rerank'];
 const ANSWER_MODES: AnswerMode[] = ['auto', 'extractive'];
 
 export interface RagSettings {
+  architecture: Architecture;
   retrieval_mode: RetrievalMode;
   top_k: number;
   bm25_k1: number;
@@ -34,6 +42,7 @@ export interface RagSettings {
 }
 
 const DEFAULT_SETTINGS: RagSettings = {
+  architecture: 'hybrid',
   retrieval_mode: 'hybrid_rerank',
   top_k: 5,
   bm25_k1: 1.5,
@@ -58,6 +67,7 @@ export function loadRagSettings(): RagSettings {
   const k1 = Number(parsed.bm25_k1);
   const b = Number(parsed.bm25_b);
   return {
+    architecture: ARCHITECTURES.includes(parsed.architecture) ? parsed.architecture : DEFAULT_SETTINGS.architecture,
     retrieval_mode: RETRIEVAL_MODES.includes(parsed.retrieval_mode) ? parsed.retrieval_mode : DEFAULT_SETTINGS.retrieval_mode,
     top_k: Number.isFinite(topK) && topK > 0 ? Math.floor(topK) : DEFAULT_SETTINGS.top_k,
     bm25_k1: Number.isFinite(k1) ? k1 : DEFAULT_SETTINGS.bm25_k1,
@@ -72,6 +82,9 @@ export class RagSettingsError extends Error {}
 export function saveRagSettings(input: any): RagSettings {
   if (!input || typeof input !== 'object') {
     throw new RagSettingsError('Invalid settings payload');
+  }
+  if (input.architecture !== undefined && !ARCHITECTURES.includes(input.architecture)) {
+    throw new RagSettingsError(`"architecture" must be one of: ${ARCHITECTURES.join(', ')}`);
   }
   if (input.retrieval_mode !== undefined && !RETRIEVAL_MODES.includes(input.retrieval_mode)) {
     throw new RagSettingsError(`"retrieval_mode" must be one of: ${RETRIEVAL_MODES.join(', ')}`);
@@ -94,6 +107,7 @@ export function saveRagSettings(input: any): RagSettings {
 
   const existing = loadRagSettings();
   const settings: RagSettings = {
+    architecture: input.architecture ?? existing.architecture,
     retrieval_mode: input.retrieval_mode ?? existing.retrieval_mode,
     top_k: Number.isFinite(topK) && topK > 0 ? Math.floor(topK) : existing.top_k,
     bm25_k1: Number.isFinite(k1) ? k1 : existing.bm25_k1,

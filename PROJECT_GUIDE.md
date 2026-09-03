@@ -52,6 +52,7 @@ cd ../wiki-app && npm install && npm start
 | Review queue UI | [35-review-queue-ui.md](./documentation/35-review-queue-ui.md) |
 | Feature roadmap (R&D survey) | [36-feature-roadmap.md](./documentation/36-feature-roadmap.md) |
 | Web search enrichment during synthesis | [37-web-search-enrichment.md](./documentation/37-web-search-enrichment.md) |
+| RAG architectures (Naive, HyDE, RAG-Fusion, GraphRAG-lite, Corrective) | [38-rag-architectures.md](./documentation/38-rag-architectures.md) |
 
 ## Also see
 

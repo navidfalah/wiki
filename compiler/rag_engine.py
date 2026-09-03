@@ -26,7 +26,7 @@ Optionally, `retrieve_hybrid(..., vector_store=...)` backs the embedding
 tier with a persistent vector_store.py VectorStore (task #11) instead of
 re-embedding the whole corpus from scratch on every call —
 `sync_corpus_to_vector_store()` embeds only passages the store doesn't
-already have, keyed by a stable content hash (`_passage_id`), so a second
+already have, keyed by a stable content hash (rag_types.passage_id), so a second
 call against an unchanged corpus does zero new embedding calls. See
 documentation/31-vector-graph-storage-and-scalability.md for why this
 matters (a naive from-scratch embed is the cost `retrieve_hybrid()` paid
@@ -37,21 +37,31 @@ from before this wiring existed.
 
 from __future__ import annotations
 
-import hashlib
 import re
-from dataclasses import dataclass, field
+from collections.abc import Iterator
 from pathlib import Path
-from typing import Any, Iterator
+from typing import Any
 
 import hybrid_retrieval
+import rag_architectures
 import rag_settings
 from doc_utils import parse_frontmatter, strip_frontmatter
 from llm_client import LLMClient
 from models import OUTPUT_DIR, PROJECT_ROOT
+from rag_types import Passage, ScoredPassage, index_corpus, passage_id, tokenize
 from text_chunking import split_text_into_chunks
 from vector_store import VectorRecord, VectorStore
 
-_WORD_RE = re.compile(r"[a-z0-9]+")
+# Re-exported so existing call sites/tests (`rag_engine.Passage`,
+# `rag_engine.ScoredPassage`) keep working now that the types live in
+# rag_types.py -- see that module's docstring for why they moved.
+__all__ = ["Passage", "ScoredPassage", "build_corpus", "retrieve", "retrieve_hybrid", "answer_question", "answer_question_stream"]
+
+# Backward-compatible alias: this was a module-private function here before
+# passage_id() moved to rag_types.py; kept so existing call sites/tests
+# (`rag_engine._passage_id`) don't need to change.
+_passage_id = passage_id
+
 _HEADING_LINE_RE = re.compile(r"^(#{1,6})\s+(.*)$")
 _PASSAGE_MAX_CHARS = 900
 
@@ -70,25 +80,6 @@ CHAT_SYSTEM_PROMPT = (
 )
 
 
-def _tokenize(text: str) -> list[str]:
-    return _WORD_RE.findall(text.lower())
-
-
-@dataclass
-class Passage:
-    doc_path: str
-    title: str
-    heading: str
-    text: str
-    tokens: list[str] = field(default_factory=list)
-
-
-@dataclass
-class ScoredPassage:
-    passage: Passage
-    score: float
-
-
 def _split_into_passages(doc_path: str, title: str, body: str) -> list[Passage]:
     """Split a page body into heading-scoped, size-bounded passages."""
     passages: list[Passage] = []
@@ -103,7 +94,7 @@ def _split_into_passages(doc_path: str, title: str, body: str) -> list[Passage]:
         for piece in split_text_into_chunks(section_text, max_chars=_PASSAGE_MAX_CHARS):
             piece = piece.strip()
             if piece:
-                passages.append(Passage(doc_path, title, heading, piece, _tokenize(piece)))
+                passages.append(Passage(doc_path, title, heading, piece, tokenize(piece)))
 
     for line in body.splitlines():
         match = _HEADING_LINE_RE.match(line)
@@ -134,32 +125,15 @@ def build_corpus(docs_dir: Path | None = None) -> list[Passage]:
     return passages
 
 
-def _passage_id(passage: Passage) -> str:
-    """A stable content-hash id — same (doc_path, heading, text) always
-    hashes to the same id, across calls and across process restarts. That's
-    what makes VectorStore persistence meaningful: if a passage's text
-    changes, its id changes too, so a stale embedding is never silently
-    reused for changed content, and sync_corpus_to_vector_store() can tell
-    "already embedded" from "needs embedding" without comparing text.
-    """
-    key = f"{passage.doc_path}\x1f{passage.heading}\x1f{passage.text}"
-    return hashlib.sha256(key.encode("utf-8")).hexdigest()[:16]
-
-
-def _index_corpus(corpus: list[Passage]) -> tuple[list[hybrid_retrieval.Doc], dict[str, Passage]]:
-    docs = [hybrid_retrieval.Doc(id=_passage_id(p), text=p.text, tokens=p.tokens) for p in corpus]
-    by_id = {_passage_id(p): p for p in corpus}
-    return docs, by_id
-
-
 def sync_corpus_to_vector_store(corpus: list[Passage], llm: LLMClient, store: VectorStore) -> int:
     """Embed and upsert every passage not already present in `store`,
-    keyed by _passage_id(). Existing entries are never re-embedded — that's
-    the entire point of a persistent store versus re-embedding the whole
-    corpus on every retrieve_hybrid() call. Returns how many new embeddings
-    were actually computed (0 on a second call against an unchanged corpus).
+    keyed by rag_types.passage_id(). Existing entries are never re-embedded —
+    that's the entire point of a persistent store versus re-embedding the
+    whole corpus on every retrieve_hybrid() call. Returns how many new
+    embeddings were actually computed (0 on a second call against an
+    unchanged corpus).
     """
-    docs, _ = _index_corpus(corpus)
+    docs, _ = index_corpus(corpus)
     to_embed = [d for d in docs if store.get(d.id) is None]
     if not to_embed:
         return 0
@@ -174,7 +148,7 @@ def prune_stale_vector_store_entries(corpus: list[Passage], store: VectorStore) 
     hash ids mean a changed passage gets a new id, orphaning the old one)
     or the store was built from a different corpus entirely. Returns how
     many entries were removed."""
-    docs, _ = _index_corpus(corpus)
+    docs, _ = index_corpus(corpus)
     live_ids = {d.id for d in docs}
     stale_ids = [record.id for record in store.all_records() if record.id not in live_ids]
     for stale_id in stale_ids:
@@ -186,7 +160,7 @@ def retrieve(query: str, corpus: list[Passage], *, top_k: int = 5) -> list[Score
     """BM25 ranking over the corpus — always available, no API key needed.
     See documentation/25-hybrid-retrieval.md for how this compares to the
     original ad hoc TF-IDF-style scorer it replaced."""
-    docs, by_id = _index_corpus(corpus)
+    docs, by_id = index_corpus(corpus)
     ranked = hybrid_retrieval.bm25_rank(query, docs, top_k=top_k)
     return [ScoredPassage(by_id[r.doc_id], r.score) for r in ranked]
 
@@ -223,7 +197,7 @@ def retrieve_hybrid(
     call's corpus before fusion — see prune_stale_vector_store_entries() to
     actually remove those, which this function does not do on its own.
     """
-    docs, by_id = _index_corpus(corpus)
+    docs, by_id = index_corpus(corpus)
     shortlist_k = max(top_k * 3, top_k)
 
     bm25_top = hybrid_retrieval.bm25_rank(query, docs, top_k=shortlist_k, config=bm25_config)
@@ -358,17 +332,34 @@ def _retrieve(
         }
 
     client = llm or LLMClient()
-    vector_store = VectorStore(VECTOR_STORE_FILE) if settings.use_vector_store else None
-    scored = retrieve_hybrid(
-        query,
-        corpus,
-        top_k=top_k if top_k is not None else settings.top_k,
-        llm=client,
-        rerank=settings.enable_rerank,
-        enable_embeddings=settings.enable_embeddings,
-        bm25_config=hybrid_retrieval.BM25Config(k1=settings.bm25_k1, b=settings.bm25_b),
-        vector_store=vector_store,
-    )
+    effective_top_k = top_k if top_k is not None else settings.top_k
+    bm25_config = hybrid_retrieval.BM25Config(k1=settings.bm25_k1, b=settings.bm25_b)
+
+    if settings.architecture == "hybrid":
+        vector_store = VectorStore(VECTOR_STORE_FILE) if settings.use_vector_store else None
+        scored = retrieve_hybrid(
+            query,
+            corpus,
+            top_k=effective_top_k,
+            llm=client,
+            rerank=settings.enable_rerank,
+            enable_embeddings=settings.enable_embeddings,
+            bm25_config=bm25_config,
+            vector_store=vector_store,
+        )
+    else:
+        # One of rag_architectures.ARCHITECTURES (naive/HyDE/RAG-Fusion/
+        # GraphRAG-lite/CRAG-lite) -- see documentation/38-rag-architectures.md.
+        # retrieval_mode/use_vector_store don't apply to these; each manages
+        # its own use of the LLM (or degrades to BM25 without one).
+        scored = rag_architectures.retrieve(
+            settings.architecture,
+            query,
+            corpus,
+            top_k=effective_top_k,
+            llm=client,
+            bm25_config=bm25_config,
+        )
     if not scored:
         return {
             "early": {

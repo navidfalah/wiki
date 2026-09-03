@@ -45,6 +45,7 @@ Detailed project documentation, split by topic. Start with [01-overview.md](./01
 | [35-review-queue-ui.md](./35-review-queue-ui.md) | Review Queue dashboard page: browse active-learning candidates and submit corrections by clicking |
 | [36-feature-roadmap.md](./36-feature-roadmap.md) | R&D survey: what's built vs. wired vs. still a gap, ranked by effort and value |
 | [37-web-search-enrichment.md](./37-web-search-enrichment.md) | Live internet search enrichment during synthesis — opt-in per run or as a persisted default, `source_type="web"` at "low" trust |
+| [38-rag-architectures.md](./38-rag-architectures.md) | Researching and implementing distinct RAG architectures: Naive, HyDE, RAG-Fusion, GraphRAG-lite, Corrective RAG |
 
 ---
 

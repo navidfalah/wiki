@@ -120,10 +120,12 @@ interface ResourceEntry {
   citation_count: number;
 }
 
+type Architecture = 'hybrid' | 'naive' | 'hyde' | 'fusion' | 'graph' | 'corrective';
 type RetrievalMode = 'bm25' | 'hybrid' | 'hybrid_rerank';
 type AnswerMode = 'auto' | 'extractive';
 
 interface RagSettings {
+  architecture: Architecture;
   retrieval_mode: RetrievalMode;
   top_k: number;
   bm25_k1: number;
@@ -136,6 +138,15 @@ const RETRIEVAL_MODE_LABELS: Record<RetrievalMode, string> = {
   bm25: 'BM25 only',
   hybrid: 'Hybrid',
   hybrid_rerank: 'Hybrid + rerank',
+};
+
+const ARCHITECTURE_LABELS: Record<Architecture, string> = {
+  hybrid: 'Hybrid',
+  naive: 'Naive RAG',
+  hyde: 'HyDE',
+  fusion: 'RAG-Fusion',
+  graph: 'GraphRAG-lite',
+  corrective: 'Corrective RAG',
 };
 
 let sessions: ChatSessionSummary[] = [];
@@ -338,12 +349,16 @@ function renderResourcesPanel() {
 
 function renderModePanel() {
   const label = el('chat-mode-label');
-  label.textContent = `Mode: ${ragSettings ? RETRIEVAL_MODE_LABELS[ragSettings.retrieval_mode] : '…'}`;
+  const isHybrid = !ragSettings || ragSettings.architecture === 'hybrid';
+  label.textContent = `Mode: ${
+    ragSettings ? (isHybrid ? RETRIEVAL_MODE_LABELS[ragSettings.retrieval_mode] : ARCHITECTURE_LABELS[ragSettings.architecture]) : '…'
+  }`;
 
   el('chat-mode-retrieval-options')
     .querySelectorAll<HTMLInputElement>('input[name="chat-retrieval-mode"]')
     .forEach((input) => {
       input.checked = ragSettings ? input.value === ragSettings.retrieval_mode : false;
+      input.disabled = !isHybrid;
     });
   el('chat-mode-answer-options')
     .querySelectorAll<HTMLInputElement>('input[name="chat-answer-mode"]')
