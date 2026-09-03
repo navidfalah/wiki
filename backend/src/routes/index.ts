@@ -583,6 +583,7 @@ export function registerRoutes(app: Express): void {
     const useCorrections =
       req.query.use_corrections !== undefined ? req.query.use_corrections === 'true' : pipelineDefaults.use_corrections;
     const redactPii = req.query.redact_pii !== undefined ? req.query.redact_pii === 'true' : pipelineDefaults.redact_pii;
+    const webSearch = req.query.web_search !== undefined ? req.query.web_search === 'true' : pipelineDefaults.web_search;
 
     logEvent(
       req.user?.username,
@@ -593,6 +594,7 @@ export function registerRoutes(app: Express): void {
         criticPass ? `critic pass${criticSamples && criticSamples > 1 ? ` x${criticSamples}` : ''}${criticRegenerate ? ' +regen' : ''}` : null,
         useCorrections ? 'use corrections' : null,
         redactPii ? 'redact PII' : null,
+        webSearch ? 'web search' : null,
       ]
         .filter(Boolean)
         .join(' · '),
@@ -605,6 +607,7 @@ export function registerRoutes(app: Express): void {
       criticRegenerate,
       useCorrections,
       redactPii,
+      webSearch,
     });
   });
 

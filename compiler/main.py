@@ -26,6 +26,7 @@ from rich.table import Table
 from rich.text import Text
 
 import active_learning
+import web_search
 from linker import (
     IndexDelta,
     link_and_export_pages,
@@ -226,6 +227,11 @@ def step_synthesize(
     extra_system_context: str = "",
     critic_samples: int = 1,
     critic_regenerate: bool = False,
+    web_search_enabled: bool = False,
+    web_search_max_results: int = web_search.DEFAULT_MAX_RESULTS,
+    web_search_max_topics: int = web_search.DEFAULT_MAX_TOPICS,
+    web_search_provider: str | None = None,
+    web_search_api_key: str | None = None,
 ) -> dict:
     """Step 3: Group by topic and write draft wiki pages to temp_output/."""
     grouped = group_chunks_by_topic(extractions)
@@ -245,6 +251,26 @@ def step_synthesize(
         dirty_topics = topics_affected_by_sources(grouped, changed_sources)
     else:
         dirty_topics = set()
+
+    web_added = 0
+    if web_search_enabled:
+        # Only enrich topics that are actually being (re)generated this run
+        # -- an incremental build with no local changes stays offline, and
+        # a --force run enriches everything, bounded by max_topics either way.
+        search_topics = list(grouped.keys()) if dirty_topics is None else sorted(dirty_topics)
+        web_added = web_search.augment_grouped_with_web_results(
+            grouped,
+            search_topics,
+            max_results=web_search_max_results,
+            max_topics=web_search_max_topics,
+            provider=web_search_provider,
+            api_key=web_search_api_key,
+        )
+        if web_added:
+            console.print(
+                f"[cyan]Web search:[/] added [bold]{web_added}[/] web-sourced chunk(s) across "
+                f"up to [bold]{min(len(search_topics), web_search_max_topics)}[/] topic(s)"
+            )
 
     removed_drafts = cleanup_stale_drafts(grouped, TEMP_OUTPUT_DIR)
     removed_filenames = {p.name for p in removed_drafts}
@@ -300,6 +326,7 @@ def step_synthesize(
         "removed_filenames": removed_filenames,
         "dirty_topics": dirty_topics,
         "skipped_count": len(skipped),
+        "web_added": web_added,
     }
 
 
@@ -417,6 +444,11 @@ def run_pipeline(
     use_corrections: bool = False,
     redact_pii: bool = False,
     exclude_prefixes: frozenset[str] | None = None,
+    web_search_enabled: bool = False,
+    web_search_max_results: int = web_search.DEFAULT_MAX_RESULTS,
+    web_search_max_topics: int = web_search.DEFAULT_MAX_TOPICS,
+    web_search_provider: str | None = None,
+    web_search_api_key: str | None = None,
 ) -> int:
     """Run the full compiler pipeline sequentially.
 
@@ -425,6 +457,11 @@ def run_pipeline(
     synthesizer.discover_raw_source_files() for the exact semantics
     (excluded != deleted, so toggling a folder back on doesn't need a
     --force to pick its topics back up).
+
+    ``web_search_enabled`` turns on step 3's live internet search
+    enrichment (web_search.py) for this run only -- off by default, so a
+    compile stays fully offline/deterministic unless explicitly asked for
+    (--web-search / WIKI_WEB_SEARCH_ENABLED). See step_synthesize().
     """
     start = time.perf_counter()
     try:
@@ -441,7 +478,8 @@ def run_pipeline(
             f"Output:  [dim]{OUTPUT_DIR}[/]\n"
             f"State:   [dim]{STATE_FILE}[/]\n"
             f"Mode:    [yellow]{mode_label}[/]"
-            + (" [red](force rebuild)[/]" if force else ""),
+            + (" [red](force rebuild)[/]" if force else "")
+            + (f" [cyan](web search: {web_search_provider or web_search.DEFAULT_PROVIDER})[/]" if web_search_enabled else ""),
             border_style="blue",
         )
     )
@@ -532,6 +570,11 @@ def run_pipeline(
             extra_system_context=extra_system_context,
             critic_samples=critic_samples,
             critic_regenerate=critic_regenerate,
+            web_search_enabled=web_search_enabled,
+            web_search_max_results=web_search_max_results,
+            web_search_max_topics=web_search_max_topics,
+            web_search_provider=web_search_provider,
+            web_search_api_key=web_search_api_key,
         )
         llm.usage_log.extend(thinking_llm.usage_log)
         run.finish_step(
@@ -540,6 +583,7 @@ def run_pipeline(
             detail=(
                 f"Wrote {len(synth_result['written_filenames'])} drafts, "
                 f"skipped {synth_result['skipped_count']} unchanged"
+                + (f", {synth_result['web_added']} web-sourced chunk(s)" if synth_result["web_added"] else "")
             ),
             data={
                 "input": {"chunk_count": extractions["chunk_count"]},
@@ -547,6 +591,8 @@ def run_pipeline(
                     "written": sorted(synth_result["written_filenames"]),
                     "removed": sorted(synth_result["removed_filenames"]),
                     "skipped_count": synth_result["skipped_count"],
+                    "web_search_enabled": web_search_enabled,
+                    "web_added": synth_result["web_added"],
                 },
             },
         )
@@ -741,6 +787,46 @@ def main() -> None:
             "picked back up on a later run without needing --force."
         ),
     )
+    parser.add_argument(
+        "--web-search",
+        action="store_true",
+        default=os.getenv("WIKI_WEB_SEARCH_ENABLED", "").lower() in {"1", "true", "yes"},
+        help=(
+            "Enrich synthesis (step 3) with live internet search results for the topics "
+            "being (re)generated this run, one search per topic -- a source alongside "
+            "data/raw/, tagged source_type=web and trusted at the 'low' default level "
+            "(see trust.py, web_search.py). Off by default, so a compile stays fully "
+            "offline/deterministic unless explicitly turned on for this run. Requires "
+            "outbound network access from the compiler process. Also enabled by setting "
+            "WIKI_WEB_SEARCH_ENABLED=true."
+        ),
+    )
+    parser.add_argument(
+        "--web-search-provider",
+        type=str,
+        default=os.getenv("WIKI_WEB_SEARCH_PROVIDER", web_search.DEFAULT_PROVIDER),
+        choices=list(web_search.SUPPORTED_PROVIDERS),
+        help=(
+            "Search provider for --web-search: 'duckduckgo' (default, no API key needed) "
+            "or 'serpapi'/'bing' (need WIKI_WEB_SEARCH_API_KEY). Also settable via "
+            "WIKI_WEB_SEARCH_PROVIDER."
+        ),
+    )
+    parser.add_argument(
+        "--web-search-max-results",
+        type=int,
+        default=int(os.getenv("WIKI_WEB_SEARCH_MAX_RESULTS", str(web_search.DEFAULT_MAX_RESULTS))),
+        help="Max search results fetched per topic when --web-search is on (default 3).",
+    )
+    parser.add_argument(
+        "--web-search-max-topics",
+        type=int,
+        default=int(os.getenv("WIKI_WEB_SEARCH_MAX_TOPICS", str(web_search.DEFAULT_MAX_TOPICS))),
+        help=(
+            "Max number of topics enriched with web search in one run, to bound cost and "
+            "latency when many topics are dirty at once (default 8)."
+        ),
+    )
     args = parser.parse_args()
     exclude_prefixes = frozenset(f.strip() for f in args.exclude_folders.split(",") if f.strip())
     raise SystemExit(
@@ -752,6 +838,10 @@ def main() -> None:
             use_corrections=args.use_corrections,
             redact_pii=args.redact_pii,
             exclude_prefixes=exclude_prefixes or None,
+            web_search_enabled=args.web_search,
+            web_search_max_results=args.web_search_max_results,
+            web_search_max_topics=args.web_search_max_topics,
+            web_search_provider=args.web_search_provider,
         )
     )
 

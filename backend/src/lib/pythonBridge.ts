@@ -43,6 +43,7 @@ export interface CompilerBuildOptions {
   criticRegenerate?: boolean;
   useCorrections?: boolean;
   redactPii?: boolean;
+  webSearch?: boolean;
 }
 
 export function streamCompilerBuild(res: Response, options: CompilerBuildOptions): void {
@@ -60,7 +61,8 @@ export function streamCompilerBuild(res: Response, options: CompilerBuildOptions
     'X-Accel-Buffering': 'no',
   });
 
-  const { force, excludeFolders, criticPass, criticSamples, criticRegenerate, useCorrections, redactPii } = options;
+  const { force, excludeFolders, criticPass, criticSamples, criticRegenerate, useCorrections, redactPii, webSearch } =
+    options;
   const args = [
     '-u',
     'main.py',
@@ -71,6 +73,7 @@ export function streamCompilerBuild(res: Response, options: CompilerBuildOptions
     ...(criticPass && criticRegenerate ? ['--critic-regenerate'] : []),
     ...(useCorrections ? ['--use-corrections'] : []),
     ...(redactPii ? ['--redact-pii'] : []),
+    ...(webSearch ? ['--web-search'] : []),
   ];
   sseEvent(res, 'start', { message: 'Starting compiler pipeline…', command: `${PYTHON_BIN} ${args.join(' ')}` });
 

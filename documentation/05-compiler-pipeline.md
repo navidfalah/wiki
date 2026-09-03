@@ -28,6 +28,7 @@ python main.py --force           # ignore MD5 cache
 | Flag | Effect |
 |------|--------|
 | `--force` | Reprocess every raw file; regenerate all topics; full re-link |
+| `--web-search` | Step 3 also searches the internet per dirty topic and adds hits as extra `source_type="web"` chunks — off by default, see [37-web-search-enrichment.md](./37-web-search-enrichment.md) |
 
 Requires `OPENAI_API_KEY` — the pipeline calls `require_llm()` at start and exits `1`
 immediately if it's unset. Exit code: `0` on success, `1` if no raw files found or the
@@ -71,8 +72,9 @@ See [06-extraction-and-synthesis.md](./06-extraction-and-synthesis.md) for extra
 
 1. Group all chunks by extracted topic name
 2. Determine **dirty topics** — topics whose source files changed (unless `--force`)
-3. `cleanup_stale_drafts()` — remove draft `.md` files for topics no longer present
-4. For each dirty topic (or all if `--force`): write `compiler/temp_output/{topic-slug}.md`
+3. If `--web-search` is on: search the internet for each dirty topic (all topics if `--force`) and append the hits as extra `source_type="web"` chunk entries (`main.py`'s `step_synthesize()` → `web_search.augment_grouped_with_web_results()`) — see [37-web-search-enrichment.md](./37-web-search-enrichment.md)
+4. `cleanup_stale_drafts()` — remove draft `.md` files for topics no longer present
+5. For each dirty topic (or all if `--force`): write `compiler/temp_output/{topic-slug}.md`
 
 Output: draft markdown with YAML front matter (`id`, `title`, `tags`, `last_updated`).
 

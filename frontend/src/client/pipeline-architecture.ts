@@ -6,6 +6,7 @@ interface PipelineSettings {
   critic_regenerate: boolean;
   use_corrections: boolean;
   redact_pii: boolean;
+  web_search: boolean;
   excluded_folders: string[];
 }
 

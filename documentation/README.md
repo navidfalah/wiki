@@ -44,6 +44,7 @@ Detailed project documentation, split by topic. Start with [01-overview.md](./01
 | [34-external-connectors.md](./34-external-connectors.md) | Gmail/Google Drive/IMAP connectors: OAuth2+PKCE, encrypted credential storage — built and tested, not yet wired into the app |
 | [35-review-queue-ui.md](./35-review-queue-ui.md) | Review Queue dashboard page: browse active-learning candidates and submit corrections by clicking |
 | [36-feature-roadmap.md](./36-feature-roadmap.md) | R&D survey: what's built vs. wired vs. still a gap, ranked by effort and value |
+| [37-web-search-enrichment.md](./37-web-search-enrichment.md) | Live internet search enrichment during synthesis — opt-in per run or as a persisted default, `source_type="web"` at "low" trust |
 
 ---
 

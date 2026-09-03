@@ -52,6 +52,10 @@
           <input id="run-opt-redact-pii" type="checkbox" class="rounded border-gray-300 text-accent focus:ring-accent/30" />
           Redact PII before extraction
         </label>
+        <label class="flex items-center gap-2 text-gray-600" title="During synthesis, search the internet for each topic being (re)generated and add the results as extra sources alongside data/raw/, tagged source_type=web and trusted &quot;Low&quot; by default. Requires network access from the compiler process.">
+          <input id="run-opt-web-search" type="checkbox" class="rounded border-gray-300 text-accent focus:ring-accent/30" />
+          Web search enrichment
+        </label>
       </div>
     </div>
     <div class="p-4">
