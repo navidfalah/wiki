@@ -152,11 +152,47 @@ Aborts Docusaurus build if compiler exits non-zero.
 
 `/api/build/stream` spawns the same `main.py` via `build_runner.py`:
 
-- Query param: `force` (default `false`) — forwarded to `main.py` as `--force`
+- Query params: `force` (default `false`, forwarded to `main.py` as `--force`) and
+  `timeout_seconds` (optional override for the run's time limit)
 - Requires `OPENAI_API_KEY` in the server's environment; `main.py` exits `1` immediately otherwise
 - Streams SSE events: `start`, `log`, `done`, `error`
-- Only one build at a time (`409` if lock held)
+- Only one build at a time — the route acquires `_build_lock` synchronously before
+  returning the `StreamingResponse` (not lazily inside the generator), so two
+  concurrent requests can't both slip past the "already running" check; the loser
+  gets `409`
+- `POST /api/build/stop` kills the in-flight build on demand (`{"stopped": bool}`);
+  the running stream reports it as `done` with `success: false` and
+  `"message": "Build stopped by user."` and releases the lock itself
 - Strips ANSI escape codes from Rich output before streaming
+
+### Failure handling
+
+Every exit path — clean finish, non-zero exit, timeout, user stop, failure to
+spawn, the client disconnecting, or a bug in `build_runner.py` itself — ends in
+exactly one `done` event and always kills the subprocess and clears its
+module-level slot, so a broken run can never wedge `_build_lock` or leave an
+orphaned process running:
+
+| Cause | `error.kind` | `done.success` |
+|-------|--------------|-----------------|
+| Entrypoint missing | `missing_entrypoint` | `false` |
+| `main.py` fails to spawn (OS error) | `spawn_failed` | `false` |
+| Subprocess has no stdout pipe | `no_stdout` | `false` |
+| Exceeds the timeout | `timeout` | `false` |
+| Finishes output but won't exit within the grace period | `exit_wait_timeout` | `false` |
+| Unhandled exception in `build_runner.py` | `unexpected` | `false` |
+| `POST /api/build/stop` called | *(no error event)* | `false` |
+| Client disconnects mid-stream | *(no event — generator is cancelled)* | — |
+| Normal non-zero exit code | *(no error event, just `done`)* | `false` |
+
+**Timed out builds:** killed (SIGTERM, then SIGKILL after a 10s grace period) if
+the run exceeds `DEFAULT_BUILD_TIMEOUT_SECONDS` (1800s / 30 min), or the
+`COMPILER_BUILD_TIMEOUT_SECONDS` env var / `timeout_seconds` query param when set.
+
+**Client disconnect:** if the SSE connection drops (browser closed, network
+hiccup), FastAPI cancels the generator; `stream_compiler_build` catches the
+resulting `CancelledError`, kills the subprocess, and re-raises — no zombie
+process is left running against a closed pipe.
 
 ## Next
 
