@@ -40,6 +40,9 @@ def parse_frontmatter(content: str) -> dict[str, Any]:
                 tags.append(line[2:].strip().strip('"').strip("'"))
                 continue
             in_tags = False
+        if line.rstrip() == "tags:":
+            in_tags = True
+            continue
         match = re.match(r"^(\w+):\s*(.+)$", line)
         if match:
             key = match.group(1)
