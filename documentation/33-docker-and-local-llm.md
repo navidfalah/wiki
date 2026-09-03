@@ -122,6 +122,17 @@ that wants fully-local retrieval too would add a small second server (or a
 `--embedding true` llama.cpp instance loading an actual embedding model)
 rather than reusing this one.
 
+**Audio transcription is not served by this container either.**
+`llama-cpp-python`'s OpenAI-compatible server exposes chat completions (and
+optionally embeddings), not an `audio.transcriptions` endpoint, so
+`LLMClient.transcribe_audio()` has nothing to call here. That's not fatal —
+`media_ingest.build_audio_chunk()` degrades to a metadata-only chunk
+("... — transcription unavailable") plus a download/player link when
+transcription fails or isn't configured — but it's worth knowing audio
+files won't get real transcripts under `--profile local-llm` unless
+`OPENAI_TRANSCRIPTION_MODEL` is separately pointed at a real speech-to-text
+endpoint (OpenAI's `whisper-1`, or Gemini's equivalent).
+
 ## An important, stated-plainly gap: the exact Gemma model name
 
 `LOCAL_LLM_MODEL_REPO`/`LOCAL_LLM_MODEL_FILE` default to

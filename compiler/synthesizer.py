@@ -28,9 +28,12 @@ from yaml_frontmatter import DRAFT_GENERATED_NOTE, insert_generated_banner, yaml
 
 EMAIL_EXTENSIONS = email_ingest.EMAIL_EXTENSIONS
 IMAGE_EXTENSIONS = media_ingest.IMAGE_EXTENSIONS
+AUDIO_EXTENSIONS = media_ingest.AUDIO_EXTENSIONS
 FILE_EXTENSIONS = media_ingest.FILE_EXTENSIONS
 TEXT_EXTENSIONS = {".txt", ".md"}
-ALL_SOURCE_EXTENSIONS = TEXT_EXTENSIONS | EMAIL_EXTENSIONS | IMAGE_EXTENSIONS | FILE_EXTENSIONS
+ALL_SOURCE_EXTENSIONS = (
+    TEXT_EXTENSIONS | EMAIL_EXTENSIONS | IMAGE_EXTENSIONS | AUDIO_EXTENSIONS | FILE_EXTENSIONS
+)
 
 ProgressCallback = Callable[[int, int, str], None]
 
@@ -265,6 +268,14 @@ def _chunks_for_file(path: Path, raw_dir: Path, llm: LLMClient | None = None) ->
         chunk_dict = media_ingest.build_image_chunk(path, rel, client)
         return [_raw_chunk_from_dict(rel, chunk_dict)]
 
+    if suffix in AUDIO_EXTENSIONS:
+        # Unlike images, transcription is optional -- build_audio_chunk
+        # degrades to a metadata + download chunk when no LLM is configured
+        # or transcription fails, so pass llm through as-is rather than
+        # requiring it.
+        chunk_dict = media_ingest.build_audio_chunk(path, rel, llm)
+        return [_raw_chunk_from_dict(rel, chunk_dict)]
+
     if suffix in FILE_EXTENSIONS:
         chunk_dicts = media_ingest.build_file_chunks(path, rel)
         return [_raw_chunk_from_dict(rel, cd) for cd in chunk_dicts]
@@ -369,10 +380,12 @@ def discover_raw_source_files(
 ) -> list[Path]:
     """Return every recognized raw source file under data/raw/, excluding _archive/.
 
-    Covers plain text/markdown notes, .eml emails, images, and the file types
-    listed in media_ingest.FILE_EXTENSIONS (PDF/CSV/JSON/DOCX/XLSX/PPTX/ZIP).
-    Hidden files (dotfiles like .gitkeep) and unrecognized extensions are
-    skipped rather than ingested as opaque noise.
+    Covers plain text/markdown notes, .eml emails, images, audio, and the file
+    types listed in media_ingest.FILE_EXTENSIONS (PDF/CSV/TSV/JSON/XML/HTML/
+    YAML/log with text extraction; DOCX/XLSX/PPTX/ZIP/RTF/ODT/archives/video
+    as opaque downloadable attachments). Hidden files (dotfiles like
+    .gitkeep) and unrecognized extensions are skipped rather than ingested as
+    opaque noise.
 
     ``exclude_prefixes`` (if given) is a set of top-level folder names under
     ``raw_dir`` -- e.g. ``{"emails", "samples"}`` -- to leave out entirely,
@@ -402,11 +415,13 @@ def read_raw_chunks(
     llm: LLMClient | None = None,
     exclude_prefixes: frozenset[str] | None = None,
 ) -> list[RawChunk]:
-    """Read every raw source file (text, email, image, file) and chunk it.
+    """Read every raw source file (text, email, image, audio, file) and chunk it.
 
     ``llm`` is required only if images are present (for captioning) — pass it
     whenever the caller already has one, since the compiler is LLM-only
-    anyway and there's no cheaper fallback for describing an image.
+    anyway and there's no cheaper fallback for describing an image. Audio
+    transcription uses the same client when available but degrades
+    gracefully (metadata-only chunk) without one.
     """
     root = raw_dir or RAW_DIR
     chunks: list[RawChunk] = []

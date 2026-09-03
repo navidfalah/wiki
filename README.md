@@ -36,7 +36,7 @@ The sample domain is fictional **Aurora Labs** (open IoT sensors), cross-linked 
 
 ## Project overview
 
-LLM Wiki turns unstructured raw sources — meeting notes, `.eml` email threads, forum scrapes, half-finished specs, images, and PDF/CSV/JSON/DOCX/XLSX/PPTX/ZIP attachments — into a linked markdown wiki suitable for Docusaurus. The compiler uses an **OpenAI-compatible API** for extraction, synthesis, cross-linking, and image captioning (`OPENAI_API_KEY` required). See [documentation/19-multimedia-email-and-trust.md](./documentation/19-multimedia-email-and-trust.md) for how non-text sources and source-trust/citation tracking work.
+LLM Wiki turns unstructured raw sources — meeting notes, `.eml` email threads, forum scrapes, half-finished specs, images, audio recordings, PDF/DOCX/XLSX/PPTX documents (real content extraction, not just a download link), CSV/TSV/JSON/XML/HTML/YAML/log files, ZIP archives (as a file listing), and RTF/legacy-office/other archive/video attachments — into a linked markdown wiki suitable for Docusaurus. The compiler uses an **OpenAI-compatible API** for extraction, synthesis, cross-linking, image captioning, and audio transcription (`OPENAI_API_KEY` required). See [documentation/19-multimedia-email-and-trust.md](./documentation/19-multimedia-email-and-trust.md) for how non-text sources and source-trust/citation tracking work.
 
 Three dedicated "engine" modules sit on top of the base pipeline, each with its own dashboard page and unit tests, independent of one another: an **email knowledge engine** (browse ingested `.eml` threads on their own, see [documentation/20-email-resources-and-chat-engines.md](./documentation/20-email-resources-and-chat-engines.md)), a **resources engine** (every cited source deduped across pages, reusable independent of which page cites it), and a **RAG chat engine** (ask questions over the compiled wiki and get cited answers — works with or without an LLM configured). The dashboard defaults to a minimal, light-only theme.
 
@@ -45,7 +45,7 @@ Three dedicated "engine" modules sit on top of the base pipeline, each with its 
 ```mermaid
 flowchart TB
     subgraph input [Human input]
-        RAW["data/raw/<br/>text, .eml, images, PDF/CSV/JSON/DOCX/..."]
+        RAW["data/raw/<br/>text, .eml, images, audio, PDF/CSV/JSON/DOCX/..."]
     end
 
     subgraph compiler [Python compiler — compiler/]
@@ -127,7 +127,7 @@ wiki/
 │   └── wiki-build.yml           # CI: compile → build → GitHub Pages
 │
 ├── data/
-│   ├── raw/                     # Raw sources: text, .eml, images, files — you add here
+│   ├── raw/                     # Raw sources: text, .eml, images, audio, files — you add here
 │   ├── state.json               # Incremental compiler state (MD5 hashes, extractions)
 │   ├── link_overrides.json      # Manual knowledge-graph connection rules
 │   ├── source_trust.json        # Per-source trust level rules (trust.py)
@@ -315,6 +315,31 @@ Entry point: `compiler/main.py`. The pipeline runs five sequential steps, then g
 ### LLM pipeline
 
 The compiler requires a valid `OPENAI_API_KEY` (or compatible endpoint via `OPENAI_BASE_URL`). It uses chat completions for extraction, synthesis, and link injection. Responses are cached in `data/.llm-cache.sqlite`.
+
+### Supported source formats
+
+Drop any of these into `data/raw/` (in any subfolder) and the compiler picks them up automatically — every format converts to a text chunk that flows through the same extraction → synthesis → linking pipeline as a plain note. Full detail: [documentation/19-multimedia-email-and-trust.md](./documentation/19-multimedia-email-and-trust.md).
+
+| Format | Extension(s) | How it's ingested |
+|---|---|---|
+| Plain text | `.txt` `.md` | Read directly, paragraph-chunked |
+| Email | `.eml` | Headers + body + attachments parsed with the stdlib `email` module |
+| Images | `.png` `.jpg` `.jpeg` `.gif` `.webp` `.bmp` | Captioned by a vision-capable LLM call (`LLMClient.describe_image()`) |
+| Audio | `.mp3` `.wav` `.m4a` `.ogg` `.flac` `.aac` | Transcribed by an LLM speech-to-text call (`LLMClient.transcribe_audio()`, model `whisper-1` by default, override with `OPENAI_TRANSCRIPTION_MODEL`); degrades to a metadata-only entry if no LLM is configured or transcription fails — never blocks the compile |
+| PDF | `.pdf` | Text extracted via `pypdf` |
+| Word | `.docx` | Paragraphs + table cells extracted via `python-docx` |
+| Excel | `.xlsx` | Every sheet's cells extracted via `openpyxl` (capped per sheet for huge spreadsheets) |
+| PowerPoint | `.pptx` | Every slide's text, tables, and speaker notes extracted via `python-pptx` |
+| Delimited data | `.csv` `.tsv` | Rows parsed with the stdlib `csv` module |
+| Structured/markup text | `.json` `.xml` `.html` `.htm` `.yaml` `.yml` `.log` | Read as plain text (JSON is pretty-printed first) |
+| ZIP archives | `.zip` | A file listing (name + size per entry) via the stdlib `zipfile` — **not** recursive extraction of the archive's contents |
+| Everything else | `.rtf` `.odt` `.ods` `.odp` `.rar` `.7z` `.tar` `.gz` `.tgz` `.epub` `.mp4` `.mov` `.avi` `.mkv` `.m4v` | Registered as an opaque downloadable attachment (metadata + a link) — no content parsing, but still shows up and is citable on the compiled page |
+
+Notes:
+
+- **Graceful degradation, not hard failures.** A PDF/DOCX/XLSX/PPTX whose parsing library isn't installed, or that fails to parse (corrupted, or not actually that format despite its extension), falls back to the same "opaque attachment" treatment as the unsupported-format row above — it never crashes the compile. Same for audio without a configured/working LLM.
+- **Upload from the dashboard.** The `/dashboard` and `/resources` pages' "Upload files" button (and drag-and-drop) accept any of the extensions above; the upload is rejected client-side/server-side for anything else, with the exact list enforced in `backend/src/lib/rawFiles.ts` (kept in sync with the compiler's `ALL_SOURCE_EXTENSIONS`).
+- **Adding a new format** means adding its extension to one of `media_ingest.py`'s extension sets and, if it needs real content extraction, a new `_extract_*_text()` function following the same "return `None` on any failure" contract as the existing ones — see [documentation/19-multimedia-email-and-trust.md](./documentation/19-multimedia-email-and-trust.md) for the exact pattern.
 
 ### CLI flags
 
@@ -609,7 +634,7 @@ cd compiler && python main.py --force
 
 ```
 data/
-├── raw/                         # All compiler input (text, .eml, images, files — recursive)
+├── raw/                         # All compiler input (text, .eml, images, audio, files — recursive)
 │   ├── notes/                   # Standups, scribbles (seed + generated)
 │   ├── transcripts/             # Meeting/support transcripts
 │   ├── articles/                # Spec fragments, blog scrapes
@@ -662,6 +687,7 @@ OPENAI_MODEL=gpt-4o-mini
 | `OPENAI_API_KEY` | **Yes** | OpenAI-compatible API key for the compiler |
 | `OPENAI_BASE_URL` | No | OpenAI-compatible API base URL |
 | `OPENAI_MODEL` | No | Model name (default `gpt-4o-mini`) |
+| `OPENAI_TRANSCRIPTION_MODEL` | No | Audio transcription model (default `whisper-1`) |
 | `WIKI_WEB_SEARCH_ENABLED` | No | `true` to enrich synthesis with live internet search by default (same as `--web-search`) |
 | `WIKI_WEB_SEARCH_PROVIDER` | No | `duckduckgo` (default, no key needed), `serpapi`, or `bing` |
 | `WIKI_WEB_SEARCH_API_KEY` | Only for `serpapi`/`bing` | API key for the chosen search provider |

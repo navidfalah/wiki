@@ -126,7 +126,7 @@ def _print_incremental_table(incremental: dict) -> None:
 
 
 def step_read_data(llm: LLMClient, *, exclude_prefixes: frozenset[str] | None = None) -> list:
-    """Step 1: Read all raw source files (text/email/image/file) and split into chunks."""
+    """Step 1: Read all raw source files (text/email/image/audio/file) and split into chunks."""
     raw_files = discover_raw_source_files(RAW_DIR, exclude_prefixes=exclude_prefixes)
     if not raw_files:
         console.print(f"[red]No raw files found under[/] {RAW_DIR}")

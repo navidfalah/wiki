@@ -46,10 +46,13 @@ stdlib-only module so those don't have to import `synthesizer.py`).
 | Symbol | Role |
 |--------|------|
 | `build_image_chunk()` | Vision-caption an image → chunk dict, copies file to `static/media/` |
-| `build_file_chunks()` | PDF/CSV/JSON text extraction, or opaque attachment for other types |
+| `build_audio_chunk()` | Transcribe audio → chunk dict, copies file to `static/media/`; degrades to metadata-only without an LLM or on transcription failure |
+| `build_file_chunks()` | PDF/DOCX/XLSX/PPTX/CSV/TSV/JSON/XML/HTML/YAML/log/ZIP text (or ZIP file-listing) extraction, or opaque attachment for other types |
+| `_extract_pdf_text()` / `_extract_docx_text()` / `_extract_xlsx_text()` / `_extract_pptx_text()` | Per-format extractors — each returns `None` (→ opaque fallback) if its library isn't usable or the file fails to parse |
+| `_extract_zip_manifest()` | ZIP entry names + sizes via stdlib `zipfile` — a listing, not recursive extraction |
 | `copy_media_to_static()` / `copy_bytes_to_static()` | Content-hash-deduped copy into `wiki-app/static/media/` |
 | `docs_relative_media_link()` | Build a `../static/media/...` link from a docs page |
-| `IMAGE_EXTENSIONS`, `TEXT_EXTRACTABLE_FILE_EXTENSIONS`, `OPAQUE_FILE_EXTENSIONS` | Recognized extension sets |
+| `IMAGE_EXTENSIONS`, `AUDIO_EXTENSIONS`, `TEXT_EXTRACTABLE_FILE_EXTENSIONS`, `OPAQUE_FILE_EXTENSIONS` | Recognized extension sets |
 
 ### `email_ingest.py`
 
@@ -97,9 +100,10 @@ stdlib-only module so those don't have to import `synthesizer.py`).
 |--------|------|
 | `LLMClient` | OpenAI SDK wrapper |
 | `ResponseCache` | SQLite `data/.llm-cache.sqlite` |
-| `make_cache_key()` / `make_image_cache_key()` | SHA256 cache key (text prompt / image content hash) |
+| `make_cache_key()` / `make_image_cache_key()` / `make_audio_cache_key()` | SHA256 cache key (text prompt / image content hash / audio content hash) |
 | `generate_response()` | Chat completion + retry |
 | `describe_image()` | Vision-capable chat completion (image captioning) + retry |
+| `transcribe_audio()` | Speech-to-text completion (audio transcription, model `OPENAI_TRANSCRIPTION_MODEL`) + retry |
 | `complete_json()` | JSON parse helper |
 
 ### `reviewer.py`
