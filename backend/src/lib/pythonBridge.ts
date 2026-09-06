@@ -134,10 +134,17 @@ export interface ChatStreamInput {
   docScope: string[] | null;
 }
 
+export interface ChatFaithfulness {
+  basis: 'extractive' | 'heuristic';
+  unsupported_rate: number;
+  checkable_count: number;
+}
+
 export interface ChatStreamResult {
   answer: string;
   sources: Array<{ doc_path: string; title: string; heading?: string; score?: number }>;
   mode: string;
+  faithfulness?: ChatFaithfulness;
 }
 
 /** Streams `cli.py chat-stream`'s NDJSON events out as SSE (same shape as
@@ -176,7 +183,7 @@ export function streamChat(res: Response, input: ChatStreamInput): Promise<ChatS
         latestSources = event.sources ?? [];
       } else if (event.type === 'done') {
         settled = true;
-        resolve({ answer: event.answer ?? '', sources: latestSources, mode: event.mode });
+        resolve({ answer: event.answer ?? '', sources: latestSources, mode: event.mode, faithfulness: event.faithfulness });
       } else if (event.type === 'error') {
         settled = true;
         reject(new PythonCliError(event.message || 'Chat stream failed'));

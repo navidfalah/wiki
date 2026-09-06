@@ -845,7 +845,7 @@ export function registerRoutes(app: Express): void {
         ...s,
         slug: s.doc_path.replace(/\.md$/, ''),
       }));
-      appendChatSessionTurn(req.params.id, message, result.answer, sourcesWithSlug);
+      appendChatSessionTurn(req.params.id, message, result.answer, sourcesWithSlug, result.faithfulness);
     } catch {
       /* already reported to the client as an SSE 'error' event by streamChat */
     }

@@ -76,6 +76,9 @@ def test_answer_question_falls_back_to_extractive_without_llm(tmp_path):
     assert result["mode"] == "extractive"
     assert result["sources"][0]["doc_path"] == "meshsync.md"
     assert "Battery" in result["answer"]
+    # Extractive answers quote the source verbatim, so they're faithful by
+    # construction -- no heuristic scoring needed (documentation/28).
+    assert result["faithfulness"] == {"basis": "extractive", "unsupported_rate": 0.0, "checkable_count": 0}
 
 
 def test_answer_question_requires_a_message():
@@ -195,6 +198,49 @@ def test_answer_question_uses_hybrid_retrieval(tmp_path):
     assert fake_llm.embed_calls  # hybrid retrieval actually ran, not just BM25
 
 
+def test_answer_question_generated_mode_scores_grounded_answer_as_faithful(tmp_path):
+    docs_dir = tmp_path / "docs"
+    docs_dir.mkdir()
+    _write_page(
+        docs_dir,
+        "meshsync.md",
+        "MeshSync",
+        "## Battery\n\nRelay radios drain batteries 30% faster than spec once relay mode is enabled.\n",
+    )
+    fake_llm = FakeHybridLLM(rerank_response="[1]")
+    fake_llm.generate_response = lambda prompt, system_prompt, temperature=0.0: (
+        "[1]" if "reranker" in system_prompt.lower() else "Relay radios drain batteries 30% faster once relay mode is enabled."
+    )
+
+    result = rag_engine.answer_question("why do batteries drain fast", docs_dir=docs_dir, llm=fake_llm)
+    assert result["mode"] == "generated"
+    assert result["faithfulness"]["basis"] == "heuristic"
+    assert result["faithfulness"]["checkable_count"] > 0
+    assert result["faithfulness"]["unsupported_rate"] < 0.5  # answer reuses the source's own vocabulary
+
+
+def test_answer_question_generated_mode_flags_an_unsupported_answer(tmp_path):
+    docs_dir = tmp_path / "docs"
+    docs_dir.mkdir()
+    _write_page(
+        docs_dir,
+        "meshsync.md",
+        "MeshSync",
+        "## Battery\n\nRelay radios drain batteries 30% faster than spec once relay mode is enabled.\n",
+    )
+    fake_llm = FakeHybridLLM(rerank_response="[1]")
+    fake_llm.generate_response = lambda prompt, system_prompt, temperature=0.0: (
+        "[1]"
+        if "reranker" in system_prompt.lower()
+        else "The founders incorporated the company in Delaware after raising a seed round from angel investors."
+    )
+
+    result = rag_engine.answer_question("why do batteries drain fast", docs_dir=docs_dir, llm=fake_llm)
+    assert result["mode"] == "generated"
+    assert result["faithfulness"]["basis"] == "heuristic"
+    assert result["faithfulness"]["unsupported_rate"] > 0.5  # answer shares no vocabulary with the retrieved passage
+
+
 def test_answer_question_doc_scope_excludes_other_pages(tmp_path):
     docs_dir = tmp_path / "docs"
     docs_dir.mkdir()
@@ -241,6 +287,7 @@ def test_answer_question_stream_extractive_deltas_join_into_final_answer(tmp_pat
     deltas = [e["text"] for e in events if e["type"] == "delta"]
     assert "".join(deltas) == events[-1]["answer"]
     assert events[-1]["mode"] == "extractive"
+    assert events[-1]["faithfulness"] == {"basis": "extractive", "unsupported_rate": 0.0, "checkable_count": 0}
 
 
 class FakeStreamingLLM(FakeHybridLLM):
@@ -272,6 +319,11 @@ def test_answer_question_stream_generated_deltas_join_into_final_answer(tmp_path
     assert done["type"] == "done"
     assert done["mode"] == "generated"
     assert done["answer"] == "Grounded streamed answer."
+    # "Grounded streamed answer." shares no content words with the source
+    # passage, so the offline lexical-overlap heuristic flags it -- expected
+    # per faithfulness_heuristic's own documented false-positive-on-vague-
+    # phrasing caveat, not a claim that this specific answer is hallucinated.
+    assert done["faithfulness"] == {"basis": "heuristic", "unsupported_rate": 1.0, "checkable_count": 1}
 
 
 def test_passage_id_is_stable_across_calls_and_content_addressed():

@@ -19,10 +19,17 @@ export interface ChatSource {
   slug: string;
 }
 
+export interface ChatFaithfulness {
+  basis: 'extractive' | 'heuristic';
+  unsupported_rate: number;
+  checkable_count: number;
+}
+
 export interface ChatMessage {
   role: 'user' | 'assistant';
   content: string;
   sources?: ChatSource[];
+  faithfulness?: ChatFaithfulness;
   at: string;
 }
 
@@ -173,12 +180,13 @@ export function appendChatSessionTurn(
   userMessage: string,
   assistantMessage: string,
   sources?: ChatSource[],
+  faithfulness?: ChatFaithfulness,
 ): ChatSession | null {
   const session = loadChatSession(id);
   if (!session) return null;
   const now = new Date().toISOString();
   session.messages.push({ role: 'user', content: userMessage, at: now });
-  session.messages.push({ role: 'assistant', content: assistantMessage, sources, at: now });
+  session.messages.push({ role: 'assistant', content: assistantMessage, sources, faithfulness, at: now });
   session.updated_at = now;
   if (session.title === DEFAULT_TITLE) {
     session.title = userMessage.length > 60 ? `${userMessage.slice(0, 60)}…` : userMessage;
