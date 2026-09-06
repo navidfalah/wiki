@@ -46,6 +46,7 @@ import hybrid_retrieval
 import rag_architectures
 import rag_settings
 from doc_utils import parse_frontmatter, strip_frontmatter
+from faithfulness_heuristic import score_text_against_sources
 from llm_client import LLMClient
 from models import OUTPUT_DIR, PROJECT_ROOT
 from rag_types import Passage, ScoredPassage, index_corpus, passage_id, tokenize
@@ -285,6 +286,30 @@ def _extractive_answer(scored: list[ScoredPassage]) -> str:
     return "\n".join(lines)
 
 
+def _faithfulness_signal(mode: str, answer: str, scored: list[ScoredPassage]) -> dict[str, Any] | None:
+    """A best-effort groundedness signal for the chat UI (rendered as a small
+    badge — see documentation/28-faithfulness-evaluation.md). Extractive
+    answers are faithful by construction (the text is quoted verbatim from
+    the retrieved passages), so no scoring is needed. Generated answers get
+    faithfulness_heuristic's offline lexical-overlap proxy against the same
+    passages the model was actually given — never an LLM judge, and never
+    blocking (a heuristic-only signal, with the false-positive-on-paraphrase
+    caveat that module documents)."""
+    if mode == "extractive":
+        return {"basis": "extractive", "unsupported_rate": 0.0, "checkable_count": 0}
+    if mode != "generated":
+        return None
+    sources_text = "\n\n".join(item.passage.text for item in scored)
+    report = score_text_against_sources(answer, sources_text)
+    if report.checkable_count == 0:
+        return None
+    return {
+        "basis": "heuristic",
+        "unsupported_rate": round(report.unsupported_rate, 4),
+        "checkable_count": report.checkable_count,
+    }
+
+
 def _build_prompt(query: str, scored: list[ScoredPassage], history: list[dict[str, str]] | None) -> str:
     context = _format_context(scored)
     history_block = ""
@@ -389,13 +414,16 @@ def answer_question(
     doc_scope, when given, restricts retrieval to passages from those
     doc_paths (e.g. a chat session scoped to a subset of resources).
 
-    Returns {"answer", "sources", "mode"} where mode is one of:
+    Returns {"answer", "sources", "mode", "faithfulness"} where mode is one of:
     - "empty": nothing has been compiled yet
     - "no_match": the corpus has nothing relevant to the query
     - "generated": an LLM wrote the answer from retrieved context
     - "extractive": no LLM configured (or the call failed), or the RAG
       Architecture page's answer mode is pinned to "extractive" — the
       retrieved passages are returned directly as the answer
+
+    "faithfulness" is omitted for "empty"/"no_match" (no real answer to
+    score); see _faithfulness_signal() for its shape otherwise.
     """
     retrieval = _retrieve(query, docs_dir=docs_dir, llm=llm, top_k=top_k, doc_scope=doc_scope)
     if "early" in retrieval:
@@ -407,12 +435,23 @@ def answer_question(
     if client.available and not force_extractive:
         prompt = _build_prompt(query.strip(), scored, history)
         try:
-            answer = client.generate_response(prompt, CHAT_SYSTEM_PROMPT, temperature=0.1)
-            return {"answer": answer.strip(), "sources": sources, "mode": "generated"}
+            answer = client.generate_response(prompt, CHAT_SYSTEM_PROMPT, temperature=0.1).strip()
+            return {
+                "answer": answer,
+                "sources": sources,
+                "mode": "generated",
+                "faithfulness": _faithfulness_signal("generated", answer, scored),
+            }
         except RuntimeError:
             pass  # fall through to the extractive answer below
 
-    return {"answer": _extractive_answer(scored), "sources": sources, "mode": "extractive"}
+    extractive_answer = _extractive_answer(scored)
+    return {
+        "answer": extractive_answer,
+        "sources": sources,
+        "mode": "extractive",
+        "faithfulness": _faithfulness_signal("extractive", extractive_answer, scored),
+    }
 
 
 def answer_question_stream(
@@ -428,7 +467,9 @@ def answer_question_stream(
     {"type": "sources", "sources": [...]} once retrieval finishes, then one
     or more {"type": "delta", "text": "..."} chunks as the answer is
     generated (or a single chunk carrying the extractive fallback when no
-    LLM is configured), then a final {"type": "done", "mode", "answer"}.
+    LLM is configured), then a final
+    {"type": "done", "mode", "answer", "faithfulness"} — see
+    _faithfulness_signal() for that field's shape.
     """
     retrieval = _retrieve(query, docs_dir=docs_dir, llm=llm, top_k=top_k, doc_scope=doc_scope)
     if "early" in retrieval:
@@ -448,11 +489,22 @@ def answer_question_stream(
             for delta in client.stream_response(prompt, CHAT_SYSTEM_PROMPT, temperature=0.1):
                 full_text += delta
                 yield {"type": "delta", "text": delta}
-            yield {"type": "done", "mode": "generated", "answer": full_text.strip()}
+            full_text = full_text.strip()
+            yield {
+                "type": "done",
+                "mode": "generated",
+                "answer": full_text,
+                "faithfulness": _faithfulness_signal("generated", full_text, scored),
+            }
             return
         except RuntimeError:
             pass  # fall through to the extractive answer below
 
     extractive = _extractive_answer(scored)
     yield {"type": "delta", "text": extractive}
-    yield {"type": "done", "mode": "extractive", "answer": extractive}
+    yield {
+        "type": "done",
+        "mode": "extractive",
+        "answer": extractive,
+        "faithfulness": _faithfulness_signal("extractive", extractive, scored),
+    }

@@ -95,10 +95,17 @@ interface ChatSource {
   slug: string;
 }
 
+interface ChatFaithfulness {
+  basis: 'extractive' | 'heuristic';
+  unsupported_rate: number;
+  checkable_count: number;
+}
+
 interface ChatMessage {
   role: 'user' | 'assistant';
   content: string;
   sources?: ChatSource[];
+  faithfulness?: ChatFaithfulness;
   at: string;
 }
 
@@ -180,6 +187,22 @@ function sourcesChipHtml(sources: ChatSource[] | undefined): string {
   return `<div class="mt-2 flex flex-wrap items-center gap-1"><span class="mr-0.5 text-[10px] font-medium uppercase tracking-wide text-gray-400">Sources</span>${chips}</div>`;
 }
 
+// Small groundedness badge (documentation/28-faithfulness-evaluation.md):
+// extractive answers are quoted verbatim from the wiki, so they're faithful
+// by construction; generated answers get an offline lexical-overlap
+// estimate, which is a heuristic proxy, not an LLM judge -- the title
+// attribute says so rather than implying a stronger guarantee than it has.
+function faithfulnessBadgeHtml(f: ChatFaithfulness | undefined): string {
+  if (!f) return '';
+  if (f.basis === 'extractive') {
+    return `<span class="inline-flex items-center rounded-full bg-emerald-50 px-2 py-0.5 text-[10px] font-medium text-emerald-700" title="Quoted directly from the wiki -- every word is grounded.">Grounded · verbatim</span>`;
+  }
+  const supportedPct = Math.round((1 - f.unsupported_rate) * 100);
+  const flagged = f.unsupported_rate > 0.5;
+  const colorClasses = flagged ? 'bg-amber-50 text-amber-700' : 'bg-emerald-50 text-emerald-700';
+  return `<span class="inline-flex items-center rounded-full ${colorClasses} px-2 py-0.5 text-[10px] font-medium" title="Offline lexical-overlap estimate across ${f.checkable_count} checkable sentence(s) vs. the retrieved wiki excerpts -- a heuristic proxy, not an LLM judge.">~${supportedPct}% grounded · estimate</span>`;
+}
+
 function typingDotsHtml(): string {
   return `<div class="flex items-center gap-1 py-0.5">
     <span class="h-1.5 w-1.5 animate-bounce rounded-full bg-gray-400" style="animation-delay:0ms"></span>
@@ -191,7 +214,7 @@ function typingDotsHtml(): string {
 function bubbleInnerHtml(
   role: 'user' | 'assistant',
   bodyHtml: string,
-  opts: { sourcesHtml?: string; at?: string; streaming?: boolean } = {},
+  opts: { sourcesHtml?: string; faithfulnessHtml?: string; at?: string; streaming?: boolean } = {},
 ): string {
   const isUser = role === 'user';
   const avatar = isUser ? USER_AVATAR : ASSISTANT_AVATAR;
@@ -206,6 +229,7 @@ function bubbleInnerHtml(
     }">
       ${copyBtn}
       <div class="chat-bubble-body ${isUser ? 'whitespace-pre-wrap' : ''}">${bodyHtml}</div>
+      ${opts.faithfulnessHtml ? `<div class="mt-2">${opts.faithfulnessHtml}</div>` : ''}
       ${opts.sourcesHtml ?? ''}
       ${timeHtml}
     </div>`;
@@ -214,7 +238,11 @@ function bubbleInnerHtml(
 }
 
 // Used for the static message list -- each row gets its own fade-in.
-function bubbleHtml(role: 'user' | 'assistant', bodyHtml: string, opts: { sourcesHtml?: string; at?: string; streaming?: boolean } = {}): string {
+function bubbleHtml(
+  role: 'user' | 'assistant',
+  bodyHtml: string,
+  opts: { sourcesHtml?: string; faithfulnessHtml?: string; at?: string; streaming?: boolean } = {},
+): string {
   const isUser = role === 'user';
   return `
     <div class="msg-enter flex items-start gap-2 ${isUser ? 'flex-row-reverse justify-start' : ''}">
@@ -249,6 +277,7 @@ function renderMessages() {
         .map((m) =>
           bubbleHtml(m.role, m.role === 'user' ? escapeHtml(m.content) : renderMarkdownLite(m.content), {
             sourcesHtml: m.role === 'assistant' ? sourcesChipHtml(m.sources) : '',
+            faithfulnessHtml: m.role === 'assistant' ? faithfulnessBadgeHtml(m.faithfulness) : '',
             at: m.at,
           }),
         )
