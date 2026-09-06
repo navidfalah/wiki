@@ -27,6 +27,7 @@ import { loadLlmSettings, LlmSettingsError, saveLlmSettings, toPublicSettings } 
 import { CompanySettingsError, loadCompanySettings, saveCompanySettings } from '../lib/companySettings';
 import { loadPipelineSettings, PipelineSettingsError, savePipelineSettings } from '../lib/pipelineSettings';
 import { loadRagSettings, RagSettingsError, saveRagSettings } from '../lib/ragSettings';
+import { applyRagPreset, deleteRagPreset, listRagPresets, saveRagPreset } from '../lib/ragPresets';
 import {
   collectSourceMetadata,
   parseFrontmatter,
@@ -1030,6 +1031,55 @@ export function registerRoutes(app: Express): void {
         if (err instanceof RagSettingsError) throw new HttpError(400, err.message);
         throw err;
       }
+    }),
+  );
+
+  // Named RAG presets -- saved snapshots of the settings above, so the RAG
+  // Architecture page can switch between several tuned configurations
+  // instead of only ever having the one active config.
+
+  app.get(
+    '/api/settings/rag/presets',
+    wrap((_req, res) => {
+      res.json({ presets: listRagPresets() });
+    }),
+  );
+
+  app.post(
+    '/api/settings/rag/presets',
+    wrap((req, res) => {
+      try {
+        const saved = saveRagPreset(req.body?.name, req.body?.settings);
+        logEvent(req.user?.username, `Saved RAG preset "${saved.name}"`);
+        res.json(saved);
+      } catch (err) {
+        if (err instanceof RagSettingsError) throw new HttpError(400, err.message);
+        throw err;
+      }
+    }),
+  );
+
+  app.post(
+    '/api/settings/rag/presets/:id/apply',
+    wrap((req, res) => {
+      try {
+        const saved = applyRagPreset(req.params.id);
+        logEvent(req.user?.username, 'Applied RAG preset');
+        res.json(saved);
+      } catch (err) {
+        if (err instanceof RagSettingsError) throw new HttpError(400, err.message);
+        throw err;
+      }
+    }),
+  );
+
+  app.delete(
+    '/api/settings/rag/presets/:id',
+    wrap((req, res) => {
+      const result = deleteRagPreset(req.params.id);
+      if (!result.removed) throw new HttpError(404, 'Preset not found');
+      logEvent(req.user?.username, 'Deleted RAG preset');
+      res.json(result);
     }),
   );
 

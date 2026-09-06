@@ -6,6 +6,24 @@
   Changes apply to the next question asked -- no rebuild required.
 </p>
 
+<section class="mt-6 rounded-xl border border-gray-200 bg-white shadow-card">
+  <div class="border-b border-gray-100 px-5 py-4">
+    <h2 class="text-base font-semibold text-gray-900">Presets</h2>
+    <p class="mt-0.5 text-xs text-gray-500">Save the configuration below under a name, then switch between saved architectures without re-entering every field.</p>
+  </div>
+  <div class="flex flex-wrap items-center gap-2 p-5">
+    <select id="rag-preset-select" class="min-w-[10rem] flex-1 rounded-lg border border-gray-300 px-2.5 py-1.5 text-sm focus:border-accent focus:outline-none focus:ring-2 focus:ring-accent/20">
+      <option value="">No presets saved yet</option>
+    </select>
+    <button id="rag-preset-load-btn" type="button" class="rounded-lg border border-gray-300 bg-white px-3 py-1.5 text-sm font-medium text-gray-700 hover:bg-gray-50" disabled>Load</button>
+    <button id="rag-preset-delete-btn" type="button" class="rounded-lg border border-red-300 bg-white px-3 py-1.5 text-sm font-medium text-red-600 hover:bg-red-50" disabled>Delete</button>
+    <span class="mx-1 h-6 w-px bg-gray-200"></span>
+    <input id="rag-preset-name-input" type="text" placeholder="New preset name" class="min-w-[10rem] flex-1 rounded-lg border border-gray-300 px-2.5 py-1.5 text-sm focus:border-accent focus:outline-none focus:ring-2 focus:ring-accent/20" />
+    <button id="rag-preset-save-btn" type="button" class="rounded-lg bg-generated px-3 py-1.5 text-sm font-medium text-white hover:opacity-90">Save as preset</button>
+  </div>
+  <p id="rag-preset-hint" class="px-5 pb-4 text-xs text-gray-400"></p>
+</section>
+
 <div class="mt-6 grid gap-6 lg:grid-cols-[minmax(0,1.3fr)_minmax(0,1fr)]">
   <section class="rounded-xl border border-gray-200 bg-white shadow-card">
     <div class="border-b border-gray-100 px-5 py-4">

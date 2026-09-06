@@ -79,7 +79,11 @@ export function loadRagSettings(): RagSettings {
 
 export class RagSettingsError extends Error {}
 
-export function saveRagSettings(input: any): RagSettings {
+/** Validates `input` against `existing` (used to fill in anything `input`
+ * omits) and returns a full, normalized RagSettings -- pure, no file I/O.
+ * Shared by saveRagSettings (writes the active-settings file) and
+ * ragPresets.ts (snapshots a named preset without touching it). */
+export function buildRagSettings(input: any, existing: RagSettings): RagSettings {
   if (!input || typeof input !== 'object') {
     throw new RagSettingsError('Invalid settings payload');
   }
@@ -105,8 +109,7 @@ export function saveRagSettings(input: any): RagSettings {
     throw new RagSettingsError('"bm25_b" must be a number');
   }
 
-  const existing = loadRagSettings();
-  const settings: RagSettings = {
+  return {
     architecture: input.architecture ?? existing.architecture,
     retrieval_mode: input.retrieval_mode ?? existing.retrieval_mode,
     top_k: Number.isFinite(topK) && topK > 0 ? Math.floor(topK) : existing.top_k,
@@ -115,6 +118,10 @@ export function saveRagSettings(input: any): RagSettings {
     use_vector_store: input.use_vector_store !== undefined ? Boolean(input.use_vector_store) : existing.use_vector_store,
     answer_mode: input.answer_mode ?? existing.answer_mode,
   };
+}
+
+export function saveRagSettings(input: any): RagSettings {
+  const settings = buildRagSettings(input, loadRagSettings());
   fs.mkdirSync(path.dirname(RAG_SETTINGS_FILE), { recursive: true });
   fs.writeFileSync(RAG_SETTINGS_FILE, JSON.stringify(settings, null, 2));
   return settings;

@@ -85,6 +85,40 @@ services:
   # `docker compose --profile local-llm up` to include it. See
   # documentation/33-docker-and-local-llm.md for the full switch-over, and
   # docker/local-llm/ for the Dockerfile + entrypoint.
+  # Sample PostgreSQL database for the "Connect your own database" feature
+  # (/database page, compiler/connectors/postgres_db.py). Represents a
+  # user's own external Postgres instance -- seeded with a small fictional
+  # Aurora Labs knowledge base (departments/employees/projects/kb_articles)
+  # via docker/postgres/init.sql so the whole connect -> browse -> import
+  # -> compile flow can be tried with zero setup. Not required for the
+  # feature itself: the /database page connects to ANY reachable Postgres
+  # server, this is just a ready-made one. See
+  # documentation/39-postgres-database-connector.md.
+  postgres:
+    image: postgres:16-alpine
+    container_name: llm-wiki-postgres
+    environment:
+      POSTGRES_DB: ${POSTGRES_DB:-aurora_kb}
+      POSTGRES_USER: ${POSTGRES_USER:-wiki_reader}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-aurora_sample_pw}
+    volumes:
+      # Seed script only runs against an empty data directory -- see the
+      # comment at the top of init.sql for what that means when editing it.
+      - ./docker/postgres/init.sql:/docker-entrypoint-initdb.d/init.sql:ro
+      - postgres-data:/var/lib/postgresql/data
+    ports:
+      # Exposed on the host so /database's connect form can also be used
+      # with host=localhost from outside Docker (e.g. testing the connector
+      # against this container without going through the frontend proxy).
+      # Same override pattern as BACKEND_PORT/FRONTEND_PORT above.
+      - "${POSTGRES_PORT:-5432}:5432"
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-wiki_reader} -d ${POSTGRES_DB:-aurora_kb}"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+    restart: unless-stopped
+
   local-llm:
     build:
       context: .
