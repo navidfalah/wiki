@@ -3,9 +3,14 @@ const apiBase = document.querySelector('meta[name="api-base"]')?.getAttribute('c
 // Matches docker/postgres/init.sql + the POSTGRES_* defaults in
 // docker-compose.yml / .env.example -- lets someone try the whole flow
 // against the seeded sample database with one click, no typing required.
+// host is the Compose service name ("postgres"), correct when the backend
+// itself is running inside `docker compose up` (the default setup this
+// button targets). Running the backend outside Docker against the same
+// container? Swap this to "localhost" -- the container still publishes
+// port 5432 on the host for exactly that case.
 const SAMPLE_VALUES = {
   account_label: 'sample',
-  host: 'localhost',
+  host: 'postgres',
   port: '5432',
   dbname: 'aurora_kb',
   user: 'wiki_reader',

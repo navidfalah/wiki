@@ -24,13 +24,14 @@ The sample domain is fictional **Aurora Labs** (open IoT sensors), cross-linked 
 6. [Compiler pipeline](#compiler-pipeline)
 7. [API server](#api-server)
 8. [Wiki app and dashboards](#wiki-app-and-dashboards)
-9. [Dummy data generation](#dummy-data-generation)
-10. [Data layout](#data-layout)
-11. [Configuration](#configuration)
-12. [CI/CD](#cicd)
-13. [Development workflows](#development-workflows)
-14. [Troubleshooting](#troubleshooting)
-15. [Contributing and agent workflows](#contributing-and-agent-workflows)
+9. [Connect your own database (PostgreSQL)](#connect-your-own-database-postgresql)
+10. [Dummy data generation](#dummy-data-generation)
+11. [Data layout](#data-layout)
+12. [Configuration](#configuration)
+13. [CI/CD](#cicd)
+14. [Development workflows](#development-workflows)
+15. [Troubleshooting](#troubleshooting)
+16. [Contributing and agent workflows](#contributing-and-agent-workflows)
 
 ---
 
@@ -217,6 +218,9 @@ docker compose up --build
 ```
 
 Backend at http://localhost:8000, frontend at http://localhost:3000.
+This also starts a seeded sample PostgreSQL database (no extra flag needed) — open
+http://localhost:3000/database to connect to it and import its tables as knowledge; see
+[Connect your own database (PostgreSQL)](#connect-your-own-database-postgresql) below.
 For a local LLM (Gemma, run in-process by llama.cpp — no Ollama) instead of a paid API key, use
 `docker compose --profile local-llm up --build` — see
 [documentation/33-docker-and-local-llm.md](./documentation/33-docker-and-local-llm.md).
@@ -449,6 +453,8 @@ Docusaurus serves compiled docs at `/docs/…`. Custom React pages (Tailwind-sty
 | `/analytics` | **Analytics & Audit** | Tag explorer, dead-link report, compiler metrics |
 | `/graph` | **Topic Graph** | Force-directed graph from `index.json` cross-links |
 | `/knowledge-graph` | **Knowledge Graph Explorer** | Detected + manual connections; edit overrides saved to `data/link_overrides.json` |
+| `/connectors` | **Connectors** | Connect Gmail/Google Drive/IMAP/PostgreSQL and import content into `data/raw/connectors/` |
+| `/database` | **Database** | Dedicated PostgreSQL connect → browse schema → bulk import flow (see [Connect your own database](#connect-your-own-database-postgresql)) |
 
 Navbar links are configured in `wiki-app/docusaurus.config.js`.
 
@@ -462,6 +468,42 @@ Key components:
 - Shared UI: `PageShell`, `PageHeader`, `DashboardNav`, `Button`
 
 **Important:** Dashboard pages require the API server running on port 8000. The static docs under `/docs` work without the API.
+
+---
+
+## Connect your own database (PostgreSQL)
+
+The wiki can connect directly to a PostgreSQL database and pull its tables in as knowledge, alongside the existing Gmail/Google Drive/IMAP connectors (see [documentation/34-external-connectors.md](./documentation/34-external-connectors.md)). Full details, security model, and CLI equivalents: [documentation/39-postgres-database-connector.md](./documentation/39-postgres-database-connector.md).
+
+### How it works
+
+1. **Connect** — on the **Database** page (`/database`) or the generic **Connectors** page (`/connectors`), enter a database's host, port, name, user, schema, and password. Credentials are encrypted at rest (Fernet, same as every other connector) and only leave your machine to reach the database itself.
+2. **Browse** — "Browse tables" lists every base table in the configured schema via `information_schema`, with column names and row counts, before anything is imported.
+3. **Import** — select the tables you want and click "Import selected into knowledge base". Each table's first 200 rows are rendered as a Markdown table and written to `data/raw/connectors/postgres/<account_label>/`.
+4. **Compile** — run a compile from `/pipelines` (or `python main.py`) like you would for any other raw source. Imported tables go through the same extraction → synthesis → linking pipeline and come out as ordinary wiki pages, cross-linked with everything else.
+
+Nothing about this is Postgres-specific under the hood: `PostgresConnector` (`compiler/connectors/postgres_db.py`) implements the same two-method `Connector` interface (`list_items`/`fetch_item`) as the Gmail/Drive/IMAP connectors, just with tables standing in for messages.
+
+### Try it with the included sample database
+
+`docker compose up --build` also starts a small seeded PostgreSQL container (service `postgres`, image `postgres:16-alpine`) — no extra flag needed. It's seeded once, via `docker/postgres/init.sql`, with a fictional **Aurora Labs** internal knowledge base (the same sample domain the rest of this repo's dummy data uses):
+
+| Table | Rows | Contents |
+|-------|------|----------|
+| `departments` | 3 | Hardware Engineering, Firmware, Customer Success |
+| `employees` | 5 | Name, title, department, bio |
+| `projects` | 4 | Nova Widget, MeshSync v3, Field Diagnostics App, Solar Harvester Module |
+| `kb_articles` | 4 | Troubleshooting/FAQ/architecture/runbook articles about the sensor mesh |
+
+On the `/database` page, click **"Fill the form with the sample database's values"** to pre-fill the connect form (host `postgres`, port `5432`, database `aurora_kb`, user `wiki_reader`, schema `public`, password from `POSTGRES_PASSWORD`), then Connect → Browse tables → Import. This is optional scaffolding for trying the feature end to end — the connector itself works against any reachable Postgres server, including a real production database; just fill in your own credentials instead.
+
+Sample-container credentials are configurable in `.env` (`POSTGRES_DB`, `POSTGRES_USER`, `POSTGRES_PASSWORD`, `POSTGRES_PORT`; defaults `aurora_kb` / `wiki_reader` / `aurora_sample_pw` / `5432`). Data persists in the named volume `postgres-data`; `init.sql` only re-runs if that volume is removed (`docker compose down -v`).
+
+### Security notes
+
+- Credentials are Fernet-encrypted at rest under `data/connectors/` (gitignored), keyed by `CONNECTOR_SECRET_KEY` — see [documentation/34-external-connectors.md](./documentation/34-external-connectors.md#security-model).
+- There is no arbitrary-SQL endpoint. The only two operations are "list tables in one schema" and "read up to 200 rows of one table" — both parameterized, with table/schema identifiers re-validated against `information_schema` immediately before use.
+- For a real (non-sample) database, connect with a read-only database role — this connector never issues a write, but a role-level `SELECT`-only grant is good defense in depth regardless.
 
 ---
 
