@@ -132,6 +132,7 @@ export interface ChatStreamInput {
   message: string;
   history: { role: string; content: string }[];
   docScope: string[] | null;
+  corpusSource: 'wiki' | 'raw';
 }
 
 export interface ChatFaithfulness {
@@ -217,7 +218,17 @@ export function streamChat(res: Response, input: ChatStreamInput): Promise<ChatS
       res.end();
     });
 
-    child.stdin.write(JSON.stringify(input));
+    // cli.py's chat-stream reads snake_case keys off stdin JSON (see
+    // cmd_chat_stream in cli.py) -- translate this interface's camelCase
+    // fields explicitly rather than JSON.stringify(input) directly.
+    child.stdin.write(
+      JSON.stringify({
+        message: input.message,
+        history: input.history,
+        doc_scope: input.docScope,
+        corpus_source: input.corpusSource,
+      }),
+    );
     child.stdin.end();
   });
 }

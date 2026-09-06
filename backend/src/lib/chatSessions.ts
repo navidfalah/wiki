@@ -16,7 +16,9 @@ export interface ChatSource {
   title: string;
   heading?: string;
   score?: number;
-  slug: string;
+  // Only set for wiki-mode sources (a clickable /wiki/<slug> page exists).
+  // Raw-sources mode cites data/raw/ files directly, which have no slug.
+  slug?: string;
 }
 
 export interface ChatFaithfulness {
@@ -33,12 +35,15 @@ export interface ChatMessage {
   at: string;
 }
 
+export type ChatCorpusSource = 'wiki' | 'raw';
+
 export interface ChatSessionSummary {
   id: string;
   title: string;
   created_at: string;
   updated_at: string;
   resource_scope: string[] | null;
+  corpus_source: ChatCorpusSource;
   message_count: number;
 }
 
@@ -48,6 +53,7 @@ export interface ChatSession {
   created_at: string;
   updated_at: string;
   resource_scope: string[] | null;
+  corpus_source: ChatCorpusSource;
   messages: ChatMessage[];
 }
 
@@ -80,6 +86,7 @@ function summaryOf(session: ChatSession): ChatSessionSummary {
     created_at: session.created_at,
     updated_at: session.updated_at,
     resource_scope: session.resource_scope,
+    corpus_source: session.corpus_source,
     message_count: session.messages.length,
   };
 }
@@ -110,6 +117,7 @@ function migrateLegacyHistoryIfNeeded(): void {
       created_at: now,
       updated_at: now,
       resource_scope: null,
+      corpus_source: 'wiki',
       messages: messages.map((m) => ({ ...m, sources: m.sources?.map((s: any) => ({ ...s, slug: s.slug ?? s.path ?? '' })) })),
     };
     saveSession(session);
@@ -128,7 +136,11 @@ export function loadChatSession(id: string): ChatSession | null {
   const filePath = sessionFile(id);
   if (!fs.existsSync(filePath)) return null;
   try {
-    return JSON.parse(fs.readFileSync(filePath, 'utf-8'));
+    const parsed = JSON.parse(fs.readFileSync(filePath, 'utf-8'));
+    // corpus_source didn't exist in sessions saved before this field was
+    // added -- default those to 'wiki' (the only mode that existed then)
+    // rather than persisting the default until the session's next save.
+    return { corpus_source: 'wiki', ...parsed };
   } catch {
     return null;
   }
@@ -142,6 +154,7 @@ export function createChatSession(title?: string): ChatSession {
     created_at: now,
     updated_at: now,
     resource_scope: null,
+    corpus_source: 'wiki',
     messages: [],
   };
   saveSession(session);
@@ -161,6 +174,15 @@ export function setChatSessionResourceScope(id: string, resourceScope: string[] 
   const session = loadChatSession(id);
   if (!session) return null;
   session.resource_scope = resourceScope && resourceScope.length ? resourceScope : null;
+  session.updated_at = new Date().toISOString();
+  saveSession(session);
+  return session;
+}
+
+export function setChatSessionCorpusSource(id: string, corpusSource: ChatCorpusSource): ChatSession | null {
+  const session = loadChatSession(id);
+  if (!session) return null;
+  session.corpus_source = corpusSource;
   session.updated_at = new Date().toISOString();
   saveSession(session);
   return session;

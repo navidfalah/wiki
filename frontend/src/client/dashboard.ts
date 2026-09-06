@@ -1,3 +1,5 @@
+import { saveCache, loadCache, showOfflineBanner, hideOfflineBanner, onReconnect } from './lib/cache';
+
 const apiBase = document.querySelector('meta[name="api-base"]')?.getAttribute('content') ?? '';
 
 function el(id: string): HTMLElement {
@@ -44,20 +46,49 @@ function iconForFile(filePath: string): string {
   return '📄';
 }
 
+// --- Offline / cached-data banner ----------------------------------------
+
+// Several loaders below (stat cards, sources, files) can each fail
+// independently, so track how many are currently falling back to cached
+// data and only hide the banner once none of them are.
+let offlineFailures = 0;
+
+function markOffline(savedAt: number) {
+  offlineFailures += 1;
+  showOfflineBanner(savedAt);
+}
+
+function markOnline() {
+  offlineFailures = Math.max(0, offlineFailures - 1);
+  if (offlineFailures === 0) hideOfflineBanner();
+}
+
 // --- Stat cards --------------------------------------------------------
 
+const STAT_CACHE_KEY = 'dashboard:analytics';
+
+function renderStatCards(data: any) {
+  const m = data.metrics;
+  el('stat-cards').innerHTML = `
+    ${statCard('source', `${m.raw_files_processed} / ${m.raw_files_total}`, 'Raw files processed')}
+    ${statCard('generated', String(m.wiki_pages_created), 'Wiki pages created')}
+    ${statCard('neutral', String(m.cross_links_established), 'Cross-links')}
+    ${statCard(m.dead_links ? 'warn' : 'neutral', String(m.dead_links), 'Dead links')}
+  `;
+}
+
 async function loadStatCards() {
+  const cached = loadCache<any>(STAT_CACHE_KEY);
+  if (cached) renderStatCards(cached.data);
+
   try {
     const data = await apiFetch('/api/analytics');
-    const m = data.metrics;
-    el('stat-cards').innerHTML = `
-      ${statCard('source', `${m.raw_files_processed} / ${m.raw_files_total}`, 'Raw files processed')}
-      ${statCard('generated', String(m.wiki_pages_created), 'Wiki pages created')}
-      ${statCard('neutral', String(m.cross_links_established), 'Cross-links')}
-      ${statCard(m.dead_links ? 'warn' : 'neutral', String(m.dead_links), 'Dead links')}
-    `;
+    saveCache(STAT_CACHE_KEY, data);
+    markOnline();
+    renderStatCards(data);
   } catch {
-    el('stat-cards').innerHTML = '';
+    if (cached) markOffline(cached.savedAt);
+    else el('stat-cards').innerHTML = '';
   }
 }
 
@@ -131,19 +162,51 @@ function stepTone(status: string): string {
   return 'border-gray-200 bg-gray-50 text-gray-300';
 }
 
+// Persists across renderBuildSteps() re-renders (polled every 1.2s while a
+// build runs) so expanding a failed step's log doesn't snap shut on the next
+// poll tick.
+const expandedErrorSteps = new Set<string>();
+
 function renderBuildSteps(liveSteps: LiveStep[]) {
   const byName = new Map(liveSteps.map((s) => [s.name, s]));
   el('build-steps').innerHTML = BUILD_STEP_NAMES.map((name) => {
     const step = byName.get(name);
     const status = step?.status ?? 'pending';
+    const hasError = Boolean(step?.error);
+    const expanded = hasError && expandedErrorSteps.has(name);
+    const errorFirstLine = step?.error ? step.error.split('\n')[0] : '';
     return `
-      <div class="flex items-center gap-2.5 rounded-lg border px-3 py-1.5 ${stepTone(status)}">
-        <span class="flex h-4 w-4 shrink-0 items-center justify-center text-[10px] font-bold">${stepIcon(status)}</span>
-        <span class="min-w-0 flex-1 text-xs font-medium">${escapeHtml(name.replace(/^\d+\.\s*/, ''))}</span>
-        ${step?.detail ? `<span class="truncate text-[11px] opacity-80">${escapeHtml(step.detail)}</span>` : ''}
-        ${step?.error ? `<span class="truncate text-[11px]">${escapeHtml(step.error)}</span>` : ''}
+      <div class="rounded-lg border ${stepTone(status)}">
+        <button
+          type="button"
+          data-step-toggle="${escapeHtml(name)}"
+          class="flex w-full items-center gap-2.5 px-3 py-1.5 text-left ${hasError ? 'cursor-pointer' : 'cursor-default'}"
+          ${hasError ? '' : 'disabled'}>
+          <span class="flex h-4 w-4 shrink-0 items-center justify-center text-[10px] font-bold">${stepIcon(status)}</span>
+          <span class="min-w-0 flex-1 text-xs font-medium">${escapeHtml(name.replace(/^\d+\.\s*/, ''))}</span>
+          ${step?.detail ? `<span class="truncate text-[11px] opacity-80">${escapeHtml(step.detail)}</span>` : ''}
+          ${step?.error ? `<span class="truncate text-[11px]">${escapeHtml(errorFirstLine)}</span>` : ''}
+          ${hasError ? `<span class="shrink-0 text-[10px] underline opacity-80">${expanded ? 'hide log' : 'view log'}</span>` : ''}
+        </button>
+        ${
+          expanded
+            ? `<pre class="max-h-64 overflow-auto whitespace-pre-wrap break-words border-t border-red-200 bg-red-50/70 px-3 py-2 font-mono text-[11px] text-red-800">${escapeHtml(step!.error!)}</pre>`
+            : ''
+        }
       </div>`;
   }).join('');
+
+  el('build-steps')
+    .querySelectorAll<HTMLButtonElement>('[data-step-toggle]')
+    .forEach((btn) => {
+      btn.addEventListener('click', () => {
+        const name = btn.dataset.stepToggle ?? '';
+        if (!byName.get(name)?.error) return;
+        if (expandedErrorSteps.has(name)) expandedErrorSteps.delete(name);
+        else expandedErrorSteps.add(name);
+        renderBuildSteps(liveSteps);
+      });
+    });
 }
 
 let buildPollTimer: number | undefined;
@@ -161,6 +224,7 @@ async function pollBuildSteps() {
   try {
     const run = await apiFetch(`/api/pipelines/${encodeURIComponent(currentRunId)}`);
     renderBuildSteps(run.steps ?? []);
+    renderSettingsHint(run.settings);
   } catch {
     /* transient -- keep the last rendered state and try again next tick */
   }
@@ -368,16 +432,28 @@ function initBuild() {
 
 let sourcesCache: any[] = [];
 
+const SOURCES_CACHE_KEY = 'dashboard:sources';
+
+function applySourcesData(data: any) {
+  sourcesCache = data.sources;
+  el('sources-subtitle').innerHTML = `Always includes <code class="rounded bg-gray-100 px-1 py-0.5">${escapeHtml(
+    data.raw_dir,
+  )}</code>${sourcesCache.length ? ' — plus the folders below' : ''}`;
+  renderSourcesGrid();
+}
+
 async function loadSources() {
+  const cached = loadCache<any>(SOURCES_CACHE_KEY);
+  if (cached) applySourcesData(cached.data);
+
   try {
     const data = await apiFetch('/api/sources');
-    sourcesCache = data.sources;
-    el('sources-subtitle').innerHTML = `Always includes <code class="rounded bg-gray-100 px-1 py-0.5">${escapeHtml(
-      data.raw_dir,
-    )}</code>${sourcesCache.length ? ' — plus the folders below' : ''}`;
-    renderSourcesGrid();
+    saveCache(SOURCES_CACHE_KEY, data);
+    markOnline();
+    applySourcesData(data);
   } catch {
-    el('sources-grid').innerHTML = '<p class="col-span-full text-sm text-red-600">Cannot reach the API.</p>';
+    if (cached) markOffline(cached.savedAt);
+    else el('sources-grid').innerHTML = '<p class="col-span-full text-sm text-red-600">Cannot reach the API.</p>';
   }
 }
 
@@ -509,16 +585,28 @@ function isManaged(p: string): boolean {
   return managedFolders.includes(topSegment(p));
 }
 
+const FILES_CACHE_KEY = 'dashboard:files';
+
+function applyFilesData(data: any) {
+  filesCache = data.files;
+  foldersCache = data.folders;
+  managedFolders = data.managed_folders;
+  renderExplorer();
+  renderSourcesPicker();
+}
+
 async function loadFiles() {
+  const cached = loadCache<any>(FILES_CACHE_KEY);
+  if (cached) applyFilesData(cached.data);
+
   try {
     const data = await apiFetch('/api/raw-files');
-    filesCache = data.files;
-    foldersCache = data.folders;
-    managedFolders = data.managed_folders;
-    renderExplorer();
-    renderSourcesPicker();
+    saveCache(FILES_CACHE_KEY, data);
+    markOnline();
+    applyFilesData(data);
   } catch {
-    el('file-grid').innerHTML = '<p class="col-span-full py-8 text-center text-sm text-red-600">Cannot reach the API.</p>';
+    if (cached) markOffline(cached.savedAt);
+    else el('file-grid').innerHTML = '<p class="col-span-full py-8 text-center text-sm text-red-600">Cannot reach the API.</p>';
   }
 }
 
@@ -829,6 +917,11 @@ initRunOptions();
 initSources();
 initExplorer();
 initUpload();
+onReconnect(() => {
+  loadStatCards();
+  loadSources();
+  loadFiles();
+});
 loadStatCards();
 loadSources();
 loadFiles();

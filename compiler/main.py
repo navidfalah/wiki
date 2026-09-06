@@ -7,6 +7,7 @@ import argparse
 import os
 import sys
 import time
+import traceback
 from collections.abc import Callable
 from pathlib import Path
 
@@ -649,8 +650,13 @@ def run_pipeline(
             },
         )
     except Exception as exc:
-        run.finish_step(current_step_name, "error", error=str(exc))
-        run.finish("error", error=str(exc))
+        # Full traceback, not just str(exc) -- a one-line message like
+        # "database disk image is malformed" tells you nothing about which
+        # call raised it. This is what the dashboard/Pipelines page shows
+        # for the failed step's log, so it needs to be the real thing.
+        full_log = traceback.format_exc()
+        run.finish_step(current_step_name, "error", error=full_log)
+        run.finish("error", error=full_log)
         raise
 
     console.print("[bold cyan]Map of Content[/] — generating hierarchical index.md")

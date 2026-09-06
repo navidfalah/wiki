@@ -14,6 +14,7 @@ import {
   listChatSessions,
   loadChatSession,
   renameChatSession,
+  setChatSessionCorpusSource,
   setChatSessionResourceScope,
 } from '../lib/chatSessions';
 import { listEvents, logEvent } from '../lib/activityLog';
@@ -41,6 +42,7 @@ import {
   validateConnections,
 } from '../lib/linkOverrides';
 import { deletePipelineRun, getPipelineRun, listPipelineRuns } from '../lib/pipelineRuns';
+import { computeUsageSummary } from '../lib/tokenUsage';
 import { isBuildRunning, runCli, stopBuild, streamChat, streamCompilerBuild } from '../lib/pythonBridge';
 import { createFolder, deleteFile, deleteFolder, discoverRawFolders, FolderError, moveFile, uploadFiles } from '../lib/rawFolders';
 import {
@@ -655,6 +657,15 @@ export function registerRoutes(app: Express): void {
     }),
   );
 
+  // --- Token usage & cost --------------------------------------------------
+
+  app.get(
+    '/api/usage',
+    wrap((_req, res) => {
+      res.json({ ...computeUsageSummary(), llm_backend: describeLlmBackend() });
+    }),
+  );
+
   // --- Knowledge graph ---------------------------------------------------
 
   app.get(
@@ -807,6 +818,11 @@ export function registerRoutes(app: Express): void {
         if (scope !== null && !Array.isArray(scope)) throw new HttpError(400, "'resource_scope' must be a list or null");
         session = setChatSessionResourceScope(req.params.id, scope);
       }
+      if (req.body?.corpus_source !== undefined) {
+        const source = req.body.corpus_source;
+        if (source !== 'wiki' && source !== 'raw') throw new HttpError(400, "'corpus_source' must be 'wiki' or 'raw'");
+        session = setChatSessionCorpusSource(req.params.id, source);
+      }
       res.json(session);
     }),
   );
@@ -836,15 +852,17 @@ export function registerRoutes(app: Express): void {
       return;
     }
 
-    const docScope = session.resource_scope ? resolveDocPaths(session.resource_scope) : null;
+    // Resource scoping is wiki-doc-path based, so it only applies in wiki
+    // mode -- a raw-sources chat searches all of data/raw/ unscoped.
+    const corpusSource = session.corpus_source === 'raw' ? 'raw' : 'wiki';
+    const docScope = corpusSource === 'wiki' && session.resource_scope ? resolveDocPaths(session.resource_scope) : null;
     const history = session.messages.map((m) => ({ role: m.role, content: m.content }));
 
     try {
-      const result = await streamChat(res, { message, history, docScope });
-      const sourcesWithSlug = (result.sources ?? []).map((s) => ({
-        ...s,
-        slug: s.doc_path.replace(/\.md$/, ''),
-      }));
+      const result = await streamChat(res, { message, history, docScope, corpusSource });
+      const sourcesWithSlug = (result.sources ?? []).map((s) =>
+        corpusSource === 'wiki' ? { ...s, slug: s.doc_path.replace(/\.md$/, '') } : { ...s },
+      );
       appendChatSessionTurn(req.params.id, message, result.answer, sourcesWithSlug, result.faithfulness);
     } catch {
       /* already reported to the client as an SSE 'error' event by streamChat */

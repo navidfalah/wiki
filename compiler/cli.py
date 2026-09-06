@@ -20,6 +20,7 @@ import active_learning
 import connectors_service
 import email_engine
 import rag_engine
+import synthesizer
 import trust_eval_dataset
 from entity_graph import entity_graph_payload
 from trust_eval_dataset import load_trust_eval_dataset
@@ -37,7 +38,8 @@ def cmd_chat() -> dict:
         raise ValueError("'message' is required")
     history = payload.get("history")
     doc_scope = payload.get("doc_scope")
-    return rag_engine.answer_question(message, history=history, doc_scope=doc_scope)
+    source = str(payload.get("corpus_source") or "wiki")
+    return rag_engine.answer_question(message, history=history, doc_scope=doc_scope, source=source)
 
 
 def cmd_chat_stream() -> None:
@@ -51,10 +53,11 @@ def cmd_chat_stream() -> None:
     message = str(payload.get("message", "")).strip()
     history = payload.get("history")
     doc_scope = payload.get("doc_scope")
+    source = str(payload.get("corpus_source") or "wiki")
     try:
         if not message:
             raise ValueError("'message' is required")
-        for event in rag_engine.answer_question_stream(message, history=history, doc_scope=doc_scope):
+        for event in rag_engine.answer_question_stream(message, history=history, doc_scope=doc_scope, source=source):
             print(json.dumps(event, ensure_ascii=False), flush=True)
     except Exception as exc:  # noqa: BLE001 -- surface any failure as a stream event
         print(json.dumps({"type": "error", "message": str(exc)}), flush=True)
@@ -62,10 +65,12 @@ def cmd_chat_stream() -> None:
 
 def cmd_chat_status() -> dict:
     corpus = rag_engine.build_corpus()
+    raw_files = synthesizer.discover_raw_source_files()
     return {
         "corpus_pages": len({p.doc_path for p in corpus}),
         "corpus_passages": len(corpus),
-        "llm_available": rag_engine.LLMClient().available,
+        "raw_source_files": len(raw_files),
+        "llm_available": rag_engine.LLMClient.for_purpose("chat").available,
     }
 
 

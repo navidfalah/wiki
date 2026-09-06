@@ -1,0 +1,13 @@
+BACKLOG — unsorted junk drawer
+
+1. Wiki linter that finds orphan pages (orphans = bad)
+2. Color-coded LED on device for "I'm dying" battery state
+3. Partnership with community garden network??? cold email draft somewhere
+4. Rename MeshSync → MeshSink (NO — rejected 3x)
+5. Document contradictions explicitly in wiki pages
+6. Fake competitor name generator for demos
+7. Why is index.md always out of date in every project
+
+half-baked: compile raw txt → md → docusaurus pipeline
+
+priority: ¯\_(ツ)_/¯

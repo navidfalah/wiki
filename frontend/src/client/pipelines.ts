@@ -51,6 +51,8 @@ let runs: RunSummary[] = [];
 let selectedId: string | null = null;
 let pollTimer: number | undefined;
 let buildIsRunning = false;
+const openStepDetails = new Set<number>();
+const openStepErrors = new Set<number>();
 
 const STATUS_TONES: Record<string, string> = {
   running: 'bg-amber-50 text-amber-700',
@@ -117,6 +119,7 @@ function renderList() {
 
   container.querySelectorAll<HTMLButtonElement>('button[data-run-id]').forEach((btn) => {
     btn.addEventListener('click', () => {
+      if (btn.dataset.runId !== selectedId) openStepDetails.clear();
       selectedId = btn.dataset.runId ?? null;
       renderList();
       loadDetail();
@@ -192,7 +195,24 @@ function renderValueHtml(value: unknown): string {
   return escapeHtml(String(value));
 }
 
-function renderStepDataHtml(data: Record<string, unknown> | null | undefined): string {
+function renderStepErrorHtml(error: string, stepIndex: number): string {
+  // error is often a full Python traceback (see main.py's exception handler
+  // in run_compiler()), not a one-line message -- render it as a scrollable
+  // monospace log rather than squashing newlines into an unreadable <p>.
+  const firstLine = error.split('\n')[0];
+  const isMultiline = error.includes('\n');
+  if (!isMultiline) {
+    return `<p class="mt-0.5 text-xs text-red-600">${escapeHtml(error)}</p>`;
+  }
+  const isOpen = openStepErrors.has(stepIndex);
+  return `
+    <details class="mt-1.5" data-step-error-index="${stepIndex}"${isOpen ? ' open' : ''}>
+      <summary class="cursor-pointer text-xs text-red-600 hover:underline">${escapeHtml(firstLine)}</summary>
+      <pre class="mt-1.5 max-h-72 overflow-auto whitespace-pre-wrap break-words rounded-lg border border-red-100 bg-red-50 p-2.5 font-mono text-[11px] leading-snug text-red-800">${escapeHtml(error)}</pre>
+    </details>`;
+}
+
+function renderStepDataHtml(data: Record<string, unknown> | null | undefined, stepIndex: number): string {
   if (!data) return '';
   const sections = ['input', 'output']
     .filter((key) => data[key] !== undefined)
@@ -204,8 +224,9 @@ function renderStepDataHtml(data: Record<string, unknown> | null | undefined): s
       )}</div></div>`;
     });
   if (!sections.length) return '';
+  const isOpen = openStepDetails.has(stepIndex);
   return `
-    <details class="mt-1.5">
+    <details class="mt-1.5" data-step-index="${stepIndex}"${isOpen ? ' open' : ''}>
       <summary class="cursor-pointer text-xs font-medium text-accent hover:underline">Show input / output</summary>
       <div class="mt-2 grid gap-3 rounded-lg border border-gray-100 bg-gray-50 p-3 sm:grid-cols-2">${sections.join('')}</div>
     </details>`;
@@ -215,7 +236,7 @@ function renderDetail(run: RunDetail) {
   const container = document.getElementById('pipeline-run-detail')!;
 
   const stepsHtml = run.steps
-    .map((step) => {
+    .map((step, stepIndex) => {
       const tone =
         step.status === 'success'
           ? 'border-emerald-200 bg-emerald-50 text-emerald-700'
@@ -231,8 +252,8 @@ function renderDetail(run: RunDetail) {
             <span class="text-xs text-gray-500">${escapeHtml(formatDuration(step.started_at, step.finished_at))}</span>
           </div>
           ${step.detail ? `<p class="mt-0.5 text-xs text-gray-600">${escapeHtml(step.detail)}</p>` : ''}
-          ${step.error ? `<p class="mt-0.5 text-xs text-red-600">${escapeHtml(step.error)}</p>` : ''}
-          ${renderStepDataHtml(step.data)}
+          ${step.error ? renderStepErrorHtml(step.error, stepIndex) : ''}
+          ${renderStepDataHtml(step.data, stepIndex)}
         </div>
       </div>`;
     })
@@ -283,11 +304,31 @@ function renderDetail(run: RunDetail) {
       </div>
       ${statusBadge(run.status)}
     </div>
-    ${run.error ? `<p class="mt-3 rounded-lg bg-red-50 px-3 py-2 text-xs text-red-700">${escapeHtml(run.error)}</p>` : ''}
+    ${
+      run.error
+        ? `<pre class="mt-3 max-h-72 overflow-auto whitespace-pre-wrap break-words rounded-lg bg-red-50 px-3 py-2 font-mono text-[11px] leading-snug text-red-700">${escapeHtml(run.error)}</pre>`
+        : ''
+    }
     <div class="mt-4 flex flex-col gap-2">${stepsHtml}</div>
     <h3 class="mt-5 text-sm font-semibold text-gray-900">Token usage</h3>
     ${usageHtml}
   `;
+
+  container.querySelectorAll<HTMLDetailsElement>('details[data-step-index]').forEach((details) => {
+    const stepIndex = Number(details.dataset.stepIndex);
+    details.addEventListener('toggle', () => {
+      if (details.open) openStepDetails.add(stepIndex);
+      else openStepDetails.delete(stepIndex);
+    });
+  });
+
+  container.querySelectorAll<HTMLDetailsElement>('details[data-step-error-index]').forEach((details) => {
+    const stepIndex = Number(details.dataset.stepErrorIndex);
+    details.addEventListener('toggle', () => {
+      if (details.open) openStepErrors.add(stepIndex);
+      else openStepErrors.delete(stepIndex);
+    });
+  });
 }
 
 async function loadList() {

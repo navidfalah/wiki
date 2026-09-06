@@ -1,0 +1,32 @@
+Message-ID: <b2f1a6b0-3c2e-4e0a-9d1f-1c2f6a7e9001@powercell-supply.example>
+Subject: Cell restock delay — order #PC-88213 (affects MeshSync batch 5)
+From: Rosa Delgado <rosa.delgado@powercell-supply.example>
+To: Mira Chen <mira.chen@auroralabs.example>
+Cc: Grace Liu <grace.liu@auroralabs.example>
+Date: Thu, 04 Jun 2026 10:22:00 -0700
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 8bit
+MIME-Version: 1.0
+
+[DUMMY TEST DATA — fictional]
+
+Hi Mira,
+
+Following up on order #PC-88213 (2,400 CR2477 cells for batch 5). Our
+cathode supplier had a customs hold in Shenzhen, so we're now looking at a
+9-business-day delay — revised ship date is June 18th instead of June 9th.
+
+I know timing is tight with your firmware retest window. Two options on our
+end:
+
+1. Wait for the full order (June 18th), or
+2. We can air-ship 600 cells from our Ontario warehouse by June 8th to cover
+   your batch 5 field units, with the remaining 1,800 following by truck on
+   the original delayed schedule.
+
+Let me know which you'd prefer. Either way there's no cost change — this one
+is on us.
+
+Best,
+Rosa Delgado
+Account Manager, PowerCell Supply Co.

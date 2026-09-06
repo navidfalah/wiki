@@ -34,6 +34,7 @@ const MODEL_PRESETS: Record<Provider, string[]> = {
     'gemini-2.5-pro', 'gemini-2.5-flash', 'gemini-2.5-flash-lite',
     'gemini-2.0-flash', 'gemini-2.0-flash-lite',
     'gemini-1.5-pro', 'gemini-1.5-flash',
+    'text-embedding-004', 'gemini-embedding-001',
   ],
   local: [
     'gemma-4-it', 'gemma-2-9b-it', 'gemma-2-27b-it',
@@ -70,10 +71,11 @@ function ensureModelDatalists() {
   }
 }
 
-type Purpose = 'default' | 'thinking' | 'embedding';
+type Purpose = 'default' | 'thinking' | 'chat' | 'embedding';
 const PURPOSES: { key: Purpose; label: string; hint: string }[] = [
   { key: 'default', label: 'Default', hint: 'Extraction, indexing, cross-linking' },
   { key: 'thinking', label: 'Thinking', hint: 'Synthesis -- the reasoning-heavy step that writes wiki pages' },
+  { key: 'chat', label: 'Chat', hint: 'Interactive RAG Q&A -- answering questions in the wiki chat' },
   { key: 'embedding', label: 'Embeddings', hint: 'Vector search / hybrid retrieval' },
 ];
 
@@ -93,7 +95,7 @@ interface Settings {
 
 let state: Settings = {
   profiles: [],
-  assignments: { default: '', thinking: '', embedding: '' },
+  assignments: { default: '', thinking: '', chat: '', embedding: '' },
   local_llm: { model_repo: '', model_file: '', model_alias: '', context: 4096, chat_format: 'gemma' },
 };
 let editedKeys: Record<string, string> = {};

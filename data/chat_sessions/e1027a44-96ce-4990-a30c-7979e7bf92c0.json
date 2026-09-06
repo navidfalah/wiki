@@ -2,7 +2,7 @@
   "id": "e1027a44-96ce-4990-a30c-7979e7bf92c0",
   "title": "What topics does the wiki cover?",
   "created_at": "2026-09-01T21:15:07.221Z",
-  "updated_at": "2026-09-02T07:03:10.887Z",
+  "updated_at": "2026-09-06T15:57:10.199Z",
   "resource_scope": null,
   "messages": [
     {
@@ -51,6 +51,186 @@
         }
       ],
       "at": "2026-09-02T07:03:10.887Z"
+    },
+    {
+      "role": "user",
+      "content": "good tell me more about wiki compiler",
+      "at": "2026-09-06T15:53:18.887Z"
+    },
+    {
+      "role": "assistant",
+      "content": "Based on the wiki excerpts, the Wiki Compiler is an LLM Wiki pipeline test artifact designed to process raw data files and compile them into structured documentation [1, 2]. \n\nKey details about the Wiki Compiler include:\n* **Heuristic Mode:** It features a \"Heuristic Mode\" (documented via pipeline tests and operational notes) designed to process raw files and generate structured documentation, complete with ingest quirks and test data layouts [1, 2, 3].\n* **Synthetic Test Data:** The corpus it processes is synthetic test data that is deliberately seeded with planted conflicts and contradictions to test cross-linking, trust propagation, and the human review queue [5].",
+      "sources": [
+        {
+          "doc_path": "index.md",
+          "title": "Wiki Map of Content",
+          "heading": "Cross Linking",
+          "score": 5,
+          "slug": "index"
+        },
+        {
+          "doc_path": "pipeline-test.md",
+          "title": "Pipeline Test: Wiki Compiler Heuristic Mode",
+          "heading": "Overview",
+          "score": 4,
+          "slug": "pipeline-test"
+        },
+        {
+          "doc_path": "heuristic-mode.md",
+          "title": "Heuristic Mode",
+          "heading": "Related Concepts",
+          "score": 3,
+          "slug": "heuristic-mode"
+        },
+        {
+          "doc_path": "contradictions-and-paradoxes.md",
+          "title": "Contradictions & Paradoxes",
+          "heading": "Contradictions & Paradoxes",
+          "score": 2,
+          "slug": "contradictions-and-paradoxes"
+        }
+      ],
+      "faithfulness": {
+        "basis": "heuristic",
+        "unsupported_rate": 0,
+        "checkable_count": 2
+      },
+      "at": "2026-09-06T15:53:18.887Z"
+    },
+    {
+      "role": "user",
+      "content": "what now",
+      "at": "2026-09-06T15:56:19.254Z"
+    },
+    {
+      "role": "assistant",
+      "content": "No LLM is configured, so here are the closest matches from the wiki:\n\n**Email Resources — Resources Engine (`resources_engine.py`)**\n- **Resource Inversion:** While synthesized pages carry a deterministic `## References & Trust` table, the resources engine inverts this relationship to answer \"what cites this source\" instead of \"what does this page cite\".\n- **Deduped Entries:** Every resource (email, note, image) becomes a single deduped entry listing every citing page, making it reusable and inspectable independently.\n- **Core …\n\n**API Endpoints — Resource Endpoints (`resources_engine.py`)**\n- **`GET /api/resources`** and **`GET /api/resources/{path}`** expose resource data.\n- **Resource Inversion**: Standard pages carry a deterministic `## References & Trust` table. The resources engine inverts this paradigm to answer \"what cites this source\" instead of \"what does this page cite.\"\n- Each resource (such as an email, note, or image) is represented as a single deduped entry listing ever…\n\n**Sprint Retrospective — Key Details**\n- **Sprint Identifier:** Aurora Labs, Sprint 14\n- **What Went Well:**\n  - Mesh network remained stable at 6 nodes in the lab.\n  - The [wiki compiler](./wiki-compiler.md) [heuristic mode](./heuristic-mode.md) functions properly without requiring an API key.\n  - The [Nova widget](./nova-widget.md) enclosure pebble shape was officially approved (Jonah won the discussion).\n- **What Didn't Go Well:**\n …",
+      "sources": [
+        {
+          "doc_path": "email-resources.md",
+          "title": "Email Resources",
+          "heading": "Resources Engine (`resources_engine.py`)",
+          "score": 5.0245,
+          "slug": "email-resources"
+        },
+        {
+          "doc_path": "api-endpoints.md",
+          "title": "API Endpoints",
+          "heading": "Resource Endpoints (`resources_engine.py`)",
+          "score": 4.8404,
+          "slug": "api-endpoints"
+        },
+        {
+          "doc_path": "sprint-retrospective.md",
+          "title": "Sprint Retrospective",
+          "heading": "Key Details",
+          "score": 4.5272,
+          "slug": "sprint-retrospective"
+        },
+        {
+          "doc_path": "ios-development.md",
+          "title": "iOS Development",
+          "heading": "Key Details",
+          "score": 4.1223,
+          "slug": "ios-development"
+        },
+        {
+          "doc_path": "bluetooth-low-energy.md",
+          "title": "Bluetooth Low Energy",
+          "heading": "Key Details",
+          "score": 3.6361,
+          "slug": "bluetooth-low-energy"
+        }
+      ],
+      "faithfulness": {
+        "basis": "extractive",
+        "unsupported_rate": 0,
+        "checkable_count": 0
+      },
+      "at": "2026-09-06T15:56:19.254Z"
+    },
+    {
+      "role": "user",
+      "content": "hardware",
+      "at": "2026-09-06T15:56:38.299Z"
+    },
+    {
+      "role": "assistant",
+      "content": "No LLM is configured, so here are the closest matches from the wiki:\n\n**Wiki Map of Content — Aurorabetaprobe**\n- [Hardware Reliability](./hardware-reliability.md) — Hardware reliability is a critical factor in long-term sensor deployment, particularly in environments prone to chemical…\n\n**Wiki Map of Content — Aurora Labs Nova**\n- [Hardware Reviews](./hardware-reviews.md) — This page compiles user discussions and community evaluations regarding emerging IoT and home lab sensor hardware, speci…\n\n**Hardware Research — Related Entities**\n- **Mira Chen:** Author of the research.\n- **SenseNode:** Representative class for the evaluated LoRaWAN [hardware](./hardware.md).\n- **Aurora:** The hardware/protocol platform evaluated for MeshSync.",
+      "sources": [
+        {
+          "doc_path": "index.md",
+          "title": "Wiki Map of Content",
+          "heading": "Aurorabetaprobe",
+          "score": 2.9794,
+          "slug": "index"
+        },
+        {
+          "doc_path": "hardware-research.md",
+          "title": "Hardware Research",
+          "heading": "Related Entities",
+          "score": 2.9449,
+          "slug": "hardware-research"
+        },
+        {
+          "doc_path": "data-privacy.md",
+          "title": "Data Privacy",
+          "heading": "Related Concepts",
+          "score": 2.932,
+          "slug": "data-privacy"
+        }
+      ],
+      "faithfulness": {
+        "basis": "extractive",
+        "unsupported_rate": 0,
+        "checkable_count": 0
+      },
+      "at": "2026-09-06T15:56:38.299Z"
+    },
+    {
+      "role": "user",
+      "content": "hardware",
+      "at": "2026-09-06T15:57:10.199Z"
+    },
+    {
+      "role": "assistant",
+      "content": "No LLM is configured, so here are the closest matches from the wiki:\n\n**Wiki Map of Content — Alex**\n- [Aurora Labs](./aurora-labs.md) — Aurora Labs is an open-hardware initiative founded by Mira Chen and Jonah Park, operating under the mission statement: \"…\n- [Hardware Specifications](./hardware-specifications.md) — This document outlines the hardware specifications, electrical components, power budgeting, and physical enclosures for…\n- [Hardware Specs](./hardware-specs.md) — This wiki page outl…\n\n**Electrical Design — Overview**\nThis wiki page outlines the electrical design specifications and related [hardware](./hardware.md) configurations for the [Nova Widget](./nova-widget.md) hardware revision C, detailing components such as the microcontroller, power source, and probe design.\n\n**Firmware — Overview**\nThis document outlines the firmware baseline and related [Hardware Specifications](./hardware-specifications.md) for the [Nova Widget](./nova-widget.md) (Hardware Revision C), detailing its operational intervals, underlying software versions, and system architecture parameters.",
+      "sources": [
+        {
+          "doc_path": "index.md",
+          "title": "Wiki Map of Content",
+          "heading": "Alex",
+          "score": 5,
+          "slug": "index"
+        },
+        {
+          "doc_path": "electrical-design.md",
+          "title": "Electrical Design",
+          "heading": "Overview",
+          "score": 4,
+          "slug": "electrical-design"
+        },
+        {
+          "doc_path": "firmware.md",
+          "title": "Firmware",
+          "heading": "Overview",
+          "score": 3,
+          "slug": "firmware"
+        },
+        {
+          "doc_path": "product-specification.md",
+          "title": "Product Specification",
+          "heading": "Overview",
+          "score": 2,
+          "slug": "product-specification"
+        }
+      ],
+      "faithfulness": {
+        "basis": "extractive",
+        "unsupported_rate": 0,
+        "checkable_count": 0
+      },
+      "at": "2026-09-06T15:57:10.199Z"
     }
   ]
 }

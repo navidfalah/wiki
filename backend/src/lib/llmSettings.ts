@@ -4,7 +4,9 @@
  * endpoint) and assign one to each purpose the compiler pipeline
  * recognizes -- "default" (extraction/indexing/linking), "thinking"
  * (synthesis -- the pipeline's one genuinely reasoning-heavy step, see
- * compiler/main.py's step 3), and "embedding". Persisted to
+ * compiler/main.py's step 3), "chat" (interactive RAG Q&A -- see
+ * rag_engine.py's answer_question()/stream_answer(), which already call
+ * LLMClient.for_purpose("chat")), and "embedding". Persisted to
  * data/llm_settings.json; also mirrored into the repo's .env so the
  * local-llm Docker container (which reads its own env at container
  * start, not this file) picks up model changes on its next restart.
@@ -22,8 +24,8 @@ import { PROJECT_ROOT } from '../paths';
 export const LLM_SETTINGS_FILE = path.join(PROJECT_ROOT, 'data', 'llm_settings.json');
 const ENV_FILE = path.join(PROJECT_ROOT, '.env');
 
-export type Purpose = 'default' | 'thinking' | 'embedding';
-export const PURPOSES: Purpose[] = ['default', 'thinking', 'embedding'];
+export type Purpose = 'default' | 'thinking' | 'chat' | 'embedding';
+export const PURPOSES: Purpose[] = ['default', 'thinking', 'chat', 'embedding'];
 
 export type ReasoningEffort = '' | 'minimal' | 'low' | 'medium' | 'high';
 
@@ -88,14 +90,65 @@ function parseReasoningEffort(value: unknown): ReasoningEffort {
   return REASONING_EFFORTS.includes(value as ReasoningEffort) ? (value as ReasoningEffort) : '';
 }
 
+const GEMINI_BASE_URL = 'https://generativelanguage.googleapis.com/v1beta/openai/';
+
+function makeProfile(overrides: Partial<LlmProfile> & Pick<LlmProfile, 'id' | 'label' | 'model'>): LlmProfile {
+  return {
+    provider: 'gemini',
+    base_url: GEMINI_BASE_URL,
+    api_key: process.env.OPENAI_API_KEY || '',
+    temperature: 0.2,
+    top_p: null,
+    max_tokens: null,
+    reasoning_effort: '',
+    ...overrides,
+  };
+}
+
+/**
+ * When OPENAI_BASE_URL already points at Gemini's OpenAI-compatible
+ * endpoint (the .env.example "Google Gemini" path), a fresh install gets
+ * one profile per purpose instead of a single one -- all sharing the same
+ * Gemini API key, but each pointed at the Gemini model best suited to that
+ * purpose's cost/quality tradeoff: a cheap/fast model for the
+ * high-volume extraction/indexing/linking work, a stronger reasoning
+ * model for synthesis ("thinking"), a balanced model for interactive
+ * chat, and Gemini's embedding model for vector search. Any of these
+ * models can be repointed per-profile on the Settings page afterward --
+ * this is just a better starting point than one model doing everything.
+ */
+function defaultGeminiSettings(apiKey: string): LlmSettings {
+  const profiles: LlmProfile[] = [
+    makeProfile({ id: 'gemini-default', label: 'Gemini Flash Lite (default)', model: 'gemini-2.5-flash-lite', api_key: apiKey }),
+    makeProfile({ id: 'gemini-thinking', label: 'Gemini Pro (thinking)', model: 'gemini-2.5-pro', api_key: apiKey }),
+    makeProfile({ id: 'gemini-chat', label: 'Gemini Flash (chat)', model: 'gemini-2.5-flash', api_key: apiKey }),
+    makeProfile({ id: 'gemini-embedding', label: 'Gemini Embedding', model: 'text-embedding-004', api_key: apiKey }),
+  ];
+  return {
+    profiles,
+    assignments: {
+      default: 'gemini-default',
+      thinking: 'gemini-thinking',
+      chat: 'gemini-chat',
+      embedding: 'gemini-embedding',
+    },
+    local_llm: { ...DEFAULT_LOCAL_LLM },
+  };
+}
+
 function defaultSettings(): LlmSettings {
+  const apiKey = process.env.OPENAI_API_KEY || '';
+  const baseUrl = process.env.OPENAI_BASE_URL || 'https://api.openai.com/v1';
+  if (apiKey && baseUrl.includes('generativelanguage.googleapis.com')) {
+    return defaultGeminiSettings(apiKey);
+  }
   const defaultProfile: LlmProfile = {
     id: 'default',
     label: 'Default',
     provider: 'custom',
-    base_url: process.env.OPENAI_BASE_URL || 'https://api.openai.com/v1',
+    base_url: baseUrl,
     model: process.env.OPENAI_MODEL || 'gpt-4o-mini',
-    api_key: process.env.OPENAI_API_KEY || '',
+    api_key: apiKey,
     temperature: 0.2,
     top_p: null,
     max_tokens: null,
@@ -103,7 +156,7 @@ function defaultSettings(): LlmSettings {
   };
   return {
     profiles: [defaultProfile],
-    assignments: { default: 'default', thinking: 'default', embedding: 'default' },
+    assignments: { default: 'default', thinking: 'default', chat: 'default', embedding: 'default' },
     local_llm: { ...DEFAULT_LOCAL_LLM },
   };
 }
@@ -136,7 +189,7 @@ export function loadLlmSettings(): LlmSettings {
   }));
   const profileIds = new Set(profiles.map((p) => p.id));
   const firstId = profiles[0].id;
-  const assignments = { default: firstId, thinking: firstId, embedding: firstId };
+  const assignments = { default: firstId, thinking: firstId, chat: firstId, embedding: firstId };
   for (const purpose of PURPOSES) {
     const candidate = parsed.assignments?.[purpose];
     if (typeof candidate === 'string' && profileIds.has(candidate)) {
@@ -229,7 +282,7 @@ export function saveLlmSettings(input: any): LlmSettings {
   const profileIds = new Set(profiles.map((p) => p.id));
 
   const firstId = profiles[0].id;
-  const assignments = { default: firstId, thinking: firstId, embedding: firstId } as Record<Purpose, string>;
+  const assignments = { default: firstId, thinking: firstId, chat: firstId, embedding: firstId } as Record<Purpose, string>;
   for (const purpose of PURPOSES) {
     const candidate = input.assignments?.[purpose];
     if (typeof candidate === 'string' && profileIds.has(candidate)) assignments[purpose] = candidate;
@@ -293,6 +346,14 @@ export function envOverridesForSpawn(): Record<string, string> {
     overrides.THINKING_OPENAI_BASE_URL = thinkingProfile.base_url;
     overrides.THINKING_OPENAI_MODEL = thinkingProfile.model;
     applySamplingOverrides(overrides, 'THINKING', thinkingProfile);
+  }
+
+  const chatProfile = byId.get(settings.assignments.chat);
+  if (chatProfile) {
+    overrides.CHAT_OPENAI_API_KEY = chatProfile.api_key;
+    overrides.CHAT_OPENAI_BASE_URL = chatProfile.base_url;
+    overrides.CHAT_OPENAI_MODEL = chatProfile.model;
+    applySamplingOverrides(overrides, 'CHAT', chatProfile);
   }
 
   const embeddingProfile = byId.get(settings.assignments.embedding);

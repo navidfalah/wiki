@@ -92,7 +92,8 @@ interface ChatSource {
   doc_path: string;
   title: string;
   heading?: string;
-  slug: string;
+  // Only set for wiki-mode sources (a clickable /wiki/<slug> page exists).
+  slug?: string;
 }
 
 interface ChatFaithfulness {
@@ -109,11 +110,14 @@ interface ChatMessage {
   at: string;
 }
 
+type ChatCorpusSource = 'wiki' | 'raw';
+
 interface ChatSessionSummary {
   id: string;
   title: string;
   updated_at: string;
   resource_scope: string[] | null;
+  corpus_source: ChatCorpusSource;
   message_count: number;
 }
 
@@ -173,15 +177,24 @@ const ASSISTANT_AVATAR = `<div class="flex h-7 w-7 shrink-0 items-center justify
 const COPY_ICON = `<svg viewBox="0 0 24 24" width="12" height="12" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg>`;
 const CHECK_ICON = `<svg viewBox="0 0 24 24" width="12" height="12" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg>`;
 
+const FILE_ICON = `<svg viewBox="0 0 24 24" width="10" height="10" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline></svg>`;
+
 function sourcesChipHtml(sources: ChatSource[] | undefined): string {
   if (!sources?.length) return '';
   const chips = sources
-    .map(
-      (s) =>
-        `<a href="/wiki/${encodeURIComponent(s.slug)}" class="flex items-center gap-1 rounded-full border border-gray-200 bg-gray-50 px-2 py-0.5 text-xs text-gray-600 no-underline hover:bg-gray-100 hover:text-accent">
-          <svg viewBox="0 0 24 24" width="10" height="10" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline></svg>
+    .map((s) =>
+      s.slug
+        ? `<a href="/wiki/${encodeURIComponent(s.slug)}" class="flex items-center gap-1 rounded-full border border-gray-200 bg-gray-50 px-2 py-0.5 text-xs text-gray-600 no-underline hover:bg-gray-100 hover:text-accent">
+          ${FILE_ICON}
           ${escapeHtml(s.title)}
-        </a>`,
+        </a>`
+        // Raw-sources mode: cites a data/raw/ file directly, which has no
+        // wiki page to link to -- a plain (non-link) chip with the file
+        // path as its tooltip.
+        : `<span title="${escapeHtml(s.doc_path)}" class="flex items-center gap-1 rounded-full border border-gray-200 bg-gray-50 px-2 py-0.5 text-xs text-gray-500">
+          ${FILE_ICON}
+          ${escapeHtml(s.title)}
+        </span>`,
     )
     .join('');
   return `<div class="mt-2 flex flex-wrap items-center gap-1"><span class="mr-0.5 text-[10px] font-medium uppercase tracking-wide text-gray-400">Sources</span>${chips}</div>`;
@@ -334,6 +347,42 @@ function renderSessionList() {
   });
 }
 
+function renderScopeToggle() {
+  const scope: ChatCorpusSource = activeSession?.corpus_source ?? 'wiki';
+  const wikiBtn = el('chat-scope-wiki');
+  const rawBtn = el('chat-scope-raw');
+  wikiBtn.classList.toggle('bg-accent', scope === 'wiki');
+  wikiBtn.classList.toggle('text-white', scope === 'wiki');
+  wikiBtn.classList.toggle('text-gray-600', scope !== 'wiki');
+  rawBtn.classList.toggle('bg-accent', scope === 'raw');
+  rawBtn.classList.toggle('text-white', scope === 'raw');
+  rawBtn.classList.toggle('text-gray-600', scope !== 'raw');
+
+  // Resource scoping is wiki-doc-path based -- doesn't apply in raw mode.
+  const resourcesToggle = el('chat-resources-toggle') as HTMLButtonElement;
+  resourcesToggle.disabled = scope === 'raw';
+  resourcesToggle.classList.toggle('opacity-50', scope === 'raw');
+  resourcesToggle.classList.toggle('cursor-not-allowed', scope === 'raw');
+
+  const input = el('chat-input') as HTMLTextAreaElement;
+  input.placeholder =
+    scope === 'raw'
+      ? 'Ask a question about your raw notes, emails, and documents… (Shift+Enter for a new line)'
+      : 'Ask a question about the wiki… (Shift+Enter for a new line)';
+}
+
+async function updateCorpusSource(source: ChatCorpusSource) {
+  if (!activeSession || activeSession.corpus_source === source) return;
+  activeSession = await apiFetch(`/api/chat/sessions/${activeSession.id}`, {
+    method: 'PATCH',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ corpus_source: source }),
+  });
+  renderScopeToggle();
+  renderResourcesPanel();
+  await loadSessions();
+}
+
 function renderResourcesPanel() {
   const scope = activeSession?.resource_scope ?? null;
   const toggle = el('chat-resources-toggle').querySelector('span')!;
@@ -469,6 +518,7 @@ async function selectSession(id: string) {
   renderSessionList();
   renderMessages();
   renderResourcesPanel();
+  renderScopeToggle();
 }
 
 async function createSession() {
@@ -518,7 +568,15 @@ el('chat-title-input').addEventListener('input', () => {
   }, 500);
 });
 
+el('chat-scope-wiki').addEventListener('click', () => {
+  updateCorpusSource('wiki').catch((err) => window.showToast?.(err.message, 'error'));
+});
+el('chat-scope-raw').addEventListener('click', () => {
+  updateCorpusSource('raw').catch((err) => window.showToast?.(err.message, 'error'));
+});
+
 el('chat-resources-toggle').addEventListener('click', () => {
+  if ((el('chat-resources-toggle') as HTMLButtonElement).disabled) return;
   el('chat-mode-panel').classList.add('hidden');
   el('chat-resources-panel').classList.toggle('hidden');
 });
@@ -578,7 +636,7 @@ async function loadStatus() {
     const res = await fetch(`${apiBase}/api/chat/status`);
     const data = await res.json();
     const dotColor = data.llm_available ? 'bg-accent' : 'bg-amber-400';
-    status.innerHTML = `<span class="h-1.5 w-1.5 rounded-full ${dotColor}"></span> ${data.corpus_pages} pages indexed · ${
+    status.innerHTML = `<span class="h-1.5 w-1.5 rounded-full ${dotColor}"></span> ${data.corpus_pages} wiki pages · ${data.raw_source_files} raw files indexed · ${
       data.llm_available ? 'LLM-generated answers' : 'No LLM configured — showing closest matches'
     }`;
   } catch {

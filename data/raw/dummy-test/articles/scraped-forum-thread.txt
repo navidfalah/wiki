@@ -1,0 +1,21 @@
+Forum: HomeLab Sensors — Thread #8821 (scraped badly)
+
+User_Potato99 (2026-05-29):
+anyone tried aurora labs nova thing? beta invite?
+
+User_MeshFan (2026-05-29):
+meshsync interesting. no cloud. my kind of toy.
+
+User_Potato99:
+how long battery tho
+
+User_MeshFan:
+they claim 2yr @ 15min reads. i got ~20mo est in teardown blog somewhere
+
+User_Random:
+sensenode better waterproof ip67
+
+User_MeshFan:
+yeah but subscription ugh
+
+[page cut off mid-thread — CSS selector wrong???]

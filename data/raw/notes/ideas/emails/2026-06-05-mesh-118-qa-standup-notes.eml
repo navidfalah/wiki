@@ -1,0 +1,32 @@
+Message-ID: <c4e9f3d2-8a5c-4b0d-9f3e-3c4a8d9e0123@auroralabs.example>
+Subject: QA notes — MESH-118 retest plan for 0.3.9 candidate
+From: Lena Ito <lena.ito@auroralabs.example>
+To: eng-team@auroralabs.example
+Cc: mira.chen@auroralabs.example, jonah.park@auroralabs.example
+Date: Fri, 05 Jun 2026 16:05:00 -0700
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 8bit
+MIME-Version: 1.0
+
+[DUMMY TEST DATA — fictional]
+
+Team,
+
+Draft test plan for validating the 0.3.9 fix on MESH-118 (relay radio sleep
+timer). Flagging now so we can adjust before Jonah's build lands Friday.
+
+Scope:
+- 6 bench units, mesh sizes of 3 / 6 / 9 nodes (9 is over the flash-before
+  warning threshold on purpose, to see how it degrades)
+- Battery drain measured hourly for 48 hours per config
+- Pass bar: drain within 10% of the 0.3.7 baseline (pre-relay-mode) at 6
+  nodes or fewer
+
+Out of scope for this pass: the 12-node stress config from the original
+MESH-102 ticket — that's a separate mesh-capacity workstream, not a battery
+regression check.
+
+Will post results here + attach the drain-rate CSV once the 48-hour window
+closes, probably Monday afternoon.
+
+Lena

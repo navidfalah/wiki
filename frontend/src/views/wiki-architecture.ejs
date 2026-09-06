@@ -1,0 +1,175 @@
+<%- include('partials/head', { title, apiBase, active }) %>
+
+<h1 class="text-2xl font-semibold tracking-tight text-gray-900">Wiki Architecture</h1>
+<p class="mt-1 max-w-2xl text-sm text-gray-600">
+  How <code class="rounded bg-gray-100 px-1 py-0.5">data/raw/</code> becomes this browsable, linked wiki --
+  which process reads and writes which folder, end to end. This is a fixed pipeline, not a setting;
+  see <a href="/pipeline-architecture" class="text-generated underline">Pipeline Architecture</a> and
+  <a href="/rag-architecture" class="text-generated underline">RAG Architecture</a> for the parts of it you can tune.
+</p>
+
+<section class="mt-6 rounded-xl border border-gray-200 bg-white shadow-card">
+  <div class="border-b border-gray-100 px-5 py-4">
+    <h2 class="text-base font-semibold text-gray-900">System diagram</h2>
+    <p class="mt-0.5 text-xs text-gray-500">Raw files in, a compiled and cross-linked wiki out.</p>
+  </div>
+
+  <div class="flex flex-col items-center gap-2 overflow-x-auto p-6">
+    <div class="rounded-lg border border-gray-300 bg-gray-50 px-4 py-2 text-center">
+      <span class="block text-sm font-medium text-gray-900">data/raw/</span>
+      <span class="block text-[11px] text-gray-500">text, .eml, images, PDF/CSV/JSON/DOCX/…</span>
+    </div>
+    <span class="text-gray-400">&darr;</span>
+
+    <div class="flex items-center gap-3">
+      <div class="rounded-lg border border-dashed border-gray-300 bg-white px-3 py-1.5 text-center">
+        <span class="block text-xs font-medium text-gray-700">email_ingest.py</span>
+        <span class="block text-[10px] text-gray-500">.eml &rarr; chunk</span>
+      </div>
+      <span class="text-[10px] text-gray-400">optional, non-text sources only</span>
+      <div class="rounded-lg border border-dashed border-gray-300 bg-white px-3 py-1.5 text-center">
+        <span class="block text-xs font-medium text-gray-700">media_ingest.py</span>
+        <span class="block text-[10px] text-gray-500">image/file &rarr; chunk</span>
+      </div>
+    </div>
+    <span class="text-gray-400">&darr;</span>
+
+    <div class="w-full max-w-3xl rounded-lg border border-gray-200 bg-gray-50 px-4 py-3">
+      <p class="mb-2 text-center text-[11px] font-semibold uppercase tracking-wide text-gray-500">Python compiler -- compiler/</p>
+      <div class="flex flex-wrap items-center justify-center gap-1.5">
+        <span class="rounded-md border border-gray-300 bg-white px-2.5 py-1 text-xs font-medium text-gray-800">1. Read</span>
+        <span class="text-gray-400">&rarr;</span>
+        <span class="rounded-md border border-gray-300 bg-white px-2.5 py-1 text-xs font-medium text-gray-800">2. Extract</span>
+        <span class="text-gray-400">&rarr;</span>
+        <span class="rounded-md border border-gray-300 bg-white px-2.5 py-1 text-xs font-medium text-gray-800">3. Synthesize</span>
+        <span class="text-gray-400">&rarr;</span>
+        <span class="rounded-md border border-gray-300 bg-white px-2.5 py-1 text-xs font-medium text-gray-800">4. Index</span>
+        <span class="text-gray-400">&rarr;</span>
+        <span class="rounded-md border border-gray-300 bg-white px-2.5 py-1 text-xs font-medium text-gray-800">5. Cross-link</span>
+      </div>
+      <p class="mt-2 text-center text-[11px] text-gray-500">
+        Writes <code class="rounded bg-white px-1 py-0.5">data/state.json</code> (step 2) and drafts to
+        <code class="rounded bg-white px-1 py-0.5">compiler/temp_output/</code> (step 3); trust is resolved alongside synthesis.
+      </p>
+    </div>
+    <span class="text-gray-400">&darr;</span>
+
+    <div class="rounded-lg border border-gray-300 bg-gray-50 px-4 py-2 text-center">
+      <span class="block text-sm font-medium text-gray-900">wiki-app/docs/</span>
+      <span class="block text-[11px] text-gray-500">linked markdown + index.md (Map of Content)</span>
+    </div>
+    <span class="text-gray-400">&darr;</span>
+
+    <div class="flex flex-wrap items-start justify-center gap-4">
+      <div class="rounded-lg border border-gray-300 bg-white px-4 py-2.5 text-center">
+        <span class="block text-sm font-medium text-gray-900">Backend -- port 8000</span>
+        <span class="block text-[11px] text-gray-500">Express+TS. Reads/writes data/, wiki-app/docs/.</span>
+        <span class="block text-[11px] text-gray-500">Spawns python3 main.py (SSE build) and cli.py (chat, email).</span>
+      </div>
+      <div class="rounded-lg border border-gray-300 bg-white px-4 py-2.5 text-center">
+        <span class="block text-sm font-medium text-gray-900">Frontend -- port 3000</span>
+        <span class="block text-[11px] text-gray-500">Express+TS+EJS, server-rendered, no client framework.</span>
+        <span class="block text-[11px] text-gray-500">/wiki/* pages, plus /dashboard, /chat, /emails, /resources, /graph, /analytics…</span>
+      </div>
+    </div>
+  </div>
+
+  <p class="border-t border-gray-100 px-5 py-3 text-xs text-gray-500">
+    Non-text sources (.eml, images, PDF/CSV/JSON/DOCX/XLSX/PPTX/ZIP) are turned into ordinary text chunks by the
+    ingestors <em>before</em> step 1 ever sees them, so everything from step 1 onward is unchanged either way.
+  </p>
+</section>
+
+<div class="mt-6 grid gap-6 lg:grid-cols-2">
+  <section class="rounded-xl border border-gray-200 bg-white shadow-card">
+    <div class="border-b border-gray-100 px-5 py-4">
+      <h2 class="text-base font-semibold text-gray-900">Layers</h2>
+      <p class="mt-0.5 text-xs text-gray-500">Who owns each folder, and whether an agent may write to it.</p>
+    </div>
+    <div class="overflow-x-auto">
+      <table class="w-full text-left text-xs">
+        <thead>
+          <tr class="border-b border-gray-100 text-[11px] uppercase tracking-wide text-gray-500">
+            <th class="px-5 py-2 font-medium">Layer</th>
+            <th class="px-3 py-2 font-medium">Path</th>
+            <th class="px-3 py-2 font-medium">Owner</th>
+            <th class="px-3 py-2 font-medium">Mutable by agents?</th>
+          </tr>
+        </thead>
+        <tbody class="divide-y divide-gray-100 text-gray-700">
+          <tr><td class="px-5 py-2">Raw sources</td><td class="px-3 py-2"><code class="rounded bg-gray-100 px-1 py-0.5">data/raw/</code></td><td class="px-3 py-2">Human</td><td class="px-3 py-2">Read-only unless ingesting</td></tr>
+          <tr><td class="px-5 py-2">Compiler state</td><td class="px-3 py-2"><code class="rounded bg-gray-100 px-1 py-0.5">data/state.json</code></td><td class="px-3 py-2">Compiler</td><td class="px-3 py-2">No (auto-written)</td></tr>
+          <tr><td class="px-5 py-2">Link overrides</td><td class="px-3 py-2"><code class="rounded bg-gray-100 px-1 py-0.5">data/link_overrides.json</code></td><td class="px-3 py-2">Human / API</td><td class="px-3 py-2">Yes (manual rules)</td></tr>
+          <tr><td class="px-5 py-2">Source trust rules</td><td class="px-3 py-2"><code class="rounded bg-gray-100 px-1 py-0.5">data/source_trust.json</code></td><td class="px-3 py-2">Human</td><td class="px-3 py-2">Yes (manual rules)</td></tr>
+          <tr><td class="px-5 py-2">LLM cache</td><td class="px-3 py-2"><code class="rounded bg-gray-100 px-1 py-0.5">data/.llm-cache.sqlite</code></td><td class="px-3 py-2">Compiler</td><td class="px-3 py-2">No</td></tr>
+          <tr><td class="px-5 py-2">Draft output</td><td class="px-3 py-2"><code class="rounded bg-gray-100 px-1 py-0.5">compiler/temp_output/</code></td><td class="px-3 py-2">Compiler</td><td class="px-3 py-2">No</td></tr>
+          <tr><td class="px-5 py-2">Wiki markdown</td><td class="px-3 py-2"><code class="rounded bg-gray-100 px-1 py-0.5">wiki-app/docs/</code></td><td class="px-3 py-2">Compiler (+ optional human refine)</td><td class="px-3 py-2">Regenerated</td></tr>
+          <tr><td class="px-5 py-2">Ingested media</td><td class="px-3 py-2"><code class="rounded bg-gray-100 px-1 py-0.5">wiki-app/static/media/</code></td><td class="px-3 py-2">Compiler</td><td class="px-3 py-2">No (content-hash deduped)</td></tr>
+          <tr><td class="px-5 py-2">Agent schema</td><td class="px-3 py-2"><code class="rounded bg-gray-100 px-1 py-0.5">AGENTS.md</code></td><td class="px-3 py-2">Human + LLM</td><td class="px-3 py-2">Co-evolved</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <section class="rounded-xl border border-gray-200 bg-white shadow-card">
+    <div class="border-b border-gray-100 px-5 py-4">
+      <h2 class="text-base font-semibold text-gray-900">Tech stack</h2>
+      <p class="mt-0.5 text-xs text-gray-500">No client framework anywhere -- server-rendered pages with hand-written TS for interactivity.</p>
+    </div>
+    <div class="overflow-x-auto">
+      <table class="w-full text-left text-xs">
+        <thead>
+          <tr class="border-b border-gray-100 text-[11px] uppercase tracking-wide text-gray-500">
+            <th class="px-5 py-2 font-medium">Component</th>
+            <th class="px-3 py-2 font-medium">Technology</th>
+          </tr>
+        </thead>
+        <tbody class="divide-y divide-gray-100 text-gray-700">
+          <tr><td class="px-5 py-2">Compiler orchestration</td><td class="px-3 py-2">Python 3.12+, <code class="rounded bg-gray-100 px-1 py-0.5">rich</code></td></tr>
+          <tr><td class="px-5 py-2">LLM</td><td class="px-3 py-2">OpenAI SDK, SQLite response cache</td></tr>
+          <tr><td class="px-5 py-2">Backend API</td><td class="px-3 py-2">Express + TypeScript (<code class="rounded bg-gray-100 px-1 py-0.5">backend/</code>)</td></tr>
+          <tr><td class="px-5 py-2">Frontend</td><td class="px-3 py-2">Express + TypeScript + EJS (<code class="rounded bg-gray-100 px-1 py-0.5">frontend/</code>)</td></tr>
+          <tr><td class="px-5 py-2">Styling</td><td class="px-3 py-2">Tailwind CSS 3 + typography plugin</td></tr>
+          <tr><td class="px-5 py-2">Client bundling</td><td class="px-3 py-2">esbuild, one hand-written bundle per page</td></tr>
+          <tr><td class="px-5 py-2">Live builds</td><td class="px-3 py-2">Server-Sent Events (SSE)</td></tr>
+          <tr><td class="px-5 py-2">CI</td><td class="px-3 py-2">GitHub Actions &rarr; GitHub Pages</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+</div>
+
+<div class="mt-6 grid gap-6 lg:grid-cols-[minmax(0,1.3fr)_minmax(0,1fr)]">
+  <section class="rounded-xl border border-gray-200 bg-white shadow-card">
+    <div class="border-b border-gray-100 px-5 py-4">
+      <h2 class="text-base font-semibold text-gray-900">Data flow, one file at a time</h2>
+      <p class="mt-0.5 text-xs text-gray-500">What happens between a file landing in <code>data/raw/</code> and it showing up at <code>/wiki</code>.</p>
+    </div>
+    <ol class="flex flex-col divide-y divide-gray-100 text-sm text-gray-700">
+      <li class="px-5 py-3"><span class="mr-2 font-mono text-xs text-gray-400">1</span>Human drops a file &rarr; <code class="rounded bg-gray-100 px-1 py-0.5 text-xs">data/raw/notes/my-meeting.md</code></li>
+      <li class="px-5 py-3"><span class="mr-2 font-mono text-xs text-gray-400">2</span>Compiler reads it &rarr; splits into ~2000-char chunks</li>
+      <li class="px-5 py-3"><span class="mr-2 font-mono text-xs text-gray-400">3</span>Extraction &rarr; topics, entities, concepts</li>
+      <li class="px-5 py-3"><span class="mr-2 font-mono text-xs text-gray-400">4</span>State saved &rarr; <code class="rounded bg-gray-100 px-1 py-0.5 text-xs">data/state.json</code> (MD5 + extractions)</li>
+      <li class="px-5 py-3"><span class="mr-2 font-mono text-xs text-gray-400">5</span>Synthesis &rarr; draft page in <code class="rounded bg-gray-100 px-1 py-0.5 text-xs">compiler/temp_output/</code></li>
+      <li class="px-5 py-3"><span class="mr-2 font-mono text-xs text-gray-400">6</span>Indexing &rarr; <code class="rounded bg-gray-100 px-1 py-0.5 text-xs">index.json</code> maps topics to files</li>
+      <li class="px-5 py-3"><span class="mr-2 font-mono text-xs text-gray-400">7</span>Cross-linking &rarr; final page in <code class="rounded bg-gray-100 px-1 py-0.5 text-xs">wiki-app/docs/</code>, with links injected</li>
+      <li class="px-5 py-3"><span class="mr-2 font-mono text-xs text-gray-400">8</span>Map of Content rebuilt &rarr; <code class="rounded bg-gray-100 px-1 py-0.5 text-xs">wiki-app/docs/index.md</code></li>
+      <li class="px-5 py-3"><span class="mr-2 font-mono text-xs text-gray-400">9</span>Frontend serves it &rarr; <a href="/wiki" class="text-generated underline">/wiki/my-meeting</a></li>
+    </ol>
+  </section>
+
+  <section class="rounded-xl border border-gray-200 bg-white shadow-card">
+    <div class="border-b border-gray-100 px-5 py-4">
+      <h2 class="text-base font-semibold text-gray-900">Design principles</h2>
+    </div>
+    <ul class="flex flex-col divide-y divide-gray-100 text-sm text-gray-700">
+      <li class="px-5 py-3"><span class="font-medium text-gray-900">Raw files are truth</span> -- the wiki is a derived, lossy-but-useful view.</li>
+      <li class="px-5 py-3"><span class="font-medium text-gray-900">Linking is a separate pass</span> -- synthesis writes content; the linker connects it afterward.</li>
+      <li class="px-5 py-3"><span class="font-medium text-gray-900">Idempotent-ish compiles</span> -- MD5 state lets unchanged files skip re-extraction.</li>
+      <li class="px-5 py-3"><span class="font-medium text-gray-900">LLM-only, cached</span> -- no offline fallback; a SQLite response cache keeps repeat compiles cheap.</li>
+      <li class="px-5 py-3"><span class="font-medium text-gray-900">Sample domain is disposable</span> -- clear <code class="rounded bg-gray-100 px-1 py-0.5 text-xs">data/raw/</code>, add your own, rebuild with <code class="rounded bg-gray-100 px-1 py-0.5 text-xs">--force</code>.</li>
+    </ul>
+  </section>
+</div>
+
+<%- include('partials/foot', { clientScript }) %>

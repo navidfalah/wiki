@@ -8,6 +8,7 @@ import json
 import os
 import re
 import sqlite3
+import sys
 import time
 from datetime import UTC, datetime
 from pathlib import Path
@@ -110,7 +111,18 @@ def make_audio_cache_key(audio_bytes: bytes, model: str) -> str:
 
 
 class ResponseCache:
-    """SQLite-backed cache for LLM responses."""
+    """SQLite-backed cache for LLM responses.
+
+    Synthesis (the pipeline's heaviest LLM user, see main.py's
+    step_synthesize()) is what put the most load on this cache, and a build
+    killed mid-write (e.g. the dashboard's "Stop build" button, which sends
+    SIGTERM) could leave the file in a corrupted state -- sqlite then raises
+    "database disk image is malformed" on the *next* run, at whatever step
+    happens to touch the cache first. A cache is disposable: get()/set() both
+    catch that corruption, quarantine the bad file, and start a fresh cache
+    rather than taking the whole pipeline run down for a problem that has
+    nothing to do with the step that happened to trip over it.
+    """
 
     def __init__(self, db_path: Path | None = None) -> None:
         self.db_path = db_path or DEFAULT_CACHE_PATH
@@ -118,35 +130,85 @@ class ResponseCache:
         self._init_db()
 
     def _connect(self) -> sqlite3.Connection:
-        conn = sqlite3.connect(self.db_path)
+        conn = sqlite3.connect(self.db_path, timeout=30)
         conn.row_factory = sqlite3.Row
+        # WAL + a busy timeout make an interrupted write far less likely to
+        # corrupt the file in the first place (the old rollback-journal mode
+        # has no protection if the process dies between journal removal and
+        # the final page write).
+        conn.execute("PRAGMA journal_mode=WAL")
+        conn.execute("PRAGMA busy_timeout=30000")
         return conn
 
-    def _init_db(self) -> None:
-        with self._connect() as conn:
-            conn.execute(
-                """
-                CREATE TABLE IF NOT EXISTS llm_cache (
-                    cache_key TEXT PRIMARY KEY,
-                    system_prompt TEXT NOT NULL,
-                    prompt TEXT NOT NULL,
-                    model TEXT NOT NULL,
-                    response TEXT NOT NULL,
-                    created_at TEXT NOT NULL
-                )
-                """
+    def _create_table(self, conn: sqlite3.Connection) -> None:
+        conn.execute(
+            """
+            CREATE TABLE IF NOT EXISTS llm_cache (
+                cache_key TEXT PRIMARY KEY,
+                system_prompt TEXT NOT NULL,
+                prompt TEXT NOT NULL,
+                model TEXT NOT NULL,
+                response TEXT NOT NULL,
+                created_at TEXT NOT NULL
             )
-            conn.commit()
+            """
+        )
+        conn.commit()
+
+    def _quarantine_and_reset(self, exc: Exception) -> None:
+        print(
+            f"[llm cache] {self.db_path} is corrupted ({exc}); quarantining it and starting a fresh cache",
+            file=sys.stderr,
+        )
+        if self.db_path.exists():
+            quarantined = self.db_path.with_name(f"{self.db_path.name}.corrupt-{int(time.time())}")
+            try:
+                self.db_path.rename(quarantined)
+            except OSError:
+                self.db_path.unlink(missing_ok=True)
+        for suffix in ("-wal", "-shm", "-journal"):
+            self.db_path.with_name(self.db_path.name + suffix).unlink(missing_ok=True)
+        with self._connect() as conn:
+            self._create_table(conn)
+
+    def _init_db(self) -> None:
+        try:
+            with self._connect() as conn:
+                self._create_table(conn)
+        except sqlite3.DatabaseError as exc:
+            self._quarantine_and_reset(exc)
 
     def get(self, cache_key: str) -> str | None:
-        with self._connect() as conn:
-            row = conn.execute(
-                "SELECT response FROM llm_cache WHERE cache_key = ?",
-                (cache_key,),
-            ).fetchone()
-        return row["response"] if row else None
+        try:
+            with self._connect() as conn:
+                row = conn.execute(
+                    "SELECT response FROM llm_cache WHERE cache_key = ?",
+                    (cache_key,),
+                ).fetchone()
+            return row["response"] if row else None
+        except sqlite3.DatabaseError as exc:
+            self._quarantine_and_reset(exc)
+            return None
 
     def set(
+        self,
+        cache_key: str,
+        *,
+        system_prompt: str,
+        prompt: str,
+        model: str,
+        response: str,
+    ) -> None:
+        try:
+            self._write(cache_key, system_prompt=system_prompt, prompt=prompt, model=model, response=response)
+        except sqlite3.DatabaseError as exc:
+            self._quarantine_and_reset(exc)
+            try:
+                self._write(cache_key, system_prompt=system_prompt, prompt=prompt, model=model, response=response)
+            except sqlite3.DatabaseError:
+                pass  # cache is best-effort -- don't let a second failure break the caller
+
+    def _write(
         self,
         cache_key: str,
         *,

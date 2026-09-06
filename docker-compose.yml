@@ -93,13 +93,12 @@ services:
     profiles: ["local-llm"]
     environment:
       # MODEL_REPO/MODEL_FILE must name an actual GGUF file on Hugging
-      # Face — the defaults below are a placeholder naming pattern, not a
-      # verified repo (see documentation/33-docker-and-local-llm.md's
-      # honesty note on this). Override in .env once you've confirmed the
-      # real repo/filename for the Gemma build you want.
-      MODEL_REPO: ${LOCAL_LLM_MODEL_REPO:-google/gemma-4-it-GGUF}
-      MODEL_FILE: ${LOCAL_LLM_MODEL_FILE:-gemma-4-it-Q4_K_M.gguf}
-      MODEL_ALIAS: ${LOCAL_LLM_MODEL_ALIAS:-gemma-4}
+      # Face. Defaults to bartowski/gemma-2-2b-it-GGUF's Q5_K_M quant
+      # (~1.9GB, real repo — verified against the Hugging Face listing).
+      # Override in .env to swap in a different Gemma-family GGUF build.
+      MODEL_REPO: ${LOCAL_LLM_MODEL_REPO:-bartowski/gemma-2-2b-it-GGUF}
+      MODEL_FILE: ${LOCAL_LLM_MODEL_FILE:-gemma-2-2b-it-Q5_K_M.gguf}
+      MODEL_ALIAS: ${LOCAL_LLM_MODEL_ALIAS:-gemma-2-2b-it}
       HF_TOKEN: ${HF_TOKEN:-}
       LOCAL_LLM_CONTEXT: ${LOCAL_LLM_CONTEXT:-4096}
       LOCAL_LLM_CHAT_FORMAT: ${LOCAL_LLM_CHAT_FORMAT:-gemma}

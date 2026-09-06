@@ -19,6 +19,7 @@ const pages: { path: string; view: string; title: string; active: string; client
   { path: '/graph', view: 'graph', title: 'Topic Graph', active: 'Graph', clientScript: 'graph' },
   { path: '/entities', view: 'entities', title: 'Entities', active: 'Entities', clientScript: 'entities' },
   { path: '/analytics', view: 'analytics', title: 'Analytics', active: 'Analytics', clientScript: 'analytics' },
+  { path: '/usage', view: 'usage', title: 'Token Usage & Cost', active: 'Usage', clientScript: 'usage' },
   { path: '/attention', view: 'attention', title: 'Attention', active: 'Attention', clientScript: 'attention' },
   { path: '/review-queue', view: 'review-queue', title: 'Review Queue', active: 'Review Queue', clientScript: 'review-queue' },
   { path: '/review', view: 'review', title: 'Review Queue', active: 'Review', clientScript: 'review' },

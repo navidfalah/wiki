@@ -29,10 +29,10 @@ else
   echo "[local-llm] ${MODEL_FILE} already present in the model volume — skipping download."
 fi
 
-echo "[local-llm] starting llama.cpp server: model=${MODEL_FILE} alias=${MODEL_ALIAS:-gemma-4} ctx=${LOCAL_LLM_CONTEXT:-4096}"
+echo "[local-llm] starting llama.cpp server: model=${MODEL_FILE} alias=${MODEL_ALIAS:-gemma-2-2b-it} ctx=${LOCAL_LLM_CONTEXT:-4096}"
 exec python -m llama_cpp.server \
   --model "${MODEL_PATH}" \
-  --model_alias "${MODEL_ALIAS:-gemma-4}" \
+  --model_alias "${MODEL_ALIAS:-gemma-2-2b-it}" \
   --host 0.0.0.0 \
   --port 8080 \
   --n_ctx "${LOCAL_LLM_CONTEXT:-4096}" \

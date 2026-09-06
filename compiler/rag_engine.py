@@ -45,10 +45,11 @@ from typing import Any
 import hybrid_retrieval
 import rag_architectures
 import rag_settings
+import synthesizer
 from doc_utils import parse_frontmatter, strip_frontmatter
 from faithfulness_heuristic import score_text_against_sources
 from llm_client import LLMClient
-from models import OUTPUT_DIR, PROJECT_ROOT
+from models import OUTPUT_DIR, PROJECT_ROOT, RAW_DIR
 from rag_types import Passage, ScoredPassage, index_corpus, passage_id, tokenize
 from text_chunking import split_text_into_chunks
 from vector_store import VectorRecord, VectorStore
@@ -56,7 +57,16 @@ from vector_store import VectorRecord, VectorStore
 # Re-exported so existing call sites/tests (`rag_engine.Passage`,
 # `rag_engine.ScoredPassage`) keep working now that the types live in
 # rag_types.py -- see that module's docstring for why they moved.
-__all__ = ["Passage", "ScoredPassage", "build_corpus", "retrieve", "retrieve_hybrid", "answer_question", "answer_question_stream"]
+__all__ = [
+    "Passage",
+    "ScoredPassage",
+    "build_corpus",
+    "build_raw_corpus",
+    "retrieve",
+    "retrieve_hybrid",
+    "answer_question",
+    "answer_question_stream",
+]
 
 # Backward-compatible alias: this was a module-private function here before
 # passage_id() moved to rag_types.py; kept so existing call sites/tests
@@ -71,14 +81,43 @@ _PASSAGE_MAX_CHARS = 900
 # calls, so repeated questions don't re-embed the whole corpus each time.
 VECTOR_STORE_FILE = PROJECT_ROOT / "data" / "vector_store.sqlite"
 
-CHAT_SYSTEM_PROMPT = (
-    "You are the knowledge assistant for a personal wiki compiled from the "
-    "user's own notes, emails, and documents. Answer the question using ONLY "
-    "the numbered wiki excerpts given as context — do not use outside "
-    "knowledge. After any claim drawn from an excerpt, cite it like [1]. If "
-    "the excerpts don't contain the answer, say so plainly instead of "
-    "guessing."
-)
+# Chat can search either the compiled wiki (default) or the raw, uncompiled
+# inputs it was built from -- see build_raw_corpus() below. Every prompt/
+# message that names the corpus takes a `source` of "wiki" or "raw" and
+# picks its wording from these two labels so the model (and the user-facing
+# fallback text) never claims to be looking at the wiki while actually
+# searching raw notes, or vice versa.
+_CORPUS_LABELS = {"wiki": "wiki", "raw": "raw sources"}
+
+
+def _corpus_label(source: str) -> str:
+    return _CORPUS_LABELS.get(source, _CORPUS_LABELS["wiki"])
+
+
+def _system_prompt(source: str) -> str:
+    if source == "raw":
+        return (
+            "You are the knowledge assistant for a personal wiki's raw, uncompiled "
+            "inputs -- the user's own notes, emails, transcripts, and documents "
+            "before they were synthesized into wiki pages. Answer the question "
+            "using ONLY the numbered source excerpts given as context — do not "
+            "use outside knowledge. After any claim drawn from an excerpt, cite "
+            "it like [1]. If the excerpts don't contain the answer, say so "
+            "plainly instead of guessing."
+        )
+    return (
+        "You are the knowledge assistant for a personal wiki compiled from the "
+        "user's own notes, emails, and documents. Answer the question using ONLY "
+        "the numbered wiki excerpts given as context — do not use outside "
+        "knowledge. After any claim drawn from an excerpt, cite it like [1]. If "
+        "the excerpts don't contain the answer, say so plainly instead of "
+        "guessing."
+    )
+
+
+# Backward-compatible alias for existing call sites/tests that reference the
+# wiki-mode prompt directly.
+CHAT_SYSTEM_PROMPT = _system_prompt("wiki")
 
 
 def _split_into_passages(doc_path: str, title: str, body: str) -> list[Passage]:
@@ -123,6 +162,48 @@ def build_corpus(docs_dir: Path | None = None) -> list[Passage]:
         body = strip_frontmatter(raw)
         passages.extend(_split_into_passages(rel, title, body))
 
+    return passages
+
+
+def _split_raw_chunk_into_passages(chunk: synthesizer.RawChunk) -> list[Passage]:
+    """Split one raw-file chunk into size-bounded passages, mirroring
+    _split_into_passages() for compiled pages. doc_path is the file's path
+    relative to data/raw/ (not a wiki .md path) so citations point back at
+    the actual source file."""
+    title = Path(chunk.source_path).name
+    heading = f"Part {chunk.chunk_index + 1}"
+    passages: list[Passage] = []
+    for piece in split_text_into_chunks(chunk.text, max_chars=_PASSAGE_MAX_CHARS):
+        piece = piece.strip()
+        if piece:
+            passages.append(Passage(chunk.source_path, title, heading, piece, tokenize(piece)))
+    return passages
+
+
+def build_raw_corpus(raw_dir: Path | None = None) -> list[Passage]:
+    """Load every raw source file under data/raw/ into retrievable passages
+    -- the "sources/inputs" counterpart to build_corpus()'s compiled wiki
+    pages, backing the chat's raw-sources mode.
+
+    Deliberately never calls an LLM: it reads chunks one file at a time via
+    synthesizer.read_chunks_for_path(llm=None) rather than
+    synthesizer.read_raw_chunks(), so an unconfigured/expensive captioning
+    call can't fire on every chat message. Images (the one raw file type
+    synthesizer always requires an LLM for) degrade to a short placeholder
+    passage instead of blocking the whole corpus build, and any other file
+    that fails to read/parse is skipped the same way -- same never-hard-
+    blocked spirit as the rest of this module.
+    """
+    root = raw_dir or RAW_DIR
+    passages: list[Passage] = []
+    for path in synthesizer.discover_raw_source_files(root):
+        try:
+            chunks = synthesizer.read_chunks_for_path(path, root, None)
+        except Exception:
+            rel = str(path.relative_to(root)).replace("\\", "/")
+            chunks = [synthesizer.RawChunk(source_path=rel, chunk_index=0, text=f"[{path.name} — preview unavailable without an LLM configured]")]
+        for chunk in chunks:
+            passages.extend(_split_raw_chunk_into_passages(chunk))
     return passages
 
 
@@ -277,8 +358,8 @@ def _deduped_sources(scored: list[ScoredPassage]) -> list[dict[str, Any]]:
     return sources
 
 
-def _extractive_answer(scored: list[ScoredPassage]) -> str:
-    lines = ["No LLM is configured, so here are the closest matches from the wiki:"]
+def _extractive_answer(scored: list[ScoredPassage], source: str = "wiki") -> str:
+    lines = [f"No LLM is configured, so here are the closest matches from the {_corpus_label(source)}:"]
     for item in scored[:3]:
         passage = item.passage
         snippet = passage.text if len(passage.text) <= 400 else f"{passage.text[:400]}…"
@@ -310,13 +391,14 @@ def _faithfulness_signal(mode: str, answer: str, scored: list[ScoredPassage]) ->
     }
 
 
-def _build_prompt(query: str, scored: list[ScoredPassage], history: list[dict[str, str]] | None) -> str:
+def _build_prompt(query: str, scored: list[ScoredPassage], history: list[dict[str, str]] | None, source: str = "wiki") -> str:
     context = _format_context(scored)
     history_block = ""
     if history:
         turns = "\n".join(f"{turn.get('role', 'user')}: {turn.get('content', '')}" for turn in history[-6:])
         history_block = f"Conversation so far:\n{turns}\n\n"
-    return f"{history_block}Wiki excerpts:\n{context}\n\nQuestion: {query}"
+    label = "Wiki excerpts" if source != "raw" else "Source excerpts"
+    return f"{history_block}{label}:\n{context}\n\nQuestion: {query}"
 
 
 def _retrieve(
@@ -326,6 +408,7 @@ def _retrieve(
     llm: LLMClient | None,
     top_k: int | None,
     doc_scope: list[str] | None,
+    source: str = "wiki",
 ) -> dict[str, Any]:
     """Shared corpus-build + retrieve + dedupe-sources step used by both
     answer_question() and answer_question_stream(). Returns either
@@ -335,28 +418,39 @@ def _retrieve(
     top_k=None (the default for every caller except the retrieval eval
     scripts) picks up the RAG Architecture page's saved top_k instead of a
     hardcoded value -- see rag_settings.py.
+
+    source picks which corpus is searched: "wiki" (default) is
+    build_corpus()'s compiled wiki pages; "raw" is build_raw_corpus()'s
+    uncompiled data/raw/ inputs -- the chat's two modes. docs_dir only
+    applies to "wiki" (it's meaningless for the raw corpus, which is always
+    RAW_DIR).
     """
     query = (query or "").strip()
-    docs_dir = docs_dir or OUTPUT_DIR
-    corpus = _filter_corpus(build_corpus(docs_dir), doc_scope)
+    is_raw = source == "raw"
+    if is_raw:
+        corpus = _filter_corpus(build_raw_corpus(), doc_scope)
+    else:
+        docs_dir = docs_dir or OUTPUT_DIR
+        corpus = _filter_corpus(build_corpus(docs_dir), doc_scope)
     settings = rag_settings.load_rag_settings()
 
     if not query:
-        return {"early": {"answer": "Ask a question about anything in the wiki.", "sources": [], "mode": "empty"}}
+        return {"early": {"answer": f"Ask a question about anything in the {_corpus_label(source)}.", "sources": [], "mode": "empty"}}
 
     if not corpus:
-        return {
-            "early": {
-                "answer": (
-                    "The wiki hasn't been compiled yet, so there's nothing to search. "
-                    "Run the compiler pipeline first, then ask again."
-                ),
-                "sources": [],
-                "mode": "empty",
-            }
-        }
+        empty_answer = (
+            "No raw source files were found under data/raw/, so there's nothing to search. "
+            "Add some files first, then ask again."
+            if is_raw
+            else "The wiki hasn't been compiled yet, so there's nothing to search. Run the compiler pipeline first, then ask again."
+        )
+        return {"early": {"answer": empty_answer, "sources": [], "mode": "empty"}}
 
-    client = llm or LLMClient()
+    # "chat" is its own LLM purpose (backend/src/lib/llmSettings.ts), kept
+    # independent of the pipeline's "default" so the wiki UI's Chat page can
+    # point retrieval + answer generation at the local model or a different
+    # cloud API without touching pipeline runs.
+    client = llm or LLMClient.for_purpose("chat")
     effective_top_k = top_k if top_k is not None else settings.top_k
     bm25_config = hybrid_retrieval.BM25Config(k1=settings.bm25_k1, b=settings.bm25_b)
 
@@ -386,16 +480,13 @@ def _retrieve(
             bm25_config=bm25_config,
         )
     if not scored:
-        return {
-            "early": {
-                "answer": (
-                    "I couldn't find anything in the wiki about that. Try rephrasing, or make "
-                    "sure the relevant source has been compiled."
-                ),
-                "sources": [],
-                "mode": "no_match",
-            }
-        }
+        no_match_answer = (
+            "I couldn't find anything in the raw sources about that. Try rephrasing, or add "
+            "the relevant file under data/raw/."
+            if is_raw
+            else "I couldn't find anything in the wiki about that. Try rephrasing, or make sure the relevant source has been compiled."
+        )
+        return {"early": {"answer": no_match_answer, "sources": [], "mode": "no_match"}}
 
     return {"scored": scored, "sources": _deduped_sources(scored), "client": client, "settings": settings}
 
@@ -408,11 +499,15 @@ def answer_question(
     llm: LLMClient | None = None,
     top_k: int | None = None,
     doc_scope: list[str] | None = None,
+    source: str = "wiki",
 ) -> dict[str, Any]:
-    """Answer a question over the compiled wiki.
+    """Answer a question over the compiled wiki, or (source="raw") the raw,
+    uncompiled data/raw/ inputs it was built from -- see build_raw_corpus().
 
     doc_scope, when given, restricts retrieval to passages from those
-    doc_paths (e.g. a chat session scoped to a subset of resources).
+    doc_paths (e.g. a chat session scoped to a subset of resources). Only
+    meaningful for source="wiki" -- resource scoping is wiki-doc-path based,
+    so callers should pass doc_scope=None for the raw-sources mode.
 
     Returns {"answer", "sources", "mode", "faithfulness"} where mode is one of:
     - "empty": nothing has been compiled yet
@@ -425,7 +520,7 @@ def answer_question(
     "faithfulness" is omitted for "empty"/"no_match" (no real answer to
     score); see _faithfulness_signal() for its shape otherwise.
     """
-    retrieval = _retrieve(query, docs_dir=docs_dir, llm=llm, top_k=top_k, doc_scope=doc_scope)
+    retrieval = _retrieve(query, docs_dir=docs_dir, llm=llm, top_k=top_k, doc_scope=doc_scope, source=source)
     if "early" in retrieval:
         return retrieval["early"]
 
@@ -433,9 +528,9 @@ def answer_question(
     force_extractive = retrieval["settings"].answer_mode == "extractive"
 
     if client.available and not force_extractive:
-        prompt = _build_prompt(query.strip(), scored, history)
+        prompt = _build_prompt(query.strip(), scored, history, source)
         try:
-            answer = client.generate_response(prompt, CHAT_SYSTEM_PROMPT, temperature=0.1).strip()
+            answer = client.generate_response(prompt, _system_prompt(source), temperature=0.1).strip()
             return {
                 "answer": answer,
                 "sources": sources,
@@ -445,7 +540,7 @@ def answer_question(
         except RuntimeError:
             pass  # fall through to the extractive answer below
 
-    extractive_answer = _extractive_answer(scored)
+    extractive_answer = _extractive_answer(scored, source)
     return {
         "answer": extractive_answer,
         "sources": sources,
@@ -462,6 +557,7 @@ def answer_question_stream(
     llm: LLMClient | None = None,
     top_k: int | None = None,
     doc_scope: list[str] | None = None,
+    source: str = "wiki",
 ) -> Iterator[dict[str, Any]]:
     """Streaming counterpart to answer_question(). Yields event dicts:
     {"type": "sources", "sources": [...]} once retrieval finishes, then one
@@ -471,7 +567,7 @@ def answer_question_stream(
     {"type": "done", "mode", "answer", "faithfulness"} — see
     _faithfulness_signal() for that field's shape.
     """
-    retrieval = _retrieve(query, docs_dir=docs_dir, llm=llm, top_k=top_k, doc_scope=doc_scope)
+    retrieval = _retrieve(query, docs_dir=docs_dir, llm=llm, top_k=top_k, doc_scope=doc_scope, source=source)
     if "early" in retrieval:
         early = retrieval["early"]
         yield {"type": "sources", "sources": early["sources"]}
@@ -483,10 +579,10 @@ def answer_question_stream(
     yield {"type": "sources", "sources": sources}
 
     if client.available and not force_extractive:
-        prompt = _build_prompt(query.strip(), scored, history)
+        prompt = _build_prompt(query.strip(), scored, history, source)
         try:
             full_text = ""
-            for delta in client.stream_response(prompt, CHAT_SYSTEM_PROMPT, temperature=0.1):
+            for delta in client.stream_response(prompt, _system_prompt(source), temperature=0.1):
                 full_text += delta
                 yield {"type": "delta", "text": delta}
             full_text = full_text.strip()
@@ -500,7 +596,7 @@ def answer_question_stream(
         except RuntimeError:
             pass  # fall through to the extractive answer below
 
-    extractive = _extractive_answer(scored)
+    extractive = _extractive_answer(scored, source)
     yield {"type": "delta", "text": extractive}
     yield {
         "type": "done",

@@ -285,6 +285,15 @@ def _chunks_for_file(path: Path, raw_dir: Path, llm: LLMClient | None = None) ->
     return []
 
 
+def read_chunks_for_path(path: Path, raw_dir: Path, llm: LLMClient | None = None) -> list[RawChunk]:
+    """Public single-file entry point into the same per-file dispatch
+    read_raw_chunks() uses in bulk. Lets a caller (rag_engine.py's raw-
+    sources chat corpus) iterate discover_raw_source_files() itself and
+    isolate a single file's failure -- e.g. an image with no LLM configured
+    for captioning -- to that file instead of aborting the whole batch."""
+    return _chunks_for_file(path, raw_dir, llm)
+
+
 def _chunk_dicts_from_extractions(extractions: list[ChunkExtraction]) -> list[dict]:
     return [
         {
