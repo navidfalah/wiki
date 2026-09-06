@@ -44,6 +44,11 @@ export interface CompilerBuildOptions {
   useCorrections?: boolean;
   redactPii?: boolean;
   webSearch?: boolean;
+  /** Per-run profile picks for "default" (extraction/indexing/linking) and
+   *  "thinking" (synthesis), overriding the Settings page's standing
+   *  assignments for just this build -- see llmSettings.ts's ProfileOverrides. */
+  defaultProfileId?: string | null;
+  thinkingProfileId?: string | null;
 }
 
 export function streamCompilerBuild(res: Response, options: CompilerBuildOptions): void {
@@ -61,8 +66,18 @@ export function streamCompilerBuild(res: Response, options: CompilerBuildOptions
     'X-Accel-Buffering': 'no',
   });
 
-  const { force, excludeFolders, criticPass, criticSamples, criticRegenerate, useCorrections, redactPii, webSearch } =
-    options;
+  const {
+    force,
+    excludeFolders,
+    criticPass,
+    criticSamples,
+    criticRegenerate,
+    useCorrections,
+    redactPii,
+    webSearch,
+    defaultProfileId,
+    thinkingProfileId,
+  } = options;
   const args = [
     '-u',
     'main.py',
@@ -79,7 +94,14 @@ export function streamCompilerBuild(res: Response, options: CompilerBuildOptions
 
   const child = spawn(PYTHON_BIN, args, {
     cwd: COMPILER_DIR,
-    env: { ...process.env, ...envOverridesForSpawn(), PYTHONUNBUFFERED: '1' },
+    env: {
+      ...process.env,
+      ...envOverridesForSpawn({
+        ...(defaultProfileId ? { default: defaultProfileId } : {}),
+        ...(thinkingProfileId ? { thinking: thinkingProfileId } : {}),
+      }),
+      PYTHONUNBUFFERED: '1',
+    },
   });
   currentChild = child;
 
@@ -133,6 +155,9 @@ export interface ChatStreamInput {
   history: { role: string; content: string }[];
   docScope: string[] | null;
   corpusSource: 'wiki' | 'raw';
+  /** Chat-purpose profile id to use for this call, overriding the Settings
+   *  page's standing "chat" assignment -- see llmSettings.ts's ProfileOverrides. */
+  llmProfileId?: string | null;
 }
 
 export interface ChatFaithfulness {
@@ -163,7 +188,10 @@ export function streamChat(res: Response, input: ChatStreamInput): Promise<ChatS
   return new Promise((resolve, reject) => {
     const child = spawn(PYTHON_BIN, ['cli.py', 'chat-stream'], {
       cwd: COMPILER_DIR,
-      env: { ...process.env, ...envOverridesForSpawn() },
+      env: {
+        ...process.env,
+        ...envOverridesForSpawn(input.llmProfileId ? { chat: input.llmProfileId } : {}),
+      },
     });
 
     let settled = false;

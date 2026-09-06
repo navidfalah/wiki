@@ -118,6 +118,7 @@ interface ChatSessionSummary {
   updated_at: string;
   resource_scope: string[] | null;
   corpus_source: ChatCorpusSource;
+  llm_profile_id: string | null;
   message_count: number;
 }
 
@@ -129,6 +130,18 @@ interface ResourceEntry {
   source: string;
   source_type: string;
   citation_count: number;
+}
+
+interface LlmProfile {
+  id: string;
+  label: string;
+  provider: string;
+  model: string;
+}
+
+interface LlmSettings {
+  profiles: LlmProfile[];
+  assignments: Record<string, string>;
 }
 
 type Architecture = 'hybrid' | 'naive' | 'hyde' | 'fusion' | 'graph' | 'corrective';
@@ -164,6 +177,7 @@ let sessions: ChatSessionSummary[] = [];
 let activeSession: ChatSession | null = null;
 let resourcesCache: ResourceEntry[] = [];
 let ragSettings: RagSettings | null = null;
+let llmSettings: LlmSettings | null = null;
 let streamingSource: EventSource | null = null;
 let sessionSearch = '';
 let finalizeStreamingBubble: (() => void) | null = null;
@@ -472,6 +486,65 @@ async function saveRagMode(patch: Partial<Pick<RagSettings, 'retrieval_mode' | '
   renderModePanel();
 }
 
+function renderModelPanel() {
+  const label = el('chat-model-label');
+  const profiles = llmSettings?.profiles ?? [];
+  const selectedId = activeSession?.llm_profile_id ?? null;
+  const chatDefaultId = llmSettings?.assignments?.chat;
+  const chatDefaultProfile = profiles.find((p) => p.id === chatDefaultId);
+
+  const selectedProfile = selectedId ? profiles.find((p) => p.id === selectedId) : null;
+  label.textContent = `Model: ${
+    selectedProfile ? selectedProfile.label : chatDefaultProfile ? `Default (${chatDefaultProfile.label})` : 'Default'
+  }`;
+
+  const optionRow = (id: string | null, title: string, subtitle: string) => `
+    <label class="flex items-start gap-2 rounded px-1.5 py-1 hover:bg-gray-50">
+      <input type="radio" name="chat-llm-profile" value="${id ?? ''}" class="mt-0.5 text-accent focus:ring-accent/30" ${
+        selectedId === id ? 'checked' : ''
+      } />
+      <span class="min-w-0 flex-1">
+        <span class="block truncate text-xs font-medium text-gray-900">${escapeHtml(title)}</span>
+        <span class="block truncate text-[11px] text-gray-500">${escapeHtml(subtitle)}</span>
+      </span>
+    </label>`;
+
+  const container = el('chat-model-options');
+  if (!profiles.length) {
+    container.innerHTML = `<p class="px-1.5 py-1 text-xs text-gray-400">No providers configured yet.</p>`;
+    return;
+  }
+  container.innerHTML = [
+    optionRow(null, 'Default', chatDefaultProfile ? `Whatever "Chat" is set to in Settings (${chatDefaultProfile.label})` : 'Whatever "Chat" is set to in Settings'),
+    ...profiles.map((p) => optionRow(p.id, p.label, p.model)),
+  ].join('');
+
+  container.querySelectorAll<HTMLInputElement>('input[name="chat-llm-profile"]').forEach((input) => {
+    input.addEventListener('change', () => {
+      if (input.checked) updateLlmProfile(input.value || null).catch((err) => window.showToast?.(err.message, 'error'));
+    });
+  });
+}
+
+async function loadLlmSettings() {
+  try {
+    llmSettings = await apiFetch('/api/settings/llm');
+  } catch {
+    llmSettings = null;
+  }
+  renderModelPanel();
+}
+
+async function updateLlmProfile(profileId: string | null) {
+  if (!activeSession) return;
+  activeSession = await apiFetch(`/api/chat/sessions/${activeSession.id}`, {
+    method: 'PATCH',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ llm_profile_id: profileId }),
+  });
+  renderModelPanel();
+}
+
 async function updateResourceScope(scope: string[] | null) {
   if (!activeSession) return;
   activeSession = await apiFetch(`/api/chat/sessions/${activeSession.id}`, {
@@ -519,6 +592,7 @@ async function selectSession(id: string) {
   renderMessages();
   renderResourcesPanel();
   renderScopeToggle();
+  renderModelPanel();
 }
 
 async function createSession() {
@@ -578,11 +652,18 @@ el('chat-scope-raw').addEventListener('click', () => {
 el('chat-resources-toggle').addEventListener('click', () => {
   if ((el('chat-resources-toggle') as HTMLButtonElement).disabled) return;
   el('chat-mode-panel').classList.add('hidden');
+  el('chat-model-panel').classList.add('hidden');
   el('chat-resources-panel').classList.toggle('hidden');
 });
 el('chat-mode-toggle').addEventListener('click', () => {
   el('chat-resources-panel').classList.add('hidden');
+  el('chat-model-panel').classList.add('hidden');
   el('chat-mode-panel').classList.toggle('hidden');
+});
+el('chat-model-toggle').addEventListener('click', () => {
+  el('chat-resources-panel').classList.add('hidden');
+  el('chat-mode-panel').classList.add('hidden');
+  el('chat-model-panel').classList.toggle('hidden');
 });
 document.addEventListener('click', (event) => {
   const panel = el('chat-resources-panel');
@@ -594,6 +675,11 @@ document.addEventListener('click', (event) => {
   const modeToggle = el('chat-mode-toggle');
   if (!modePanel.contains(event.target as Node) && !modeToggle.contains(event.target as Node)) {
     modePanel.classList.add('hidden');
+  }
+  const modelPanel = el('chat-model-panel');
+  const modelToggle = el('chat-model-toggle');
+  if (!modelPanel.contains(event.target as Node) && !modelToggle.contains(event.target as Node)) {
+    modelPanel.classList.add('hidden');
   }
 });
 el('chat-mode-retrieval-options')
@@ -786,6 +872,7 @@ async function init() {
   renderMessages();
   loadStatus();
   await loadRagSettings();
+  await loadLlmSettings();
   await loadResources();
   await loadSessions();
   const lastId = (() => {

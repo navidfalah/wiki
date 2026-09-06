@@ -1,9 +1,10 @@
 {
   "corpus_source": "raw",
+  "llm_profile_id": "local-gemma",
   "id": "e1027a44-96ce-4990-a30c-7979e7bf92c0",
   "title": "What topics does the wiki cover?",
   "created_at": "2026-09-01T21:15:07.221Z",
-  "updated_at": "2026-09-06T16:03:11.780Z",
+  "updated_at": "2026-09-06T16:10:02.353Z",
   "resource_scope": null,
   "messages": [
     {
@@ -273,6 +274,53 @@
         "checkable_count": 0
       },
       "at": "2026-09-06T16:03:11.780Z"
+    },
+    {
+      "role": "user",
+      "content": "hey search the software for me",
+      "at": "2026-09-06T16:09:45.498Z"
+    },
+    {
+      "role": "assistant",
+      "content": "No LLM is configured, so here are the closest matches from the raw sources:\n\n**2026-06-01-standup-scribbles.txt — Part 1**\nSTANDUP — june 1?? (late again)\n\nmira: mesh still weird at 8 nodes. spike 110µA on rejoin. \"fine for beta\"\n\njonah: gasket samples = meh. IP54 ok. IP65 = $8k tool rip\n\nme: forgot to update the wiki AGAIN\n\nTODO ???\n- fix cron job on staging (maybe?)\n- ask about solar trickle — jonah yes / mira no\n- lunch\n\nrandom: why do CR2032 cells cost more at the hardware store than online\n\n---\nfragment: \"open se…\n\n**[SAMPLE]-2026-07-02-investor-call-fragment.txt — Part 1**\n[SAMPLE] Investor call transcript fragment — Aurora Labs (July 2)\n\nINVESTOR: Walk me through the moat against SenseNode.\n\nMIRA CHEN: Local mesh without subscription. Open firmware partial. Community integrations.\n\nINVESTOR: Battery life claims?\n\nMIRA: Engineering eighteen months at ten nodes, fifteen minute reads. Marketing rounds to two years — we're publishing the spreadsheet.\n\nINVESTOR: Eight-n…\n\n**20-email-resources-and-chat-engines.md — Part 2**\n- `parse_references_table(body)` — regex-parses a page's rendered references\n  table back into rows.\n- `list_resources(docs_dir=..., q=, source_type=, trust=)` — scans every\n  compiled page, aggregates by source path, and supports search/type/trust\n  filters.\n- `get_resource_detail(source_path, docs_dir=, raw_dir=)` — citing pages plus\n  a raw content preview when the source is still readable unde…",
+      "sources": [
+        {
+          "doc_path": "notes/2026-06-01-standup-scribbles.txt",
+          "title": "2026-06-01-standup-scribbles.txt",
+          "heading": "Part 1",
+          "score": 5
+        },
+        {
+          "doc_path": "samples/transcripts/[SAMPLE]-2026-07-02-investor-call-fragment.txt",
+          "title": "[SAMPLE]-2026-07-02-investor-call-fragment.txt",
+          "heading": "Part 1",
+          "score": 4
+        },
+        {
+          "doc_path": "articles/20-email-resources-and-chat-engines.md",
+          "title": "20-email-resources-and-chat-engines.md",
+          "heading": "Part 2",
+          "score": 3
+        },
+        {
+          "doc_path": "dummy-test/articles/20-email-resources-and-chat-engines.md",
+          "title": "20-email-resources-and-chat-engines.md",
+          "heading": "Part 2",
+          "score": 2
+        },
+        {
+          "doc_path": "18-sample-domain.md",
+          "title": "18-sample-domain.md",
+          "heading": "Part 2",
+          "score": 1
+        }
+      ],
+      "faithfulness": {
+        "basis": "extractive",
+        "unsupported_rate": 0,
+        "checkable_count": 0
+      },
+      "at": "2026-09-06T16:09:45.498Z"
     }
   ]
 }

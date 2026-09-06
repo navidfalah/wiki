@@ -11,8 +11,9 @@ def test_every_id_has_an_oauth_flag():
         assert connector_id in CONNECTOR_REQUIRES_OAUTH
 
 
-def test_imap_does_not_require_oauth():
+def test_imap_and_postgres_do_not_require_oauth():
     assert CONNECTOR_REQUIRES_OAUTH["imap"] is False
+    assert CONNECTOR_REQUIRES_OAUTH["postgres"] is False
 
 
 def test_gmail_and_drive_require_oauth():

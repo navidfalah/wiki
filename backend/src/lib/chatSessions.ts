@@ -196,6 +196,15 @@ export function setChatSessionCorpusSource(id: string, corpusSource: ChatCorpusS
   return session;
 }
 
+export function setChatSessionLlmProfile(id: string, llmProfileId: string | null): ChatSession | null {
+  const session = loadChatSession(id);
+  if (!session) return null;
+  session.llm_profile_id = llmProfileId;
+  session.updated_at = new Date().toISOString();
+  saveSession(session);
+  return session;
+}
+
 export function deleteChatSession(id: string): boolean {
   if (!SESSION_ID_RE.test(id)) return false;
   const filePath = sessionFile(id);

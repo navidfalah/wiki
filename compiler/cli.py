@@ -251,6 +251,18 @@ def cmd_connectors_imap_connect() -> dict:
     return connectors_service.connect_imap(account_label, host, password, port=port, mailbox=mailbox)
 
 
+def cmd_connectors_postgres_connect() -> dict:
+    payload = _read_stdin_json()
+    account_label = str(payload.get("account_label", "")).strip()
+    host = str(payload.get("host", "")).strip()
+    password = str(payload.get("password", ""))
+    port = int(payload.get("port") or 5432)
+    dbname = str(payload.get("dbname", "")).strip()
+    user = str(payload.get("user", "")).strip()
+    schema = str(payload.get("schema") or "public").strip()
+    return connectors_service.connect_postgres(account_label, host, password, port=port, dbname=dbname, user=user, schema=schema)
+
+
 def cmd_connectors_items_list() -> dict:
     payload = _read_stdin_json()
     connector_id = str(payload.get("connector_id", "")).strip()
@@ -309,6 +321,7 @@ COMMANDS = {
     "connectors-oauth-start": cmd_connectors_oauth_start,
     "connectors-oauth-callback": cmd_connectors_oauth_callback,
     "connectors-imap-connect": cmd_connectors_imap_connect,
+    "connectors-postgres-connect": cmd_connectors_postgres_connect,
     "connectors-items-list": cmd_connectors_items_list,
     "connectors-item-import": cmd_connectors_item_import,
     "connectors-disconnect": cmd_connectors_disconnect,

@@ -49,6 +49,45 @@ class FakeImapClient:
         return ("BYE", [])
 
 
+class FakePgCursor:
+    def __init__(self, conn):
+        self.conn = conn
+        self._result = []
+
+    def execute(self, query, params=()):
+        q = " ".join(query.split())
+        if "information_schema.tables" in q:
+            self._result = [(t,) for t in self.conn.tables]
+        elif "information_schema.columns" in q:
+            self._result = [(c,) for c in self.conn.columns]
+        elif q.startswith("SELECT COUNT(*)"):
+            self._result = [(len(self.conn.rows),)]
+        elif q.startswith("SELECT * FROM"):
+            self._result = self.conn.rows
+        else:
+            raise AssertionError(f"unexpected query: {q}")
+
+    def fetchall(self):
+        return self._result
+
+    def close(self):
+        pass
+
+
+class FakePgConnection:
+    def __init__(self, host, port, dbname, user, password):
+        self.host, self.port, self.dbname, self.user, self.password = host, port, dbname, user, password
+        self.tables = ["kb_articles"]
+        self.columns = ["id", "title"]
+        self.rows = [(1, "Getting started")]
+
+    def cursor(self):
+        return FakePgCursor(self)
+
+    def close(self):
+        pass
+
+
 @pytest.fixture(autouse=True)
 def isolated_env(tmp_path, monkeypatch):
     """Every test gets its own credential store, pending-OAuth dir, and
@@ -72,13 +111,16 @@ def _configure_gmail_env(monkeypatch):
 def test_catalog_lists_all_known_connectors_unconfigured_by_default():
     entries = svc.catalog()
     ids = [e["id"] for e in entries]
-    assert ids == ["gmail", "google_drive", "imap"]
+    assert ids == ["gmail", "google_drive", "imap", "postgres"]
     gmail_entry = next(e for e in entries if e["id"] == "gmail")
     assert gmail_entry["configured"] is False
     assert gmail_entry["connected_accounts"] == []
     imap_entry = next(e for e in entries if e["id"] == "imap")
     assert imap_entry["requires_oauth"] is False
     assert imap_entry["configured"] is True  # IMAP needs no env vars, only a per-account connect
+    postgres_entry = next(e for e in entries if e["id"] == "postgres")
+    assert postgres_entry["requires_oauth"] is False
+    assert postgres_entry["configured"] is True  # Postgres needs no env vars, only a per-account connect
 
 
 def test_catalog_reports_configured_once_env_vars_are_set(monkeypatch):
@@ -135,6 +177,30 @@ def test_connect_imap_stores_host_and_mailbox_in_extra(isolated_env):
 def test_connect_imap_requires_password():
     with pytest.raises(ValueError, match="password"):
         svc.connect_imap("me@example.com", host="imap.example.com", password="")
+
+
+def test_connect_postgres_stores_connection_details_in_extra(isolated_env):
+    result = svc.connect_postgres(
+        "local", host="localhost", password="s3cret", port=5433, dbname="aurora_kb", user="wiki_reader", schema="public"
+    )
+    assert result == {"connected": True, "connector_id": "postgres", "account_label": "local"}
+    saved = isolated_env.load("postgres", "local")
+    assert saved.password == "s3cret"
+    assert saved.extra == {"host": "localhost", "port": 5433, "dbname": "aurora_kb", "user": "wiki_reader", "schema": "public"}
+
+
+def test_connect_postgres_requires_password():
+    with pytest.raises(ValueError, match="password"):
+        svc.connect_postgres("local", host="localhost", password="", dbname="aurora_kb", user="wiki_reader")
+
+
+def test_import_item_for_postgres_uses_injected_client_factory(isolated_env):
+    svc.connect_postgres("local", host="localhost", password="s3cret", dbname="aurora_kb", user="wiki_reader")
+    result = svc.import_item("postgres", "local", "public.kb_articles", pg_client_factory=FakePgConnection)
+    assert result["imported"] is True
+    content = next((svc.IMPORT_DIR / "postgres" / "local").glob("*.txt")).read_text(encoding="utf-8")
+    assert "Getting started" in content
+    assert "Imported via PostgreSQL Database connector" in content
 
 
 def test_list_items_raises_when_not_connected():

@@ -59,6 +59,20 @@
           Web search enrichment
         </label>
       </div>
+      <div class="mt-3 flex flex-wrap items-center gap-4 border-t border-gray-200 pt-3 text-sm">
+        <label class="flex items-center gap-2 text-gray-600" title="Overrides the Settings page's &quot;Default&quot; assignment for extraction, indexing, and cross-linking in this run only.">
+          Extraction/linking model
+          <select id="run-opt-default-model" class="rounded-md border border-gray-300 px-1.5 py-1 text-sm focus:border-accent focus:outline-none focus:ring-2 focus:ring-accent/20">
+            <option value="">Default (from Settings)</option>
+          </select>
+        </label>
+        <label class="flex items-center gap-2 text-gray-600" title="Overrides the Settings page's &quot;Thinking&quot; assignment for synthesis in this run only.">
+          Synthesis model
+          <select id="run-opt-thinking-model" class="rounded-md border border-gray-300 px-1.5 py-1 text-sm focus:border-accent focus:outline-none focus:ring-2 focus:ring-accent/20">
+            <option value="">Default (from Settings)</option>
+          </select>
+        </label>
+      </div>
     </div>
     <div class="p-4">
       <div id="build-steps" class="flex flex-col gap-1.5"></div>

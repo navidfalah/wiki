@@ -15,6 +15,7 @@ import {
   loadChatSession,
   renameChatSession,
   setChatSessionCorpusSource,
+  setChatSessionLlmProfile,
   setChatSessionResourceScope,
 } from '../lib/chatSessions';
 import { listEvents, logEvent } from '../lib/activityLog';
@@ -627,6 +628,22 @@ export function registerRoutes(app: Express): void {
     const redactPii = req.query.redact_pii !== undefined ? req.query.redact_pii === 'true' : pipelineDefaults.redact_pii;
     const webSearch = req.query.web_search !== undefined ? req.query.web_search === 'true' : pipelineDefaults.web_search;
 
+    // Per-run model picks -- override the Settings page's standing
+    // "default"/"thinking" assignments for just this build (see
+    // llmSettings.ts's ProfileOverrides). Unknown ids are ignored rather
+    // than rejected, so a run doesn't fail SSE mid-stream over a stale
+    // profile picked before it was deleted -- it just falls back to the
+    // standing assignment.
+    const knownProfileIds = new Set(loadLlmSettings().profiles.map((p) => p.id));
+    const defaultProfileId =
+      typeof req.query.default_profile_id === 'string' && knownProfileIds.has(req.query.default_profile_id)
+        ? req.query.default_profile_id
+        : undefined;
+    const thinkingProfileId =
+      typeof req.query.thinking_profile_id === 'string' && knownProfileIds.has(req.query.thinking_profile_id)
+        ? req.query.thinking_profile_id
+        : undefined;
+
     logEvent(
       req.user?.username,
       'Started compiler run',
@@ -650,6 +667,8 @@ export function registerRoutes(app: Express): void {
       useCorrections,
       redactPii,
       webSearch,
+      defaultProfileId,
+      thinkingProfileId,
     });
   });
 
@@ -860,6 +879,16 @@ export function registerRoutes(app: Express): void {
         if (source !== 'wiki' && source !== 'raw') throw new HttpError(400, "'corpus_source' must be 'wiki' or 'raw'");
         session = setChatSessionCorpusSource(req.params.id, source);
       }
+      if (req.body?.llm_profile_id !== undefined) {
+        const profileId = req.body.llm_profile_id;
+        if (profileId !== null && typeof profileId !== 'string') {
+          throw new HttpError(400, "'llm_profile_id' must be a string or null");
+        }
+        if (profileId !== null && !loadLlmSettings().profiles.some((p) => p.id === profileId)) {
+          throw new HttpError(400, `Unknown LLM profile: ${profileId}`);
+        }
+        session = setChatSessionLlmProfile(req.params.id, profileId);
+      }
       res.json(session);
     }),
   );
@@ -896,7 +925,13 @@ export function registerRoutes(app: Express): void {
     const history = session.messages.map((m) => ({ role: m.role, content: m.content }));
 
     try {
-      const result = await streamChat(res, { message, history, docScope, corpusSource });
+      const result = await streamChat(res, {
+        message,
+        history,
+        docScope,
+        corpusSource,
+        llmProfileId: session.llm_profile_id,
+      });
       const sourcesWithSlug = (result.sources ?? []).map((s) =>
         corpusSource === 'wiki' ? { ...s, slug: s.doc_path.replace(/\.md$/, '') } : { ...s },
       );
@@ -1098,6 +1133,20 @@ export function registerRoutes(app: Express): void {
       try {
         const result = await runCli('connectors-imap-connect', { account_label: accountLabel, host, password, port, mailbox });
         logEvent(req.user?.username, 'Connected external account', `imap → ${accountLabel}`);
+        res.json(result);
+      } catch (err: any) {
+        throw new HttpError(400, err.message);
+      }
+    }),
+  );
+
+  app.post(
+    '/api/connectors/postgres/connect',
+    wrap(async (req, res) => {
+      const { account_label: accountLabel, host, password, port, dbname, user, schema } = req.body ?? {};
+      try {
+        const result = await runCli('connectors-postgres-connect', { account_label: accountLabel, host, password, port, dbname, user, schema });
+        logEvent(req.user?.username, 'Connected external account', `postgres → ${accountLabel}`);
         res.json(result);
       } catch (err: any) {
         throw new HttpError(400, err.message);

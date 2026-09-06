@@ -44,6 +44,19 @@ function imapConnectForm(connectorId: string): string {
   </form>`;
 }
 
+function postgresConnectForm(connectorId: string): string {
+  return `<form class="postgres-connect-form mt-3 flex flex-wrap items-end gap-2 rounded-lg border border-gray-100 bg-gray-50 p-3" data-connector-id="${connectorId}">
+    <label class="flex flex-col gap-1 text-xs font-medium text-gray-600">Label <input name="account_label" type="text" required placeholder="my-database" class="rounded-lg border border-gray-300 px-2 py-1.5 text-sm" /></label>
+    <label class="flex flex-col gap-1 text-xs font-medium text-gray-600">Host <input name="host" type="text" required placeholder="localhost" class="rounded-lg border border-gray-300 px-2 py-1.5 text-sm" /></label>
+    <label class="flex w-20 flex-col gap-1 text-xs font-medium text-gray-600">Port <input name="port" type="number" value="5432" class="rounded-lg border border-gray-300 px-2 py-1.5 text-sm" /></label>
+    <label class="flex flex-col gap-1 text-xs font-medium text-gray-600">Database <input name="dbname" type="text" required placeholder="aurora_kb" class="rounded-lg border border-gray-300 px-2 py-1.5 text-sm" /></label>
+    <label class="flex flex-col gap-1 text-xs font-medium text-gray-600">User <input name="user" type="text" required placeholder="wiki_reader" class="rounded-lg border border-gray-300 px-2 py-1.5 text-sm" /></label>
+    <label class="flex flex-col gap-1 text-xs font-medium text-gray-600">Schema <input name="schema" type="text" value="public" class="rounded-lg border border-gray-300 px-2 py-1.5 text-sm" /></label>
+    <label class="flex flex-col gap-1 text-xs font-medium text-gray-600">Password <input name="password" type="password" required class="rounded-lg border border-gray-300 px-2 py-1.5 text-sm" /></label>
+    <button type="submit" class="rounded-lg bg-gray-900 px-3 py-1.5 text-xs font-medium text-white hover:bg-gray-800">Connect</button>
+  </form>`;
+}
+
 function accountRow(connectorId: string, accountLabel: string): string {
   return `<div class="connector-account rounded-lg border border-gray-100 bg-white p-3" data-connector-id="${connectorId}" data-account-label="${escapeHtml(accountLabel)}">
     <div class="flex flex-wrap items-center justify-between gap-2">
@@ -69,12 +82,13 @@ function connectorCard(entry: ConnectorEntry): string {
     <div class="flex flex-wrap items-center justify-between gap-2">
       <div>
         <h2 class="text-sm font-semibold text-gray-900">${escapeHtml(entry.display_name)}</h2>
-        <p class="text-xs text-gray-500">${entry.requires_oauth ? 'OAuth2, read-only' : 'IMAP, app password'}</p>
+        <p class="text-xs text-gray-500">${entry.requires_oauth ? 'OAuth2, read-only' : entry.id === 'postgres' ? 'PostgreSQL, username &amp; password' : 'IMAP, app password'}</p>
       </div>
       ${connectAction}
     </div>
     ${hint}
-    ${!entry.requires_oauth ? imapConnectForm(entry.id) : ''}
+    ${entry.id === 'postgres' ? `<p class="mt-2 text-xs text-gray-500">Want the guided version with schema browsing and bulk import? Use the <a href="/database" class="font-medium text-gray-700 underline">Database</a> page instead.</p>` : ''}
+    ${!entry.requires_oauth ? (entry.id === 'postgres' ? postgresConnectForm(entry.id) : imapConnectForm(entry.id)) : ''}
     <div class="accounts-list mt-3 flex flex-col gap-2">
       ${entry.connected_accounts.length ? entry.connected_accounts.map((a) => accountRow(entry.id, a)).join('') : '<p class="text-xs text-gray-400">No accounts connected yet.</p>'}
     </div>
@@ -206,23 +220,39 @@ document.getElementById('connectors-list')?.addEventListener('click', async (eve
 
 document.getElementById('connectors-list')?.addEventListener('submit', async (event) => {
   const form = event.target as HTMLFormElement;
-  if (!form.classList.contains('imap-connect-form')) return;
+  const isImap = form.classList.contains('imap-connect-form');
+  const isPostgres = form.classList.contains('postgres-connect-form');
+  if (!isImap && !isPostgres) return;
   event.preventDefault();
 
-  const connectorId = form.dataset.connectorId!;
   const submitBtn = form.querySelector('button[type="submit"]') as HTMLButtonElement;
   submitBtn.disabled = true;
   try {
-    await api('/api/connectors/imap/connect', {
-      method: 'POST',
-      body: JSON.stringify({
-        account_label: (form.elements.namedItem('account_label') as HTMLInputElement).value.trim(),
-        host: (form.elements.namedItem('host') as HTMLInputElement).value.trim(),
-        port: Number((form.elements.namedItem('port') as HTMLInputElement).value) || 993,
-        mailbox: (form.elements.namedItem('mailbox') as HTMLInputElement).value.trim() || 'INBOX',
-        password: (form.elements.namedItem('password') as HTMLInputElement).value,
-      }),
-    });
+    if (isImap) {
+      await api('/api/connectors/imap/connect', {
+        method: 'POST',
+        body: JSON.stringify({
+          account_label: (form.elements.namedItem('account_label') as HTMLInputElement).value.trim(),
+          host: (form.elements.namedItem('host') as HTMLInputElement).value.trim(),
+          port: Number((form.elements.namedItem('port') as HTMLInputElement).value) || 993,
+          mailbox: (form.elements.namedItem('mailbox') as HTMLInputElement).value.trim() || 'INBOX',
+          password: (form.elements.namedItem('password') as HTMLInputElement).value,
+        }),
+      });
+    } else {
+      await api('/api/connectors/postgres/connect', {
+        method: 'POST',
+        body: JSON.stringify({
+          account_label: (form.elements.namedItem('account_label') as HTMLInputElement).value.trim(),
+          host: (form.elements.namedItem('host') as HTMLInputElement).value.trim(),
+          port: Number((form.elements.namedItem('port') as HTMLInputElement).value) || 5432,
+          dbname: (form.elements.namedItem('dbname') as HTMLInputElement).value.trim(),
+          user: (form.elements.namedItem('user') as HTMLInputElement).value.trim(),
+          schema: (form.elements.namedItem('schema') as HTMLInputElement).value.trim() || 'public',
+          password: (form.elements.namedItem('password') as HTMLInputElement).value,
+        }),
+      });
+    }
     (window as any).showToast?.('Connected.', 'success');
     load();
   } catch (err: any) {

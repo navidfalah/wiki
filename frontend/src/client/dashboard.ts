@@ -298,8 +298,36 @@ function updateRunOptionsCount() {
   const correctionsOn = (el('run-opt-use-corrections') as HTMLInputElement).checked;
   const redactOn = (el('run-opt-redact-pii') as HTMLInputElement).checked;
   const webSearchOn = (el('run-opt-web-search') as HTMLInputElement).checked;
-  const count = [criticOn, correctionsOn, redactOn, webSearchOn].filter(Boolean).length;
+  const defaultModelOn = (el('run-opt-default-model') as HTMLSelectElement).value !== '';
+  const thinkingModelOn = (el('run-opt-thinking-model') as HTMLSelectElement).value !== '';
+  const count = [criticOn, correctionsOn, redactOn, webSearchOn, defaultModelOn, thinkingModelOn].filter(Boolean).length;
   el('run-options-count').textContent = count ? `(${count})` : '';
+}
+
+interface LlmProfile {
+  id: string;
+  label: string;
+  model: string;
+}
+
+/** Populates the per-run "Extraction/linking model" and "Synthesis model"
+ *  pickers from the Settings page's providers -- overriding "default"/
+ *  "thinking" for just this build (see routes/index.ts's /api/build/stream
+ *  and pythonBridge.ts's streamCompilerBuild). */
+async function loadRunOptionModels() {
+  const defaultSelect = el('run-opt-default-model') as HTMLSelectElement;
+  const thinkingSelect = el('run-opt-thinking-model') as HTMLSelectElement;
+  try {
+    const settings = await apiFetch('/api/settings/llm');
+    const profiles: LlmProfile[] = settings.profiles ?? [];
+    const optionsHtml =
+      `<option value="">Default (from Settings)</option>` +
+      profiles.map((p) => `<option value="${escapeHtml(p.id)}">${escapeHtml(p.label)} — ${escapeHtml(p.model)}</option>`).join('');
+    defaultSelect.innerHTML = optionsHtml;
+    thinkingSelect.innerHTML = optionsHtml;
+  } catch {
+    /* leave the "Default (from Settings)" fallback option in place */
+  }
 }
 
 function initRunOptions() {
@@ -323,7 +351,9 @@ function initRunOptions() {
       updateRunOptionsCount();
     }),
   );
+  ['run-opt-default-model', 'run-opt-thinking-model'].forEach((id) => el(id).addEventListener('change', updateRunOptionsCount));
   updateRunOptionsCount();
+  loadRunOptionModels();
 }
 
 function runOptionsParams(): Record<string, string> {
@@ -333,6 +363,8 @@ function runOptionsParams(): Record<string, string> {
   const useCorrections = (el('run-opt-use-corrections') as HTMLInputElement).checked;
   const redactPii = (el('run-opt-redact-pii') as HTMLInputElement).checked;
   const webSearch = (el('run-opt-web-search') as HTMLInputElement).checked;
+  const defaultProfileId = (el('run-opt-default-model') as HTMLSelectElement).value;
+  const thinkingProfileId = (el('run-opt-thinking-model') as HTMLSelectElement).value;
 
   const params: Record<string, string> = {};
   if (criticPass) {
@@ -343,6 +375,8 @@ function runOptionsParams(): Record<string, string> {
   if (useCorrections) params.use_corrections = 'true';
   if (redactPii) params.redact_pii = 'true';
   if (webSearch) params.web_search = 'true';
+  if (defaultProfileId) params.default_profile_id = defaultProfileId;
+  if (thinkingProfileId) params.thinking_profile_id = thinkingProfileId;
   return params;
 }
 

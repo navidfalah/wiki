@@ -32,6 +32,7 @@ from connectors.credential_store import CredentialStore, MissingSecretKeyError
 from connectors.credentials import ConnectorCredentials
 from connectors.imap_email import ImapConnector
 from connectors.oauth2 import OAuth2Connector
+from connectors.postgres_db import PostgresConnector
 from connectors.registry import CONNECTOR_DISPLAY_NAMES, CONNECTOR_IDS, CONNECTOR_REQUIRES_OAUTH
 from models import PROJECT_ROOT
 
@@ -221,7 +222,42 @@ def connect_imap(account_label: str, host: str, password: str, port: int = 993, 
     return {"connected": True, "connector_id": "imap", "account_label": account_label}
 
 
-def _build_connector(connector_id: str, account_label: str, *, http_get=None, http_post=None, imap_client_factory=None):
+def connect_postgres(
+    account_label: str, host: str, password: str, port: int = 5432, dbname: str = "", user: str = "", schema: str = "public"
+) -> dict:
+    """Postgres has no OAuth dance either -- host/port/dbname/user/password
+    (the user's own database, or the sample database docker-compose can
+    spin up -- see docker/postgres/init.sql) plus an account label to tell
+    multiple connections apart."""
+    if not account_label:
+        raise ValueError("'account_label' is required")
+    if not host:
+        raise ValueError("'host' is required")
+    if not dbname:
+        raise ValueError("'dbname' is required")
+    if not user:
+        raise ValueError("'user' is required")
+    if not password:
+        raise ValueError("'password' is required")
+    creds = ConnectorCredentials(
+        connector_id="postgres",
+        account_label=account_label,
+        password=password,
+        extra={"host": host, "port": port, "dbname": dbname, "user": user, "schema": schema or "public"},
+    )
+    _credential_store().save(creds)
+    return {"connected": True, "connector_id": "postgres", "account_label": account_label}
+
+
+def _build_connector(
+    connector_id: str,
+    account_label: str,
+    *,
+    http_get=None,
+    http_post=None,
+    imap_client_factory=None,
+    pg_client_factory=None,
+):
     """Loads stored credentials, refreshes an OAuth2 token if it's expired
     (ensure_fresh(), persisting the refreshed token back), and returns a
     ready-to-call connector instance."""
@@ -250,6 +286,18 @@ def _build_connector(connector_id: str, account_label: str, *, http_get=None, ht
             credentials=creds,
             port=creds.extra.get("port", 993),
             mailbox=creds.extra.get("mailbox", "INBOX"),
+            **kwargs,
+        )
+
+    if connector_id == "postgres":
+        kwargs = {} if pg_client_factory is None else {"client_factory": pg_client_factory}
+        return PostgresConnector(
+            host=creds.extra.get("host", ""),
+            credentials=creds,
+            port=creds.extra.get("port", 5432),
+            dbname=creds.extra.get("dbname", ""),
+            user=creds.extra.get("user", ""),
+            schema=creds.extra.get("schema", "public"),
             **kwargs,
         )
 

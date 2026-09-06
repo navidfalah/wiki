@@ -24,6 +24,7 @@ const pages: { path: string; view: string; title: string; active: string; client
   { path: '/review-queue', view: 'review-queue', title: 'Review Queue', active: 'Review Queue', clientScript: 'review-queue' },
   { path: '/review', view: 'review', title: 'Review Queue', active: 'Review', clientScript: 'review' },
   { path: '/connectors', view: 'connectors', title: 'Connectors', active: 'Connectors', clientScript: 'connectors' },
+  { path: '/database', view: 'database', title: 'Database', active: 'Database', clientScript: 'database' },
   { path: '/settings', view: 'settings', title: 'Settings', active: 'Settings', clientScript: 'settings' },
   { path: '/company', view: 'company', title: 'Company Profile', active: 'Company', clientScript: 'company' },
   { path: '/logs', view: 'logs', title: 'Logs', active: 'Logs', clientScript: 'logs' },
