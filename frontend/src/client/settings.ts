@@ -34,7 +34,7 @@ const MODEL_PRESETS: Record<Provider, string[]> = {
     'gemini-2.5-pro', 'gemini-2.5-flash', 'gemini-2.5-flash-lite',
     'gemini-2.0-flash', 'gemini-2.0-flash-lite',
     'gemini-1.5-pro', 'gemini-1.5-flash',
-    'text-embedding-004', 'gemini-embedding-001',
+    'gemini-embedding-001', 'gemini-embedding-2',
   ],
   local: [
     'gemma-4-it', 'gemma-2-9b-it', 'gemma-2-27b-it',

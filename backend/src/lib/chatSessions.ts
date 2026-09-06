@@ -44,6 +44,10 @@ export interface ChatSessionSummary {
   updated_at: string;
   resource_scope: string[] | null;
   corpus_source: ChatCorpusSource;
+  // Which LLM Settings profile answers this session's questions -- null
+  // means "use whatever the Settings page's 'chat' purpose is assigned
+  // to" (see envOverridesForSpawn's ProfileOverrides in llmSettings.ts).
+  llm_profile_id: string | null;
   message_count: number;
 }
 
@@ -54,6 +58,7 @@ export interface ChatSession {
   updated_at: string;
   resource_scope: string[] | null;
   corpus_source: ChatCorpusSource;
+  llm_profile_id: string | null;
   messages: ChatMessage[];
 }
 
@@ -87,6 +92,7 @@ function summaryOf(session: ChatSession): ChatSessionSummary {
     updated_at: session.updated_at,
     resource_scope: session.resource_scope,
     corpus_source: session.corpus_source,
+    llm_profile_id: session.llm_profile_id,
     message_count: session.messages.length,
   };
 }
@@ -118,6 +124,7 @@ function migrateLegacyHistoryIfNeeded(): void {
       updated_at: now,
       resource_scope: null,
       corpus_source: 'wiki',
+      llm_profile_id: null,
       messages: messages.map((m) => ({ ...m, sources: m.sources?.map((s: any) => ({ ...s, slug: s.slug ?? s.path ?? '' })) })),
     };
     saveSession(session);
@@ -137,10 +144,10 @@ export function loadChatSession(id: string): ChatSession | null {
   if (!fs.existsSync(filePath)) return null;
   try {
     const parsed = JSON.parse(fs.readFileSync(filePath, 'utf-8'));
-    // corpus_source didn't exist in sessions saved before this field was
-    // added -- default those to 'wiki' (the only mode that existed then)
-    // rather than persisting the default until the session's next save.
-    return { corpus_source: 'wiki', ...parsed };
+    // corpus_source/llm_profile_id didn't exist in sessions saved before
+    // those fields were added -- default them (rather than persisting the
+    // default until the session's next save).
+    return { corpus_source: 'wiki', llm_profile_id: null, ...parsed };
   } catch {
     return null;
   }
@@ -155,6 +162,7 @@ export function createChatSession(title?: string): ChatSession {
     updated_at: now,
     resource_scope: null,
     corpus_source: 'wiki',
+    llm_profile_id: null,
     messages: [],
   };
   saveSession(session);

@@ -3,7 +3,7 @@ import path from 'node:path';
 import type { Express } from 'express';
 import multer from 'multer';
 
-import { INDEX_JSON, OUTPUT_DIR, RAW_DIR, REVIEW_REPORT_PATH, STATE_FILE } from '../paths';
+import { INDEX_JSON, OUTPUT_DIR, RAW_DIR, REVIEW_REPORT_PATH, STATE_FILE, STATIC_MEDIA_DIR, TEMP_OUTPUT_DIR } from '../paths';
 import { HttpError, wrap } from '../lib/httpError';
 import { buildAnalytics, getTagDetail } from '../lib/analytics';
 import { buildAttentionReport } from '../lib/attentionEngine';
@@ -489,6 +489,43 @@ export function registerRoutes(app: Express): void {
         category: categories.get(page.path) ?? null,
       }));
       res.json({ directory: OUTPUT_DIR, total: pagesWithCategory.length, pages: pagesWithCategory });
+    }),
+  );
+
+  app.delete(
+    '/api/docs',
+    wrap((req, res) => {
+      let pagesDeleted = 0;
+      let mediaDeleted = 0;
+
+      if (fs.existsSync(OUTPUT_DIR)) {
+        for (const name of fs.readdirSync(OUTPUT_DIR)) {
+          if (!name.endsWith('.md')) continue;
+          fs.unlinkSync(path.join(OUTPUT_DIR, name));
+          pagesDeleted += 1;
+        }
+      }
+
+      if (fs.existsSync(TEMP_OUTPUT_DIR)) {
+        for (const name of fs.readdirSync(TEMP_OUTPUT_DIR)) {
+          if (name.endsWith('.md') || name === 'index.json') {
+            fs.unlinkSync(path.join(TEMP_OUTPUT_DIR, name));
+          }
+        }
+      }
+
+      if (fs.existsSync(STATIC_MEDIA_DIR)) {
+        for (const name of fs.readdirSync(STATIC_MEDIA_DIR)) {
+          const mediaPath = path.join(STATIC_MEDIA_DIR, name);
+          if (fs.statSync(mediaPath).isFile()) {
+            fs.unlinkSync(mediaPath);
+            mediaDeleted += 1;
+          }
+        }
+      }
+
+      logEvent(req.user?.username, `Deleted all wiki pages (${pagesDeleted} pages, ${mediaDeleted} media files)`);
+      res.json({ pagesDeleted, mediaDeleted });
     }),
   );
 

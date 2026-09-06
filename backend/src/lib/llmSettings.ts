@@ -122,7 +122,7 @@ function defaultGeminiSettings(apiKey: string): LlmSettings {
     makeProfile({ id: 'gemini-default', label: 'Gemini Flash Lite (default)', model: 'gemini-2.5-flash-lite', api_key: apiKey }),
     makeProfile({ id: 'gemini-thinking', label: 'Gemini Pro (thinking)', model: 'gemini-2.5-pro', api_key: apiKey }),
     makeProfile({ id: 'gemini-chat', label: 'Gemini Flash (chat)', model: 'gemini-2.5-flash', api_key: apiKey }),
-    makeProfile({ id: 'gemini-embedding', label: 'Gemini Embedding', model: 'text-embedding-004', api_key: apiKey }),
+    makeProfile({ id: 'gemini-embedding', label: 'Gemini Embedding', model: 'gemini-embedding-001', api_key: apiKey }),
   ];
   return {
     profiles,
@@ -327,12 +327,27 @@ function applySamplingOverrides(overrides: Record<string, string>, prefix: strin
   if (profile.reasoning_effort) overrides[`${prefix}_REASONING_EFFORT`] = profile.reasoning_effort;
 }
 
-export function envOverridesForSpawn(): Record<string, string> {
+/**
+ * Per-call profile picks, keyed by purpose, that win over the Settings
+ * page's standing assignments for one subprocess spawn -- e.g. a single
+ * chat session pinned to a specific profile, or a single build run's
+ * "thinking" step pointed at a stronger model, without touching the
+ * assignments everything else keeps using.
+ */
+export type ProfileOverrides = Partial<Record<Purpose, string>>;
+
+export function envOverridesForSpawn(profileOverrides: ProfileOverrides = {}): Record<string, string> {
   const settings = loadLlmSettings();
   const byId = new Map(settings.profiles.map((p) => [p.id, p]));
   const overrides: Record<string, string> = {};
 
-  const defaultProfile = byId.get(settings.assignments.default);
+  const resolve = (purpose: Purpose): LlmProfile | undefined => {
+    const requestedId = profileOverrides[purpose];
+    const requested = requestedId ? byId.get(requestedId) : undefined;
+    return requested ?? byId.get(settings.assignments[purpose]);
+  };
+
+  const defaultProfile = resolve('default');
   if (defaultProfile) {
     overrides.OPENAI_API_KEY = defaultProfile.api_key;
     overrides.OPENAI_BASE_URL = defaultProfile.base_url;
@@ -340,7 +355,7 @@ export function envOverridesForSpawn(): Record<string, string> {
     applySamplingOverrides(overrides, 'OPENAI', defaultProfile);
   }
 
-  const thinkingProfile = byId.get(settings.assignments.thinking);
+  const thinkingProfile = resolve('thinking');
   if (thinkingProfile) {
     overrides.THINKING_OPENAI_API_KEY = thinkingProfile.api_key;
     overrides.THINKING_OPENAI_BASE_URL = thinkingProfile.base_url;
@@ -348,7 +363,7 @@ export function envOverridesForSpawn(): Record<string, string> {
     applySamplingOverrides(overrides, 'THINKING', thinkingProfile);
   }
 
-  const chatProfile = byId.get(settings.assignments.chat);
+  const chatProfile = resolve('chat');
   if (chatProfile) {
     overrides.CHAT_OPENAI_API_KEY = chatProfile.api_key;
     overrides.CHAT_OPENAI_BASE_URL = chatProfile.base_url;
@@ -356,7 +371,7 @@ export function envOverridesForSpawn(): Record<string, string> {
     applySamplingOverrides(overrides, 'CHAT', chatProfile);
   }
 
-  const embeddingProfile = byId.get(settings.assignments.embedding);
+  const embeddingProfile = resolve('embedding');
   if (embeddingProfile) {
     overrides.OPENAI_EMBEDDING_MODEL = embeddingProfile.model;
     overrides.EMBEDDING_OPENAI_API_KEY = embeddingProfile.api_key;

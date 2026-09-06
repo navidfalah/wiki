@@ -1,8 +1,9 @@
 {
+  "corpus_source": "raw",
   "id": "e1027a44-96ce-4990-a30c-7979e7bf92c0",
   "title": "What topics does the wiki cover?",
   "created_at": "2026-09-01T21:15:07.221Z",
-  "updated_at": "2026-09-06T15:57:10.199Z",
+  "updated_at": "2026-09-06T16:03:11.780Z",
   "resource_scope": null,
   "messages": [
     {
@@ -231,6 +232,47 @@
         "checkable_count": 0
       },
       "at": "2026-09-06T15:57:10.199Z"
+    },
+    {
+      "role": "user",
+      "content": "what contradictions exist in the sample domain?",
+      "at": "2026-09-06T16:03:11.780Z"
+    },
+    {
+      "role": "assistant",
+      "content": "No LLM is configured, so here are the closest matches from the raw sources:\n\n**18-sample-domain.md — Part 2**\n## Intentional contradictions\n\nSample data **deliberately conflicts** to exercise cross-linking, analytics, and human review:\n\n| Topic | Conflict |\n|-------|----------|\n| Read interval | Kickoff slides say **hourly**; spec says **15 minutes** |\n| Battery life | Marketing **2 years**; engineering **~18 months @ 10 nodes** |\n| Battery type | Alex's blog said **CR2450**; product uses **CR2032** |\n| H…\n\n**18-sample-domain.md — Part 1**\n## Intentional contradictions\n\nSample data **deliberately conflicts** to exercise cross-linking, analytics, and human review:\n\n**[SAMPLE]-2026-07-01-ticket-2201-battery-docs.txt — Part 1**\n[SAMPLE] Support ticket #2201 — battery documentation wrong\n\nStatus: CLOSED  \nProduct: Aurora Nova Widget  \nCustomer: blog reader (not beta)\n\n---\n\nCUSTOMER (2026-07-01):\nAlex's teardown blog listed CR2450. Your spec says CR2032. Which is correct?\n\nAGENT (Mira):\nCR2032 is correct. Blog corrected 2026-06-20. Wiki page updated.\n\nCUSTOMER:\nMarketing still says 2 year battery. Forum says 18 months.\n\nAG…",
+      "sources": [
+        {
+          "doc_path": "18-sample-domain.md",
+          "title": "18-sample-domain.md",
+          "heading": "Part 2",
+          "score": 5
+        },
+        {
+          "doc_path": "samples/support/[SAMPLE]-2026-07-01-ticket-2201-battery-docs.txt",
+          "title": "[SAMPLE]-2026-07-01-ticket-2201-battery-docs.txt",
+          "heading": "Part 1",
+          "score": 3
+        },
+        {
+          "doc_path": "samples/articles/[SAMPLE]-2026-06-17-broken-markdown-export.md",
+          "title": "[SAMPLE]-2026-06-17-broken-markdown-export.md",
+          "heading": "Part 1",
+          "score": 2
+        },
+        {
+          "doc_path": "samples/articles/[SAMPLE]-2026-07-11-wiki-compiler-heuristic-notes.md",
+          "title": "[SAMPLE]-2026-07-11-wiki-compiler-heuristic-notes.md",
+          "heading": "Part 1",
+          "score": 1
+        }
+      ],
+      "faithfulness": {
+        "basis": "extractive",
+        "unsupported_rate": 0,
+        "checkable_count": 0
+      },
+      "at": "2026-09-06T16:03:11.780Z"
     }
   ]
 }
