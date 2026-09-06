@@ -14,6 +14,15 @@ interface RagSettings {
   answer_mode: AnswerMode;
 }
 
+interface RagPreset {
+  id: string;
+  name: string;
+  settings: RagSettings;
+  created_at: string;
+}
+
+let presets: RagPreset[] = [];
+
 function updateRetrievalTuningDisabledState(architecture: Architecture) {
   const disabled = architecture !== 'hybrid';
   document.querySelectorAll<HTMLInputElement>('input[name="retrieval_mode"]').forEach((el) => (el.disabled = disabled));
@@ -61,6 +70,114 @@ function readForm(): RagSettings {
   return result as RagSettings;
 }
 
+function renderPresetSelect() {
+  const select = document.getElementById('rag-preset-select') as HTMLSelectElement;
+  const loadBtn = document.getElementById('rag-preset-load-btn') as HTMLButtonElement;
+  const deleteBtn = document.getElementById('rag-preset-delete-btn') as HTMLButtonElement;
+  const previousValue = select.value;
+  if (!presets.length) {
+    select.innerHTML = '<option value="">No presets saved yet</option>';
+    loadBtn.disabled = true;
+    deleteBtn.disabled = true;
+    return;
+  }
+  select.innerHTML = presets
+    .map((p) => `<option value="${p.id}">${escapeHtml(p.name)}</option>`)
+    .join('');
+  select.value = presets.some((p) => p.id === previousValue) ? previousValue : presets[0].id;
+  loadBtn.disabled = false;
+  deleteBtn.disabled = false;
+}
+
+function escapeHtml(text: string): string {
+  const div = document.createElement('div');
+  div.textContent = text ?? '';
+  return div.innerHTML;
+}
+
+async function loadPresets() {
+  try {
+    const res = await fetch(`${apiBase}/api/settings/rag/presets`);
+    if (!res.ok) throw new Error(`Request failed (${res.status})`);
+    const data = await res.json();
+    presets = data.presets ?? [];
+  } catch {
+    presets = [];
+  }
+  renderPresetSelect();
+}
+
+async function saveAsPreset() {
+  const nameInput = document.getElementById('rag-preset-name-input') as HTMLInputElement;
+  const hint = document.getElementById('rag-preset-hint') as HTMLElement;
+  const name = nameInput.value.trim();
+  if (!name) {
+    (window as any).showToast?.('Give the preset a name first.', 'error');
+    return;
+  }
+  try {
+    const res = await fetch(`${apiBase}/api/settings/rag/presets`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ name, settings: readForm() }),
+    });
+    if (!res.ok) {
+      const err = await res.json().catch(() => ({}));
+      throw new Error(err.error || `Request failed (${res.status})`);
+    }
+    const saved: RagPreset = await res.json();
+    nameInput.value = '';
+    await loadPresets();
+    (document.getElementById('rag-preset-select') as HTMLSelectElement).value = saved.id;
+    hint.textContent = `Saved preset "${saved.name}".`;
+    (window as any).showToast?.('RAG preset saved.');
+  } catch (err: any) {
+    (window as any).showToast?.(err.message || 'Could not save preset.', 'error');
+  }
+}
+
+async function loadSelectedPreset() {
+  const select = document.getElementById('rag-preset-select') as HTMLSelectElement;
+  const hint = document.getElementById('rag-preset-hint') as HTMLElement;
+  if (!select.value) return;
+  try {
+    const res = await fetch(`${apiBase}/api/settings/rag/presets/${encodeURIComponent(select.value)}/apply`, {
+      method: 'POST',
+    });
+    if (!res.ok) {
+      const err = await res.json().catch(() => ({}));
+      throw new Error(err.error || `Request failed (${res.status})`);
+    }
+    fillForm(await res.json());
+    const preset = presets.find((p) => p.id === select.value);
+    hint.textContent = preset ? `Loaded "${preset.name}" -- now the active architecture.` : 'Loaded preset.';
+    (window as any).showToast?.('RAG preset applied.');
+  } catch (err: any) {
+    (window as any).showToast?.(err.message || 'Could not load preset.', 'error');
+  }
+}
+
+async function deleteSelectedPreset() {
+  const select = document.getElementById('rag-preset-select') as HTMLSelectElement;
+  const hint = document.getElementById('rag-preset-hint') as HTMLElement;
+  if (!select.value) return;
+  const preset = presets.find((p) => p.id === select.value);
+  if (!window.confirm(`Delete preset "${preset?.name ?? select.value}"?`)) return;
+  try {
+    const res = await fetch(`${apiBase}/api/settings/rag/presets/${encodeURIComponent(select.value)}`, {
+      method: 'DELETE',
+    });
+    if (!res.ok) {
+      const err = await res.json().catch(() => ({}));
+      throw new Error(err.error || `Request failed (${res.status})`);
+    }
+    await loadPresets();
+    hint.textContent = 'Preset deleted.';
+  } catch (err: any) {
+    (window as any).showToast?.(err.message || 'Could not delete preset.', 'error');
+  }
+}
+
 async function load() {
   try {
     const res = await fetch(`${apiBase}/api/settings/rag`);
@@ -102,4 +219,9 @@ document
   .querySelectorAll<HTMLInputElement>('input[name="architecture"]')
   .forEach((el) => el.addEventListener('change', () => updateRetrievalTuningDisabledState(el.value as Architecture)));
 
+document.getElementById('rag-preset-save-btn')?.addEventListener('click', saveAsPreset);
+document.getElementById('rag-preset-load-btn')?.addEventListener('click', loadSelectedPreset);
+document.getElementById('rag-preset-delete-btn')?.addEventListener('click', deleteSelectedPreset);
+
 load();
+loadPresets();

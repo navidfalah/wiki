@@ -10,12 +10,23 @@ import { PIPELINE_RUNS_DIR, PIPELINE_RUNS_INDEX } from '../paths';
 // Matches PipelineRun.start()'s id format: YYYYMMDD-HHMMSS-<6 hex chars>.
 const RUN_ID_RE = /^\d{8}-\d{6}-[0-9a-f]{6}$/;
 
+/** Which LLM profile (model/base_url) was active for each purpose when this
+ * run started -- see compiler/main.py's _pipeline_settings_snapshot(). Frozen
+ * at start time, so it still reflects reality even if the Settings page is
+ * changed while the run is in progress or afterward. */
+export interface PipelineRunSettings {
+  default?: { model: string; base_url: string; available: boolean };
+  thinking?: { model: string; base_url: string; available: boolean };
+  embedding?: { model: string };
+}
+
 export interface PipelineRunSummary {
   id: string;
   started_at: string;
   finished_at: string | null;
   status: 'running' | 'success' | 'error';
   force: boolean;
+  settings?: PipelineRunSettings;
 }
 
 export interface PipelineRunStep {

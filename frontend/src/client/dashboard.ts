@@ -146,6 +146,31 @@ function renderBuildSteps(liveSteps: LiveStep[]) {
   }).join('');
 }
 
+interface RunSettings {
+  default?: { model: string; base_url: string; available: boolean };
+  thinking?: { model: string; base_url: string; available: boolean };
+  embedding?: { model: string };
+}
+
+/** Shows which LLM profile (per purpose) the running/last build actually
+ * used -- see backend/src/lib/pipelineRuns.ts's PipelineRunSettings. Lets
+ * the "Run compiler" panel answer "which settings is this working with"
+ * without opening the Pipelines page's run detail. */
+function renderSettingsHint(settings: RunSettings | null | undefined) {
+  const hint = document.getElementById('build-settings-hint');
+  if (!hint) return;
+  if (!settings?.default) {
+    hint.textContent = '';
+    return;
+  }
+  const parts = [`default: ${settings.default.model}`];
+  if (settings.thinking && settings.thinking.model !== settings.default.model) {
+    parts.push(`thinking: ${settings.thinking.model}`);
+  }
+  if (settings.embedding?.model) parts.push(`embedding: ${settings.embedding.model}`);
+  hint.textContent = `Working with ${parts.join(' · ')}.`;
+}
+
 let buildPollTimer: number | undefined;
 let currentRunId: string | null = null;
 
@@ -161,6 +186,7 @@ async function pollBuildSteps() {
   try {
     const run = await apiFetch(`/api/pipelines/${encodeURIComponent(currentRunId)}`);
     renderBuildSteps(run.steps ?? []);
+    renderSettingsHint(run.settings);
   } catch {
     /* transient -- keep the last rendered state and try again next tick */
   }
@@ -314,6 +340,7 @@ function initBuild() {
 
     currentRunId = null;
     renderBuildSteps([]);
+    renderSettingsHint(null);
     setMessage('Starting compiler pipeline…');
     setBadge('running');
     runButton.disabled = true;

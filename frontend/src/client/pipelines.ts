@@ -6,12 +6,19 @@ function escapeHtml(text: string): string {
   return div.innerHTML;
 }
 
+interface RunSettings {
+  default?: { model: string; base_url: string; available: boolean };
+  thinking?: { model: string; base_url: string; available: boolean };
+  embedding?: { model: string };
+}
+
 interface RunSummary {
   id: string;
   started_at: string;
   finished_at: string | null;
   status: 'running' | 'success' | 'error';
   force: boolean;
+  settings?: RunSettings;
 }
 
 interface RunStep {
@@ -100,8 +107,8 @@ function renderList() {
             ${statusBadge(run.status)}
           </div>
           <div class="flex items-center justify-between gap-2 text-xs text-gray-500">
-            <span>${escapeHtml(formatTime(run.started_at))}${run.force ? ' · forced' : ''}</span>
-            <span>${escapeHtml(formatDuration(run.started_at, run.finished_at))}</span>
+            <span class="truncate">${escapeHtml(formatTime(run.started_at))}${run.force ? ' · forced' : ''}${run.settings?.default?.model ? ` · ${escapeHtml(run.settings.default.model)}` : ''}</span>
+            <span class="shrink-0">${escapeHtml(formatDuration(run.started_at, run.finished_at))}</span>
           </div>
         </button>
         <button
@@ -211,6 +218,31 @@ function renderStepDataHtml(data: Record<string, unknown> | null | undefined): s
     </details>`;
 }
 
+/** Which LLM profile (model per purpose) a run started with -- see
+ * backend/src/lib/pipelineRuns.ts's PipelineRunSettings, frozen by
+ * compiler/main.py at run start so it reflects what the run actually used
+ * even if the Settings page changes afterward. */
+function renderSettingsHtml(settings: RunSettings | undefined): string {
+  const rows: Array<[string, string]> = [];
+  if (settings?.default) {
+    rows.push(['Default', settings.default.model + (settings.default.available ? '' : ' (no API key configured)')]);
+  }
+  if (settings?.thinking) {
+    rows.push(['Thinking', settings.thinking.model + (settings.thinking.available ? '' : ' (no API key configured)')]);
+  }
+  if (settings?.embedding) {
+    rows.push(['Embedding', settings.embedding.model]);
+  }
+  if (!rows.length) return '';
+  return `
+    <div class="mt-3 rounded-lg border border-gray-100 bg-gray-50 px-3 py-2">
+      <p class="text-[11px] font-semibold uppercase tracking-wide text-gray-500">Settings used</p>
+      <ul class="mt-1 flex flex-col gap-0.5 text-xs text-gray-700">
+        ${rows.map(([label, value]) => `<li><span class="font-medium text-gray-900">${escapeHtml(label)}:</span> ${escapeHtml(value)}</li>`).join('')}
+      </ul>
+    </div>`;
+}
+
 function renderDetail(run: RunDetail) {
   const container = document.getElementById('pipeline-run-detail')!;
 
@@ -283,6 +315,7 @@ function renderDetail(run: RunDetail) {
       </div>
       ${statusBadge(run.status)}
     </div>
+    ${renderSettingsHtml(run.settings)}
     ${run.error ? `<p class="mt-3 rounded-lg bg-red-50 px-3 py-2 text-xs text-red-700">${escapeHtml(run.error)}</p>` : ''}
     <div class="mt-4 flex flex-col gap-2">${stepsHtml}</div>
     <h3 class="mt-5 text-sm font-semibold text-gray-900">Token usage</h3>

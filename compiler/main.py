@@ -9,6 +9,7 @@ import sys
 import time
 from collections.abc import Callable
 from pathlib import Path
+from typing import Any
 
 from rich.console import Console
 from rich.panel import Panel
@@ -435,6 +436,21 @@ def step_link(
     return written
 
 
+def _pipeline_settings_snapshot(llm: LLMClient) -> dict[str, Any]:
+    """Which LLM profile (model/base_url) is active for each purpose the
+    pipeline uses, so a run's detail view on the Pipelines page can show
+    what it actually ran with -- see PipelineRun.settings. ``llm`` is the
+    already-built default-purpose client (require_llm()'s result); thinking
+    gets its own lightweight client since step 3 hasn't built one yet.
+    """
+    thinking = LLMClient.for_purpose("thinking")
+    return {
+        "default": {"model": llm.model, "base_url": llm.base_url, "available": llm.available},
+        "thinking": {"model": thinking.model, "base_url": thinking.base_url, "available": thinking.available},
+        "embedding": {"model": os.getenv("OPENAI_EMBEDDING_MODEL", "text-embedding-3-small")},
+    }
+
+
 def run_pipeline(
     *,
     force: bool = False,
@@ -484,7 +500,7 @@ def run_pipeline(
         )
     )
 
-    run = PipelineRun.start(force=force)
+    run = PipelineRun.start(force=force, settings=_pipeline_settings_snapshot(llm))
     # Machine-readable marker, not a Rich-formatted log line: the Node
     # bridge (pythonBridge.ts's streamCompilerBuild) parses this out of
     # stdout to learn the run id, so the dashboard can poll
