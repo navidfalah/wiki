@@ -28,6 +28,7 @@ python main.py --force           # ignore MD5 cache
 | Flag | Effect |
 |------|--------|
 | `--force` | Reprocess every raw file; regenerate all topics; full re-link |
+| `--web-search` | Step 3 also searches the internet per dirty topic and adds hits as extra `source_type="web"` chunks — off by default, see [37-web-search-enrichment.md](./37-web-search-enrichment.md) |
 
 Requires `OPENAI_API_KEY` — the pipeline calls `require_llm()` at start and exits `1`
 immediately if it's unset. Exit code: `0` on success, `1` if no raw files found or the
@@ -71,8 +72,9 @@ See [06-extraction-and-synthesis.md](./06-extraction-and-synthesis.md) for extra
 
 1. Group all chunks by extracted topic name
 2. Determine **dirty topics** — topics whose source files changed (unless `--force`)
-3. `cleanup_stale_drafts()` — remove draft `.md` files for topics no longer present
-4. For each dirty topic (or all if `--force`): write `compiler/temp_output/{topic-slug}.md`
+3. If `--web-search` is on: search the internet for each dirty topic (all topics if `--force`) and append the hits as extra `source_type="web"` chunk entries (`main.py`'s `step_synthesize()` → `web_search.augment_grouped_with_web_results()`) — see [37-web-search-enrichment.md](./37-web-search-enrichment.md)
+4. `cleanup_stale_drafts()` — remove draft `.md` files for topics no longer present
+5. For each dirty topic (or all if `--force`): write `compiler/temp_output/{topic-slug}.md`
 
 Output: draft markdown with YAML front matter (`id`, `title`, `tags`, `last_updated`).
 
@@ -150,11 +152,47 @@ Aborts Docusaurus build if compiler exits non-zero.
 
 `/api/build/stream` spawns the same `main.py` via `build_runner.py`:
 
-- Query param: `force` (default `false`) — forwarded to `main.py` as `--force`
+- Query params: `force` (default `false`, forwarded to `main.py` as `--force`) and
+  `timeout_seconds` (optional override for the run's time limit)
 - Requires `OPENAI_API_KEY` in the server's environment; `main.py` exits `1` immediately otherwise
 - Streams SSE events: `start`, `log`, `done`, `error`
-- Only one build at a time (`409` if lock held)
+- Only one build at a time — the route acquires `_build_lock` synchronously before
+  returning the `StreamingResponse` (not lazily inside the generator), so two
+  concurrent requests can't both slip past the "already running" check; the loser
+  gets `409`
+- `POST /api/build/stop` kills the in-flight build on demand (`{"stopped": bool}`);
+  the running stream reports it as `done` with `success: false` and
+  `"message": "Build stopped by user."` and releases the lock itself
 - Strips ANSI escape codes from Rich output before streaming
+
+### Failure handling
+
+Every exit path — clean finish, non-zero exit, timeout, user stop, failure to
+spawn, the client disconnecting, or a bug in `build_runner.py` itself — ends in
+exactly one `done` event and always kills the subprocess and clears its
+module-level slot, so a broken run can never wedge `_build_lock` or leave an
+orphaned process running:
+
+| Cause | `error.kind` | `done.success` |
+|-------|--------------|-----------------|
+| Entrypoint missing | `missing_entrypoint` | `false` |
+| `main.py` fails to spawn (OS error) | `spawn_failed` | `false` |
+| Subprocess has no stdout pipe | `no_stdout` | `false` |
+| Exceeds the timeout | `timeout` | `false` |
+| Finishes output but won't exit within the grace period | `exit_wait_timeout` | `false` |
+| Unhandled exception in `build_runner.py` | `unexpected` | `false` |
+| `POST /api/build/stop` called | *(no error event)* | `false` |
+| Client disconnects mid-stream | *(no event — generator is cancelled)* | — |
+| Normal non-zero exit code | *(no error event, just `done`)* | `false` |
+
+**Timed out builds:** killed (SIGTERM, then SIGKILL after a 10s grace period) if
+the run exceeds `DEFAULT_BUILD_TIMEOUT_SECONDS` (1800s / 30 min), or the
+`COMPILER_BUILD_TIMEOUT_SECONDS` env var / `timeout_seconds` query param when set.
+
+**Client disconnect:** if the SSE connection drops (browser closed, network
+hiccup), FastAPI cancels the generator; `stream_compiler_build` catches the
+resulting `CancelledError`, kills the subprocess, and re-raises — no zombie
+process is left running against a closed pipe.
 
 ## Next
 

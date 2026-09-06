@@ -44,6 +44,7 @@ import { deletePipelineRun, getPipelineRun, listPipelineRuns } from '../lib/pipe
 import { isBuildRunning, runCli, stopBuild, streamChat, streamCompilerBuild } from '../lib/pythonBridge';
 import { createFolder, deleteFile, deleteFolder, discoverRawFolders, FolderError, moveFile, uploadFiles } from '../lib/rawFolders';
 import {
+  AUDIO_PREVIEW_EXTENSIONS,
   computeMd5,
   discoverRawSourceFiles,
   IMAGE_PREVIEW_EXTENSIONS,
@@ -266,6 +267,7 @@ export function registerRoutes(app: Express): void {
       const ext = path.extname(filePath).toLowerCase();
       const isText = TEXT_PREVIEW_EXTENSIONS.has(ext);
       const isImage = IMAGE_PREVIEW_EXTENSIONS.has(ext);
+      const isAudio = AUDIO_PREVIEW_EXTENSIONS.has(ext);
       const content = isText ? fs.readFileSync(filePath, 'utf-8') : null;
       const md5 = computeMd5(filePath);
       const state = loadState();
@@ -279,6 +281,7 @@ export function registerRoutes(app: Express): void {
         content,
         is_text: isText,
         is_image: isImage,
+        is_audio: isAudio,
         is_pdf: ext === '.pdf',
         mime: mimeTypeFor(filePath),
         raw_url: `/api/raw-files/raw/${rel.split('/').map(encodeURIComponent).join('/')}`,
@@ -583,6 +586,7 @@ export function registerRoutes(app: Express): void {
     const useCorrections =
       req.query.use_corrections !== undefined ? req.query.use_corrections === 'true' : pipelineDefaults.use_corrections;
     const redactPii = req.query.redact_pii !== undefined ? req.query.redact_pii === 'true' : pipelineDefaults.redact_pii;
+    const webSearch = req.query.web_search !== undefined ? req.query.web_search === 'true' : pipelineDefaults.web_search;
 
     logEvent(
       req.user?.username,
@@ -593,6 +597,7 @@ export function registerRoutes(app: Express): void {
         criticPass ? `critic pass${criticSamples && criticSamples > 1 ? ` x${criticSamples}` : ''}${criticRegenerate ? ' +regen' : ''}` : null,
         useCorrections ? 'use corrections' : null,
         redactPii ? 'redact PII' : null,
+        webSearch ? 'web search' : null,
       ]
         .filter(Boolean)
         .join(' · '),
@@ -605,6 +610,7 @@ export function registerRoutes(app: Express): void {
       criticRegenerate,
       useCorrections,
       redactPii,
+      webSearch,
     });
   });
 
@@ -729,6 +735,29 @@ export function registerRoutes(app: Express): void {
       const detail = getResourceDetail(sourcePath, OUTPUT_DIR, RAW_DIR);
       if (!detail) throw new HttpError(404, `Resource not found: ${sourcePath}`);
       res.json(detail);
+    }),
+  );
+
+  // --- Review queue (bridged to active_learning.py, task #9) ---------------
+
+  app.get(
+    '/api/review-queue',
+    wrap(async (_req, res) => {
+      res.json(await runCli('review-queue'));
+    }),
+  );
+
+  app.post(
+    '/api/review-queue/correct',
+    wrap(async (req, res) => {
+      try {
+        const { claim_id: claimId, group_id: groupId, verdict, note, quote } = req.body ?? {};
+        const result = await runCli('review-correct', { claim_id: claimId, group_id: groupId, verdict, note, quote });
+        logEvent(req.user?.username, 'Recorded review correction', String(claimId ?? ''));
+        res.status(201).json(result);
+      } catch (err: any) {
+        throw new HttpError(400, err.message);
+      }
     }),
   );
 
@@ -929,6 +958,139 @@ export function registerRoutes(app: Express): void {
       } catch {
         res.json({ reachable: false, base_url: baseUrl });
       }
+    }),
+  );
+
+  // --- Active-learning review queue (bridged to active_learning.py) --------
+
+  app.get(
+    '/api/review/candidates',
+    wrap(async (_req, res) => {
+      res.json(await runCli('review-candidates'));
+    }),
+  );
+
+  app.get(
+    '/api/review/corrections',
+    wrap(async (_req, res) => {
+      res.json(await runCli('review-corrections-list'));
+    }),
+  );
+
+  app.post(
+    '/api/review/corrections',
+    wrap(async (req, res) => {
+      const { claim_id: claimId, group_id: groupId, verdict, note, quote } = req.body ?? {};
+      try {
+        const result = await runCli('review-correction-save', { claim_id: claimId, group_id: groupId, verdict, note, quote });
+        logEvent(req.user?.username, 'Submitted review correction', `${claimId} → ${verdict}`);
+        res.json(result);
+      } catch (err: any) {
+        throw new HttpError(400, err.message);
+      }
+    }),
+  );
+
+  // --- Entity graph (bridged to entity_graph.py) ----------------------------
+
+  app.get(
+    '/api/entity-graph',
+    wrap(async (_req, res) => {
+      res.json(await runCli('entity-graph'));
+    }),
+  );
+
+  // --- External connectors (bridged to connectors_service.py) --------------
+
+  app.get(
+    '/api/connectors',
+    wrap(async (_req, res) => {
+      res.json(await runCli('connectors-catalog'));
+    }),
+  );
+
+  app.post(
+    '/api/connectors/:id/oauth/start',
+    wrap(async (req, res) => {
+      try {
+        const result = await runCli('connectors-oauth-start', { connector_id: req.params.id });
+        res.json(result);
+      } catch (err: any) {
+        if (err.errorType === 'not_configured') throw new HttpError(400, err.message);
+        throw new HttpError(400, err.message);
+      }
+    }),
+  );
+
+  app.post(
+    '/api/connectors/:id/oauth/callback',
+    wrap(async (req, res) => {
+      const { code, state, account_label: accountLabel } = req.body ?? {};
+      try {
+        const result = await runCli('connectors-oauth-callback', { connector_id: req.params.id, code, state, account_label: accountLabel });
+        logEvent(req.user?.username, 'Connected external account', `${req.params.id} → ${accountLabel}`);
+        res.json(result);
+      } catch (err: any) {
+        throw new HttpError(400, err.message);
+      }
+    }),
+  );
+
+  app.post(
+    '/api/connectors/imap/connect',
+    wrap(async (req, res) => {
+      const { account_label: accountLabel, host, password, port, mailbox } = req.body ?? {};
+      try {
+        const result = await runCli('connectors-imap-connect', { account_label: accountLabel, host, password, port, mailbox });
+        logEvent(req.user?.username, 'Connected external account', `imap → ${accountLabel}`);
+        res.json(result);
+      } catch (err: any) {
+        throw new HttpError(400, err.message);
+      }
+    }),
+  );
+
+  app.post(
+    '/api/connectors/:id/items',
+    wrap(async (req, res) => {
+      const { account_label: accountLabel, query, limit } = req.body ?? {};
+      try {
+        const result = await runCli('connectors-items-list', { connector_id: req.params.id, account_label: accountLabel, query, limit });
+        res.json(result);
+      } catch (err: any) {
+        if (err.errorType === 'not_connected') throw new HttpError(409, err.message);
+        if (err.errorType === 'not_configured') throw new HttpError(400, err.message);
+        throw new HttpError(400, err.message);
+      }
+    }),
+  );
+
+  app.post(
+    '/api/connectors/:id/items/import',
+    wrap(async (req, res) => {
+      const { account_label: accountLabel, item_id: itemId, item_title: itemTitle } = req.body ?? {};
+      try {
+        const result = await runCli('connectors-item-import', {
+          connector_id: req.params.id,
+          account_label: accountLabel,
+          item_id: itemId,
+          item_title: itemTitle,
+        });
+        logEvent(req.user?.username, 'Imported item from connector', `${req.params.id} → ${result.raw_path}`);
+        res.json(result);
+      } catch (err: any) {
+        if (err.errorType === 'not_connected') throw new HttpError(409, err.message);
+        throw new HttpError(400, err.message);
+      }
+    }),
+  );
+
+  app.delete(
+    '/api/connectors/:id/accounts/:accountLabel',
+    wrap(async (req, res) => {
+      const result = await runCli('connectors-disconnect', { connector_id: req.params.id, account_label: req.params.accountLabel });
+      logEvent(req.user?.username, 'Disconnected external account', `${req.params.id} → ${req.params.accountLabel}`);
+      res.json(result);
     }),
   );
 

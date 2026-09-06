@@ -98,6 +98,17 @@ def make_image_cache_key(
     return hashlib.sha256(payload).hexdigest()
 
 
+def make_audio_cache_key(audio_bytes: bytes, model: str) -> str:
+    """Stable hash for an exact (audio content, model) combination.
+
+    No system prompt/temperature axis here -- speech-to-text transcription
+    (unlike chat completions) isn't steered by either, so the cache key is
+    just the audio's own content hash plus the model name.
+    """
+    payload = hashlib.sha256(audio_bytes).digest() + f"\0<audio-transcription>\0{model}".encode()
+    return hashlib.sha256(payload).hexdigest()
+
+
 class ResponseCache:
     """SQLite-backed cache for LLM responses."""
 
@@ -179,6 +190,7 @@ class LLMClient:
         )
         self.model = model or os.getenv("OPENAI_MODEL", "gpt-4o-mini")
         self.embedding_model = os.getenv("OPENAI_EMBEDDING_MODEL", "text-embedding-3-small")
+        self.transcription_model = os.getenv("OPENAI_TRANSCRIPTION_MODEL", "whisper-1")
         self.cache = cache or ResponseCache()
         self.cache_enabled = cache_enabled
         self.max_retries = max(1, max_retries)
@@ -576,6 +588,62 @@ class LLMClient:
                 response=content,
             )
         return content
+
+    def transcribe_audio(self, audio_path: Path, *, use_cache: bool | None = None) -> str:
+        """
+        Transcribe an audio file via a speech-to-text completion (Whisper by
+        default; override with OPENAI_TRANSCRIPTION_MODEL).
+
+        Cached separately from generate_response/describe_image, keyed by the
+        audio file's own content hash so re-transcribing the same file (even
+        if renamed/moved) is a cache hit.
+        """
+        if not self.available:
+            raise RuntimeError(
+                "No OPENAI_API_KEY set. Add a key to .env or pass api_key= to LLMClient."
+            )
+
+        audio_bytes = audio_path.read_bytes()
+        cache_on = self.cache_enabled if use_cache is None else use_cache
+        cache_key = make_audio_cache_key(audio_bytes, self.transcription_model)
+
+        if cache_on:
+            cached = self.cache.get(cache_key)
+            if cached is not None:
+                self._record_usage(model=self.transcription_model, cached=True)
+                return cached
+
+        text = ""
+        last_error: Exception | None = None
+        for attempt in range(1, self.max_retries + 1):
+            try:
+                with audio_path.open("rb") as handle:
+                    response = self._get_client().audio.transcriptions.create(
+                        model=self.transcription_model,
+                        file=handle,
+                    )
+                text = (getattr(response, "text", None) or "").strip()
+                self._record_usage(model=self.transcription_model)
+                break
+            except RETRYABLE_EXCEPTIONS as exc:
+                last_error = exc
+                if attempt >= self.max_retries:
+                    raise RuntimeError(
+                        f"Audio transcription failed after {self.max_retries} attempt(s): {last_error}"
+                    ) from last_error
+                time.sleep(self.retry_base_delay * (2 ** (attempt - 1)))
+            except Exception as exc:
+                raise RuntimeError(f"Audio transcription failed (non-retryable): {exc}") from exc
+
+        if cache_on:
+            self.cache.set(
+                cache_key,
+                system_prompt="<audio-transcription>",
+                prompt=f"<audio:{audio_path.name}>",
+                model=self.transcription_model,
+                response=text,
+            )
+        return text
 
     def complete(self, system: str, user: str, temperature: float | None = None) -> str:
         """Backward-compatible alias: system=user order matches prior API."""

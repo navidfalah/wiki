@@ -34,6 +34,9 @@ class FakeLLM:
     def describe_image(self, path: Path, system_prompt: str) -> str:
         return "A whiteboard photo of the MeshSync node topology."
 
+    def transcribe_audio(self, path: Path) -> str:
+        return "Voice memo: MeshSync rejoin storm reproduces at 8 nodes."
+
 
 def test_mixed_source_types_flow_through_pipeline(tmp_path: Path, monkeypatch):
     raw_dir = tmp_path / "raw"
@@ -54,6 +57,9 @@ def test_mixed_source_types_flow_through_pipeline(tmp_path: Path, monkeypatch):
 
     (raw_dir / "data.csv").write_text("node,rssi\nA,-40\nB,-52\n", encoding="utf-8")
 
+    audio_path = raw_dir / "voice-memo.mp3"
+    audio_path.write_bytes(b"ID3 fake mp3 bytes")
+
     static_dir = tmp_path / "static" / "media"
     monkeypatch.setattr(synthesizer.media_ingest, "STATIC_MEDIA_DIR", static_dir)
 
@@ -64,7 +70,7 @@ def test_mixed_source_types_flow_through_pipeline(tmp_path: Path, monkeypatch):
         all_chunks.extend(_chunks_for_file(path, raw_dir, llm))
 
     by_type = {c.source_type for c in all_chunks}
-    assert by_type == {"text", "image", "email", "file"}
+    assert by_type == {"text", "image", "email", "file", "audio"}
 
     extractions_payload = {"files": []}
     for path in sorted(raw_dir.iterdir()):
@@ -92,7 +98,7 @@ def test_mixed_source_types_flow_through_pipeline(tmp_path: Path, monkeypatch):
     assert "MeshSync" in grouped
     entries = grouped["MeshSync"]
     entry_source_types = {e["source_type"] for e in entries}
-    assert entry_source_types == {"text", "image", "email", "file"}
+    assert entry_source_types == {"text", "image", "email", "file", "audio"}
 
     out_dir = tmp_path / "temp_output"
     written, _ = synthesize_topic_wiki_pages(grouped, llm=llm, output_dir=out_dir)
@@ -105,5 +111,7 @@ def test_mixed_source_types_flow_through_pipeline(tmp_path: Path, monkeypatch):
     assert "whiteboard.png" in content and "| image |" in content
     assert "thread.eml" in content and "| email |" in content
     assert "data.csv" in content and "| file |" in content
-    # image defaults to "Low" trust, text/email/file default to "Medium".
+    assert "voice-memo.mp3" in content and "| audio |" in content
+    # image/audio default to "Low" trust, text/email/file default to "Medium".
     assert "| `whiteboard.png` | image | Low |" in content
+    assert "| `voice-memo.mp3` | audio | Low |" in content

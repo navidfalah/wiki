@@ -1,15 +1,24 @@
 const apiBase = document.querySelector('meta[name="api-base"]')?.getAttribute('content') ?? '';
 
+type Architecture = 'hybrid' | 'naive' | 'hyde' | 'fusion' | 'graph' | 'corrective';
 type RetrievalMode = 'bm25' | 'hybrid' | 'hybrid_rerank';
 type AnswerMode = 'auto' | 'extractive';
 
 interface RagSettings {
+  architecture: Architecture;
   retrieval_mode: RetrievalMode;
   top_k: number;
   bm25_k1: number;
   bm25_b: number;
   use_vector_store: boolean;
   answer_mode: AnswerMode;
+}
+
+function updateRetrievalTuningDisabledState(architecture: Architecture) {
+  const disabled = architecture !== 'hybrid';
+  document.querySelectorAll<HTMLInputElement>('input[name="retrieval_mode"]').forEach((el) => (el.disabled = disabled));
+  document.getElementById('retrieval-mode-section')?.classList.toggle('opacity-50', disabled);
+  document.getElementById('vector-store-hint')?.classList.toggle('hidden', !disabled);
 }
 
 function numberFields(): NodeListOf<HTMLInputElement> {
@@ -26,11 +35,15 @@ function fillForm(settings: RagSettings) {
     }
   });
   document
+    .querySelectorAll<HTMLInputElement>('input[name="architecture"]')
+    .forEach((el) => (el.checked = el.value === settings.architecture));
+  document
     .querySelectorAll<HTMLInputElement>('input[name="retrieval_mode"]')
     .forEach((el) => (el.checked = el.value === settings.retrieval_mode));
   document
     .querySelectorAll<HTMLInputElement>('input[name="answer_mode"]')
     .forEach((el) => (el.checked = el.value === settings.answer_mode));
+  updateRetrievalTuningDisabledState(settings.architecture);
 }
 
 function readForm(): RagSettings {
@@ -39,8 +52,10 @@ function readForm(): RagSettings {
     const key = el.dataset.field as keyof RagSettings;
     result[key] = el.type === 'checkbox' ? el.checked : Number(el.value);
   });
+  const architectureInput = document.querySelector<HTMLInputElement>('input[name="architecture"]:checked');
   const retrievalInput = document.querySelector<HTMLInputElement>('input[name="retrieval_mode"]:checked');
   const answerInput = document.querySelector<HTMLInputElement>('input[name="answer_mode"]:checked');
+  result.architecture = (architectureInput?.value ?? 'hybrid') as Architecture;
   result.retrieval_mode = (retrievalInput?.value ?? 'hybrid_rerank') as RetrievalMode;
   result.answer_mode = (answerInput?.value ?? 'auto') as AnswerMode;
   return result as RagSettings;
@@ -83,5 +98,8 @@ async function save() {
 }
 
 document.getElementById('save-rag-arch-btn')?.addEventListener('click', save);
+document
+  .querySelectorAll<HTMLInputElement>('input[name="architecture"]')
+  .forEach((el) => el.addEventListener('change', () => updateRetrievalTuningDisabledState(el.value as Architecture)));
 
 load();
