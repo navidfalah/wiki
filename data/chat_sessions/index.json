@@ -1,12 +1,12 @@
 [
   {
     "id": "e1027a44-96ce-4990-a30c-7979e7bf92c0",
-    "title": "New chat",
+    "title": "hey tell me some email hardware",
     "created_at": "2026-09-01T21:15:07.221Z",
-    "updated_at": "2026-09-10T14:30:21.133Z",
+    "updated_at": "2026-09-10T16:22:02.108Z",
     "resource_scope": null,
     "corpus_source": "wiki",
-    "llm_profile_id": "local-gemma",
-    "message_count": 14
+    "llm_profile_id": "gemini-thinking",
+    "message_count": 18
   }
 ]

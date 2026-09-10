@@ -17,7 +17,7 @@ const { tmpRoot, PIPELINE_RUNS_DIR, PIPELINE_RUNS_INDEX } = vi.hoisted(() => {
 
 vi.mock('../paths', () => ({ PIPELINE_RUNS_DIR, PIPELINE_RUNS_INDEX }));
 
-import { getPipelineRun, reconcileOrphanedPipelineRuns } from './pipelineRuns';
+import { getPipelineRun, markRunAbandoned, reconcileOrphanedPipelineRuns } from './pipelineRuns';
 
 function writeRun(id: string, overrides: Record<string, unknown> = {}) {
   const detail = {
@@ -85,5 +85,39 @@ describe('reconcileOrphanedPipelineRuns', () => {
   it('returns an empty list when there are no runs at all', () => {
     writeIndex([]);
     expect(reconcileOrphanedPipelineRuns()).toEqual([]);
+  });
+});
+
+describe('markRunAbandoned', () => {
+  it('marks a still-running run and its in-flight step, immediately (not waiting for a restart)', () => {
+    writeRun('20260910-161254-b0c4c9');
+    writeIndex([{ id: '20260910-161254-b0c4c9', started_at: 't', finished_at: null, status: 'running', force: true }]);
+
+    const changed = markRunAbandoned('20260910-161254-b0c4c9', 'Interrupted: stopped by user.');
+
+    expect(changed).toBe(true);
+    const run = getPipelineRun('20260910-161254-b0c4c9');
+    expect(run?.status).toBe('error');
+    expect(run?.error).toBe('Interrupted: stopped by user.');
+    expect(run?.steps.find((s) => s.name === '3. Synthesis')?.status).toBe('error');
+    const index = JSON.parse(fs.readFileSync(PIPELINE_RUNS_INDEX, 'utf-8'));
+    expect(index[0].status).toBe('error');
+  });
+
+  it('is a no-op when PipelineRun.finish() already ran (the normal success/error path)', () => {
+    writeRun('20260910-170000-cccccc', { status: 'success', finished_at: 't', error: null });
+
+    const changed = markRunAbandoned('20260910-170000-cccccc', 'should not apply');
+
+    expect(changed).toBe(false);
+    expect(getPipelineRun('20260910-170000-cccccc')?.status).toBe('success');
+  });
+
+  it('returns false for an unknown run id', () => {
+    expect(markRunAbandoned('20260910-180000-dddddd', 'reason')).toBe(false);
+  });
+
+  it('rejects a malformed id rather than touching an arbitrary path', () => {
+    expect(markRunAbandoned('../../etc/passwd', 'reason')).toBe(false);
   });
 });

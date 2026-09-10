@@ -213,16 +213,35 @@ function renderValueHtml(value: unknown): string {
 // doing. `recent` is a small rolling window main.py caps at 20 items,
 // newest last; shown newest-first here since that's what you actually
 // want to watch scroll by.
-function renderStepProgressHtml(progress: RunStep['progress']): string {
+// A rough ETA from elapsed-time-so-far × remaining/done items -- not a
+// model of the pipeline's actual timing (early items are typically
+// slower/faster than later ones, e.g. cache warm-up), just enough to tell
+// "a couple minutes" from "almost done" while a step is running. Returns
+// null until there's at least one completed item to extrapolate from.
+function estimateRemaining(startedAt: string, current: number, total: number): string | null {
+  if (current <= 0 || current >= total) return null;
+  const elapsedMs = Date.now() - new Date(startedAt).getTime();
+  if (elapsedMs <= 0) return null;
+  const remainingMs = (elapsedMs / current) * (total - current);
+  if (remainingMs < 5000) return '<1m left';
+  const minutes = Math.round(remainingMs / 60000);
+  if (minutes < 1) return '<1m left';
+  if (minutes < 60) return `~${minutes}m left`;
+  const hours = Math.round(minutes / 60);
+  return `~${hours}h left`;
+}
+
+function renderStepProgressHtml(startedAt: string, progress: RunStep['progress']): string {
   if (!progress || !progress.recent.length) return '';
   const items = progress.recent
     .slice()
     .reverse()
     .map((item) => `<li class="truncate">${escapeHtml(item)}</li>`)
     .join('');
+  const eta = estimateRemaining(startedAt, progress.current, progress.total);
   return `
     <div class="mt-1.5">
-      <p class="text-[11px] font-medium text-amber-700">${progress.current}/${progress.total} processed</p>
+      <p class="text-[11px] font-medium text-amber-700">${progress.current}/${progress.total} processed${eta ? ` · ${escapeHtml(eta)}` : ''}</p>
       <ul class="mt-1 max-h-40 space-y-0.5 overflow-auto rounded-lg border border-amber-100 bg-amber-50/70 px-2.5 py-1.5 font-mono text-[11px] leading-snug text-amber-900">${items}</ul>
     </div>`;
 }
@@ -290,7 +309,7 @@ function renderDetail(run: RunDetail) {
             <span class="text-xs text-gray-500">${escapeHtml(formatDuration(step.started_at, step.finished_at))}</span>
           </div>
           ${step.detail ? `<p class="mt-0.5 text-xs text-gray-600">${escapeHtml(step.detail)}</p>` : ''}
-          ${step.status === 'running' ? renderStepProgressHtml(step.progress) : ''}
+          ${step.status === 'running' ? renderStepProgressHtml(step.started_at, step.progress) : ''}
           ${step.error ? renderStepErrorHtml(step.error, stepIndex) : ''}
           ${renderStepDataHtml(step.data, stepIndex)}
         </div>

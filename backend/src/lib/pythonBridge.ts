@@ -9,6 +9,7 @@ import type { Response } from 'express';
 import { COMPILER_DIR, PYTHON_BIN } from '../paths';
 import { envOverridesForSpawn } from './llmSettings';
 import { logSystemEvent } from './activityLog';
+import { markRunAbandoned } from './pipelineRuns';
 
 // eslint-disable-next-line no-control-regex
 const ANSI_ESCAPE_RE = /\x1B(?:[@-Z\\-_]|\[[0-?]*[ -/]*[@-~])/g;
@@ -157,6 +158,7 @@ function runBuildNow(res: Response, options: CompilerBuildOptions): void {
   currentChild = child;
 
   let buffer = '';
+  let runId: string | null = null;
   const handleChunk = (chunk: Buffer) => {
     buffer += chunk.toString('utf-8');
     const lines = buffer.split('\n');
@@ -166,7 +168,8 @@ function runBuildNow(res: Response, options: CompilerBuildOptions): void {
       if (!cleaned) continue;
       const runIdMatch = cleaned.match(/^@@RUN_ID@@(.+)$/);
       if (runIdMatch) {
-        sseEvent(res, 'run_id', { run_id: runIdMatch[1] });
+        runId = runIdMatch[1];
+        sseEvent(res, 'run_id', { run_id: runId });
         continue;
       }
       sseEvent(res, 'log', { message: cleaned });
@@ -188,6 +191,16 @@ function runBuildNow(res: Response, options: CompilerBuildOptions): void {
     buildRunning = false;
     currentChild = null;
     stopRequested = false;
+    // A killed/crashed subprocess never gets to call PipelineRun.finish()
+    // itself (SIGTERM in particular: Python only runs its own except/
+    // finally blocks between bytecode instructions, so a signal handler
+    // can't reliably beat a process kill to the punch) -- patch the run's
+    // own status immediately instead of leaving it stuck on "running"
+    // until the next backend restart's reconcileOrphanedPipelineRuns().
+    // A no-op if Python's own run.finish() already wrote success/error.
+    if (runId) {
+      markRunAbandoned(runId, wasStopped ? 'Interrupted: stopped by user.' : `Interrupted: process exited with code ${code}.`);
+    }
     // Success and a user-requested stop are already the Pipelines page's
     // own story (full step-by-step detail); only an unexpected failure is
     // worth surfacing in the general system log too.

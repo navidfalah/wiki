@@ -145,9 +145,28 @@ const BUILD_STEP_NAMES = ['1. Data Reading', '2. Extraction', '3. Synthesis', '4
 interface LiveStep {
   name: string;
   status: 'running' | 'success' | 'error';
+  started_at: string;
   detail: string | null;
   error: string | null;
   progress?: { current: number; total: number; recent: string[] } | null;
+}
+
+// A rough ETA from elapsed-time-so-far × remaining/done items -- not a
+// model of the pipeline's actual timing (early items are typically
+// slower/faster than later ones, e.g. cache warm-up), just enough to tell
+// "a couple minutes" from "almost done" while a step is running. Returns
+// null until there's at least one completed item to extrapolate from.
+function estimateRemaining(startedAt: string, current: number, total: number): string | null {
+  if (current <= 0 || current >= total) return null;
+  const elapsedMs = Date.now() - new Date(startedAt).getTime();
+  if (elapsedMs <= 0) return null;
+  const remainingMs = (elapsedMs / current) * (total - current);
+  if (remainingMs < 5000) return '<1m left';
+  const minutes = Math.round(remainingMs / 60000);
+  if (minutes < 1) return '<1m left';
+  if (minutes < 60) return `~${minutes}m left`;
+  const hours = Math.round(minutes / 60);
+  return `~${hours}h left`;
 }
 
 function stepIcon(status: string): string {
@@ -187,6 +206,8 @@ function renderBuildSteps(liveSteps: LiveStep[]) {
     const expanded = (hasError && expandedErrorSteps.has(name)) || (hasProgress && expandedProgressSteps.has(name));
     const errorFirstLine = step?.error ? step.error.split('\n')[0] : '';
     const progressCounter = step?.progress ? `${step.progress.current}/${step.progress.total}` : '';
+    const eta =
+      step?.status === 'running' && step.progress ? estimateRemaining(step.started_at, step.progress.current, step.progress.total) : null;
     const box = `
       <div class="min-w-0 rounded-lg border ${stepTone(status)} md:flex-1">
         <button
@@ -197,6 +218,7 @@ function renderBuildSteps(liveSteps: LiveStep[]) {
           <span class="flex h-4 w-4 shrink-0 items-center justify-center text-[10px] font-bold">${stepIcon(status)}</span>
           <span class="min-w-0 flex-1 truncate text-xs font-medium">${escapeHtml(name.replace(/^\d+\.\s*/, ''))}</span>
           ${progressCounter ? `<span class="shrink-0 text-[11px] tabular-nums opacity-80">${escapeHtml(progressCounter)}</span>` : ''}
+          ${eta ? `<span class="hidden shrink-0 text-[11px] opacity-70 sm:inline">${escapeHtml(eta)}</span>` : ''}
           ${step?.detail ? `<span class="hidden truncate text-[11px] opacity-80 lg:inline">${escapeHtml(step.detail)}</span>` : ''}
           ${step?.error ? `<span class="truncate text-[11px]">${escapeHtml(errorFirstLine)}</span>` : ''}
           ${hasError ? `<span class="shrink-0 text-[10px] underline opacity-80">${expanded ? 'hide log' : 'view log'}</span>` : ''}
@@ -253,12 +275,21 @@ function stopBuildPolling() {
   }
 }
 
+// Set when polling notices a run it's watching has finished without an SSE
+// 'done' event to tell it so -- i.e. a run resumed via attachToRunningBuild
+// on page load rather than one started from this same page load. Read once
+// by pollBuildSteps' caller-side finish handling below.
+let onBuildFinishedWhilePolling: ((run: any) => void) | null = null;
+
 async function pollBuildSteps() {
   if (!currentRunId) return;
   try {
     const run = await apiFetch(`/api/pipelines/${encodeURIComponent(currentRunId)}`);
     renderBuildSteps(run.steps ?? []);
     renderSettingsHint(run.settings);
+    if (run.status !== 'running' && onBuildFinishedWhilePolling) {
+      onBuildFinishedWhilePolling(run);
+    }
   } catch {
     /* transient -- keep the last rendered state and try again next tick */
   }
@@ -497,6 +528,53 @@ function initBuild() {
       source.close();
     };
   });
+
+  attachToRunningBuildIfAny(runButton, stopButton);
+}
+
+/**
+ * Reattaches to an already-running build on page load -- e.g. the user
+ * started a build, navigated to Wiki, and came back to Dashboard. The run
+ * itself already lives on disk (data/pipeline_runs/<id>.json) independent
+ * of this page; the only thing that resets on navigation is this module's
+ * in-memory `currentRunId`/SSE connection, so all this needs to do is find
+ * the run again and resume polling it -- no separate state store (Redis or
+ * otherwise) required, since the backend was never the part that forgot.
+ * There's no SSE stream to reattach to (that's tied to the one HTTP
+ * response that started it), so pollBuildSteps' terminal-status check
+ * (see onBuildFinishedWhilePolling) is what notices this run finishing.
+ */
+async function attachToRunningBuildIfAny(runButton: HTMLButtonElement, stopButton: HTMLButtonElement) {
+  try {
+    const status = await apiFetch('/api/build/status');
+    if (!status.running) return;
+    const { runs } = await apiFetch('/api/pipelines');
+    const liveRun = (runs ?? []).find((r: any) => r.status === 'running');
+    if (!liveRun) return;
+
+    currentRunId = liveRun.id;
+    setMessage('Reattached to a build already in progress…');
+    setBadge('running');
+    runButton.disabled = true;
+    stopButton.classList.remove('hidden');
+    stopButton.disabled = false;
+    onBuildFinishedWhilePolling = (run) => {
+      stopBuildPolling();
+      onBuildFinishedWhilePolling = null;
+      setMessage(run.status === 'error' ? `Build failed: ${run.error ?? 'unknown error'}` : 'Finished.');
+      setBadge(run.status === 'success' ? 'success' : 'error');
+      runButton.disabled = false;
+      stopButton.classList.add('hidden');
+      if (run.status === 'success') {
+        loadStatCards();
+        loadFiles();
+      }
+    };
+    startBuildPolling();
+  } catch {
+    /* Cannot reach the API right now -- next page load tries again; not
+     * worth a retry loop for a one-time reattachment check. */
+  }
 }
 
 // --- Source folders ------------------------------------------------------

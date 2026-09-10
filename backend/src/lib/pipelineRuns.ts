@@ -65,6 +65,54 @@ export function getPipelineRun(id: string): PipelineRunDetail | null {
   }
 }
 
+function patchIndexStatus(ids: string[], status: string): void {
+  if (!ids.length) return;
+  try {
+    const entries = JSON.parse(fs.readFileSync(PIPELINE_RUNS_INDEX, 'utf-8'));
+    if (Array.isArray(entries)) {
+      const idSet = new Set(ids);
+      const updated = entries.map((e) => (idSet.has(e?.id) ? { ...e, status, finished_at: new Date().toISOString() } : e));
+      fs.writeFileSync(PIPELINE_RUNS_INDEX, JSON.stringify(updated, null, 2));
+    }
+  } catch {
+    // Index is a cache of the per-run files; leave it be if unreadable.
+  }
+}
+
+/**
+ * Marks one run (and any of its steps still "running") as finished with
+ * `reason`, but only if it's still recorded as "running" on disk -- a
+ * no-op if PipelineRun.finish() already ran (the normal success/error
+ * path), so this is safe to call speculatively any time a build's
+ * subprocess exits without knowing whether Python's own cleanup ran.
+ * Returns whether it actually changed anything.
+ */
+export function markRunAbandoned(id: string, reason: string): boolean {
+  if (!RUN_ID_RE.test(id)) return false;
+  const filePath = path.join(PIPELINE_RUNS_DIR, `${id}.json`);
+  if (!fs.existsSync(filePath)) return false;
+  try {
+    const detail = JSON.parse(fs.readFileSync(filePath, 'utf-8')) as PipelineRunDetail;
+    if (detail.status !== 'running') return false;
+    const finishedAt = new Date().toISOString();
+    detail.status = 'error';
+    detail.finished_at = finishedAt;
+    detail.error = reason;
+    for (const step of detail.steps) {
+      if (step.status === 'running') {
+        step.status = 'error';
+        step.finished_at = finishedAt;
+        step.error = reason;
+      }
+    }
+    fs.writeFileSync(filePath, JSON.stringify(detail, null, 2));
+    patchIndexStatus([id], 'error');
+    return true;
+  } catch {
+    return false;
+  }
+}
+
 /**
  * Marks every run still recorded as "running" as failed. Called once at
  * backend startup: this process's in-memory `buildRunning` flag (see
@@ -74,51 +122,17 @@ export function getPipelineRun(id: string): PipelineRunDetail | null {
  * PipelineRun ever got to call finish(). Without this, such a run sits in
  * "running" forever, which is what /api/pipelines/:id's `wasRunning` check
  * and the dashboard's "build in progress" banner both trust blindly.
+ *
+ * A build stopped or crashed *during* this same backend process's uptime
+ * is instead caught immediately by pythonBridge.ts calling
+ * markRunAbandoned() as soon as the subprocess exits -- this only ever
+ * catches what a previous server process left behind.
  */
 export function reconcileOrphanedPipelineRuns(): string[] {
-  const reconciled: string[] = [];
-  const summaries = listPipelineRuns();
-  const orphaned = summaries.filter((s) => s.status === 'running');
-  if (!orphaned.length) return reconciled;
-
-  for (const summary of orphaned) {
-    const filePath = path.join(PIPELINE_RUNS_DIR, `${summary.id}.json`);
-    if (!fs.existsSync(filePath)) continue;
-    try {
-      const detail = JSON.parse(fs.readFileSync(filePath, 'utf-8')) as PipelineRunDetail;
-      const finishedAt = new Date().toISOString();
-      detail.status = 'error';
-      detail.finished_at = finishedAt;
-      detail.error = 'Interrupted: the server process exited (crash or restart) while this run was in progress.';
-      for (const step of detail.steps) {
-        if (step.status === 'running') {
-          step.status = 'error';
-          step.finished_at = finishedAt;
-          step.error = 'Interrupted: the server process exited while this step was running.';
-        }
-      }
-      fs.writeFileSync(filePath, JSON.stringify(detail, null, 2));
-      reconciled.push(summary.id);
-    } catch {
-      // Leave anything unreadable/malformed alone rather than guessing at its shape.
-    }
-  }
-
-  if (reconciled.length) {
-    try {
-      const entries = JSON.parse(fs.readFileSync(PIPELINE_RUNS_INDEX, 'utf-8'));
-      if (Array.isArray(entries)) {
-        const reconciledSet = new Set(reconciled);
-        const updated = entries.map((e) =>
-          reconciledSet.has(e?.id) ? { ...e, status: 'error', finished_at: new Date().toISOString() } : e,
-        );
-        fs.writeFileSync(PIPELINE_RUNS_INDEX, JSON.stringify(updated, null, 2));
-      }
-    } catch {
-      // Index is a cache of the per-run files; leave it be if unreadable.
-    }
-  }
-
+  const orphaned = listPipelineRuns().filter((s) => s.status === 'running');
+  const reconciled = orphaned
+    .filter((summary) => markRunAbandoned(summary.id, 'Interrupted: the server process exited (crash or restart) while this run was in progress.'))
+    .map((summary) => summary.id);
   return reconciled;
 }
 
