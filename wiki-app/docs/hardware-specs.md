@@ -10,7 +10,7 @@ tags:
   - default-read-interval
   - hardware-specs
   - ip-rating
-last_updated: "2026-09-02T06:40:00.109727+00:00"
+last_updated: "2026-09-10T14:38:35.981022+00:00"
 sidebar_label: Hardware Specs
 slug: /hardware-specs
 ---
@@ -20,45 +20,37 @@ slug: /hardware-specs
 # Hardware Specs
 
 ## Overview
-This wiki page outlines the [hardware specifications](./hardware-specifications.md), power budgets, and design assumptions for the [Aurora Nova Widget](./aurora-nova-widget.md), along with relevant cross-references to comparative devices such as the [TeaBuddy puck](./teabuddy.md) and [SenseNode SN-400](./sensenode-sn-400.md).
+This page compiles the [hardware specifications](./hardware-specifications.md), [power budget](./power-budget.md) metrics, and component details for the [Aurora Nova Widget](./aurora-nova-widget.md), along with relevant cross-references to comparative devices such as the [TeaBuddy puck](./teabuddy.md) and [SenseNode SN-400](./sensenode-sn-400.md).
 
 ## Key Details
 
-### Aurora Nova Widget Hardware & Power
-- **Battery Specification:** The device uses a CR2032 coin cell battery with a nominal capacity of 220 mAh (accounting for datasheet variance, rather than an optimistic 240 mAh). 
-- **Read Interval:** The default read interval is 15 minutes (as specified by authoritative [documentation](./documentation.md), correcting an earlier hourly interval mentioned in kickoff materials).
-- **Mesh Protocol:** Utilizes [MeshSync](./meshsync.md) for its [mesh networking](./mesh-networking.md) capabilities.
-- **[Waterproofing](./waterproofing.md) / Enclosure:** The current beta version holds an IP54 rating.
-- **[Power Consumption](./power-consumption.md) Breakdown (10-node stress case mesh size):**
-  - **Sleep State:** 4.2 µA current, 99.7% duty cycle, 0.10 daily mAh.
-  - **Sample + TX State:** 12 mA current, 0.03% duty cycle, 0.05 daily mAh.
-  - **Rejoin Spike:** 180 µA average current, 0.01% duty cycle, 0.04 daily mAh.
-  - **Total Consumption:** Approximately 0.19 mAh/day, supporting an engineering target of roughly 18 months of [battery life](./battery-life.md).
+### Aurora Nova Widget Hardware & Power Specifications
+- **Battery:** CR2032 coin cell battery (nominal 220 mAh capacity). 
+- **Default Read Interval:** 15 minutes (authoritative specification).
+- **Mesh Protocol:** [MeshSync](./meshsync.md).
+- **Ingress Protection (IP) Rating:** IP54 (beta rating).
+- **[Power Consumption](./power-consumption.md) & Current States:**
+  - **Sleep State:** 4.2 µA (99.7% duty cycle, ~0.10 mAh/day).
+  - **Sample + TX State:** 12 mA (0.03% duty cycle, ~0.05 mAh/day).
+  - **Rejoin Spike:** 180 µA average (0.01% duty cycle, ~0.04 mAh/day).
+- **Total Daily Draw & Expected Lifespan:** ~0.19 mAh/day, yielding an engineering-claimed lifespan of approximately 18 months under a stress case of 10 mesh nodes.
+
+&gt; **Contradiction:** 
+&gt; - **Battery Type:** Official design specifications and engineering notes confirm the device uses a CR2032 cell (220 mAh). However, some older [documentation](./documentation.md) and Alex's blog incorrectly reference a CR2450 battery, and early kickoff slides incorrectly listed an hourly read interval. 
+&gt; - **Lifespan Claims:** While engineering models estimate an 18-month lifespan at 10 nodes based on a 15-minute read interval, [marketing](./marketing.md) slides claim "2 years," which assumes 6 nodes, an optimistic cell, and hourly reads.
 
 ## Related Entities
-- **Aurora Nova Widget:** The primary device subject to these hardware and power specifications.
-- **TeaBuddy:** A comparative device (puck) utilizing [BLE](./ble.md) instead of mesh, drawing more power due to haptic features (~0.35 mAh/day across 5 steeps, targeting 12 months). Sam Rivera manages TeaBuddy numbers.
-- **SenseNode SN-400:** An alternative outdoor device featuring an IP67 waterproof rating.
-- **[Mira Chen](./aurora-nova-widget-v2.md) & Jonah Park:** Engineering contributors discussing power budgets, battery capacities, and default read intervals.
-- **Alex:** Author of a blog post containing incorrect battery information.
+- **Aurora Nova Widget:** The primary device utilizing the [MeshSync protocol](./meshsync-protocol.md), CR2032 battery, and IP54 rating.
+- **[Mira Chen](./aurora-nova-widget-v2.md):** Author of the power budget working notes and participant in battery specification validations.
+- **Jonah Park:** Engineering/project participant discussing [battery life](./battery-life.md) claims and stakeholder alignments.
+- **Alex:** Author of a blog post containing incorrect [battery specifications](./battery-specifications.md) (referencing CR2450).
+- **Sam Rivera / TeaBuddy Team:** Creators of the TeaBuddy puck (a [BLE](./ble.md)-based device with haptic draw that uses a different chemistry).
+- **SenseNode (SN-400):** Outdoor-use comparative device featuring an IP67 waterproof rating.
 
 ## Related Concepts
-- **MeshSync:** The proprietary or project-specific mesh networking protocol used by the Nova Widget, which operates with no cloud fee.
-- **Power Budgeting:** Calculating daily mAh consumption based on sleep, transmission, and rejoin duty cycles to project realistic battery lifespans.
-
-## Contradictions
-
-&gt; **Contradiction:** Battery Cell Size
-&gt; - [Power budget](./power-budget.md) working notes and team transcripts confirm the device uses a **CR2032** cell (220 mAh nominal). 
-&gt; - However, an earlier Notion markdown export and an external blog post by Alex incorrectly referenced the larger **CR2450** battery.
-
-&gt; **Contradiction:** Battery Life Marketing Claims vs. Engineering Estimates
-&gt; - Engineering claims an 18-month lifespan based on a 10-node mesh size and a 15-minute read interval (~0.19 mAh/day).
-&gt; - Marketing slides claim a "2-year" lifespan, which assumes an optimized cell, only 6 nodes, and an incorrect hourly read interval.
-
-&gt; **Contradiction:** Default Read Interval
-&gt; - Authoritative specs and current documentation mandate a **15-minute** default read interval.
-&gt; - Initial kickoff slides and early notes incorrectly suggested an **hourly** read interval.
+- **MeshSync:** The underlying [mesh networking](./mesh-networking.md) protocol used by the Nova Widget.
+- **Power Budget:** The calculated daily milliamp-hour (mAh) consumption accounting for sleep, sample/TX, and rejoin states.
+- **Ingress Protection (IP):** Environmental sealing standards (comparing the Nova Widget's IP54 beta rating with the SenseNode's IP67 rating).
 
 ## References & Trust
 

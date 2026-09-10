@@ -8,6 +8,7 @@ import { spawn, ChildProcess } from 'node:child_process';
 import type { Response } from 'express';
 import { COMPILER_DIR, PYTHON_BIN } from '../paths';
 import { envOverridesForSpawn } from './llmSettings';
+import { logSystemEvent } from './activityLog';
 
 // eslint-disable-next-line no-control-regex
 const ANSI_ESCAPE_RE = /\x1B(?:[@-Z\\-_]|\[[0-?]*[ -/]*[@-~])/g;
@@ -24,8 +25,17 @@ let buildRunning = false;
 let currentChild: ChildProcess | null = null;
 let stopRequested = false;
 
+/** At most one build waits behind the running one -- see streamCompilerBuild's
+ * queuing note. A second concurrent request while one is already queued is
+ * rejected rather than piling up further, same as the old flat 409 behavior. */
+let queuedBuild: { res: Response; options: CompilerBuildOptions } | null = null;
+
 export function isBuildRunning(): boolean {
   return buildRunning;
+}
+
+export function isBuildQueued(): boolean {
+  return queuedBuild !== null;
 }
 
 export function stopBuild(): boolean {
@@ -51,20 +61,61 @@ export interface CompilerBuildOptions {
   thinkingProfileId?: string | null;
 }
 
+/**
+ * Streams a compiler build over SSE. If one is already running, this queues
+ * the request (at most one deep) instead of flatly rejecting it: the SSE
+ * connection opens right away with a `queued` event, then transitions into
+ * the normal `start`/`log`/`done` sequence once the current build finishes
+ * and this one is dequeued -- see runQueuedBuildIfAny() in the `close`
+ * handler below. A second request while one is already queued still gets
+ * a 409, so at most two builds (one running, one waiting) are ever tracked.
+ */
 export function streamCompilerBuild(res: Response, options: CompilerBuildOptions): void {
   if (buildRunning) {
-    res.status(409).json({ detail: 'A build is already running' });
+    if (queuedBuild) {
+      res.status(409).json({ detail: 'A build is already running and another is already queued' });
+      return;
+    }
+    res.writeHead(200, {
+      'Content-Type': 'text/event-stream',
+      'Cache-Control': 'no-cache',
+      Connection: 'keep-alive',
+      'X-Accel-Buffering': 'no',
+    });
+    sseEvent(res, 'queued', {
+      message: 'A build is already running -- this one will start automatically once it finishes.',
+    });
+    queuedBuild = { res, options };
+    // If the waiting client disconnects before its turn comes, drop it
+    // rather than writing to a dead response when it's dequeued.
+    res.on('close', () => {
+      if (queuedBuild?.res === res) queuedBuild = null;
+    });
     return;
   }
+  runBuildNow(res, options);
+}
+
+function runQueuedBuildIfAny(): void {
+  if (!queuedBuild) return;
+  const next = queuedBuild;
+  queuedBuild = null;
+  runBuildNow(next.res, next.options);
+}
+
+function runBuildNow(res: Response, options: CompilerBuildOptions): void {
   buildRunning = true;
   stopRequested = false;
 
-  res.writeHead(200, {
-    'Content-Type': 'text/event-stream',
-    'Cache-Control': 'no-cache',
-    Connection: 'keep-alive',
-    'X-Accel-Buffering': 'no',
-  });
+  // A queued request already wrote its SSE headers when it was accepted.
+  if (!res.headersSent) {
+    res.writeHead(200, {
+      'Content-Type': 'text/event-stream',
+      'Cache-Control': 'no-cache',
+      Connection: 'keep-alive',
+      'X-Accel-Buffering': 'no',
+    });
+  }
 
   const {
     force,
@@ -137,16 +188,25 @@ export function streamCompilerBuild(res: Response, options: CompilerBuildOptions
     buildRunning = false;
     currentChild = null;
     stopRequested = false;
+    // Success and a user-requested stop are already the Pipelines page's
+    // own story (full step-by-step detail); only an unexpected failure is
+    // worth surfacing in the general system log too.
+    if (!success && !wasStopped) {
+      logSystemEvent('Compiler build failed', `exit code ${code}`, 'error');
+    }
     res.end();
+    runQueuedBuildIfAny();
   });
 
   child.on('error', (err) => {
     sseEvent(res, 'error', { message: `Failed to start compiler: ${err.message}` });
     sseEvent(res, 'done', { code: 1, success: false });
+    logSystemEvent('Compiler build failed to start', err.message, 'error');
     buildRunning = false;
     currentChild = null;
     stopRequested = false;
     res.end();
+    runQueuedBuildIfAny();
   });
 }
 

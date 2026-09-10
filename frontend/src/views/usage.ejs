@@ -11,12 +11,21 @@
 
 <div id="usage-note" class="mt-4"></div>
 
-<section class="mt-6 rounded-xl border border-gray-200 bg-white shadow-card">
-  <div class="border-b border-gray-100 px-5 py-3">
-    <h2 class="text-sm font-semibold text-gray-900">Daily spend</h2>
-  </div>
-  <div id="usage-daily" class="p-4"></div>
-</section>
+<div class="relative mt-6 grid gap-6 lg:grid-cols-2">
+  <section class="rounded-xl border border-gray-200 bg-white shadow-card">
+    <div class="border-b border-gray-100 px-5 py-3">
+      <h2 class="text-sm font-semibold text-gray-900">Daily estimated cost</h2>
+    </div>
+    <div id="usage-daily-cost-chart" class="p-4"></div>
+  </section>
+  <section class="rounded-xl border border-gray-200 bg-white shadow-card">
+    <div class="border-b border-gray-100 px-5 py-3">
+      <h2 class="text-sm font-semibold text-gray-900">Daily tokens used</h2>
+    </div>
+    <div id="usage-daily-tokens-chart" class="p-4"></div>
+  </section>
+  <div id="usage-chart-tooltip" class="pointer-events-none absolute z-10 hidden rounded-lg bg-gray-900 px-2.5 py-1.5 text-xs text-white shadow-lg"></div>
+</div>
 
 <div class="mt-6 grid gap-6 lg:grid-cols-2">
   <section class="rounded-xl border border-gray-200 bg-white shadow-card">

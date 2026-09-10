@@ -27,6 +27,23 @@
       </label>
       <button type="submit" class="mt-1 rounded-lg bg-accent px-4 py-2 text-sm font-medium text-white hover:bg-accent-dark">Sign in</button>
     </form>
+
+    <div class="mt-4 rounded-lg border border-gray-200 bg-gray-50 px-3 py-2 text-xs text-gray-600">
+      <p>
+        Default login: <code class="rounded bg-white px-1 py-0.5">admin</code> /
+        <code class="rounded bg-white px-1 py-0.5">aurora_admin</code>
+        -- set <code class="rounded bg-white px-1 py-0.5">ADMIN_USERNAME</code>/<code class="rounded bg-white px-1 py-0.5">ADMIN_PASSWORD</code>
+        before first boot to pick your own, or change it under Settings → Users once signed in.
+      </p>
+      <button type="button" id="use-default-login-btn" class="mt-1.5 font-medium text-accent hover:text-accent-dark">Fill in default login</button>
+    </div>
   </div>
+
+  <script>
+    document.getElementById('use-default-login-btn')?.addEventListener('click', function () {
+      document.querySelector('input[name="username"]').value = 'admin';
+      document.querySelector('input[name="password"]').value = 'aurora_admin';
+    });
+  </script>
 </body>
 </html>

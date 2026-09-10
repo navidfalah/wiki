@@ -98,6 +98,15 @@ export function findUserById(id: string): User | undefined {
   return loadUsersFile().users.find((u) => u.id === id);
 }
 
+export function setPassword(username: string, password: string): void {
+  if (!password || password.length < 8) throw new UserError('Password must be at least 8 characters');
+  const data = loadUsersFile();
+  const user = data.users.find((u) => u.username.toLowerCase() === username.toLowerCase());
+  if (!user) throw new UserError(`User not found: ${username}`);
+  user.password_hash = bcrypt.hashSync(password, 10);
+  saveUsersFile(data);
+}
+
 /**
  * Deletes a user, refusing to remove the account making the request or the
  * last remaining admin -- either would leave the app with no way back in

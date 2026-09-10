@@ -10,7 +10,7 @@ tags:
   - costtooling-tradeoff
   - cr2032
   - engineering-timeline
-last_updated: "2026-09-02T06:39:57.405524+00:00"
+last_updated: "2026-09-10T14:38:33.224666+00:00"
 sidebar_label: Hardware Specifications
 slug: /hardware-specifications
 ---
@@ -20,50 +20,37 @@ slug: /hardware-specifications
 # Hardware Specifications
 
 ## Overview
-This document outlines the [hardware](./hardware.md) specifications, electrical components, power budgeting, and physical enclosures for the [Aurora Nova Widget](./aurora-nova-widget.md) (including the [Nova Widget Mini](./nova-widget-mini.md) and v2 beta units). The device is an open-source soil moisture and temperature sensor utilizing a local [MeshSync](./meshsync.md) mesh network with no mandatory cloud dependency.
+This wiki page outlines the [hardware](./hardware.md) specifications, design parameters, electrical components, and known limitations for the [Aurora Nova Widget](./aurora-nova-widget.md) and its variants (such as the [Nova Widget Mini](./nova-widget-mini.md) and v2 beta units). The device is an open-source soil moisture and temperature sensor utilizing a local [MeshSync](./meshsync.md) mesh network without mandatory cloud dependencies.
 
 ## Key Details
-
-### Electrical & Core Components
-- **MCU:** nRF52840
-- **Probe:** Capacitive soil probe (30mm length)
-- **Battery Type:** CR2032 × 1. 
-  - *Note:* Hardware revision C features an updated battery holder that fixes a known rattle issue.
-- **Reading Interval:** 15-minute default interval. (Older [documentation](./documentation.md) referencing an hourly interval was a kickoff mistake).
-
-### Power Budget & Battery Life
-- **Sleep Current:** 4.2 µA (target)
-- **Sample + TX Current:** 12 mA peak at a 15-minute interval
-- **Rejoin Spike:** 110–340 µA (identified as a known issue)
-- **Battery Lifespan Expectations:**
-  - Marketing claims up to 2 years.
-  - Engineering estimates 18 months at 10 nodes.
-
-### Enclosure & Weatherproofing
-- **Enclosure:** PETG beta unit, pebble shape.
-- **Gasket:** Silicone 50A, providing an **IP54** splash-resistant rating (not submersible). An IP65 tooled variant was deferred due to a $7,850 tooling quote, though it remains on the roadmap.
-
-### Mesh & Sensor Limits
-- **Node Limits:** 
-  - Theoretical maximum: 32 nodes.
-  - Beta tested and stable up to 6–8 nodes (running 8 or more nodes can cause rejoin loops).
+- **Microcontroller (MCU):** nRF52840
+- **Soil Probe:** Capacitive soil probe (30mm length on hardware revision C)
+- **Battery Type:** CR2032 (utilizes a CR2032 holder in hardware rev C which fixes rattle issues).
+- **Enclosure & IP Rating:** PETG beta enclosure with a pebble shape and a silicone 50A gasket, providing an IP54 splash-resistant rating. 
+- **Reading Interval:** Default reading interval is **15 minutes**. (Note: Older [documentation](./documentation.md) or kickoff notes incorrectly stated hourly intervals).
+- **[Power Budget](./power-budget.md) & [Battery Life](./battery-life.md):** 
+  - Sleep current target: 4.2 µA
+  - Sample + TX peak current: 12 mA
+  - Rejoin spike: 110–340 µA (identified as a known issue)
+  - [Marketing](./marketing.md) claims a 2-year battery life, whereas engineering estimates 18 months at 10 nodes.
 
 ## Related Entities
-- **Aurora Nova Widget (v2 & Mini):** The primary open-source sensor product lines.
-- **[SenseNode SN-400](./sensenode-sn-400.md):** A competing competitor device offering IP67 outdoor submersion.
-- **[TeaBuddy](./teabuddy.md):** An unrelated local-first kitchen product from a different company.
+- **Aurora Nova Widget / v2:** The primary product line handled by owners [Mira Chen](./aurora-nova-widget-v2.md) ([firmware](./firmware.md)) and Jonah Park (hardware).
+- **[SenseNode](./sensenode.md) ([SN-400](./sensenode.md)):** A competing or neighboring product featuring IP67 outdoor submersion capabilities.
+- **[TeaBuddy](./teabuddy.md):** An unrelated [local-first](./local-first.md) kitchen product by a different company.
+- **Alex:** A team member whose blog post previously propagated an incorrect battery specification.
 
 ## Related Concepts
-- **MeshSync:** Local mesh protocol running on a default 15-minute reading interval.
-- **Cost/Tooling Tradeoff:** The engineering and business decision to use an IP54 PETG enclosure rather than paying for an IP65/IP67 waterproof tooling mold during the beta phase.
+- **MeshSync:** The local mesh protocol used by the device, defaulting to a 15-minute sync interval. Beta tested up to 8 nodes with instability, and a beta recommendation limiting users to 6 nodes prior to MeshSync 0.3.9 (though theoretical capacity reaches 32 nodes).
+- **Cost/Tooling Tradeoff:** The decision to utilize an IP54 splash-resistant rating instead of an IP65/IP67 variant due to tooling costs ($7,850 quote for the IP65 tooled variant).
+- **[OTA Updates](./ota-updates.md) & Export:** Features managed via local mesh and open export schemas.
 
 ## Contradictions
+&gt; **Contradiction:** There are conflicting claims regarding the battery specification across various historical artifacts. While Alex's blog post and some early documentation incorrectly cited the **CR2450** battery, engineering specifications, hardware revision C, and [customer support](./customer-support.md) guides explicitly confirm the correct battery is the **CR2032**. 
 
-&gt; **Contradiction:** Battery Specification Discrepancies
-&gt; Some early blog posts, marketing materials, and Alex's blog incorrectly cited the battery as a CR2450. Internal engineering documentation, hardware revision C specs, and team sync transcripts confirm the correct battery is the **CR2032**.
+&gt; **Contradiction:** Discrepancies exist regarding default reading intervals; while some older documentation mentioned hourly readings, official specifications and consensus confirm a **15-minute** default interval.
 
-&gt; **Contradiction:** Battery Lifespan Estimates
-&gt; Marketing materials claim a 2-year battery lifespan, whereas engineering assessments specify an 18-month minimum lifespan when operating with 10 nodes.
+&gt; **Contradiction:** Conflicting node limits are reported for beta units—some documentation recommends a strict limit of **6 nodes** to avoid rejoin loops, while design fragments note [beta testing](./beta-testing.md) up to **8 nodes** (noting instability) against a theoretical maximum of **32 nodes**.
 
 ## References & Trust
 

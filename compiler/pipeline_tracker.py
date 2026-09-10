@@ -11,7 +11,7 @@ from __future__ import annotations
 
 import json
 import uuid
-from datetime import UTC, datetime
+from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any
 
@@ -22,7 +22,7 @@ MAX_RUNS_KEPT = 100
 
 
 def _utc_now_iso() -> str:
-    return datetime.now(UTC).isoformat()
+    return datetime.now(timezone.utc).isoformat()
 
 
 def _atomic_write_json(path: Path, data: Any) -> None:
@@ -48,7 +48,7 @@ class PipelineRun:
 
     @classmethod
     def start(cls, *, force: bool) -> "PipelineRun":
-        run_id = f"{datetime.now(UTC).strftime('%Y%m%d-%H%M%S')}-{uuid.uuid4().hex[:6]}"
+        run_id = f"{datetime.now(timezone.utc).strftime('%Y%m%d-%H%M%S')}-{uuid.uuid4().hex[:6]}"
         run = cls(run_id, force=force)
         run._save()
         run._update_index()
@@ -65,8 +65,22 @@ class PipelineRun:
                 "detail": None,
                 "error": None,
                 "data": None,
+                "progress": None,
             }
         )
+        self._save()
+
+    def update_step_progress(self, name: str, *, current: int, total: int, recent: list[str]) -> None:
+        """Live per-item activity while a step is still running -- e.g.
+        "42/91: notes/meeting.md" for each chunk Extraction processes --
+        instead of the step just sitting at "running" with no visibility
+        into what it's actually doing. ``recent`` is a small, bounded
+        rolling window (main.py caps it), not the full history, so this
+        stays cheap to persist even across hundreds of items."""
+        idx = self._step_index.get(name)
+        if idx is None:
+            return
+        self.steps[idx]["progress"] = {"current": current, "total": total, "recent": recent}
         self._save()
 
     def finish_step(

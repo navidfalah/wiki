@@ -3,14 +3,14 @@ id: firmware-bugs
 title: Firmware Bugs
 tags:
   - aurora-labs
-  - aurora-labs-support
-  - data-loss-on-factory-reset
   - firmware-bugs
   - jonah-park
   - kevin-ostrander
   - mesh-118
   - nova-59
-last_updated: "2026-09-02T06:39:24.135749+00:00"
+  - nova-widget
+  - sam-okafor
+last_updated: "2026-09-10T14:38:06.716737+00:00"
 sidebar_label: Firmware Bugs
 slug: /firmware-bugs
 ---
@@ -20,30 +20,32 @@ slug: /firmware-bugs
 # Firmware Bugs
 
 ## Overview
-[Firmware](./firmware.md) bugs in [Aurora Labs](./aurora-labs.md) devices involve state-corruption issues triggered by unexpected events, such as power outages or router updates. A prominent issue affecting the [Nova Widget](./nova-widget.md) (firmware version 0.3.8) highlights problems with Wi-Fi credential and state persistence during unclean power losses, leading to connection failures and potential data loss if improper [troubleshooting](./troubleshooting.md) steps are taken.
+[Firmware](./firmware.md) bugs represent critical software-level issues affecting device stability, state persistence, and connectivity in [hardware](./hardware.md) products like the [Aurora Nova Widget v2](./aurora-nova-widget-v2.md) Widget. [Bug Triage](./bug-triage.md) tracking, such as issue NOVA-59, helps identify root causes like state corruption during unclean power losses and links related subsystem failures across different device models and communication [protocols](./protocols.md).
 
 ## Key Details
-- **Nova Widget Issue (NOVA-59):** Beta testers reported that the Nova Widget fails to reconnect to [Wi-Fi Connectivity](./wi-fi-connectivity.md) after a power outage, getting stuck blinking blue. A similar issue previously occurred following a router firmware update in May.
-- **Data Loss Risk:** Full factory resets required to restore connection wipe accumulated sensor history (e.g., three weeks of data). However, a soft Wi-Fi-only reset (holding the side button for 3 seconds) can preserve sensor history.
-- **Workarounds:** Setting a static DHCP reservation for the widget's MAC address can mitigate issues caused by changed IP addresses upon reconnection.
-- **[Debugging](./debugging.md) Requirements:** Router logs, specifically DHCP lease renewal timestamps around the time of the outage, are requested for troubleshooting.
+- **NOVA-59**: A tracked issue on firmware version 0.3.8 where Wi-Fi credentials and connection state fail to survive an unclean power loss, resulting in lost device history.
+- **Workarounds for NOVA-59**:
+  - Setting a static DHCP reservation for the widget's MAC address in the router to prevent connection issues caused by changed IP addresses after reconnect.
+  - Using a soft Wi-Fi-only reset (holding the side button for 3 seconds) instead of a full factory reset to preserve sensor history.
+- **[Troubleshooting](./troubleshooting.md) Requirements**: Router logs—specifically DHCP lease renewal timestamps around the time of the outage—are requested to diagnose Wi-Fi reconnection failures.
 
 ## Related Entities
-- **Kevin Ostrander:** Beta tester (batch 4) who reported the Nova Widget Wi-Fi bug.
-- **[Aurora Labs Support](./aurora-nova-widget-v2.md) / Sam Okafor / Jonah Park:** Support and engineering personnel investigating and triaging the bug.
-- **Nova Widget:** The device model affected by bug NOVA-59.
+- **[Aurora Labs Nova Widget v2](./aurora-nova-widget-v2.md)**: The support team handling customer reports and logging beta feedback.
+- **Kevin Ostrander**: Beta user who reported the Wi-Fi reconnection issue following a power outage.
+- **Sam Okafor**: [Aurora Labs](./aurora-labs.md) team member who looped in [Firmware Development](./firmware-development.md).
+- **Jonah Park**: Firmware engineer investigating state-corruption bug classes.
+- **[Nova Widget](./nova-widget.md)**: The hardware device experiencing firmware behavior issues during the batch 4 [Hardware Beta](./hardware-beta.md).
 
 ## Related Concepts
-- **NOVA-59:** The tracking ID for the Wi-Fi credentials/state persistence bug on firmware version 0.3.8.
-- **[MESH-118](./mesh-118.md):** A related state-corruption bug class affecting relay radios, sharing similarities with the Wi-Fi supplicant state issue.
-- **State Corruption:** A recurring firmware vulnerability category involving how device configurations and connection states are saved and recovered.
+- **State Corruption**: A class of software bugs where device states (such as Wi-Fi supplicant state or relay radio configurations) become corrupted or fail to persist through power interruptions.
+- **[MESH-118](./mesh-118.md)**: A related state-corruption bug class affecting relay radios, sharing similarities with the Wi-Fi subsystem bug identified in NOVA-59.
+- **Firmware Triage**: The process of logging, categorizing, and routing beta feedback to appropriate engineering resources.
 
 ## Contradictions
-*(No contradictions identified in the provided sources.)*
+*(None identified in current sources)*
 
 ## References & Trust
 
 | # | Source | Type | Trust |
 |---|--------|------|-------|
-| 1 | `emails/2026-06-11-nova-59-customer-wifi-complaint.eml` | email | Medium |
-| 2 | `emails/2026-06-11-nova-59-support-triage.eml` | email | Medium |
+| 1 | `notes/ideas/emails/2026-06-11-nova-59-support-triage.eml` | email | Medium |

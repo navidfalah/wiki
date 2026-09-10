@@ -10,7 +10,7 @@ tags:
   - meshsync
   - mira
   - sprint-retrospective
-last_updated: "2026-09-01T21:25:44.200696+00:00"
+last_updated: "2026-09-10T14:40:48.175454+00:00"
 sidebar_label: Sprint Retrospective
 slug: /sprint-retrospective
 ---
@@ -20,39 +20,42 @@ slug: /sprint-retrospective
 # Sprint Retrospective
 
 ## Overview
-This wiki page documents the Sprint 14 retrospective for [Aurora Labs](./aurora-labs.md). It captures team successes, recurring roadblocks, action items, special shoutouts, and items discussed in the parking lot.
+This wiki page documents the Sprint 14 retrospective for [Aurora Labs](./aurora-labs.md). It captures team successes, ongoing friction points, concrete action items, team shoutouts, and parking lot items discussed during the review.
 
 ## Key Details
-- **Sprint Identifier:** Aurora Labs, Sprint 14
-- **What Went Well:**
-  - Mesh network remained stable at 6 nodes in the lab.
-  - The [wiki compiler](./wiki-compiler.md) [heuristic mode](./heuristic-mode.md) functions properly without requiring an API key.
-  - The [Nova widget](./nova-widget.md) enclosure pebble shape was officially approved (Jonah won the discussion).
-- **What Didn't Go Well:**
-  - [Documentation](./documentation.md) repeatedly states an hourly default, whereas the specification dictates 15 minutes.
-  - Support ticket #1042 remains open.
-  - The `index.md` file was not updated prior to the demo.
-- **Action Items:**
-  1. Build a contradiction linter for battery claims.
-  2. Publish the [power budget](./power-budget.md) spreadsheet.
-  3. Invite 3 additional [beta testing](./beta-testing.md) testers from the homelab forum.
-- **Team Shoutouts:**
-  - [Mira](./nova-widget.md) successfully fixed the sleep regression bug in just 2 hours.
-- **Parking Lot:**
-  - [TeaBuddy](./teabuddy.md) partnership ("smart garden tea"): Unanimously rejected.
-  - Rename `MeshSync` to `MeshSink`: Rejected for the 4th consecutive time.
+
+### What Went Well
+* **Mesh Stability:** The network remained stable at 6 nodes in the lab environment.
+* **[Wiki Compiler](./wiki-compiler.md):** [Heuristic mode](./heuristic-mode.md) is now operational and functions without requiring an [API](./api.md) key.
+* **[Hardware Design](./hardware-design.md):** The [Nova Widget](./nova-widget.md) enclosure pebble shape was officially approved (with Jonah winning the design choice).
+
+### What Didn't Go Well
+* **[Documentation](./documentation.md) Drift:** Documentation continues to incorrectly state an hourly default frequency, whereas the official specification calls for a 15-minute interval (noted as recurring).
+* **Support Backlog:** Support ticket #1042 remains open.
+* **Demo Preparation:** The `index.md` file was not updated prior to the team demo.
+
+### Action Items
+1. Develop and implement a contradiction linter specifically for battery claims.
+2. Publish the [power budget](./power-budget.md) spreadsheet.
+3. Invite 3 additional beta testers from the [Homelab](./homelab.md) forum.
+
+### Shoutouts
+* **[Mira](./aurora-nova-widget-v2.md):** Recognized for quickly resolving a sleep regression bug in just 2 hours.
 
 ## Related Entities
-- Aurora Labs
-- Jonah
-- Mira
+* **Aurora Labs:** The organization conducting Sprint 14.
+* **Jonah:** Team member who successfully advocated for the Nova widget pebble shape enclosure.
+* **Mira:** Team member credited with fixing the sleep regression bug.
 
 ## Related Concepts
-- Mesh network stability
-- Wiki compiler heuristic mode
-- Documentation maintenance
-- Contradiction linter
-- Beta testing
+* **Mesh Network Stability:** Achieved a stable benchmark of 6 nodes in the lab.
+* **Documentation Maintenance:** Ongoing challenge regarding synchronization between specs and published documentation (`index.md` updates, interval defaults).
+* **[MeshSync](./meshsync.md) / MeshSink:** A recurring humorous or rejected renaming proposal.
+* **[TeaBuddy](./teabuddy.md):** A rejected "smart garden tea" partnership idea.
+
+## Parking Lot
+* **TeaBuddy Partnership:** Evaluated as "smart garden tea" and rejected unanimously.
+* **MeshSync Renaming:** Proposal to rename `MeshSync` to `MeshSink` was rejected for the 4th time.
 
 ## References & Trust
 

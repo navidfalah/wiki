@@ -2,25 +2,184 @@
 
 <h1 class="text-2xl font-semibold tracking-tight text-gray-900">Resources</h1>
 <p class="mt-1 max-w-2xl text-sm text-gray-600">
-  Browse data/raw/ like a file manager. Files cited by the wiki are badged with what cites them.
-  Drag files onto a folder to move them, or drag files in from outside the browser to upload.
+  Everywhere input data comes from before it flows through the compiler pipeline -- raw files,
+  a connected database, external app connectors, and ingested emails. Connect or add a new
+  source from whichever tab fits it.
 </p>
 
-<section class="mt-4 rounded-xl border border-gray-200 bg-white shadow-card">
-  <div class="flex flex-wrap items-center justify-between gap-2 border-b border-gray-100 px-5 py-2.5">
-    <nav id="breadcrumbs" class="flex min-w-0 flex-wrap items-center gap-1 text-sm"></nav>
-    <div class="flex items-center gap-2">
-      <input id="resource-search" type="search" placeholder="Search this folder…" class="w-44 rounded-lg border border-gray-300 px-2.5 py-1 text-sm focus:border-accent focus:outline-none focus:ring-2 focus:ring-accent/20" />
-      <button id="new-folder-toggle" type="button" class="inline-flex items-center justify-center gap-2 rounded-lg border border-gray-300 bg-white px-3 py-1 text-xs font-medium text-gray-700 hover:bg-gray-50">+ New folder</button>
-      <button id="upload-files-toggle" type="button" title="Supports text, markdown, email (.eml), images, audio, PDF, CSV/TSV, JSON, XML, HTML, YAML, and dozens more formats — office docs, archives, and video are accepted as downloadable attachments." class="inline-flex items-center justify-center gap-2 rounded-lg bg-accent px-3 py-1 text-xs font-medium text-white hover:bg-accent-dark">⬆ Upload files</button>
-      <input id="upload-files-input" type="file" multiple class="hidden" />
-    </div>
-  </div>
-  <div id="new-folder-form" class="hidden mx-5 mt-4 rounded-lg border border-dashed border-gray-300 bg-gray-50 px-3 py-2"></div>
-  <div id="upload-status" class="hidden mx-5 mt-4 rounded-lg border border-dashed border-source-border bg-source-bg/60 px-3 py-2 text-xs text-source"></div>
-  <div id="resource-grid" data-dropzone class="grid grid-cols-3 gap-1 p-4 transition-colors sm:grid-cols-4 md:grid-cols-6 lg:grid-cols-8"></div>
-</section>
+<div class="mt-4 flex flex-wrap items-center gap-1 border-b border-gray-200">
+  <button data-tab="files" class="resource-tab -mb-px border-b-2 border-accent px-3 py-2 text-sm font-medium text-accent">Files</button>
+  <button data-tab="database" class="resource-tab -mb-px border-b-2 border-transparent px-3 py-2 text-sm font-medium text-gray-500 hover:text-gray-700">Database</button>
+  <button data-tab="connectors" class="resource-tab -mb-px border-b-2 border-transparent px-3 py-2 text-sm font-medium text-gray-500 hover:text-gray-700">Connectors</button>
+  <button data-tab="emails" class="resource-tab -mb-px border-b-2 border-transparent px-3 py-2 text-sm font-medium text-gray-500 hover:text-gray-700">Emails</button>
+</div>
 
-<div id="preview-modal" class="hidden"></div>
+<!-- ============================== Files ============================== -->
+<div id="tab-panel-files" class="resource-panel mt-4">
+  <p class="max-w-2xl text-sm text-gray-600">
+    Browse data/raw/ like a file manager. Files cited by the wiki are badged with what cites them.
+    Drag files onto a folder to move them, or drag files in from outside the browser to upload.
+  </p>
+
+  <section class="mt-4 rounded-xl border border-gray-200 bg-white shadow-card">
+    <div class="flex flex-wrap items-center justify-between gap-2 border-b border-gray-100 px-5 py-2.5">
+      <nav id="breadcrumbs" class="flex min-w-0 flex-wrap items-center gap-1 text-sm"></nav>
+      <div class="flex items-center gap-2">
+        <input id="resource-search" type="search" placeholder="Search this folder…" class="w-44 rounded-lg border border-gray-300 px-2.5 py-1 text-sm focus:border-accent focus:outline-none focus:ring-2 focus:ring-accent/20" />
+        <button id="new-folder-toggle" type="button" class="inline-flex items-center justify-center gap-2 rounded-lg border border-gray-300 bg-white px-3 py-1 text-xs font-medium text-gray-700 hover:bg-gray-50">+ New folder</button>
+        <button id="upload-files-toggle" type="button" title="Supports text, markdown, email (.eml), images, audio, PDF, CSV/TSV, JSON, XML, HTML, YAML, and dozens more formats — office docs, archives, and video are accepted as downloadable attachments." class="inline-flex items-center justify-center gap-2 rounded-lg bg-accent px-3 py-1 text-xs font-medium text-white hover:bg-accent-dark">⬆ Upload files</button>
+        <input id="upload-files-input" type="file" multiple class="hidden" />
+      </div>
+    </div>
+    <div id="new-folder-form" class="hidden mx-5 mt-4 rounded-lg border border-dashed border-gray-300 bg-gray-50 px-3 py-2"></div>
+    <div id="upload-status" class="hidden mx-5 mt-4 rounded-lg border border-dashed border-source-border bg-source-bg/60 px-3 py-2 text-xs text-source"></div>
+    <div id="resource-grid" data-dropzone class="grid grid-cols-3 gap-1 p-4 transition-colors sm:grid-cols-4 md:grid-cols-6 lg:grid-cols-8"></div>
+  </section>
+
+  <div id="preview-modal" class="hidden"></div>
+</div>
+
+<!-- ============================= Database ============================= -->
+<div id="tab-panel-database" class="resource-panel mt-4 hidden">
+  <p class="max-w-2xl text-sm text-gray-600">
+    Connect your own PostgreSQL database or a local SQLite file and pull tables straight into
+    <code class="rounded bg-gray-100 px-1 py-0.5">data/raw/connectors/</code> as knowledge -- from there they flow
+    through the normal compiler pipeline (extraction, synthesis, linking) exactly like any other raw source.
+    Credentials are encrypted at rest and only the row counts/column names you choose to import ever leave your
+    database. A sample of each is connected by default (below) so there's something real to browse immediately.
+  </p>
+
+  <div id="sample-db-callout" class="mt-4 rounded-xl border border-indigo-100 bg-indigo-50 p-4 text-sm text-indigo-900">
+    <p class="font-semibold">Don't have a Postgres database handy?</p>
+    <p class="mt-1 text-indigo-800">
+      <code class="rounded bg-white px-1 py-0.5">docker compose up</code> also starts a small seeded PostgreSQL
+      container (service <code class="rounded bg-white px-1 py-0.5">postgres</code>) with a sample Aurora Labs
+      knowledge base -- departments, employees, projects, and KB articles -- so you can try the whole flow end to end
+      without any data of your own. See <code class="rounded bg-white px-1 py-0.5">docker/postgres/init.sql</code> and
+      <code class="rounded bg-white px-1 py-0.5">documentation/39-postgres-database-connector.md</code>.
+    </p>
+    <button type="button" id="use-sample-values-btn" class="mt-3 rounded-lg bg-indigo-900 px-3 py-1.5 text-xs font-medium text-white hover:bg-indigo-800">
+      Fill the form with the sample database's values
+    </button>
+    <p class="mt-2 text-xs text-indigo-700">
+      Pre-fills host <code class="rounded bg-white px-1 py-0.5">postgres</code> (the Compose service name), which is
+      correct when this app is also running via <code class="rounded bg-white px-1 py-0.5">docker compose up</code>.
+      Running the backend outside Docker instead? Change the host to <code class="rounded bg-white px-1 py-0.5">localhost</code>
+      -- the container still publishes port 5432 to the host.
+    </p>
+  </div>
+
+  <section class="mt-4 rounded-xl border border-gray-200 bg-white p-4 shadow-card">
+    <h2 class="text-sm font-semibold text-gray-900">Connect a database</h2>
+    <form id="connect-form" class="mt-3 grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-4">
+      <label class="flex flex-col gap-1 text-xs font-medium text-gray-600">Label
+        <input name="account_label" type="text" required placeholder="my-database" class="rounded-lg border border-gray-300 px-2 py-1.5 text-sm" />
+      </label>
+      <label class="flex flex-col gap-1 text-xs font-medium text-gray-600">Host
+        <input name="host" type="text" required placeholder="localhost" class="rounded-lg border border-gray-300 px-2 py-1.5 text-sm" />
+      </label>
+      <label class="flex flex-col gap-1 text-xs font-medium text-gray-600">Port
+        <input name="port" type="number" value="5432" class="rounded-lg border border-gray-300 px-2 py-1.5 text-sm" />
+      </label>
+      <label class="flex flex-col gap-1 text-xs font-medium text-gray-600">Database
+        <input name="dbname" type="text" required placeholder="aurora_kb" class="rounded-lg border border-gray-300 px-2 py-1.5 text-sm" />
+      </label>
+      <label class="flex flex-col gap-1 text-xs font-medium text-gray-600">User
+        <input name="user" type="text" required placeholder="wiki_reader" class="rounded-lg border border-gray-300 px-2 py-1.5 text-sm" />
+      </label>
+      <label class="flex flex-col gap-1 text-xs font-medium text-gray-600">Schema
+        <input name="schema" type="text" value="public" class="rounded-lg border border-gray-300 px-2 py-1.5 text-sm" />
+      </label>
+      <label class="flex flex-col gap-1 text-xs font-medium text-gray-600">Password
+        <input name="password" type="password" required class="rounded-lg border border-gray-300 px-2 py-1.5 text-sm" />
+      </label>
+      <div class="flex items-end">
+        <button type="submit" class="rounded-lg bg-gray-900 px-3 py-1.5 text-sm font-medium text-white hover:bg-gray-800">Connect</button>
+      </div>
+    </form>
+    <p id="connect-error" class="mt-2 hidden text-xs text-red-600"></p>
+  </section>
+
+  <section class="mt-4 rounded-xl border border-gray-200 bg-white p-4 shadow-card">
+    <h2 class="text-sm font-semibold text-gray-900">Connect a SQLite file</h2>
+    <p class="mt-1 text-xs text-gray-500">
+      Any local <code class="rounded bg-gray-100 px-1 py-0.5">.sqlite</code>/<code class="rounded bg-gray-100 px-1 py-0.5">.db</code>
+      file this server can read -- no server or credentials needed.
+    </p>
+    <form id="connect-sqlite-form" class="mt-3 grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-4">
+      <label class="flex flex-col gap-1 text-xs font-medium text-gray-600">Label
+        <input name="account_label" type="text" required placeholder="my-sqlite-db" class="rounded-lg border border-gray-300 px-2 py-1.5 text-sm" />
+      </label>
+      <label class="flex flex-col gap-1 text-xs font-medium text-gray-600 sm:col-span-2 lg:col-span-2">File path
+        <input name="db_path" type="text" required placeholder="/path/to/database.sqlite" class="rounded-lg border border-gray-300 px-2 py-1.5 text-sm" />
+      </label>
+      <div class="flex items-end">
+        <button type="submit" class="rounded-lg bg-gray-900 px-3 py-1.5 text-sm font-medium text-white hover:bg-gray-800">Connect</button>
+      </div>
+    </form>
+    <p id="connect-sqlite-error" class="mt-2 hidden text-xs text-red-600"></p>
+  </section>
+
+  <section class="mt-4">
+    <h2 class="text-sm font-semibold text-gray-900">Connected databases</h2>
+    <div id="accounts-list" class="mt-3 flex flex-col gap-4"></div>
+  </section>
+
+  <section class="mt-4">
+    <div class="flex items-center gap-2">
+      <h2 class="text-sm font-semibold text-gray-900">Interaction history</h2>
+      <span id="activity-status" class="text-xs text-gray-500"></span>
+      <button id="activity-refresh" type="button" class="ml-auto inline-flex items-center justify-center gap-2 rounded-lg border border-gray-300 bg-white px-3 py-1.5 text-sm font-medium text-gray-700 hover:bg-gray-50">Refresh</button>
+    </div>
+    <p class="mt-1 max-w-2xl text-sm text-gray-600">
+      Every connect, browse, import, and disconnect against a database connected here, newest first --
+      including failed attempts, so a connection or query problem shows up as more than a one-off toast.
+    </p>
+    <div class="mt-3 overflow-hidden rounded-xl border border-gray-200 bg-white shadow-card">
+      <table class="w-full text-left text-sm">
+        <thead class="border-b border-gray-100 bg-gray-50 text-xs text-gray-500">
+          <tr>
+            <th class="px-4 py-2.5 font-medium">When</th>
+            <th class="px-4 py-2.5 font-medium">User</th>
+            <th class="px-4 py-2.5 font-medium">Account</th>
+            <th class="px-4 py-2.5 font-medium">Action</th>
+            <th class="px-4 py-2.5 font-medium">Detail</th>
+            <th class="px-4 py-2.5 font-medium">Duration</th>
+          </tr>
+        </thead>
+        <tbody id="activity-body" class="divide-y divide-gray-100"></tbody>
+      </table>
+    </div>
+  </section>
+</div>
+
+<!-- ============================ Connectors ============================ -->
+<div id="tab-panel-connectors" class="resource-panel mt-4 hidden">
+  <p class="max-w-2xl text-sm text-gray-600">
+    Connect Gmail, Google Drive, or any IMAP mailbox and pull content straight into
+    <code class="rounded bg-gray-100 px-1 py-0.5">data/raw/connectors/</code> -- from there it flows through the
+    normal compiler pipeline like anything else. Credentials are encrypted at rest and never leave this server. See
+    <code class="rounded bg-gray-100 px-1 py-0.5">documentation/34-external-connectors.md</code> for the security
+    model. Connecting a Postgres or SQLite database? Use the <button type="button" data-tab-link="database" class="font-medium text-accent underline">Database</button> tab instead -- it has the guided form and table browser.
+  </p>
+
+  <div id="connectors-list" class="mt-4 flex flex-col gap-4"></div>
+</div>
+
+<!-- ============================== Emails =============================== -->
+<div id="tab-panel-emails" class="resource-panel mt-4 hidden">
+  <div class="flex items-start justify-between gap-4">
+    <p class="max-w-2xl text-sm text-gray-600">Ingested .eml threads treated as first-class knowledge sources.</p>
+    <button id="add-email" class="shrink-0 rounded-lg bg-accent px-3 py-2 text-sm font-medium text-white hover:bg-accent-dark">
+      + Add email
+    </button>
+  </div>
+
+  <div id="emails-list" class="mt-4 grid gap-3">
+    <p class="text-sm text-gray-500">Loading…</p>
+  </div>
+
+  <div id="email-modal" class="hidden"></div>
+</div>
 
 <%- include('partials/foot', { clientScript }) %>

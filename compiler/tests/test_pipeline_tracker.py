@@ -49,6 +49,7 @@ def test_start_step_then_finish_step_updates_saved_state(tmp_path, monkeypatch):
             "detail": None,
             "error": None,
             "data": None,
+            "progress": None,
         }
     ]
 
@@ -59,6 +60,41 @@ def test_start_step_then_finish_step_updates_saved_state(tmp_path, monkeypatch):
     assert step["detail"] == "12 files"
     assert step["data"] == {"count": 12}
     assert step["finished_at"] is not None
+
+
+def test_update_step_progress_persists_current_total_and_recent_items(tmp_path, monkeypatch):
+    runs_dir = _use_tmp_runs_dir(tmp_path, monkeypatch)
+    run = PipelineRun.start(force=False)
+    run.start_step("extract")
+
+    run.update_step_progress("extract", current=3, total=10, recent=["a.md", "b.md", "c.md"])
+
+    saved = json.loads((runs_dir / f"{run.id}.json").read_text())
+    assert saved["steps"][0]["progress"] == {"current": 3, "total": 10, "recent": ["a.md", "b.md", "c.md"]}
+    # Still "running" -- progress updates don't imply completion.
+    assert saved["steps"][0]["status"] == "running"
+
+
+def test_update_step_progress_on_unknown_step_name_is_noop(tmp_path, monkeypatch):
+    _use_tmp_runs_dir(tmp_path, monkeypatch)
+    run = PipelineRun.start(force=False)
+    run.start_step("extract")
+
+    run.update_step_progress("nonexistent", current=1, total=1, recent=["x"])
+
+    assert run.steps[0]["progress"] is None
+
+
+def test_finish_step_leaves_progress_as_the_final_snapshot(tmp_path, monkeypatch):
+    runs_dir = _use_tmp_runs_dir(tmp_path, monkeypatch)
+    run = PipelineRun.start(force=False)
+    run.start_step("extract")
+    run.update_step_progress("extract", current=10, total=10, recent=["j.md"])
+
+    run.finish_step("extract", "success", detail="10 files")
+
+    saved = json.loads((runs_dir / f"{run.id}.json").read_text())
+    assert saved["steps"][0]["progress"] == {"current": 10, "total": 10, "recent": ["j.md"]}
 
 
 def test_finish_step_on_unknown_step_name_is_noop(tmp_path, monkeypatch):

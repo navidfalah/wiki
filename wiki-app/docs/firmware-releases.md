@@ -2,15 +2,15 @@
 id: firmware-releases
 title: Firmware Releases
 tags:
-  - aurora-labs
+  - alex-kim
+  - aurora-nova-widget
+  - ble-pairing-timeout
+  - cr2032-sleep-draw
   - firmware-releases
-  - jonah-park
-  - mira-chen
-  - mqtt-export-schema-v2
-  - parent-election-logging
-  - rejoin-storm-mitigation
+  - haptic-motor-duty-cycle
   - sam-rivera
-last_updated: "2026-09-02T06:39:29.479487+00:00"
+  - teabuddy
+last_updated: "2026-09-10T14:38:10.482924+00:00"
 sidebar_label: Firmware Releases
 slug: /firmware-releases
 ---
@@ -20,42 +20,37 @@ slug: /firmware-releases
 # Firmware Releases
 
 ## Overview
-This page documents official [firmware](./firmware.md) [release notes](./release-notes.md) and updates from [Aurora Labs](./aurora-labs.md), focusing on the [MeshSync](./meshsync.md) firmware line (specifically version 0.3.8 released on July 2, 2026). The release addresses key network stability challenges, introduces diagnostic logging, and outlines specifications for deployment.
+This wiki page documents the v0.9.x [firmware](./firmware.md) release series for the [TeaBuddy](./teabuddy.md) device, capturing critical [bug fixes](./bug-fixes.md), protocol adjustments, and optimizations made across iterative releases in June and July 2026.
 
 ## Key Details
-- **Release Date:** July 2, 2026
-- **Version:** MeshSync 0.3.8
-- **Owners:** [Mira Chen](./aurora-nova-widget-v2.md) (Firmware), Jonah Park (QA Sign-off)
-- **Highlights:**
-  - Rejoin storm mitigation implemented for meshes exceeding 6 nodes (resolving a known issue present since beta).
-  - Parent election logging now exports RSSI and hop count via debug UART.
-  - Power spike on rejoin has been reduced from 340µA to 180µA.
-- **Breaking Changes:**
-  - Default read interval is set to **15 minutes** (correcting earlier kickoff slide errors that stated hourly intervals).
-  - Introduction of [MQTT export](./mqtt-export.md) schema v2, which is optional and restricted to local brokers.
-- **Known Issues:**
-  - Networks with 8 or more nodes remain unstable in field reports (tracked under ticket #2099).
-  - [Battery life](./battery-life.md) projections differ: engineering estimates 18 months at 10 nodes, whereas marketing claims 2 years.
+The v0.9.x series includes several notable [firmware updates](./firmware-updates.md) with specific improvements:
+
+* **v0.9.4 (2026-07-01):**
+  * Resolved ticket TB-142, fixing an issue where the timer continued running after being canceled in the app (reported by Sam Rivera).
+  * Increased the [BLE](./ble.md) pairing timeout to 45 seconds to accommodate compatibility with the [iOS](./ios.md) 18 beta.
+  * Aligned the herbal preset constant to 7:00.
+* **v0.9.3 (2026-06-28):**
+  * Fixed the CoreBluetooth permission prompt order (ticket #2156).
+  * Capped the haptic motor duty cycle at 70% following the UX review conducted by Alex Kim.
+* **v0.9.2 (2026-06-20):**
+  * Released to TestFlight with box QR pairing path support.
+  * Optimized [power management](./power-management.md), reducing CR2032 sleep draw from 12µA to 9µA.
 
 ## Related Entities
-- **Aurora Labs:** Organization responsible for the MeshSync firmware and [Nova Widget](./nova-widget.md) ecosystem.
-- **Mira Chen:** Firmware owner.
-- **Jonah Park:** QA sign-off owner.
-- **Sam Rivera:** Inquired about integrating tea timer synchronization capabilities.
+* **Sam Rivera:** Identified and reported the timer cancellation bug (TB-142).
+* **Alex Kim:** Conducted the UX review that recommended capping the haptic motor duty cycle.
+* **[Aurora Labs](./aurora-labs.md):** Creator/associated entity referenced in [hardware](./hardware.md) context.
 
 ## Related Concepts
-- **MeshSync:** The core mesh synchronization [firmware architecture](./firmware-architecture.md).
-- **Nova Widget:** [Hardware](./hardware.md) device/widget associated with the MeshSync firmware release.
-- **Rejoin Storm Mitigation:** Mechanism to stabilize network reconnections when node counts grow.
-- **MQTT Export Schema v2:** Version 2 of the local broker telemetry and export schema format.
+* **BLE Pairing Timeout:** Adjusted to 45 seconds for iOS 18 beta compatibility.
+* **CR2032 Sleep Draw:** Optimized [power consumption](./power-consumption.md) during sleep states.
+* **Haptic Motor Duty Cycle:** Capped at 70% for improved user experience.
 
 ## Contradictions
-&gt; **Contradiction:** There is a discrepancy regarding battery life expectations. Engineering estimates a battery lifespan of 18 months at 10 nodes, while marketing materials continue to advertise a 2-year lifespan.
-&gt; 
-&gt; **Contradiction:** Kickoff slides incorrectly claimed that the default read interval would be hourly, whereas the actual release mandates a default read interval of 15 minutes.
+&gt; **Contradiction:** The herbal preset constant was aligned to 7:00 in firmware v0.9.4, whereas [marketing](./marketing.md) copy previously stated it was 5:00. This discrepancy was resolved in the firmware only.
 
 ## References & Trust
 
 | # | Source | Type | Trust |
 |---|--------|------|-------|
-| 1 | `dummy-test/2026-07-02-aurora-meshsync-release-notes.md` | text | Unverified |
+| 1 | `dummy-test/2026-07-01-firmware-changelog.md` | text | Unverified |

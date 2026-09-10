@@ -3,14 +3,14 @@ id: aurora-labs
 title: Aurora Labs
 tags:
   - alex
+  - alex-kim
+  - aurora
   - aurora-labs
-  - backlog-grooming
   - battery-life-claims
-  - co-marketing-partnership
-  - contradiction-linter
-  - documentation-maintenance
-  - heuristic-mode
-last_updated: "2026-09-02T06:38:32.630915+00:00"
+  - beta-testing-program
+  - bridge-financing
+  - cheapoco
+last_updated: "2026-09-10T14:36:58.595782+00:00"
 sidebar_label: Aurora Labs
 slug: /aurora-labs
 ---
@@ -21,47 +21,50 @@ slug: /aurora-labs
 
 ## Overview
 
-[Aurora](./aurora-nova-widget-v2.md) Labs is an open-[hardware](./hardware.md) initiative founded by [Mira Chen](./aurora-nova-widget-v2.md) and Jonah Park, operating under the mission statement: *"Open [sensors](./sensors.md) for people who own their data."* Established following a local maker faire in Portland, OR, the company focuses on creating local-first, subscription-free [IoT sensors](./iot-sensors.md) targeted at home gardeners and small-acreage farmers. Their primary product development effort centers around the **[Nova Widget](./nova-widget.md)**, a pebble-shaped sensor designed to monitor soil moisture, air temperature, and ambient light.
+[Aurora](./aurora-nova-widget-v2.md) Labs is an open-sensor [IoT](./iot.md) [hardware](./hardware.md) company founded by [Mira Chen](./aurora-nova-widget-v2.md) and Jonah Park after meeting at a local maker faire. Frustrated by commercial [IoT sensors](./iot-sensors.md) that fail within months and enforce proprietary cloud accounts, they established the company with the mission statement: *"Open sensors for people who own their data."* Their flagship product is the **[Nova Widget](./nova-widget.md)**, a pebble-shaped sensor designed primarily for home gardeners and small-acreage farmers.
 
 ## Key Details
 
-### Product Architecture & Specifications
-- **Hardware Foundation:** Built around the nRF52840 MCU, featuring capacitive [soil probes](./soil-probes.md), an air temperature sensor, and a simple photodiode for ambient light.
-- **Connectivity:** [Bluetooth Low Energy](./bluetooth-low-energy.md) ([BLE](./ble.md)) is utilized for initial phone setup, while a custom mesh protocol codenamed **[MeshSync](./meshsync.md)** provides range extension between nodes.
-- **Power and Battery Targets:** 
-  - Initial kickoff goals aimed for 2 years on a CR2032 battery with hourly readings.
-  - Engineering models project 18 months of life at 10 nodes under a 15-minute read interval, while marketing materials may state a 2-year lifespan.
-- **[Firmware](./firmware.md) & Releases:** MeshSync firmware version 0.3.8 was released on July 2, 2026, introducing rejoin storm mitigation for meshes exceeding 6 nodes and parent election logging.
+### The Nova Widget & Technical Specs
+- **Core Hardware:** Built around the nRF52840 MCU, featuring capacitive soil moisture sensing, air temperature monitoring, and ambient light detection via a simple photodiode.
+- **Connectivity:** [Bluetooth Low Energy](./bluetooth-low-energy.md) ([BLE](./ble.md)) is utilized for initial phone setup, while a custom mesh protocol called **[MeshSync](./meshsync.md)** extends range between nodes. 
+- **Read Intervals:** Default read intervals are set to **15 minutes** (with hourly intervals deprecated following kickoff adjustments).
+- **Power & Battery:** Powered by a **CR2032** coin cell battery. Engineering estimates practical [battery life](./battery-life.md) at 18 months under a 10-node deployment, though [marketing](./marketing.md) rounds and targets up to 2 years.
+- **Enclosures:** Current beta units ship with a 3D-printed PETG enclosure offering IP54 splash resistance. Full IP65 injection-molded tooling ($8k cost) has been temporarily deferred pending bridge financing or tooling funds.
 
-### Operations & Team Roles
-- **Mira Chen:** Manages firmware development, the [MeshSync Protocol](./meshsync-protocol.md), power profiling, and technical strategy.
-- **Jonah Park:** Oversees PCB design, sensor integration, and mechanical/enclosure design (including the pebble-shaped 3D-printed PETG beta enclosures).
-- **Project Scope:** v1 explicitly excludes cameras, GPS, and subscription cloud dashboards, relying instead on CSV and local [MQTT](./mqtt.md) exports.
+### MeshSync Firmware
+- **[Firmware](./firmware.md) Version:** 0.3.8 released in July 2026.
+- **Node Limitations:** While the protocol header supports up to 32 nodes, beta stability is officially recommended for up to 6 nodes (with 8-node deployments improving via rejoin storm mitigations and RSSI-weighted parent election logging).
 
 ## Related Entities
 
-- **Nova Widget:** The flagship sensor product developed by Aurora Labs.
-- **MeshSync:** The custom proprietary [mesh networking](./mesh-networking.md) protocol developed by Mira Chen.
-- **[SenseNode](./sensenode-sn-400.md) ([SenseNode SN-400](./sensenode-sn-400.md)):** A competing commercial product line used as a market benchmark.
-- **[TeaBuddy](./teabuddy.md):** A smart garden tea project associated with an individual named Alex. While a formal product merge was rejected unanimously, a co-marketing partnership has been discussed.
+- **Founders:** Mira Chen (firmware, power profiling, and CEO voice) and Jonah Park (PCB, sensors, [mechanical design](./mechanical-design.md), and enclosure aesthetics).
+- **Competitors:** 
+  - **[SenseNode](./sensenode.md) ([SN-400](./sensenode.md)):** Outdoor waterproof competitor utilizing [LoRaWAN](./lorawan.md), required cloud subscriptions, and an IP67 rating (compared against Aurora's subscription-free local mesh and IP54 beta rating).
+  - **CheapoCo (SoilStick):** USB-powered Wi-Fi competitor.
+- **[TeaBuddy](./teabuddy.md):** A kitchen/lifestyle brand making local-only tea timer pucks ([TeaBuddy Puck](./teabuddy.md)). Led by Alex Kim, the relationship is strictly limited to friendly community banter, co-marketing discussions, and stress-ball gifts, with formal product integrations explicitly rejected as out-of-scope.
 
 ## Related Concepts
 
-- **Local-First IoT:** A design philosophy emphasizing data ownership, local MQTT/CSV exports, and the avoidance of compulsory cloud subscriptions.
-- **Mesh Networking & Rejoin Storms:** The technical challenge of stabilizing larger node clusters (target stability reached at 6 nodes; 8+ nodes remain a field challenge handled via ticketing and version updates).
-- **Power Profiling:** Rigorous tracking of sleep regressions, power spikes during node rejoin events, and public [documentation](./documentation.md) via [power budget](./power-budget.md) spreadsheets.
+- **[MeshSync Protocol](./meshsync-protocol.md):** The custom multi-hop routing and parent election protocol created to link Nova Widgets without requiring external Wi-Fi routers or cloud infrastructure.
+- **Data Sovereignty:** The core design philosophy emphasizing local-only data exports (CSV and local [MQTT](./mqtt.md) broker support) without mandatory subscription dashboards.
+- **[Beta Testing](./beta-testing.md) Program:** A field-testing initiative encompassing 47+ units, relying on community feedback from [homelab](./homelab.md) forums and maker events.
 
 ## Contradictions
 
-&gt; **Contradiction:** Kickoff documentation and early specifications originally stated a default read interval of **hourly** with a 2-year CR2032 battery target, but subsequent [firmware releases](./firmware-releases.md) and technical disclosures clarified that the default read interval is **15 minutes**, yielding an engineering expectation of **18 months** at 10 nodes while marketing materials continue to target or claim a 2-year lifespan.
+&gt; **Contradiction:** Early [documentation](./documentation.md), kickoff slides, and draft materials occasionally cited an hourly read interval or a CR2450 battery (such as an early Amazon draft and an old blog post by Alex/Aurora Labs). Official specs and [firmware updates](./firmware-updates.md) have corrected these to a **15-minute default read interval** and a **CR2032 battery**. Additionally, engineering projects an 18-month battery life at 10 nodes, while marketing materials continue to advertise a 2-year target.
 
 ## References & Trust
 
 | # | Source | Type | Trust |
 |---|--------|------|-------|
-| 1 | `dummy-test/2026-07-02-aurora-meshsync-release-notes.md` | text | Unverified |
+| 1 | `2026-07-02-aurora-meshsync-release-notes.md` | text | Medium |
 | 2 | `notes/2026-05-01-kickoff-notes.md` | text | Medium |
-| 3 | `samples/notes/[SAMPLE]-2026-06-16-sprint-retro-aurora.txt` | text | Unverified |
-| 4 | `samples/notes/[SAMPLE]-2026-07-01-aurora-standup.txt` | text | Unverified |
-| 5 | `samples/notes/[SAMPLE]-2026-07-10-sprint-planning-aurora.txt` | text | Unverified |
-| 6 | `samples/transcripts/[SAMPLE]-2026-07-02-investor-call-fragment.txt` | text | Unverified |
+| 3 | `samples/2026-07-04-investor-update-draft.txt` | text | Unverified |
+| 4 | `samples/articles/[SAMPLE]-2026-07-09-competitive-landscape-q3.md` | text | Unverified |
+| 5 | `samples/notes/[SAMPLE]-2026-06-16-sprint-retro-aurora.txt` | text | Unverified |
+| 6 | `samples/notes/[SAMPLE]-2026-07-01-aurora-standup.txt` | text | Unverified |
+| 7 | `samples/notes/[SAMPLE]-2026-07-10-sprint-planning-aurora.txt` | text | Unverified |
+| 8 | `samples/social/[SAMPLE]-2026-07-02-twitter-thread-scrape.txt` | text | Unverified |
+| 9 | `samples/specs/[SAMPLE]-2026-07-07-meshsync-protocol-header.txt` | text | Unverified |
+| 10 | `samples/transcripts/[SAMPLE]-2026-07-02-investor-call-fragment.txt` | text | Unverified |

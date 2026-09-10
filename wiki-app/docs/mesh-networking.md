@@ -10,7 +10,7 @@ tags:
   - mira
   - node-rejoin-issues
   - sensenode
-last_updated: "2026-09-02T06:40:43.923343+00:00"
+last_updated: "2026-09-10T14:39:11.028560+00:00"
 sidebar_label: Mesh Networking
 slug: /mesh-networking
 ---
@@ -20,28 +20,28 @@ slug: /mesh-networking
 # Mesh Networking
 
 ## Overview
-Mesh [networking](./networking.md) discussions center around the practical deployment of smart home and [sensor hardware](./sensor-hardware.md)—specifically comparing devices like the [Aurora Nova](./aurora-nova-widget-v2.md) and [SenseNode](./sensenode-sn-400.md), and managing scaling constraints on [protocols](./protocols.md) like [MeshSync](./meshsync.md). Real-world user feedback highlights hardware quirks, [firmware](./firmware.md) limitations, and environmental use cases.
+Mesh [networking](./networking.md) in the context of home lab sensor deployments heavily involves comparing [hardware](./hardware.md) ecosystems such as [Aurora Nova](./aurora-nova-widget-v2.md) and [SenseNode](./sensenode.md), alongside management tools like [MeshSync](./meshsync.md). Real-world user discussions highlight [configuration](./configuration.md) limits, version recommendations, and hardware discrepancies.
 
 ## Key Details
-- **Node Scaling Limitations:** Users running 8 or more Aurora Nova widgets on MeshSync have reported node rejoin issues (noted as matching thread 8821). It is recommended by community members (such as [mira](./aurora-nova-widget-v2.md) via GitHub issues) to limit deployments to a maximum of 6 nodes until version 0.3.8 is released.
+- **Node Limits:** Users running 8 or more Aurora Nova widgets on MeshSync report encountering rejoin issues (consistent with [thread 8821](/thread/8821)). It is recommended by community members (referenced via [Mira's](./aurora-nova-widget-v2.md) GitHub issues) to cap deployments at 6 nodes until version 0.3.8 is released.
 - **Hardware Comparison:** 
-  - **SenseNode:** Favored for outdoor deployments due to its IP67 rating.
-  - **Aurora Nova:** Favored because it operates without requiring a subscription.
+  - *SenseNode* is favored for outdoor deployments due to its IP67 rating.
+  - *Aurora Nova* is favored because it operates without a subscription.
+- **Hardware Battery Discrepancy:** A noted discrepancy exists regarding the power source of the Aurora [Nova hardware](./nova-hardware.md)—while Alex's blog states it utilizes a CR2450 battery, physical teardowns reveal it uses a CR2032 battery instead.
 
 ## Related Entities
-- **Aurora Nova:** A widget/sensor hardware line used in mesh setups.
-- **SenseNode:** An alternative IP67-rated sensor node designed for outdoor use.
-- **MeshSync:** The mesh networking protocol/software layer managing node communication.
-- **Mira:** A community member/developer who provided guidance regarding GitHub issues and node limits.
-- **Alex:** A blogger/writer who published [documentation](./documentation.md) regarding device specifications.
+- **Aurora Nova:** Sensor widget hardware operating subscription-free.
+- **SenseNode:** IP67-rated outdoor [sensor hardware](./sensor-hardware.md).
+- **MeshSync:** Management tool/platform used for mesh nodes.
+- **Mira:** Contributor/developer tracking issues on GitHub regarding mesh releases.
+- **Alex:** Blog author who documented [hardware specifications](./hardware-specifications.md).
 
 ## Related Concepts
-- **Node Rejoin Issues:** Problems where nodes drop off the mesh network and fail to reconnect cleanly, particularly when scaling past 6 units on current firmware versions.
-- **Outdoor Sensor Ratings:** The necessity of weatherproofing (IP67) for exterior [home automation](./home-automation.md) [sensors](./sensors.md).
-- **Subscription-free Hardware:** Consumer preference for local-only or subscription-free device ecosystems.
+- **Node Rejoin Issues:** Connectivity and re-establishment problems experienced when exceeding recommended device thresholds on a mesh network.
+- **Outdoor Sensor Weatherproofing:** IP67 ratings for reliable exterior deployments.
 
 ## Contradictions
-&gt; **Contradiction:** There is a discrepancy regarding the power source of the Aurora Nova. Alex's blog states that the device uses a CR2450 battery, whereas a physical teardown reveals that it actually uses a smaller CR2032 battery.
+&gt; **Contradiction:** There is a direct contradiction regarding the Aurora Nova battery specification: Alex's official blog states the device uses a CR2450 battery, whereas physical teardowns of the hardware show it actually uses a CR2032 battery.
 
 ## References & Trust
 

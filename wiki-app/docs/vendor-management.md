@@ -2,7 +2,7 @@
 id: vendor-management
 title: Vendor Management
 tags:
-  - audit-trail-documentation
+  - audit-trail
   - aurora-labs
   - grace-liu
   - mira-chen
@@ -10,7 +10,7 @@ tags:
   - rosa-delgado
   - split-shipment
   - vendor-management
-last_updated: "2026-09-01T21:26:00.229099+00:00"
+last_updated: "2026-09-10T14:41:03.680443+00:00"
 sidebar_label: Vendor Management
 slug: /vendor-management
 ---
@@ -20,28 +20,25 @@ slug: /vendor-management
 # Vendor Management
 
 ## Overview
-Vendor management encompasses the coordination, communication, and logistical planning between organizations and their third-party suppliers. Effective vendor management ensures that production delays are mitigated through rapid problem-solving, such as organizing split shipments and maintaining clear audit trails for exceptions like air freight surcharges.
+Vendor management encompasses the coordination, communication, and logistical planning between organizations and their external suppliers. In the context of [manufacturing](./manufacturing.md) and [supply chain](./supply-chain.md) operations for projects like [MeshSync](./meshsync.md), effective vendor management ensures that component delays are mitigated with minimal impact on production schedules and [testing](./testing.md) [protocols](./protocols.md).
 
 ## Key Details
-- **Order Details:** Order #PC-88213 regarding cell restock delays impacting the [MeshSync](./meshsync.md) batch 5 production.
-- **Shipment Strategy:** A split shipment was arranged, consisting of 600 cells delivered by air on June 8th, 2026.
-- **Testing Requirements:** The shipment accommodates approximately 40 units needed for the 0.3.9 retest of field group units, plus additional buffer capacity for bench testing.
-- **[Documentation](./documentation.md) and Compliance:** Emphasis is placed on maintaining an audit trail, specifically ensuring that any air freight surcharge waivers are properly documented.
+* **Order Reference:** Order `#PC-88213` with PowerCell Supply involving a cell restock delay affecting the [MeshSync Batch 5](./meshsync-batch-5.md) production.
+* **Logistical Solution:** A split shipment approach was agreed upon, consisting of 600 cells delivered via air freight on the 8th of June, 2026.
+* **Testing Requirements:** The initial air freight batch covers the 0.3.9 retest on batch 5 units. While the field group requires only about 40 cells, a larger buffer of 600 cells was requested to accommodate bench testing.
+* **Audit Trail & Compliance:** Mira Chen requested that Grace Liu ensure the air freight surcharge waiver is properly documented for the audit trail, maintaining a clear paper trail despite no anticipated cost changes.
 
 ## Related Entities
-- **Mira Chen:** Staff member at [Aurora Labs](./aurora-labs.md) initiating the logistical adjustments and requesting audit trail documentation.
-- **Rosa Delgado:** Representative at PowerCell Supply coordinating the fast turnaround and shipment details.
-- **Grace Liu:** Team member at Aurora Labs tasked with confirming the documentation of the air freight surcharge waiver.
-- **Aurora Labs:** Organization receiving the shipment and managing the MeshSync batch 5 production.
-- **PowerCell Supply:** Vendor supplying the cells under order #PC-88213.
+* **Mira Chen:** [Aurora Labs](./aurora-labs.md) representative coordinating the shipment and testing buffer requirements (`mira.chen@auroralabs.example`).
+* **Rosa Delgado:** PowerCell Supply representative managing the vendor side and turnaround (`rosa.delgado@powercell-supply.example`).
+* **Grace Liu:** Aurora Labs team member tasked with verifying the audit trail and [documentation](./documentation.md) (`grace.liu@auroralabs.example`).
+* **PowerCell Supply:** External vendor providing cell restock supplies.
+* **Aurora Labs:** Receiving organization managing MeshSync batch production.
 
 ## Related Concepts
-- **Split Shipment:** A logistics strategy used to fulfill portions of an order early via expedited methods (such as air freight) to bypass restock delays and maintain production schedules.
-- **Audit Trail Documentation:** The practice of recording and preserving a paper trail for financial and operational exceptions, such as freight surcharge waivers.
-- **Bench and Field Testing:** Quality assurance phases requiring specific unit allocations (e.g., 0.3.9 retest units).
-
-## Contradictions
-*(No contradictions present in the provided source material.)*
+* **Split Shipment:** A logistical strategy used to deliver urgent portions of an order ahead of the main supply to prevent production or testing bottlenecks.
+* **Audit Trail:** The practice of recording administrative and financial communications, agreements, and waivers to ensure accountability and compliance.
+* **Bench Testing & Field Testing:** [Quality Assurance](./quality-assurance.md) phases requiring specific quantities of component cells prior to full deployment.
 
 ## References & Trust
 

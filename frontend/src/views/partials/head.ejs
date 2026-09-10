@@ -33,50 +33,68 @@
         company: svg('<path d="M3 21h18"></path><path d="M5 21V7l7-4 7 4v14"></path><path d="M9 21v-6h6v6"></path><path d="M9 10h.01"></path><path d="M15 10h.01"></path><path d="M9 14h.01"></path><path d="M15 14h.01"></path>'),
         usage: svg('<circle cx="12" cy="12" r="10"></circle><path d="M12 6v6l4 2"></path>'),
       };
-      const links = [
-        {href: '/dashboard', label: 'Dashboard', icon: icons.dashboard},
-        {href: '/resources', label: 'Resources', icon: icons.link},
-        {href: '/wiki', label: 'Wiki', icon: icons.wiki},
-        {href: '/pipelines', label: 'Pipelines', icon: icons.pipelines},
-        {href: '/pipeline-architecture', label: 'Pipeline Architecture', icon: icons.architecture},
-        {href: '/chat', label: 'Chat', icon: icons.chat},
-        {href: '/rag-architecture', label: 'RAG Architecture', icon: icons.rag},
-        {href: '/emails', label: 'Emails', icon: icons.mail},
-        {href: '/graph', label: 'Graph', icon: icons.graph},
-        {href: '/entities', label: 'Entities', icon: icons.entities},
-        {href: '/analytics', label: 'Analytics', icon: icons.analytics},
-        {href: '/usage', label: 'Usage', icon: icons.usage},
-        {href: '/attention', label: 'Attention', icon: icons.attention},
-        {href: '/review-queue', label: 'Review Queue', icon: icons.review},
-        {href: '/review', label: 'Review', icon: icons.review},
-        {href: '/connectors', label: 'Connectors', icon: icons.connectors},
-        {href: '/database', label: 'Database', icon: icons.database},
-        {href: '/logs', label: 'Logs', icon: icons.logs},
-        {href: '/company', label: 'Company', icon: icons.company},
-        {href: '/settings', label: 'Settings', icon: icons.settings},
-        ...(typeof currentUser !== 'undefined' && currentUser?.role === 'admin' ? [{href: '/users', label: 'Users', icon: icons.users}] : []),
+      const isAdmin = typeof currentUser !== 'undefined' && currentUser?.role === 'admin';
+      // Grouped instead of one flat 20-item list -- same pages, but
+      // clustered so the sidebar reads as a handful of scannable sections
+      // (Knowledge base / Pipeline / Chat / Insights / Data sources / Admin)
+      // instead of a wall of icons with no hierarchy.
+      const navGroups = [
+        { items: [{href: '/dashboard', label: 'Dashboard', icon: icons.dashboard}] },
+        { section: 'Knowledge base', items: [
+          {href: '/wiki', label: 'Wiki', icon: icons.wiki},
+          {href: '/resources', label: 'Resources', icon: icons.link},
+          {href: '/graph', label: 'Graph', icon: icons.graph},
+          {href: '/entities', label: 'Entities', icon: icons.entities},
+        ]},
+        { section: 'Pipeline', items: [
+          {href: '/pipelines', label: 'Pipelines', icon: icons.pipelines},
+          {href: '/pipeline-architecture', label: 'Pipeline Architecture', icon: icons.architecture},
+        ]},
+        { section: 'Chat', items: [
+          {href: '/chat', label: 'Chat', icon: icons.chat},
+          {href: '/rag-architecture', label: 'RAG Architecture', icon: icons.rag},
+        ]},
+        { section: 'Insights', items: [
+          {href: '/analytics', label: 'Analytics', icon: icons.analytics},
+          {href: '/usage', label: 'Usage', icon: icons.usage},
+          {href: '/review-queue', label: 'Review & Attention', icon: icons.review},
+        ]},
+        { section: 'Admin', items: [
+          {href: '/logs', label: 'Logs', icon: icons.logs},
+          {href: '/company', label: 'Company', icon: icons.company},
+          {href: '/settings', label: 'Settings', icon: icons.settings},
+          ...(isAdmin ? [{href: '/users', label: 'Users', icon: icons.users}] : []),
+        ]},
       ];
     %>
 
-    <aside class="shrink-0 border-b border-gray-200 bg-white md:sticky md:top-0 md:h-screen md:w-56 md:border-b-0 md:border-r">
-      <div class="flex items-center gap-2 border-b border-gray-100 px-4 py-4">
+    <aside class="shrink-0 border-b border-gray-200 bg-white md:sticky md:top-0 md:flex md:h-screen md:w-60 md:flex-col md:border-b-0 md:border-r">
+      <div class="flex shrink-0 items-center gap-2 border-b border-gray-100 px-4 py-4">
+        <span class="flex h-7 w-7 shrink-0 items-center justify-center rounded-lg bg-accent text-sm font-semibold text-white">A</span>
         <a href="/dashboard" class="truncate text-base font-semibold tracking-tight text-gray-900 no-underline">
           Aurora Labs Wiki
         </a>
       </div>
       <nav
-        class="flex gap-1 overflow-x-auto px-2 py-2 text-sm md:flex-col md:gap-0.5 md:overflow-visible md:px-3 md:py-3"
+        class="flex gap-1 overflow-x-auto px-2 py-2 text-sm md:min-h-0 md:flex-1 md:flex-col md:gap-4 md:overflow-y-auto md:px-3 md:py-4"
         aria-label="Main">
-        <% links.forEach(function(link) { %>
-          <a href="<%= link.href %>"
-             class="flex shrink-0 items-center gap-2 whitespace-nowrap rounded-lg px-3 py-2 font-medium no-underline transition-colors <%= active === link.label ? 'bg-generated-bg text-generated' : 'text-gray-600 hover:bg-gray-100' %>">
-            <span aria-hidden="true" class="flex h-[18px] w-[18px] shrink-0 items-center justify-center"><%- link.icon %></span>
-            <span><%= link.label %></span>
-          </a>
+        <% navGroups.forEach(function(group) { %>
+          <div class="flex shrink-0 gap-1 md:flex-col md:gap-0.5">
+            <% if (group.section) { %>
+              <p class="hidden px-3 pb-1 text-[11px] font-semibold text-gray-400 md:block"><%= group.section %></p>
+            <% } %>
+            <% group.items.forEach(function(link) { %>
+              <a href="<%= link.href %>"
+                 class="flex shrink-0 items-center gap-2 whitespace-nowrap rounded-lg px-3 py-2 font-medium no-underline transition-colors <%= active === link.label ? 'bg-accent/10 text-accent' : 'text-gray-600 hover:bg-gray-100' %>">
+                <span aria-hidden="true" class="flex h-[18px] w-[18px] shrink-0 items-center justify-center"><%- link.icon %></span>
+                <span><%= link.label %></span>
+              </a>
+            <% }); %>
+          </div>
         <% }); %>
       </nav>
       <% if (typeof currentUser !== 'undefined' && currentUser) { %>
-        <div class="flex items-center justify-between gap-2 border-t border-gray-100 px-4 py-3 text-xs text-gray-500">
+        <div class="flex shrink-0 items-center justify-between gap-2 border-t border-gray-100 px-4 py-3 text-xs text-gray-500">
           <span class="truncate" title="<%= currentUser.username %> (<%= currentUser.role %>)"><%= currentUser.username %></span>
           <form method="POST" action="/logout">
             <button type="submit" class="font-medium text-gray-500 hover:text-gray-900">Log out</button>

@@ -18,6 +18,7 @@ export const CHAT_SESSIONS_INDEX = path.join(CHAT_SESSIONS_DIR, 'index.json');
 export const USERS_FILE = path.join(PROJECT_ROOT, 'data', 'users.json');
 export const SESSIONS_FILE = path.join(PROJECT_ROOT, 'data', 'sessions.json');
 export const ACTIVITY_LOG_FILE = path.join(PROJECT_ROOT, 'data', 'activity_log.json');
+export const CONNECTOR_ACTIVITY_FILE = path.join(PROJECT_ROOT, 'data', 'connector_activity.json');
 export const TEMP_OUTPUT_DIR = path.join(COMPILER_DIR, 'temp_output');
 export const INDEX_JSON = path.join(TEMP_OUTPUT_DIR, 'index.json');
 export const STATIC_MEDIA_DIR = path.join(PROJECT_ROOT, 'wiki-app', 'static', 'media');

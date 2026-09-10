@@ -10,7 +10,7 @@ tags:
   - sensenode
   - sensenode-sn-400
   - soil-probes
-last_updated: "2026-09-01T21:25:40.849202+00:00"
+last_updated: "2026-09-10T14:40:44.432204+00:00"
 sidebar_label: Soil Probes
 slug: /soil-probes
 ---
@@ -20,27 +20,24 @@ slug: /soil-probes
 # Soil Probes
 
 ## Overview
-This page compiles research and field notes regarding capacitive soil probe corrosion, operational lifespans, and [hardware](./hardware.md) alternatives evaluated for sensor deployments, drawing from community threads and preliminary hardware testing.
+This page compiles research and findings regarding capacitive soil probe corrosion, durability, and replacement costs based on community discussions and [hardware](./hardware.md) evaluations.
 
 ## Key Details
-- **Durability in Acidic Soil:** Inexpensive capacitive soil probes typically fail within 6 to 9 months when deployed in acidic soil conditions.
-- **[SenseNode SN-400](./sensenode-sn-400.md):** Utilizes a coated probe designed to mitigate corrosion issues; replacement probes cost $12.
-- **[Aurora Beta Probe](./nova-widget.md):** Features a gold-flashed PCB design, though long-term durability data remains untested.
+- **Failure Rates:** Inexpensive soil probes typically fail within 6 to 9 months when deployed in acidic soil environments.
+- **[SenseNode SN-400](./sensenode-sn-400.md):** This model utilizes a coated probe to enhance durability, with replacement units priced at $12.
+- **[Aurora](./aurora-nova-widget-v2.md) Beta Probe:** Features a gold-flashed PCB, though its long-term durability remains untested.
 
 ## Related Entities
-- **SenseNode** (Manufacturer of the SN-400)
-- **[Nova Widget](./nova-widget.md)** (Hardware ecosystem referenced in context)
-- **Aurora Beta** (Developer of the gold-flashed PCB probe)
-- **Jonah** (Team member tracking cost-of-ownership metrics)
-- **[Mira](./nova-widget.md)** (Team member managing v1 milestone blockers)
+- **[SenseNode](./sensenode.md):** Manufacturer of the SN-400 soil probe.
+- **[Nova Widget](./nova-widget.md):** Referenced in hardware discussions related to sensor comparisons.
+- **Aurora:** Creator of the aurora beta probe featuring a gold-flashed PCB.
 
 ## Related Concepts
-- **Capacitive Soil Probe Corrosion:** The degradation of exposed circuit traces and capacitive plates due to soil chemistry and moisture.
-- **Total Cost of Ownership (TCO):** Long-term evaluation metric accounting for probe failure rates and replacement costs.
-- **Hardware v1 Blocker:** Project milestone classification indicating whether a hardware limitation delays initial release.
+- **Capacitive Soil Probe Corrosion:** The degradation of [sensor hardware](./sensor-hardware.md) over time, particularly accelerated by acidic soil conditions.
+- **Total Cost of Ownership:** Long-term financial impact including frequent replacements of cheaper hardware versus more durable alternatives.
 
 ## Contradictions
-*(No direct contradictions found among the provided source chunks.)*
+*(No contradictions noted in the current source material.)*
 
 ## References & Trust
 

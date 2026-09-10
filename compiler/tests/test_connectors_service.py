@@ -111,7 +111,7 @@ def _configure_gmail_env(monkeypatch):
 def test_catalog_lists_all_known_connectors_unconfigured_by_default():
     entries = svc.catalog()
     ids = [e["id"] for e in entries]
-    assert ids == ["gmail", "google_drive", "imap", "postgres"]
+    assert ids == ["gmail", "google_drive", "imap", "postgres", "sqlite"]
     gmail_entry = next(e for e in entries if e["id"] == "gmail")
     assert gmail_entry["configured"] is False
     assert gmail_entry["connected_accounts"] == []

@@ -31,7 +31,7 @@ from __future__ import annotations
 import json
 import random
 from dataclasses import asdict, dataclass, field
-from datetime import UTC, datetime
+from datetime import datetime, timezone
 from pathlib import Path
 
 from models import PROJECT_ROOT
@@ -108,7 +108,7 @@ class TrialResult:
     duration_seconds: float
     correct: bool
     confidence: int  # self-reported, 1 (not confident) - 5 (very confident)
-    recorded_at: str = field(default_factory=lambda: datetime.now(UTC).isoformat())
+    recorded_at: str = field(default_factory=lambda: datetime.now(timezone.utc).isoformat())
 
     def __post_init__(self) -> None:
         if self.condition not in CONDITIONS:

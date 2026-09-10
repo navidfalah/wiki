@@ -1,8 +1,13 @@
 from pathlib import Path
 
+import pytest
+
 from synthesizer import (
+    RawChunk,
+    _parse_extraction_json,
     compute_file_md5,
     discover_raw_source_files,
+    extract_chunk_topics,
     scan_raw_file_changes,
     slugify,
     split_text_into_chunks,
@@ -11,6 +16,79 @@ from synthesizer import (
 
 def test_slugify_lowercases_and_hyphenates():
     assert slugify("MeshSync Protocol") == "meshsync-protocol"
+
+
+def test_parse_extraction_json_parses_clean_json():
+    raw = '{"topics": ["MeshSync"], "entities": [], "concepts": []}'
+    assert _parse_extraction_json(raw) == {"topics": ["MeshSync"], "entities": [], "concepts": []}
+
+
+def test_parse_extraction_json_repairs_a_trailing_comma_before_the_closing_brace():
+    # The exact shape that produces json's confusing "Expecting property
+    # name enclosed in double quotes" error -- a real failure this project
+    # hit against gemini-3.5-flash-lite.
+    raw = '{"topics": ["MeshSync"], "entities": [{"name": "Mira Chen"},],}'
+    assert _parse_extraction_json(raw) == {"topics": ["MeshSync"], "entities": [{"name": "Mira Chen"}]}
+
+
+def test_parse_extraction_json_extracts_the_json_blob_from_surrounding_prose():
+    raw = 'Here is the extraction:\n{"topics": ["MeshSync"], "entities": [], "concepts": []}\nHope that helps!'
+    assert _parse_extraction_json(raw) == {"topics": ["MeshSync"], "entities": [], "concepts": []}
+
+
+def test_parse_extraction_json_raises_with_the_raw_response_attached_when_unrepairable():
+    raw = '{"topics": ["MeshSync" "entities": []}'  # missing comma -- not a trailing-comma shape
+    with pytest.raises(ValueError, match="MeshSync"):
+        _parse_extraction_json(raw)
+
+
+def test_parse_extraction_json_raises_when_no_json_object_is_present():
+    with pytest.raises(ValueError):
+        _parse_extraction_json("I couldn't find any topics.")
+
+
+class _FakeRetryLLM:
+    """Returns `responses` in order, one per generate_response call --
+    lets a test script "broken first call, valid retry" without touching a
+    real LLM. Records use_cache per call so the retry's use_cache=False can
+    be asserted on."""
+
+    available = True
+
+    def __init__(self, responses: list[str]):
+        self.responses = list(responses)
+        self.calls: list[dict] = []
+
+    def generate_response(self, prompt: str, system_prompt: str, *, temperature: float = 0.2, use_cache: bool | None = None) -> str:
+        self.calls.append({"prompt": prompt, "use_cache": use_cache})
+        return self.responses.pop(0)
+
+
+def test_extract_chunk_topics_retries_once_on_malformed_json_and_succeeds():
+    # The real failure this project hit: a missing closing brace inside a
+    # nested array -- not the trailing-comma shape _parse_extraction_json
+    # repairs on its own, so it must fall through to the retry.
+    broken = '{"topics": ["A"], "entities": [{"name": "x", "description": "y"\n, {"name": "z"}], "concepts": []}'
+    valid = '{"topics": ["A"], "entities": [{"name": "x", "description": "y"}], "concepts": []}'
+    llm = _FakeRetryLLM([broken, valid])
+    chunk = RawChunk(source_path="notes/x.md", chunk_index=0, text="some text", source_type="text")
+
+    extraction = extract_chunk_topics(chunk, llm)
+
+    assert extraction.topics == ["A"]
+    assert len(llm.calls) == 2
+    assert llm.calls[1]["use_cache"] is False
+    assert "not valid JSON" in llm.calls[1]["prompt"]
+    assert broken in llm.calls[1]["prompt"]
+
+
+def test_extract_chunk_topics_raises_with_both_errors_when_the_retry_also_fails():
+    llm = _FakeRetryLLM(["not json at all", "still not json"])
+    chunk = RawChunk(source_path="notes/x.md", chunk_index=0, text="some text", source_type="text")
+
+    with pytest.raises(ValueError, match="malformed JSON twice in a row"):
+        extract_chunk_topics(chunk, llm)
+    assert len(llm.calls) == 2
 
 
 def test_slugify_strips_punctuation():

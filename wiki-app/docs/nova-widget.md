@@ -10,7 +10,7 @@ tags:
   - ble-proxy-update
   - data-loss-on-factory-reset
   - default-read-interval
-last_updated: "2026-09-02T06:41:06.792717+00:00"
+last_updated: "2026-09-10T14:39:30.858693+00:00"
 sidebar_label: Nova Widget
 slug: /nova-widget
 ---
@@ -21,57 +21,62 @@ slug: /nova-widget
 
 ## Overview
 
-The **[Nova](./aurora-nova-widget-v2.md) Widget** (developed under the working name **[Aurora Nova Widget v2](./aurora-nova-widget-v2.md)**) is an open-source, local-first [IoT](./iot.md) sensor designed by [Aurora Labs](./aurora-labs.md) for home gardeners and small-acreage farmers. Guided by the mission statement *"Open [sensors](./sensors.md) for people who own their data,"* the device features no mandatory cloud accounts, no camera, and no GPS, instead relying on direct local exports via CSV or [MQTT](./mqtt.md) (compatible with [Home Assistant](./home-assistant.md)). 
+The **[Nova](./aurora-nova-widget-v2.md) Widget** (developed by [Aurora Labs](./aurora-labs.md), founded by [Mira Chen](./aurora-nova-widget-v2.md) and Jonah Park) is an open-source [IoT](./iot.md) sensor designed primarily for home gardeners and small-acreage farmers. Its core mission is encapsulated in the draft statement: *"Open [sensors](./sensors.md) for people who own their data."* 
 
-The device core features:
-- Capacitive soil moisture sensing
+The device features a pebble-shaped 3D-printed PETG enclosure (silicone 50A gasket providing IP54 splash resistance, with an IP65 variant deferred) and includes:
+- Capacitive soil moisture sensing (30mm probe length)
 - Air temperature monitoring
 - Ambient light detection via a simple photodiode
-- [Bluetooth Low Energy](./bluetooth-low-energy.md) ([BLE](./ble.md)) for phone setup and a custom mesh network protocol called **[MeshSync](./meshsync.md)** for extended range
+- [Bluetooth Low Energy](./bluetooth-low-energy.md) ([BLE](./ble.md)) for phone setup and optional phone app BLE proxy updates
+- The custom **[MeshSync](./meshsync.md)** local mesh protocol for range extension (no mandatory cloud subscription; export via CSV or local [MQTT](./mqtt.md) compatible with [Home Assistant](./home-assistant.md))
+
+Non-goals for the device include cameras, GPS, and mandatory cloud dashboards.
 
 ---
 
 ## Key Details
 
-### Hardware & Electrical Specifications
-- **Microcontroller (MCU):** nRF52840
-- **Enclosure:** 3D-printed PETG (pebble shape) with a silicone 50A gasket providing an IP54 splash rating (an IP65 variant was deferred due to tooling costs).
-- **[Battery Specifications](./battery-specifications.md):** Powered by a CR2032 coin cell ([Hardware](./hardware.md) Revision C includes a revised holder to fix battery rattle). 
-- **Power Profile:** 
-  - Sleep current: 4.2 µA
-  - Sample + TX current: 12 mA peak
+### Technical Specifications
+- **Microcontroller (MCU):** Nordic nRF52840
+- **Battery:** CR2032 × 1 ([Hardware](./hardware.md) Rev C features a battery holder fix to prevent rattling). [Marketing](./marketing.md) materials target a 2-year lifespan, while engineering estimates 18 months with 10 nodes. 
+- **[Power Budget](./power-budget.md) & Profiles:**
+  - Sleep mode: 4.2 µA
+  - Sample + TX: 12 mA peak
+  - Rejoin spike: 110–340 µA
+- **Read Intervals:** Defaulting to 15 minutes per reading cycle (though initial kickoff [documentation](./documentation.md) suggested hourly intervals).
+- **Mesh Limits:** Designed theoretically for up to 32 nodes, though [beta testing](./beta-testing.md) has encountered instability around 8 nodes.
 
-### Firmware & Networking
-- **Mesh Protocol:** Custom protocol named **MeshSync**, designed by [Mira Chen](./aurora-nova-widget-v2.md). It supports a theoretical maximum of 32 nodes (though [beta testing](./beta-testing.md) noted instability past 8 nodes, and developers recommend flashing [firmware](./firmware.md) version 0.3.9 before adding more than 6 nodes to prevent relay [battery drain](./battery-drain.md) issues).
-- **Reading Intervals:** The default read interval is **15 minutes** (updated from the initial hourly kickoff proposal).
-- **[OTA Updates](./ota-updates.md):** Signed firmware images using ed25519 with rollback protection. Over-the-air updates support BLE proxying via a phone app when a mesh node is unreachable, though OTA is not shipping in the initial beta phase.
-- **Local Data Export:** Optional local MQTT telemetry publishing follows the topic structure `aurora/{device_id}/telemetry`, `aurora/{device_id}/battery`, and `aurora/{device_id}/mesh/neighbors`.
+### Firmware & Updates
+- **[MeshSync Protocol](./meshsync-protocol.md):** Developed by Mira Chen, version 0.3.8 / 0.3.9 beta builds address relay [battery drain](./battery-drain.md) (such as ticket [MESH-118](./mesh-118.md)).
+- **[OTA Updates](./ota-updates.md):** Signed [firmware](./firmware.md) images using ed25519 with rollback protection. OTA features are not shipping in the current beta and require handling risks like mesh-wide upgrade routing table invalidations.
 
 ---
 
 ## Related Entities
 
-- **Aurora Labs:** The organization founded by Mira Chen and Jonah Park.
-- **Mira Chen:** Co-founder responsible for firmware, the [MeshSync protocol](./meshsync-protocol.md), and power profiling.
-- **Jonah Park:** Co-founder responsible for PCB design, sensors, and mechanical hardware.
-- **[TeaBuddy](./teabuddy.md):** An unrelated, single-device BLE product by Sam Rivera that uses simple BLE DFU and does not share codebases with Aurora Labs.
-- **[SenseNode](./sensenode-sn-400.md) (SN-400):** A competitor comparison reference noted for having a superior IP67 waterproof rating.
+- **Aurora Labs:** The parent company and maker of the Nova Widget.
+- **Mira Chen:** Co-founder responsible for firmware, the MeshSync protocol, and power profiling.
+- **Jonah Park:** Co-founder responsible for PCBs, sensors, and [mechanical design](./mechanical-design.md).
+- **[SenseNode](./sensenode.md) (Competitor):** Features a waterproof IP67 variant (referenced in comparative notes).
+- **[TeaBuddy](./teabuddy.md):** An unrelated, separate product that uses simple single-device BLE rather than a mesh network; codebases and team integrations are kept separate per Sam Rivera's guidance.
 
 ---
 
 ## Related Concepts
 
-- **MeshSync:** The proprietary multi-hop local [mesh networking](./mesh-networking.md) protocol used by Nova Widget nodes.
-- **Local-First IoT:** A design philosophy emphasizing local data export (MQTT/CSV) over mandatory cloud dashboard subscriptions.
-- **Battery Longevity:** Engineering efforts focused on achieving multi-month to multi-year lifespans on coin-cell batteries using optimized sleep and sampling intervals.
+- **MeshSync:** A custom local mesh protocol created to extend sensor range without a cloud backbone.
+- **Local [MQTT Export](./mqtt-export.md):** Schema structures telemetry, battery, and neighbor information locally (`aurora/{device_id}/telemetry`).
+- **BLE Proxy Updates:** Phone app-based [firmware updates](./firmware-updates.md) utilized when a mesh node is unreachable.
 
 ---
 
 ## Contradictions
 
-&gt; **Contradiction:** [Battery life](./battery-life.md) projections vary across [documentation](./documentation.md). Early kickoff notes and marketing material initially targeted a **2-year lifespan on a CR2032 battery with hourly readings**, while engineering power budgets and later specifications estimate **18 months** (factoring in a 10-node mesh network and 15-minute intervals). Furthermore, older draft documents briefly referenced using a CR2450 battery, which [hardware specs](./hardware-specs.md) and labels explicitly clarify is **wrong** (misprints have caused support tickets).
+&gt; **Contradiction:** [Battery Specifications](./battery-specifications.md)
+&gt; Early kickoff [meeting notes](./meeting-notes.md) and goals targeted a 2-year lifespan on a CR2032 battery with hourly readings. Later design specs and fragments modify engineering expectations to 18 months at 10 nodes using a 15-minute read interval. Furthermore, some legacy documents incorrectly referenced a CR2450 battery, which hardware revision specs explicitly corrected as a misprint.
 
-&gt; **Contradiction:** The default reading interval shifted during development. The initial May kickoff notes specified **hourly readings**, whereas subsequent hardware and MQTT schema specifications standardize the default read interval to **15 minutes**.
+&gt; **Contradiction:** Default Read Interval
+&gt; Kickoff notes and initial drafts specified hourly readings to preserve power, whereas hardware revision C specifications, MQTT export documentation, and markdown export fragments establish the default read interval at 15 minutes.
 
 ## References & Trust
 

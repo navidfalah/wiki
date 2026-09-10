@@ -8,7 +8,7 @@ tags:
   - product-comparison
   - sensenode-sn-400
   - wiki
-last_updated: "2026-09-02T06:41:25.791296+00:00"
+last_updated: "2026-09-10T14:39:43.575464+00:00"
 sidebar_label: Product Comparison
 slug: /product-comparison
 ---
@@ -18,14 +18,14 @@ slug: /product-comparison
 # Product Comparison
 
 ## Overview
-This wiki page provides a product comparison based on support ticket inquiries regarding outdoor usage specifications and features between the [Nova Widget](./nova-widget.md) and the [SenseNode SN-400](./sensenode-sn-400.md), alongside related ecosystem features like [MeshSync](./meshsync.md).
+This page provides a comparison between [hardware](./hardware.md) and software offerings, specifically evaluating the [Nova Widget](./nova-widget.md) against the [SenseNode SN-400](./sensenode-sn-400.md) for outdoor use, alongside software pricing details such as [MeshSync's](./meshsync.md) fee structure.
 
 ## Key Details
 - **Outdoor Use / IP Ratings:** 
-  - **SenseNode SN-400:** Features an IP67 rating, making it fully dust-tight and protected against temporary water immersion, suitable for outdoor deployments.
-  - **Nova Widget:** Currently features an IP54 beta rating, offering limited splash and dust resistance which may be less optimal for harsh outdoor environments compared to the SenseNode SN-400.
-- **Ecosystem Features:**
-  - **MeshSync:** Operates with no cloud fee, providing a cost-effective synchronization option.
+  - **SenseNode SN-400:** Features an IP67 rating, making it robust and suitable for outdoor deployment.
+  - **Nova Widget:** Features an IP54 rating and is currently designated as a beta version for outdoor use.
+- **[Software Features](./software-features.md):** 
+  - **MeshSync:** Operates with no cloud fee.
 
 ## Related Entities
 - Nova Widget
@@ -33,10 +33,12 @@ This wiki page provides a product comparison based on support ticket inquiries r
 - MeshSync
 
 ## Related Concepts
-- IP Rating
-- Outdoor Use
-- Cloud Fees
-- [Product Specifications](./product-specifications.md)
+- IP Rating (Ingress Protection)
+- Outdoor Deployment
+- Cloud Fees / Software Pricing
+
+## Contradictions
+*(No contradictions present in the current source material.)*
 
 ## References & Trust
 

@@ -4,13 +4,13 @@ title: Fictional Universe
 tags:
   - alex-kim
   - aurora-labs
+  - dev-singh
+  - elena-voss
   - fictional-universe
   - greengrid-energy
   - greengrid-hub
   - intentional-contradictions
-  - jamie-lo
-  - jonah-park
-last_updated: "2026-09-06T15:20:05.554296+00:00"
+last_updated: "2026-09-10T14:38:02.268537+00:00"
 sidebar_label: Fictional Universe
 slug: /fictional-universe
 ---
@@ -20,46 +20,43 @@ slug: /fictional-universe
 # Fictional Universe
 
 ## Overview
-The Fictional Universe is an invented domain specifically designed to stress-test compilers, cross-linking, analytics, and human review systems. All characters, companies, products, and technologies within this universe are entirely fictitious and contain deliberate conflicts to test data handling capabilities.
+
+The Fictional Universe is a constructed sandbox environment specifically designed to stress-test the compiler, cross-linking, analytics, and human review systems. All characters, companies, and products within this domain are entirely invented.
 
 ## Key Details
-The universe encompasses several distinct companies operating in the [IoT](./iot.md), [smart devices](./smart-devices.md), health, and consumer electronics spaces, alongside a cast of recurring characters and competitor products.
+
+The universe encompasses several interconnected technology companies, [hardware](./hardware.md) and software products, and a roster of recurring and procedural characters:
 
 ### Companies
-* **[Aurora Labs](./aurora-labs.md) (`aurora`)**: Focuses on open IoT mesh [sensors](./sensors.md). Key products include the [Nova Widget](./nova-widget.md) and the [MeshSync protocol](./meshsync-protocol.md).
-* **[TeaBuddy](./teabuddy.md) (`teabuddy`)**: Specializes in [BLE](./ble.md) smart tea timers, offering the [TeaBuddy Puck](./teabuddy.md) paired with an [iOS Development](./ios-development.md) app.
-* **[Nova Health](./aurora-nova-widget.md) (`nova-health`)**: Develops clinical wearables, notably the PulsePatch.
-* **GreenGrid Energy (`greengrid`)**: Operates in the home energy mesh sector, featuring the GreenGrid Hub.
+* **[Aurora Labs](./aurora-labs.md)** (`aurora`): Focuses on open [IoT](./iot.md) mesh [sensors](./sensors.md). Key products include the [Nova Widget](./nova-widget.md) and the [MeshSync protocol](./meshsync-protocol.md).
+* **[TeaBuddy](./teabuddy.md)** (`teabuddy`): Specializes in [BLE](./ble.md) smart tea timers, featuring the TeaBuddy Puck and an accompanying [iOS](./ios.md) app.
+* **[Nova Health](./aurora-nova-widget-v2.md)** (`nova-health`): Develops clinical wearables, notably the PulsePatch.
+* **GreenGrid Energy** (`greengrid`): Operates in the home energy mesh space, centered around the GreenGrid Hub.
 
 ### Products and Competitors
-* **Nova Widget / [Nova Widget v2](./nova-widget-v2.md)**: Developed by Aurora, featuring soil moisture and temperature tracking inside a pebble enclosure.
-* **MeshSync**: Aurora's local mesh protocol that operates without a mandatory cloud requirement.
-* **TeaBuddy Puck**: TeaBuddy's [Bluetooth Low Energy](./bluetooth-low-energy.md) (BLE) smart tea timer powered by a CR2032 battery with haptic and LED feedback.
-* **[SenseNode SN-400](./sensenode-sn-400.md)**: A competitor product featuring an IP67 rating, subscription model, and [LoRaWAN](./lorawan.md) connectivity.
-* **GreenGrid Hub**: GreenGrid's product, noted for exploratory integration only.
-* **PulsePatch**: Nova Health's clinical wearable, which shares no [firmware](./firmware.md) with MeshSync.
+* **[Nova Widget / Nova Widget v2](./aurora-nova-widget-v2.md)**: Developed by Aurora Labs, featuring soil moisture and temperature tracking within a pebble enclosure.
+* **MeshSync**: Aurora Labs' local mesh protocol that operates without a mandatory cloud connection.
+* **TeaBuddy Puck**: A BLE-enabled device powered by a CR2032 battery featuring haptics and LEDs.
+* **[SenseNode SN-400](./sensenode-sn-400.md)**: A competitor product featuring IP67 rating, a subscription model, and [LoRaWAN](./lorawan.md).
+* **GreenGrid Hub**: A GreenGrid Energy product used for exploratory integration only.
+* **PulsePatch**: A Nova Health clinical wearable that shares no [firmware](./firmware.md) with MeshSync.
 
 ## Related Entities
-* **Aurora Labs**
-* **TeaBuddy**
-* **Nova Health**
-* **GreenGrid Energy**
-* **[Mira Chen](./aurora-nova-widget.md)** (Firmware lead at Aurora Labs)
-* **Jonah Park** ([Hardware](./hardware.md) at Aurora Labs)
-* **Sam Rivera** (Firmware at TeaBuddy)
-* **Alex Kim** (UX / interviews at TeaBuddy)
-* **Jamie Lo** (QA at TeaBuddy)
-* **Elena Voss, Priya Nair, Marcus Webb, Tina Okonkwo, Dev Singh** (Procedural generator cast from various affiliations)
+
+* **Aurora Labs Team**: [Mira Chen](./aurora-nova-widget-v2.md) (Firmware Lead) and Jonah Park (Hardware).
+* **TeaBuddy Team**: Sam Rivera (Firmware), Alex Kim (UX / Interviews), and Jamie Lo (QA).
+* **Procedural Generator Cast**: Elena Voss, Priya Nair, Marcus Webb, Tina Okonkwo, and Dev Singh.
 
 ## Related Concepts
-* Open IoT mesh sensors
-* BLE smart tea timers
-* Clinical wearables
-* Home energy mesh
-* Intentional data contradictions and stress-[testing](./testing.md)
+
+* IoT Mesh Networks
+* BLE [Smart Devices](./smart-devices.md)
+* Clinical Wearables
+* Compiler Stress-[Testing](./testing.md) and Cross-Linking Analytics
 
 ## Contradictions
-* Sample data **deliberately conflicts** to exercise cross-linking, analytics, and human review.
+
+The [sample data](./sample-data.md) intentionally incorporates deliberate conflicts to test how systems handle cross-linking, analytics, and human review workflows. Specific conflicting data points are embedded across the [sample domain](./sample-domain.md).
 
 ## References & Trust
 

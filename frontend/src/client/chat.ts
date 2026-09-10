@@ -211,7 +211,7 @@ function sourcesChipHtml(sources: ChatSource[] | undefined): string {
         </span>`,
     )
     .join('');
-  return `<div class="mt-2 flex flex-wrap items-center gap-1"><span class="mr-0.5 text-[10px] font-medium uppercase tracking-wide text-gray-400">Sources</span>${chips}</div>`;
+  return `<div class="mt-2 flex flex-wrap items-center gap-1"><span class="mr-0.5 text-[10px] font-medium text-gray-400">Sources</span>${chips}</div>`;
 }
 
 // Small groundedness badge (documentation/28-faithfulness-evaluation.md):

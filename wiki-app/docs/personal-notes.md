@@ -8,7 +8,7 @@ tags:
   - reverse-mesh
   - self-maintaining-wiki
   - wiki
-last_updated: "2026-09-02T06:41:14.183286+00:00"
+last_updated: "2026-09-10T14:39:32.569181+00:00"
 sidebar_label: Personal Notes
 slug: /personal-notes
 ---
@@ -18,30 +18,31 @@ slug: /personal-notes
 # Personal Notes
 
 ## Overview
-This document compiles a collection of personal notes, [groceries](./groceries.md) lists, [project ideas](./project-ideas.md), and late-night thoughts recorded on June 3, 2026. The notes capture a mix of daily errands, [hardware](./hardware.md) prototype requirements, creative software concepts, and philosophical musings on automated [knowledge management](./knowledge-management.md).
+This page compiles personal notes, reminders, and brainstorming fragments captured on June 3, 2026. It covers routine grocery tasks, [hardware](./hardware.md) prototypes, inventive software project concepts, and late-night thoughts regarding automated [documentation](./documentation.md).
 
 ## Key Details
-- **Grocery List:** 
+- **[Grocery List](./grocery-list.md):**
   - Milk
-  - Batteries: CR2032 x4 (noted for [Nova](./aurora-nova-widget-v2.md) prototypes)
+  - Batteries (CR2032 x4) — earmarked for [Nova](./aurora-nova-widget-v2.md) prototypes
   - Coffee
   - "That one cheese"
-- **Project Idea #47 ("Plant Whisperer"):** A mobile application designed to alert users audibly when soil moisture is low. It potentially connects to the [Nova widget](./nova-widget.md), with monetization planned around stickers.
-- **Project Idea #48 ("Reverse Mesh"):** A [networking](./networking.md) concept utilizing smartphones as individual nodes, though questioned as potentially a "bad idea."
-- **Late-Night Thought (2:00 AM):** Explored the concept of a self-maintaining wiki inspired by "the Karpathy thing." The user noted a reminder to research the "LLM wiki pattern."
-- **Reminders:** Call the dentist on Thursday.
-- **[Hardware Design](./hardware-design.md) Fragment:** An unfinished thought regarding physical enclosure design: *"the enclosure needs to be more like a pebble and less like a"*
+- **[Project Ideas](./project-ideas.md):**
+  - **Project Idea #47 ("Plant Whisperer"):** An application designed to yell at users when soil is dry, potentially connecting to a [Nova widget](./nova-widget.md). Monetization envisioned via stickers.
+  - **Project Idea #48:** A "reverse mesh" concept using phones as network nodes (noted as a potentially bad idea).
+- **Late-Night Thoughts & Reminders:**
+  - 2:00 AM thought regarding a self-maintaining wiki ; a reminder to look up the "LLM wiki pattern".
+  - Reminder to call the dentist on Thursday.
+  - An unfinished reflection on [hardware design](./hardware-design.md): *"the enclosure needs to be more like a pebble and less like a"*
 
 ## Related Entities
-- **Nova:** A hardware or widget project associated with CR2032 batteries and potentially the Plant Whisperer application.
+- **Nova:** Mentioned in the context of hardware prototypes requiring CR2032 batteries and a potential widget integration for the Plant Whisperer application.
 
 ## Related Concepts
-- **Plant Whisperer:** An [IoT](./iot.md)/mobile app concept focused on plant care and auditory alerts.
-- **Reverse Mesh:** A decentralized networking concept utilizing mobile devices.
-- **Self-Maintaining Wiki:** An autonomous knowledge base maintained by language models (LLM wiki pattern).
+- **LLM Wiki Pattern / Self-Maintaining Wiki:** An exploratory concept from a 2:00 AM thought about wikis that maintain themselves autonomously.
+- **Reverse Mesh:** An architectural network concept utilizing standard smartphones as communication nodes.
 
 ## Contradictions
-*No contradictions were found in the provided source material.*
+*(No contradictions present in the source material.)*
 
 ## References & Trust
 

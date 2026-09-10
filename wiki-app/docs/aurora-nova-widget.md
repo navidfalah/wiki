@@ -5,12 +5,12 @@ tags:
   - alex
   - aurora-labs
   - aurora-nova-widget
-  - aurora-nova-widget-v2-beta
+  - aurora-nova-widget-v2
   - battery-specification
-  - beta-sensor-limit
-  - costtooling-tradeoff
-  - cr2032-battery-capacity
-last_updated: "2026-09-02T06:38:37.506472+00:00"
+  - confidentiality-agreement
+  - default-read-interval
+  - device-safety-and-water-resistance
+last_updated: "2026-09-10T14:37:03.592241+00:00"
 sidebar_label: Aurora Nova Widget
 slug: /aurora-nova-widget
 ---
@@ -21,42 +21,52 @@ slug: /aurora-nova-widget
 
 ## Overview
 
-The [Aurora](./aurora-nova-widget-v2.md) [Nova Widget](./nova-widget.md) (including the [Aurora Nova Widget v2 beta](./aurora-nova-widget-v2.md)) is a local-first smart sensor device developed by [Aurora Labs](./aurora-labs.md). Designed for local [mesh networking](./mesh-networking.md) without cloud subscriptions, it features open export options such as [MQTT](./mqtt.md) integration for platforms like [Home Assistant](./home-assistant.md). 
+The [Aurora](./aurora-nova-widget-v2.md) [Nova Widget](./nova-widget.md) (v2 beta unit) is an open-source soil moisture and temperature sensor developed by [Aurora Labs](./aurora-labs.md). It features local [mesh networking](./mesh-networking.md) via [MeshSync](./meshsync.md) without mandatory cloud dependency. 
 
 ## Key Details
 
-- **Battery Specification:** Powered by a CR2032 battery (nominal 220mAh, accounting for datasheet variance). Some early blog posts and teardowns incorrectly referenced the CR2450 battery, which has since been corrected in official [documentation](./documentation.md).
-- **[Battery Life](./battery-life.md) Estimates:** 
-  - Engineering [power budget](./power-budget.md) calculations (assuming a 15-minute read interval and a stressed mesh size of 10 nodes) estimate approximately **18 months** of battery life (~0.19 mAh/day).
-  - Marketing materials and slides may claim **2 years** of battery life, though this assumes an optimistic cell, hourly reads, and a smaller mesh of 6 nodes.
-- **Default Reading Interval:** 15 minutes. Some older documentation or kickoff notes incorrectly stated an hourly interval.
-- **Sensor Node Limit:** Beta recommendations advise a limit of **6 nodes** per mesh network. Exceeding this (such as running 8 or more nodes on [firmware](./firmware.md) prior to 0.3.8) can cause rejoin loops, duplicate MQTT messages, and network drops. Firmware 0.3.8 addresses several of these stability issues.
-- **Water Resistance:** Rated **IP54** (splash-resistant, not submersible). It is not suitable for outdoor submersion or uncovered garden use where heavy rain can damage the unit.
+### Power Budget and Battery
+- **Battery Type:** Uses a single CR2032 coin cell battery. (An earlier teardown blog post by Alex mistakenly listed a CR2450 battery, which was corrected on June 20, 2026).
+- **[Battery Life](./battery-life.md) Estimates:** [Marketing](./marketing.md) claims a 2-year lifespan, while engineering estimates 18 months with a [configuration](./configuration.md) of 10 nodes. 
+- **Power Modes:** 
+  - Sleep mode: 4.2 µA (target)
+  - Sample + TX: 12 mA peak (15-minute default interval)
+  - Rejoin spike: 110–340 µA (known issue)
+
+&gt; **Contradiction:** Conflicting claims exist regarding battery lifespan and specifications. Marketing materials advertise a 2-year battery life, whereas engineering expectations cap it at 18 months based on 10 nodes. Additionally, initial external blog [documentation](./documentation.md) incorrectly specified a CR2450 battery before being corrected to the actual CR2032 specification. Furthermore, while an early draft spec fragment mentioned an hourly read interval, the official default read interval is 15 minutes.
+
+### MeshSync Networking
+- **Capacity:** Supports a theoretical maximum of 32 nodes; [beta testing](./beta-testing.md) has been stable up to 6–8 nodes ([firmware](./firmware.md) 0.3.8 recommends flashing before exceeding 6 nodes).
+- **Communication:** Telemetry stays local with optional, user-configured [MQTT export](./mqtt-export.md).
+
+### Safety and Water Resistance
+- **IP Rating:** The device features an IP54 splash-resistant rating only. 
+- **Limitations:** It is not designed to be submerged and does not support [SenseNode](./sensenode.md)-style outdoor burial. Users in wet environments (such as raised garden beds) are advised to use protective covers. An IP65 roadmap is planned for the future.
+
+### Legal and Confidentiality
+- Under beta tester agreements, beta firmware, partial MeshSync source code, and [power budget](./power-budget.md) spreadsheets are classified as confidential.
 
 ## Related Entities
 
-- **Aurora Labs:** The developer and manufacturer of the Nova Widget and the [MeshSync protocol](./meshsync-protocol.md).
-- **[SenseNode](./sensenode-sn-400.md) (SN-400):** A competing or alternative product featuring simpler topology, subscription options, and an IP67 waterproof rating suitable for outdoor submersion.
-- **[TeaBuddy](./teabuddy.md):** An unrelated local-first product and company with a [BLE](./ble.md)-only app and no MQTT support. Despite casual confusion from users, it shares no backend, app, or ecosystem with the Nova Widget.
+- **Aurora Labs:** Creator and manufacturer of the Nova Widget and firmware maintainers.
+- **[Mira Chen](./aurora-nova-widget-v2.md):** Firmware owner.
+- **Jonah Park:** [Hardware](./hardware.md) owner and support agent.
+- **Alex:** Author of the teardown blog that initially reported incorrect battery details.
+- **SenseNode ([SN-400](./sensenode.md)):** A competing soil sensor product known for outdoor burial and an IP67 rating.
+- **[TeaBuddy](./teabuddy.md):** An unrelated kitchen product/[puck](./teabuddy.md) mentioned frequently in community kickoff notes and support inquiries, but shares no app, company, or partnership with Aurora Labs.
 
 ## Related Concepts
 
-- **MeshSync:** The local mesh protocol used by the Nova Widget. Versions prior to 0.3.9 struggle with scaling beyond 6 nodes, leading to rejoin storms.
-- **[MQTT Export](./mqtt-export.md):** Supported in v2 schema (required for firmware 0.3.8+), allowing local [home automation](./home-automation.md) integration.
-- **Power Budgeting:** Balances sleep current (4.2 µA), sample/TX current (12 mA), and rejoin spikes to determine overall longevity.
-
-## Contradictions
-
-&gt; **Contradiction:** Battery life projections vary across official channels. Engineering notes and power budget models calculate an **18-month** lifespan based on a 15-minute read interval and 10 nodes, while marketing slides claim a **2-year** lifespan based on 6 nodes and optimistic assumptions.
+- **MeshSync:** Local mesh protocol used by the Nova Widget for node communication.
+- **IP54 Rating:** The splash-resistance standard of the current beta unit, limiting outdoor installation without physical covers.
+- **Telemetry and MQTT:** Local data tracking with optional export paths rather than mandatory cloud connectivity.
 
 ## References & Trust
 
 | # | Source | Type | Trust |
 |---|--------|------|-------|
-| 1 | `dummy-test/2026-07-07-power-budget-spreadsheet-notes.txt` | text | Unverified |
-| 2 | `dummy-test/2026-07-08-customer-onboarding-faq.md` | text | Unverified |
-| 3 | `samples/emails/[SAMPLE]-2026-07-01-beta-invite-batch.txt` | text | Unverified |
-| 4 | `samples/support/[SAMPLE]-2026-06-27-ticket-2099-mesh-rejoin.txt` | text | Unverified |
-| 5 | `samples/support/[SAMPLE]-2026-07-01-ticket-2201-battery-docs.txt` | text | Unverified |
-| 6 | `samples/support/[SAMPLE]-2026-07-04-ticket-2210-mqtt-setup.txt` | text | Unverified |
-| 7 | `samples/support/[SAMPLE]-2026-07-08-ticket-2222-waterproof-confusion.txt` | text | Unverified |
+| 1 | `samples/articles/[SAMPLE]-2026-06-11-nova-widget-spec-fragment.md` | text | Unverified |
+| 2 | `samples/emails/[SAMPLE]-2026-07-01-beta-invite-batch.txt` | text | Unverified |
+| 3 | `samples/legal/[SAMPLE]-2026-07-04-beta-tester-agreement-snippet.txt` | text | Unverified |
+| 4 | `samples/support/[SAMPLE]-2026-07-01-ticket-2201-battery-docs.txt` | text | Unverified |
+| 5 | `samples/support/[SAMPLE]-2026-07-08-ticket-2222-waterproof-confusion.txt` | text | Unverified |

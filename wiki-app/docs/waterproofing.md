@@ -10,7 +10,7 @@ tags:
   - teabuddy-puck
   - waterproofing
   - wiki
-last_updated: "2026-09-01T21:26:02.265315+00:00"
+last_updated: "2026-09-10T14:41:05.380026+00:00"
 sidebar_label: Waterproofing
 slug: /waterproofing
 ---
@@ -20,29 +20,25 @@ slug: /waterproofing
 # Waterproofing
 
 ## Overview
-Waterproofing is a critical consideration for [Hardware](./hardware.md) devices deployed in outdoor or demanding environments. Support interactions regarding the [Aurora Nova Widget](./aurora-nova-widget.md) highlight user confusion surrounding IP ratings, particularly when comparing the widget's moisture resistance against competing devices like the [SenseNode SN-400](./sensenode-sn-400.md) and indoor-rated accessories like the [TeaBuddy](./teabuddy.md) puck.
+Waterproofing standards and ingress protection vary significantly across [hardware](./hardware.md) products, leading to user confusion in outdoor environments. This topic covers the distinct IP ratings, design trade-offs, and competitive comparisons involving devices such as the [Aurora Nova Widget](./aurora-nova-widget.md), [SenseNode](./sensenode.md), and [TeaBuddy puck](./teabuddy.md).
 
 ## Key Details
-- **Aurora Nova Widget Rating**: The Aurora Nova Widget features an **IP54** rating, making it splash-resistant rather than fully waterproof. For outdoor deployments, such as in raised garden beds, internal recommendations advise using a protective cover to prevent rain damage.
-- **Roadmap**: Upgrading the widget's ingress protection to **IP65** is currently slated for the product roadmap.
-- **Design Tradeoffs**: The decision to use IP54 instead of a higher rating like IP67 stems from a **cost and tooling tradeoff**, as initial [Beta Testing](./beta-testing.md) development prioritized local mesh capabilities and open data export features.
-- **Comparison Products**: 
-  - **SenseNode**: A competing device (specifically noted as the SN-400) features an **IP67** rating, allowing it to survive harsh outdoor conditions where the Aurora Nova Widget failed.
-  - **TeaBuddy Puck**: Designed strictly for splash-resistant kitchen use and is not built for outdoor or waterproof applications.
+- **Aurora Nova Widget**: Features an **IP54** rating rather than full waterproofing (IP67). When installed in demanding outdoor environments like Pacific Northwest raised garden beds, units are susceptible to rain damage unless additional covers are used.
+- **Support & Roadmap**: Internal agent Jonah notes that a comparison page update is slated for sprint 15, and an IP65 rating is currently on the [product roadmap](./product-roadmap.md).
+- **Design Trade-Offs**: The decision to use a lower IP rating on the Aurora Nova Widget stems from a deliberate cost and tooling tradeoff, prioritizing beta focus on local mesh and open data export capabilities over extreme weather sealing.
 
 ## Related Entities
-- **Aurora Nova Widget**: The primary product discussed in the waterproofing support context.
-- **SenseNode (SN-400)**: A competing outdoor sensor node featuring an IP67 rating.
-- **TeaBuddy Puck**: A separate, kitchen-focused accessory with limited splash resistance.
-- **Jonah**: Internal support agent handling the customer ticket regarding waterproofing confusion.
+- **Aurora Nova Widget**: The primary product discussed in support ticket #2222 regarding water ingress issues.
+- **SenseNode**: A competing outdoor device (competitor [SN-400](./sensenode.md)) featuring an **IP67** waterproof rating, which successfully survives heavy rain conditions where unprotected lower-rated units fail.
+- **TeaBuddy puck**: A separate kitchen-focused product designed only to be splash-resistant rather than fully waterproof.
+- **Jonah**: Support agent handling customer inquiries and internal drafting regarding [product specifications](./product-specifications.md).
 
 ## Related Concepts
-- **IP Rating (Ingress Protection)**: The standard for classifying the degrees of protection provided against dust, accidental contact, and water. (e.g., comparing IP54 vs. IP65 vs. IP67).
-- **Cost/Tooling Tradeoff**: Manufacturing and engineering decisions balancing feature sets (such as local mesh and open export) against enclosure sealing costs.
-- **Outdoor Deployment**: Installing electronics in weather-exposed environments like Pacific Northwest gardens.
+- **IP Rating (Ingress Protection)**: The standardized classification system used to define levels of sealing effectiveness of electrical enclosures against intrusion from foreign bodies and moisture (e.g., comparing IP54, IP65, and IP67).
+- **Cost/Tooling Tradeoff**: [Manufacturing](./manufacturing.md) and engineering decisions that balance production expenses and mold tooling investments against target durability and market positioning.
 
 ## Contradictions
-*(No contradictions present in the current source material.)*
+*(No direct contradictions present in the current source material.)*
 
 ## References & Trust
 

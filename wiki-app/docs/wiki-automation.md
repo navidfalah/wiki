@@ -10,7 +10,7 @@ tags:
   - jonah
   - karpathy
   - llm-faq-summarization
-last_updated: "2026-09-01T21:26:05.787592+00:00"
+last_updated: "2026-09-10T14:41:11.155689+00:00"
 sidebar_label: Wiki Automation
 slug: /wiki-automation
 ---
@@ -20,30 +20,37 @@ slug: /wiki-automation
 # Wiki Automation
 
 ## Overview
-This page outlines a collection of automation ideas, cross-product initiatives, and rejected proposals for enhancing [documentation](./documentation.md) workflows, heavily influenced by the Karpathy LLM wiki pattern and Docusaurus graph plugins.
+Wiki automation encompasses a set of proposed features, tools, and cross-product initiatives aimed at streamlining [documentation](./documentation.md) maintenance, content ingestion, and cross-referencing. Inspired by patterns such as the Karpathy LLM wiki pattern and Docusaurus graph plugins, the automation ideas focus on reducing manual overhead while maintaining structured, high-quality knowledge bases.
 
 ## Key Details
-The proposed wiki automation and maintenance features include:
-* **Pre-commit hook:** Grep raw source files to detect any `CONTRADICTION` markers before committing.
-* **Auto-ingest:** Automatically process Slack exports originating from the `dummy-test/` folder.
-* **Graph diffing:** Compare graph structures between compiles to explicitly highlight newly added entities.
-* **LLM summarization:** Use large language models to distill support tickets directly into structured FAQ pages.
-* **Orphan page linter:** Clean up unlinked pages (which is already tracked on backlog item #1).
+The proposed wiki automation ideas and cross-product efforts are categorized into operational enhancements, cross-product content sharing, and explicitly rejected proposals:
+
+### Proposed Automation Features
+* **Pre-commit hook:** Grep raw files to detect and flag `CONTRADICTION` markers before commits are finalized.
+* **Auto-ingest:** Automatically ingest Slack exports placed within the `dummy-test/` folder.
+* **Graph diffs:** Generate graph comparisons between compilation states to highlight newly introduced entities.
+* **LLM summarization:** Utilize Large Language Models (LLMs) to process and summarize [support tickets](./support-tickets.md) into structured FAQ pages.
+* **Orphan page linter:** A utility to detect disconnected or unlinked pages (already prioritized on backlog item #1).
+
+### Cross-Product Initiatives
+* **Shared glossary:** Establish a unified glossary covering technical terms and concepts such as `CR2032`, [BLE](./ble.md), [MeshSync](./meshsync.md), and the `steep preset`.
+* **Unified manifesto:** Create a dedicated "[local-first](./local-first.md) manifesto" page incorporating quotes from Aurora and [TeaBuddy](./teabuddy.md).
+
+### Rejected Proposals
+* **Single application:** Combining both products into a single app was explicitly rejected by the CEOs.
+* **Mesh tea timer:** Proposed mesh tea timer concept was rejected outright by Jonah ("absolutely not").
 
 ## Related Entities
-* **[Aurora](./nova-widget.md):** A product referenced in the cross-product local-first manifesto initiative.
-* **[TeaBuddy](./teabuddy.md):** A product referenced alongside Aurora for unified quotes.
-* **Jonah:** Product leadership who vetoed specific [hardware](./hardware.md)/feature proposals.
-* **Karpathy:** Inspiration for the underlying LLM wiki pattern.
+* **Aurora**
+* **TeaBuddy**
+* **Jonah**
 
 ## Related Concepts
-* **CR2032 & [BLE](./ble.md):** Shared glossary terms identified for cross-product documentation.
-* **[MeshSync](./meshsync.md) & Steep Preset:** Additional domain-specific terminology included in the shared glossary.
-* **Local-first manifesto:** A unified documentation page combining quotes from Aurora and TeaBuddy.
-* **Docusaurus graph plugin:** Referenced tooling used for visualization and graph-based documentation patterns.
-
-## Contradictions
-*(No contradictions reported in the source material.)*
+* **[BLE](./ble.md)**
+* **CR2032**
+* **[MeshSync](./meshsync.md)**
+* **LLM-FAQ-Summarization**
+* **Graph-Diff**
 
 ## References & Trust
 

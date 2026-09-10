@@ -119,7 +119,7 @@ function makeProfile(overrides: Partial<LlmProfile> & Pick<LlmProfile, 'id' | 'l
  */
 function defaultGeminiSettings(apiKey: string): LlmSettings {
   const profiles: LlmProfile[] = [
-    makeProfile({ id: 'gemini-default', label: 'Gemini Flash Lite (default)', model: 'gemini-2.5-flash-lite', api_key: apiKey }),
+    makeProfile({ id: 'gemini-default', label: 'Gemini Flash Lite (default)', model: 'gemini-3.5-flash-lite', api_key: apiKey }),
     makeProfile({ id: 'gemini-thinking', label: 'Gemini Pro (thinking)', model: 'gemini-2.5-pro', api_key: apiKey }),
     makeProfile({ id: 'gemini-chat', label: 'Gemini Flash (chat)', model: 'gemini-2.5-flash', api_key: apiKey }),
     makeProfile({ id: 'gemini-embedding', label: 'Gemini Embedding', model: 'gemini-embedding-001', api_key: apiKey }),

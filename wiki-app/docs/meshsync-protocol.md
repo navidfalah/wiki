@@ -10,7 +10,7 @@ tags:
   - meshsync-protocol-header
   - mira-chen
   - parent-election
-last_updated: "2026-09-02T06:40:48.670881+00:00"
+last_updated: "2026-09-10T14:39:17.104358+00:00"
 sidebar_label: MeshSync Protocol
 slug: /meshsync-protocol
 ---
@@ -21,33 +21,34 @@ slug: /meshsync-protocol
 
 ## Overview
 
-The [MeshSync](./meshsync.md) protocol is a local mesh communication protocol designed for open-source environmental [sensors](./sensors.md), specifically utilized in the [Aurora Nova Widget v2 beta](./aurora-nova-widget-v2.md) unit. It allows soil moisture and temperature sensors to operate locally without requiring a mandatory cloud connection. The protocol manages node roles, packet intervals, and network topology for up to 32 theoretical nodes.
+The [MeshSync](./meshsync.md) protocol is a local [mesh networking](./mesh-networking.md) protocol designed for open-source environmental [sensors](./sensors.md), such as the [Aurora Nova Widget v2 beta](./aurora-nova-widget-v2.md) unit. It enables communication between soil moisture and temperature sensor nodes without requiring a mandatory cloud connection. The protocol [configuration](./configuration.md) defined in `meshsync.h` (v0.3 excerpt) establishes a theoretical maximum of 32 nodes, though [beta testing](./beta-testing.md) has encountered stability issues at higher node counts.
 
 ## Key Details
 
-- **Node Limits:** Supports a theoretical maximum of 32 nodes (`MESHSYNC_MAX_NODES`), though [beta testing](./beta-testing.md) to 8 nodes has proven unstable, and protocol header specifications suggest a beta-safe limit of 6 nodes (`MESHSYNC_BETA_SAFE_NODES`).
-- **Roles:** Node roles are defined via `meshsync_role_t` and include parent (`MESHSYNC_ROLE_PARENT`), child (`MESHSYNC_ROLE_CHILD`), and lost/rejoin storm state (`MESHSYNC_ROLE_LOST`).
-- **Parent Election:** Handled via an RSSI-weighted random backoff mechanism (referenced from the July 3 whiteboard).
-- **Timing Intervals:** The default sample and transmission interval is 15 minutes (`MESHSYNC_DEFAULT_INTERVAL_MIN`), and hourly intervals are officially deprecated.
-- **Power Impact:** Operates alongside [hardware](./hardware.md) power budgets that target 4.2 µA in sleep mode, 12 mA peak for sampling and transmission, and a known rejoin spike issue ranging between 110–340 µA.
+- **Node Capacity:** Supports a theoretical maximum of 32 nodes (`MESHSYNC_MAX_NODES`), with beta-safe limits defined at 6 nodes.
+- **Sampling Interval:** Uses a default sampling interval of 15 minutes (`MESHSYNC_DEFAULT_INTERVAL_MIN`), while hourly intervals are explicitly deprecated.
+- **Roles:** Node roles are categorized into parent (`MESHSYNC_ROLE_PARENT`), child (`MESHSYNC_ROLE_CHILD`), and lost/rejoin storm state (`MESHSYNC_ROLE_LOST`).
+- **Parent Election:** Relies on an RSSI-weighted random backoff mechanism referenced from a July 3 whiteboard.
+- **Power and Performance:** The Aurora Nova Widget v2 operates with a sleep current of 4.2 µA, a sample and transmit peak of 12 mA every 15 minutes, and a known rejoin spike issue ranging from 110 µA to 340 µA.
 
 ## Related Entities
 
-- **Aurora Nova Widget v2:** The beta hardware unit utilizing the MeshSync protocol.
+- **Aurora Nova Widget v2 beta unit:** The primary [hardware](./hardware.md) utilizing the MeshSync protocol.
 - **[Mira Chen](./aurora-nova-widget-v2.md):** [Firmware](./firmware.md) owner for the Aurora Nova Widget v2.
 - **Jonah Park:** Hardware owner for the Aurora Nova Widget v2.
-- **[SenseNode SN-400](./sensenode-sn-400.md):** Competitor device used for comparison.
-- **[TeaBuddy](./teabuddy.md):** Unrelated product mentioned in kickoff; integration requests with MeshSync have been officially denied.
+- **[TeaBuddy](./teabuddy.md):** An unrelated device mentioned in kickoff meetings whose integration request was formally denied per the partnership memo.
+- **[SenseNode SN-400](./sensenode-sn-400.md):** A competitor product used for comparative analysis.
 
 ## Related Concepts
 
-- **Local [Mesh Networking](./mesh-networking.md):** Device-to-device communication operating independently of cloud infrastructure.
-- **Parent Election:** The algorithmic process by which nodes determine network hierarchy based on signal strength (RSSI).
-- **Rejoin Storm State:** A network recovery condition (`MESHSYNC_ROLE_LOST`) characterized by spikes in [power consumption](./power-consumption.md) (110–340 µA) when multiple nodes attempt to reconnect simultaneously.
+- Local mesh networking
+- Soil moisture and temperature sensing
+- Parent election algorithms (RSSI-weighted random backoff)
+- Rejoin storm states and [power budget](./power-budget.md) management
 
 ## Contradictions
 
-&gt; **Contradiction:** There is a discrepancy regarding the stable beta node capacity of the network. The Nova Widget spec fragment states that the protocol has been beta tested up to 8 nodes (noting instability), whereas the `meshsync.h` protocol header explicitly defines `MESHSYNC_BETA_SAFE_NODES` as 6.
+&gt; **Contradiction:** Sources conflict regarding the upper stability threshold during beta testing. The Nova Widget spec fragment states that the protocol has been beta tested up to 8 nodes (noting it is unstable), whereas the `meshsync.h` header file defines the beta-safe node limit as 6 (`MESHSYNC_BETA_SAFE_NODES`).
 
 ## References & Trust
 

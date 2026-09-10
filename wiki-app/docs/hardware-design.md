@@ -10,7 +10,7 @@ tags:
   - mira-chen
   - nordic-nrf52840
   - nova-widget-v2
-last_updated: "2026-09-02T06:39:40.858590+00:00"
+last_updated: "2026-09-10T14:38:21.674259+00:00"
 sidebar_label: Hardware Design
 slug: /hardware-design
 ---
@@ -21,32 +21,40 @@ slug: /hardware-design
 
 ## Overview
 
-[Hardware](./hardware.md) design encompasses the physical architecture, component selection, electrical specifications, and enclosure design for products developed by [Aurora Labs](./aurora-labs.md). This page documents the design specifications and open engineering issues for the [Nova Widget v2](./nova-widget-v2.md) second-generation soil and environment sensor, based on [product specification](./product-specification.md) drafts.
+[Hardware](./hardware.md) design for the [Nova Widget v2](./nova-widget-v2.md)—the second-generation soil and environment sensor developed by [Aurora Labs](./aurora-labs.md)—encompasses core microcontroller architecture, sensor integration, power systems, enclosure specifications, and architectural trade-offs managed by the engineering team (including contributors [Mira Chen](./aurora-nova-widget-v2.md) and Jonah). 
 
 ## Key Details
 
-- **MCU:** Nordic nRF52840
-- **Sensory Components:** Capacitive soil moisture sensor, SHT41 temperature/humidity sensor, and VEML7700 light sensor.
-- **Power Source:** CR2032 primary cell battery, targeting a [battery life](./battery-life.md) of 24 months (marketing target) or 18 months minimum (internal engineering target) at 15-minute intervals in moderate mesh environments.
-- **Connectivity:** 2.4 GHz PCB trace antenna supporting [MeshSync](./meshsync.md) for self-healing mesh networks (maximum hop count of 4, with USB-powered gateway nodes bridging to [MQTT](./mqtt.md)).
-- **Enclosure:** IP54 rating planned for beta units, with an IP65 rating targeted for general availability (GA) depending on gasket tooling budget availability (~$8k).
-- **[Firmware](./firmware.md) & Performance:** Default reading interval is set to every 15 minutes when the mesh is active (configurable from 5 minutes to 24 hours via companion app). Target average current is &lt; 85 µA including mesh overhead at a 10-node deployment.
+- **Microcontroller (MCU):** Nordic nRF52840.
+- **[Sensors](./sensors.md):** Capacitive soil moisture sensor, SHT41 temperature and humidity sensor, and VEML7700 light sensor.
+- **Power & Battery:** Powered by a CR2032 primary coin cell battery.
+- **Connectivity & Antenna:** 2.4 GHz PCB trace antenna. Devices support [MeshSync](./meshsync.md), forming a self-healing mesh network with a maximum hop count of 4, while gateway nodes (USB-powered) bridge data to [MQTT](./mqtt.md).
+- **Reading Interval & Power Targets:** 
+  - Default reading interval is set to every 15 minutes when the mesh is active (configurable from 5 minutes to 24 hours via the companion app).
+  - Target average current is &lt; 85 µA, which includes mesh overhead in a 10-node deployment.
+- **[Battery Life](./battery-life.md) Claims:** 
+  - [Marketing](./marketing.md) target: 24 months at 15-minute intervals in a moderate mesh (≤ 5 nodes).
+  - Internal engineering target: 18 months minimum at 10 nodes.
+- **Enclosure:** IP54 rating for beta units, with an IP65 rating planned for General Availability (GA) if the gasket tooling budget (approximately $8k) permits.
+- **Open Design Issues:** 
+  - Solar trickle charger module requested as an optional add-on by Jonah, weighed against Bill of Materials (BOM) cost concerns raised by Mira.
+  - Over-the-Air (OTA) updates are currently deferred to version 2.1.
 
 ## Related Entities
 
 - **Aurora Labs:** The organization developing the Nova Widget v2.
-- **Mira Chen:** Author of the product spec draft.
-- **Jonah:** Team member advocating for an optional solar trickle charger module.
+- **Mira Chen:** Author of the product spec draft who raised concerns regarding BOM costs for solar options.
+- **Jonah:** Team member advocating for the optional solar trickle charger module.
 
 ## Related Concepts
 
-- **MeshSync:** The protocol allowing devices to form a self-healing mesh network with up to 4 hops.
-- **[OTA Updates](./ota-updates.md):** Firmware over-the-air update capability, which is currently deferred to version 2.1.
-- **Solar Trickle Charger:** An optional hardware module proposed for power augmentation.
+- **MeshSync:** The self-healing [mesh networking](./mesh-networking.md) protocol utilized by the devices.
+- **Nordic nRF52840:** The primary microcontroller driving the [hardware architecture](./hardware-architecture.md).
+- **Nova Widget v2:** The primary second-generation product being specified and engineered.
 
 ## Contradictions
 
-&gt; **Contradiction:** Kickoff notes previously mentioned an hourly default reading interval, whereas the current spec draft changes the default to 15 minutes for beta feedback. Consequently, the battery section requires revalidation.
+&gt; **Contradiction:** The [product specification](./product-specification.md) draft notes a default reading interval of every 15 minutes for beta feedback, whereas earlier kickoff notes had specified an hourly default. Consequently, the battery life section requires revalidation.
 
 ## References & Trust
 

@@ -4,13 +4,11 @@ title: Power Management
 tags:
   - aurora-nova-widget-v2
   - jonah-park
-  - meshsync
   - mira-chen
-  - parent-election
   - power-budget
   - power-management
   - sensenode-sn-400
-last_updated: "2026-09-02T06:41:23.387657+00:00"
+last_updated: "2026-09-10T14:39:42.377166+00:00"
 sidebar_label: Power Management
 slug: /power-management
 ---
@@ -20,29 +18,35 @@ slug: /power-management
 # Power Management
 
 ## Overview
-Power management for the [Aurora Nova Widget v2 beta](./aurora-nova-widget-v2.md) unit governs energy consumption across sleep, sampling, transmission, and network rejoin states. The device is designed as an open-source soil moisture and temperature sensor utilizing the [MeshSync](./meshsync.md) local mesh network with no mandatory cloud dependency.
+
+Power management is a critical subsystem of the [Aurora Nova Widget v2 beta](./aurora-nova-widget-v2.md) unit, an open-source soil moisture and temperature sensor utilizing the [MeshSync](./meshsync.md) local mesh protocol without mandatory cloud dependence.  While [marketing](./marketing.md) materials claim a 2-year [Battery Life](./battery-life.md), engineering estimates project a maximum life of 18 months assuming a 10-node deployment.
 
 ## Key Details
-The [power budget](./power-budget.md) for the Aurora Nova Widget v2 is currently in a draft state and outlines the following consumption modes:
-* **Sleep Mode:** 4.2 µA (target)
-* **Sample + TX:** 12 mA peak (operating on a 15-minute interval)
-* **Rejoin Spike:** 110–340 µA (identified as a known issue)
 
-The [hardware](./hardware.md) is powered by dual CR2032 batteries. Discrepancies exist regarding expected longevity, as marketing materials claim a 2-year [battery life](./battery-life.md), whereas engineering estimates project 18 months at a 10-node capacity.
+The current [Power Budget](./power-budget.md) for the Aurora Nova Widget v2 beta unit is outlined as follows:
+
+| Mode | Current | Notes |
+|------|---------|-------|
+| Sleep | 4.2 µA | Target |
+| Sample + TX | 12 mA peak | 15 min interval |
+| Rejoin spike | **110–340 µA** | Known issue |
 
 ## Related Entities
-* **Aurora Nova Widget v2:** The open-source beta hardware unit utilizing this power budget.
-* **[Mira Chen](./aurora-nova-widget-v2.md):** [Firmware](./firmware.md) owner for the widget.
-* **Jonah Park:** Hardware owner for the widget.
-* **[SenseNode SN-400](./sensenode-sn-400.md):** A competitor product referenced in cross-links.
-* **[TeaBuddy](./teabuddy.md):** An unrelated product mentioned during [project kickoff](./project-kickoff.md).
+
+- **Aurora Nova Widget v2:** The open-source soil moisture and temperature sensor hosting this power [configuration](./configuration.md).
+- **[Mira Chen](./aurora-nova-widget-v2.md):** [Firmware](./firmware.md) owner for the widget.
+- **Jonah Park:** [Hardware](./hardware.md) owner for the widget.
+- **[SenseNode SN-400](./sensenode-sn-400.md):** Competitor product referenced in cross-links.
 
 ## Related Concepts
-* **MeshSync:** The local mesh protocol used by the widget supporting a theoretical maximum of 32 nodes (beta tested unstably up to 8 nodes).
-* **Parent Election:** Network routing mechanism currently marked as pending clarification (referenced on whiteboard).
+
+- **MeshSync:** The local [Mesh Networking](./mesh-networking.md) protocol used by the widget (supporting a theoretical maximum of 32 nodes, though [Beta Testing](./beta-testing.md) has been unstable at 8 nodes).
+- **Parent Election:** A network formation process whose mechanism is currently undetermined ("??? (see whiteboard)").
+- **Power Budget:** The planning document and metric tracking for current draw across sleep, sampling, and rejoin states.
 
 ## Contradictions
-&gt; **Contradiction:** Marketing materials claim a 2-year battery life using dual CR2032 batteries, whereas engineering estimates limit the expected longevity to 18 months under a 10-node configuration.
+
+&gt; **Contradiction:** There is a discrepancy in projected battery longevity between departments. Marketing claims a 2-year battery life for the dual CR2032 setup, whereas engineering estimates limit the lifespan to 18 months at a 10-node scale.
 
 ## References & Trust
 

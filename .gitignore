@@ -1,6 +1,7 @@
 .DS_Store
 .env
 .obsidian/
+.claude/worktrees/
 *.tmp
 __pycache__/
 *.pyc
@@ -23,6 +24,8 @@ data/llm_settings.json
 data/users.json
 data/sessions.json
 data/activity_log.json
+data/connector_activity.json
+data/sample.sqlite
 compiler/temp_output/*
 !compiler/temp_output/.gitkeep
 wiki-app/static/media/*

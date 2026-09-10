@@ -2,15 +2,15 @@
 id: battery-management
 title: Battery Management
 tags:
-  - alex
+  - aurora-labs
   - battery-management
-  - battery-specification
-  - engineering-timeline
-  - jonah
-  - mira
-  - wiki
-  - wiki-ingestion
-last_updated: "2026-09-02T06:38:43.924292+00:00"
+  - grace-liu
+  - jonah-park
+  - lena-ito
+  - mesh-118
+  - mesh-capacity-workstream
+  - mira-chen
+last_updated: "2026-09-10T14:37:19.924906+00:00"
 sidebar_label: Battery Management
 slug: /battery-management
 ---
@@ -20,29 +20,38 @@ slug: /battery-management
 # Battery Management
 
 ## Overview
-Battery management encompasses the technical specifications, timelines, and component selections required to power device nodes effectively. Discussions surrounding battery requirements involve balancing marketing timelines with [engineering constraints](./engineering-constraints.md) and correcting public-facing [documentation](./documentation.md) errors.
+Battery management encompasses the sourcing, [supply chain](./supply-chain.md) logistics, and [firmware](./firmware.md)-level power optimization for [Aurora Labs](./aurora-labs.md)' [hardware](./hardware.md) units. This topic covers component supply updates (such as cell restock delays impacting production batches) and [QA testing](./qa-testing.md) [protocols](./protocols.md) designed to monitor and prevent regressions in [battery drain](./battery-drain.md) caused by [firmware updates](./firmware-updates.md) like the [MESH-118](./mesh-118.md) relay radio sleep timer fix.
 
 ## Key Details
-- **Engineering Timeline:** While marketing may project a two-year timeline, engineering targets an 18-month minimum duration at ten active nodes.
-- **[Battery Specifications](./battery-specifications.md):** 
-  - Official specification calls for the use of the **CR2032** battery (often referred to as two-oh-three-two).
-  - An incorrect battery type, the **CR2450**, was mistakenly referenced in Alex's blog.
-- **Default Intervals:** Discussions have touched on fifteen-minute defaults versus hourly kickoff intervals.
+- **Supply Chain & Orders**: 
+  - Order `#PC-88213` involves 2,400 CR2477 cells intended for [MeshSync Batch 5](./meshsync-batch-5.md).
+  - A customs hold at the Shenzhen cathode supplier caused a 9-business-day delay, moving the revised ship date from June 9th to June 18th, 2026.
+  - PowerCell Supply Co. (Rosa Delgado) offered an alternative split shipment: air-shipping 600 cells from the Ontario warehouse by June 8th to cover initial field units, with the remaining 1,800 cells following by truck.
+- **Firmware Validation & QA (MESH-118)**:
+  - The 0.3.9 candidate test plan targets the relay radio sleep timer fix.
+  - Testing scope utilizes 6 bench units across mesh sizes of 3, 6, and 9 nodes (deliberately pushing past the flash-before warning threshold to observe degradation).
+  - Battery drain is measured hourly over a 48-hour period per [configuration](./configuration.md).
+  - The pass criteria requires drain to remain within 10% of the 0.3.7 baseline (pre-relay-mode) at 6 nodes or fewer.
 
 ## Related Entities
-- **Alex:** Author of the blog post containing the incorrect battery specification.
-- **Jonah:** Team member who identified the battery error in Alex's blog and noted the engineering kickoff timeline.
-- **[Mira](./aurora-nova-widget-v2.md):** Team member who highlighted the engineering lifespan requirements and suggested ingesting corrections into the wiki.
+- **Aurora Labs**: Organization managing [product development](./product-development.md), QA, and firmware engineering.
+- **PowerCell Supply Co.**: Supplier providing battery cells (contact: Rosa Delgado).
+- **[Mira Chen](./aurora-nova-widget-v2.md)**: Recipient of supply chain updates and CC'd on QA standup communications.
+- **Grace Liu**: CC'd on supplier communications regarding order delays.
+- **Lena Ito**: Author of the MESH-118 QA retest plan.
+- **Jonah Park**: Engineering team member responsible for building firmware updates.
 
 ## Related Concepts
-- **Wiki Ingestion:** The process of updating and correcting internal documentation (such as correcting the battery type from the blog error).
-- **[Hardware](./hardware.md) Habit:** An external platform or comment section requiring a reply (noted as an action item lost in corruption).
+- **MESH-118**: Ticket and identifier covering the relay radio sleep timer fix and its associated 0.3.9 QA retest plan.
+- **Mesh-Capacity Workstream**: A separate workstream handling high-stress configurations (such as the 12-node stress config from MESH-102), which is explicitly excluded from standard battery regression checks.
+- **MeshSync Batch 5**: Production batch impacted by battery cell supply delays.
 
 ## Contradictions
-&gt; **Contradiction:** There is a discrepancy between marketing expectations and engineering capabilities regarding the device lifespan timeline, with marketing targeting two years while engineering specifies an 18-month minimum at ten nodes.
+*(No direct contradictions found across the provided sources.)*
 
 ## References & Trust
 
 | # | Source | Type | Trust |
 |---|--------|------|-------|
-| 1 | `transcripts/2026-06-05-sync-fragment.txt` | text | Medium |
+| 1 | `notes/ideas/emails/2026-06-04-mesh-118-vendor-battery-delay.eml` | email | Medium |
+| 2 | `notes/ideas/emails/2026-06-05-mesh-118-qa-standup-notes.eml` | email | Medium |

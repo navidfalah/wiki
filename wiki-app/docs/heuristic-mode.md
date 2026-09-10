@@ -9,7 +9,7 @@ tags:
   - nova-widget
   - teabuddy
   - wiki
-last_updated: "2026-09-02T06:40:05.928473+00:00"
+last_updated: "2026-09-10T14:38:40.654916+00:00"
 sidebar_label: Heuristic Mode
 slug: /heuristic-mode
 ---
@@ -20,19 +20,15 @@ slug: /heuristic-mode
 
 ## Overview
 
-Heuristic mode is a feature of the [Wiki Compiler](./wiki-compiler.md) pipeline designed to process raw data files and generate structured [Documentation](./documentation.md) without relying on an external Large Language Model (LLM) API key. Operating as part of the LLM Wiki pipeline test artifact, it ingests text and markdown files, extracts topics, builds cross-links between entity mentions, and generates Docusaurus-compatible pages.
+Heuristic mode is an operational state of the [Wiki Compiler](./wiki-compiler.md) designed to process raw data and generate [Documentation](./documentation.md) without requiring an LLM [API](./api.md) key. Operating as part of the LLM Wiki [Pipeline Test Artifact](./pipeline-test-artifact.md), it reads source files, extracts topics, builds Docusaurus pages, and automatically maps cross-links across recognized entity mentions.
 
 ## Key Details
 
-- **File Ingestion:** Reads all `.txt` and `.md` files located under the `data/raw/` directory.
-- **API Independence:** Extracts topics and builds pages without requiring an LLM API key.
-- **Output Generation:** Automatically generates Docusaurus pages under the `wiki-app/docs/` directory.
-- **Cross-Linking:** Constructs cross-links based on detected entity mentions, such as [Nova Widget](./nova-widget.md), [TeaBuddy](./teabuddy.md), and [MeshSync](./meshsync.md).
-- **Test Data Layout:** 
-  - `data/raw/samples/` contains `[SAMPLE]` prefixed files.
-  - `data/raw/dummy-test/` contains `[DUMMY TEST DATA]` labeled files.
-  - Includes original junk data generated via `generate_junk_data.py`.
-- **Primary Goal:** Transform over 40 raw files into a rich, interconnected graph that surfaces underlying contradictions—such as discrepancies concerning [Battery Life](./battery-life.md), herbal presets, and read intervals.
+- **Input Processing:** Reads all `.txt` and `.md` files located under the `data/raw/` directory.
+- **Page Generation:** Automatically outputs generated Docusaurus pages directly into `wiki-app/docs/`.
+- **Cross-Linking:** Dynamically builds cross-links by detecting entity mentions such as [Nova Widget](./nova-widget.md), [TeaBuddy](./teabuddy.md), and [MeshSync](./meshsync.md) within the text.
+- **Test Data Layout:** Organizes inputs across `data/raw/samples/` (containing `[SAMPLE]` prefixed files) and `data/raw/dummy-test/` (containing `[DUMMY TEST DATA]` labeled files), alongside original junk data produced by `generate_junk_data.py`.
+- **Primary Goal:** Transform over 40 raw files into a rich, interconnected graph that surfaces underlying contradictions—specifically regarding metrics like battery, herbal presets, and read intervals.
 
 ## Related Entities
 
@@ -42,17 +38,14 @@ Heuristic mode is a feature of the [Wiki Compiler](./wiki-compiler.md) pipeline 
 
 ## Related Concepts
 
-- [Wiki Compiler](./wiki-compiler.md)
+- Wiki Compiler
 - Karpathy Pattern
 - Cross-Linking
 - Ingest Quirks
 
-## Ingest Quirks
+## Contradictions
 
-The heuristic mode pipeline is tested against several known data irregularities and parser edge cases:
-- **Broken Markdown Exports:** Used specifically to test and verify parser resilience.
-- **Forum HTML Scrapes:** Result in the loss of nested content structures.
-- **Email Threads:** Frequently introduce wrong-thread noise into the dataset.
+- The [Wiki Pipeline](./wiki-pipeline.md) aims to surface contradictions embedded in the source data, explicitly highlighting conflicting details concerning system properties such as [Battery Specifications](./battery-specifications.md), herbal presets, and read intervals.
 
 ## References & Trust
 

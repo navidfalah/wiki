@@ -20,6 +20,7 @@ import {
   findUserByUsername,
   findUserById,
   listUsers,
+  setPassword,
   UserError,
   verifyPassword,
 } from './users';
@@ -96,6 +97,31 @@ describe('findUserByUsername / verifyPassword', () => {
 
   it('rejects a password for an unknown user', () => {
     expect(verifyPassword('bob', 'password123')).toBeNull();
+  });
+});
+
+describe('setPassword', () => {
+  beforeEach(() => {
+    createUser('alice', 'password123', 'user');
+  });
+
+  it('replaces the password, invalidating the old one', () => {
+    setPassword('alice', 'new-password123');
+    expect(verifyPassword('alice', 'new-password123')).not.toBeNull();
+    expect(verifyPassword('alice', 'password123')).toBeNull();
+  });
+
+  it('is case-insensitive on username, matching findUserByUsername', () => {
+    setPassword('ALICE', 'new-password123');
+    expect(verifyPassword('alice', 'new-password123')).not.toBeNull();
+  });
+
+  it('rejects a password shorter than 8 characters', () => {
+    expect(() => setPassword('alice', 'short')).toThrow(UserError);
+  });
+
+  it('rejects an unknown username', () => {
+    expect(() => setPassword('bob', 'password123')).toThrow(UserError);
   });
 });
 

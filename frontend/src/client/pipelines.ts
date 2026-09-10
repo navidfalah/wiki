@@ -1,3 +1,5 @@
+import { copyButtonHtml, initCopyButtons } from './lib/copy';
+
 const apiBase = document.querySelector('meta[name="api-base"]')?.getAttribute('content') ?? '';
 
 function escapeHtml(text: string): string {
@@ -22,6 +24,7 @@ interface RunStep {
   detail: string | null;
   error: string | null;
   data?: Record<string, unknown> | null;
+  progress?: { current: number; total: number; recent: string[] } | null;
 }
 
 interface TokenUsageRow {
@@ -65,13 +68,22 @@ function statusBadge(status: string): string {
   return `<span class="inline-flex items-center gap-1 rounded-full px-2 py-0.5 text-xs font-medium ${tone}">${escapeHtml(status)}</span>`;
 }
 
+// Scales through s -> m -> h -> d instead of collapsing everything into
+// minutes:seconds -- a run interrupted by a server restart (see
+// reconcileOrphanedPipelineRuns on the backend) can carry a multi-day gap
+// between started_at and the reconciled finished_at, which read as a
+// nonsensical "5501m 44s" before this handled that range.
 function formatDuration(startedAt: string, finishedAt: string | null): string {
   const start = new Date(startedAt).getTime();
   const end = finishedAt ? new Date(finishedAt).getTime() : Date.now();
   const seconds = Math.max(0, (end - start) / 1000);
   if (seconds < 60) return `${seconds.toFixed(1)}s`;
   const minutes = Math.floor(seconds / 60);
-  return `${minutes}m ${Math.round(seconds % 60)}s`;
+  if (minutes < 60) return `${minutes}m ${Math.round(seconds % 60)}s`;
+  const hours = Math.floor(minutes / 60);
+  if (hours < 24) return `${hours}h ${minutes % 60}m`;
+  const days = Math.floor(hours / 24);
+  return `${days}d ${hours % 24}h`;
 }
 
 function formatTime(iso: string): string {
@@ -98,12 +110,12 @@ function renderList() {
           data-run-id="${escapeHtml(run.id)}"
           class="flex min-w-0 flex-1 flex-col gap-1 text-left">
           <div class="flex items-center justify-between gap-2">
-            <span class="truncate text-sm font-medium text-gray-900">${escapeHtml(run.id)}</span>
+            <span class="truncate text-sm font-medium text-gray-900">${escapeHtml(formatTime(run.started_at))}${run.force ? ' · forced' : ''}</span>
             ${statusBadge(run.status)}
           </div>
           <div class="flex items-center justify-between gap-2 text-xs text-gray-500">
-            <span>${escapeHtml(formatTime(run.started_at))}${run.force ? ' · forced' : ''}</span>
-            <span>${escapeHtml(formatDuration(run.started_at, run.finished_at))}</span>
+            <span class="truncate font-mono">${escapeHtml(run.id)}</span>
+            <span class="shrink-0">${escapeHtml(formatDuration(run.started_at, run.finished_at))}</span>
           </div>
         </button>
         <button
@@ -195,6 +207,26 @@ function renderValueHtml(value: unknown): string {
   return escapeHtml(String(value));
 }
 
+// Live per-item activity while a step is still running -- e.g. which
+// chunk Extraction is on right now, out of how many -- instead of a
+// running step just sitting there with no visibility into what it's
+// doing. `recent` is a small rolling window main.py caps at 20 items,
+// newest last; shown newest-first here since that's what you actually
+// want to watch scroll by.
+function renderStepProgressHtml(progress: RunStep['progress']): string {
+  if (!progress || !progress.recent.length) return '';
+  const items = progress.recent
+    .slice()
+    .reverse()
+    .map((item) => `<li class="truncate">${escapeHtml(item)}</li>`)
+    .join('');
+  return `
+    <div class="mt-1.5">
+      <p class="text-[11px] font-medium text-amber-700">${progress.current}/${progress.total} processed</p>
+      <ul class="mt-1 max-h-40 space-y-0.5 overflow-auto rounded-lg border border-amber-100 bg-amber-50/70 px-2.5 py-1.5 font-mono text-[11px] leading-snug text-amber-900">${items}</ul>
+    </div>`;
+}
+
 function renderStepErrorHtml(error: string, stepIndex: number): string {
   // error is often a full Python traceback (see main.py's exception handler
   // in run_compiler()), not a one-line message -- render it as a scrollable
@@ -202,13 +234,19 @@ function renderStepErrorHtml(error: string, stepIndex: number): string {
   const firstLine = error.split('\n')[0];
   const isMultiline = error.includes('\n');
   if (!isMultiline) {
-    return `<p class="mt-0.5 text-xs text-red-600">${escapeHtml(error)}</p>`;
+    return `<div class="copy-wrap mt-0.5 flex items-start gap-1">
+      <p class="copy-source text-xs text-red-600">${escapeHtml(error)}</p>
+      ${copyButtonHtml('text-red-600')}
+    </div>`;
   }
   const isOpen = openStepErrors.has(stepIndex);
   return `
     <details class="mt-1.5" data-step-error-index="${stepIndex}"${isOpen ? ' open' : ''}>
       <summary class="cursor-pointer text-xs text-red-600 hover:underline">${escapeHtml(firstLine)}</summary>
-      <pre class="mt-1.5 max-h-72 overflow-auto whitespace-pre-wrap break-words rounded-lg border border-red-100 bg-red-50 p-2.5 font-mono text-[11px] leading-snug text-red-800">${escapeHtml(error)}</pre>
+      <div class="copy-wrap relative mt-1.5">
+        <pre class="copy-source max-h-72 overflow-auto whitespace-pre-wrap break-words rounded-lg border border-red-100 bg-red-50 p-2.5 pr-8 font-mono text-[11px] leading-snug text-red-800">${escapeHtml(error)}</pre>
+        ${copyButtonHtml('absolute right-1.5 top-1.5 bg-red-50 text-red-600')}
+      </div>
     </details>`;
 }
 
@@ -219,7 +257,7 @@ function renderStepDataHtml(data: Record<string, unknown> | null | undefined, st
     .map((key) => {
       const heading = key === 'input' ? 'Input' : 'Output';
       const tone = key === 'input' ? 'text-source' : 'text-generated';
-      return `<div><p class="text-[11px] font-semibold uppercase tracking-wide ${tone}">${heading}</p><div class="mt-1 text-xs text-gray-700">${renderValueHtml(
+      return `<div><p class="text-[11px] font-semibold ${tone}">${heading}</p><div class="mt-1 text-xs text-gray-700">${renderValueHtml(
         data[key],
       )}</div></div>`;
     });
@@ -252,6 +290,7 @@ function renderDetail(run: RunDetail) {
             <span class="text-xs text-gray-500">${escapeHtml(formatDuration(step.started_at, step.finished_at))}</span>
           </div>
           ${step.detail ? `<p class="mt-0.5 text-xs text-gray-600">${escapeHtml(step.detail)}</p>` : ''}
+          ${step.status === 'running' ? renderStepProgressHtml(step.progress) : ''}
           ${step.error ? renderStepErrorHtml(step.error, stepIndex) : ''}
           ${renderStepDataHtml(step.data, stepIndex)}
         </div>
@@ -306,7 +345,10 @@ function renderDetail(run: RunDetail) {
     </div>
     ${
       run.error
-        ? `<pre class="mt-3 max-h-72 overflow-auto whitespace-pre-wrap break-words rounded-lg bg-red-50 px-3 py-2 font-mono text-[11px] leading-snug text-red-700">${escapeHtml(run.error)}</pre>`
+        ? `<div class="copy-wrap relative mt-3">
+             <pre class="copy-source max-h-72 overflow-auto whitespace-pre-wrap break-words rounded-lg bg-red-50 px-3 py-2 pr-8 font-mono text-[11px] leading-snug text-red-700">${escapeHtml(run.error)}</pre>
+             ${copyButtonHtml('absolute right-1.5 top-1.5 bg-red-50 text-red-700')}
+           </div>`
         : ''
     }
     <div class="mt-4 flex flex-col gap-2">${stepsHtml}</div>
@@ -410,20 +452,20 @@ function initBuildControls() {
   });
 
   runButton.addEventListener('click', async () => {
+    let alreadyRunning = false;
     try {
       const res = await fetch(`${apiBase}/api/build/status`);
       const status = await res.json();
-      if (status.running) {
-        setBuildMessage('A build is already running.');
-        setBuildButtonsRunning(true);
-        return;
-      }
+      alreadyRunning = Boolean(status.running);
     } catch {
       setBuildMessage(`Cannot reach API at ${apiBase}.`);
       return;
     }
 
-    setBuildMessage('Starting…');
+    // A build already running doesn't block this one -- /api/build/stream
+    // queues it (one deep) and starts it automatically once the current
+    // build finishes, rather than rejecting the request outright.
+    setBuildMessage(alreadyRunning ? 'A build is already running — queuing this one…' : 'Starting…');
     setBuildButtonsRunning(true);
 
     const params = new URLSearchParams();
@@ -438,7 +480,7 @@ function initBuildControls() {
       } catch {
         return;
       }
-      if (payload.type === 'start' || payload.type === 'log') {
+      if (payload.type === 'start' || payload.type === 'log' || payload.type === 'queued') {
         setBuildMessage(payload.message);
       } else if (payload.type === 'error') {
         setBuildMessage(`Error: ${payload.message}`);
@@ -474,4 +516,5 @@ window.addEventListener('beforeunload', () => {
 });
 
 initBuildControls();
+initCopyButtons();
 tick();

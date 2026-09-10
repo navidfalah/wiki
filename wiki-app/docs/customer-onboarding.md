@@ -2,15 +2,15 @@
 id: customer-onboarding
 title: Customer Onboarding
 tags:
-  - beta-sensor-limit
+  - aurora-labs
+  - aurora-nova-widget
+  - battery-specification
+  - beta-node-limit
   - customer-onboarding
-  - ip54-rating
+  - ingress-protection-ip-rating
   - meshsync
-  - nova-widget
   - reading-interval
-  - sensenode-sn-400
-  - teabuddy
-last_updated: "2026-09-02T06:39:07.083374+00:00"
+last_updated: "2026-09-10T14:37:46.911205+00:00"
 sidebar_label: Customer Onboarding
 slug: /customer-onboarding
 ---
@@ -20,30 +20,32 @@ slug: /customer-onboarding
 # Customer Onboarding
 
 ## Overview
-
-The Customer Onboarding guide provides essential instructions, technical specifications, and frequently asked questions for [beta testing](./beta-testing.md) participants setting up the [Aurora Nova Widget](./aurora-nova-widget.md) and associated [hardware](./hardware.md). 
+This page compiles frequently asked questions and key details for onboarding customers and [Beta Testing](./beta-testing.md) testers onto the [Aurora Nova Widget](./aurora-nova-widget.md) ecosystem. It covers limitations, [hardware specifications](./hardware-specifications.md), and compatibility details.
 
 ## Key Details
-
-* **Sensor Limits:** During the beta phase, it is recommended to add a maximum of **6 nodes** until the release of [MeshSync](./meshsync.md) version 0.3.9. Adding eight or more nodes may trigger rejoin loops, as documented in ticket #2099.
-* **Reading Interval:** The default reading interval is **15 minutes**. (Note: Older [documentation](./documentation.md) incorrectly stated an hourly interval due to a kickoff error).
-* **Water Resistance:** The device holds an **IP54 rating**, making it splash-resistant but not submersible. For outdoor submersion requirements, the [SenseNode SN-400](./sensenode-sn-400.md) offers an IP67 rating.
-* **Battery Type:** Powered by a **CR2032** battery. (Note: Certain blog posts mistakenly referenced the CR2450 battery, which has since been corrected in the wiki).
+- **Sensor Limit:** The beta recommendation is a maximum of **6 nodes** until the release of [MeshSync](./meshsync.md) 0.3.9. Adding eight or more nodes may trigger rejoin loops (referenced in ticket #2099).
+- **Default Reading Interval:** Set to **15 minutes**.
+- **Ingress Protection (IP) Rating:** Rated IP54 (splash-resistant, not submersible). For outdoor submersion requirements, the [SenseNode SN-400](./sensenode-sn-400.md) offers IP67 protection.
+- **Battery Type:** Uses a CR2032 battery. 
+- **Ecosystem Compatibility:** Not compatible with [TeaBuddy](./teabuddy.md). Although both products share a [local-first](./local-first.md) philosophy, they are entirely separate products from different companies using different applications.
 
 ## Related Entities
-
-* **Aurora Nova Widget:** The primary hardware device covered under the beta onboarding program.
-* **SenseNode SN-400:** An alternative hardware model providing an IP67 rating for outdoor submersion needs.
-* **[TeaBuddy](./teabuddy.md):** A separate product produced by a different company utilizing a different application.
+- [Aurora Nova Widget](./aurora-nova-widget.md)
+- [SenseNode SN-400](./sensenode-sn-400.md)
+- [Aurora Labs](./aurora-labs.md)
+- [TeaBuddy](./teabuddy.md)
 
 ## Related Concepts
-
-* **MeshSync:** The synchronization protocol and software framework governing node connectivity; version 0.3.9 addresses current beta sensor limitations.
-* **Local-First Philosophy:** A design principle shared philosophically by both the Nova Widget and TeaBuddy, despite being entirely separate products and companies.
+- Beta Node Limits
+- [MeshSync](./meshsync.md)
+- [Battery Specifications](./battery-specifications.md)
+- Ingress Protection (IP Rating)
+- Reading Intervals
+- [Local-first Software](./local-first-software.md)
 
 ## Contradictions
-
-&gt; **Contradiction:** Older project documentation and kickoff materials incorrectly stated that the default reading interval was hourly, whereas current guidelines establish it as 15 minutes. Additionally, early blog posts erroneously referenced a CR2450 battery type instead of the correct CR2032 battery.
+&gt; **Contradiction:** [Documentation](./documentation.md) regarding the default reading interval conflicts across sources; while the current FAQ specifies a 15-minute default interval, some older documentation incorrectly cited hourly readings.
+&gt; **Contradiction:** Early blog posts and documentation incorrectly stated that the Nova widget used a CR2450 battery; the correct beta unit specification uses a CR2032.
 
 ## References & Trust
 

@@ -27,6 +27,14 @@ const MODEL_PRICES: Record<string, ModelPrice> = {
   'o3-mini': { input: 1.1, output: 4.4 },
   'text-embedding-3-small': { input: 0.02, output: 0 },
   'text-embedding-3-large': { input: 0.13, output: 0 },
+  // Google Gemini (this app's default provider -- see .env.example) had no
+  // entries at all, so every Gemini run showed as "unpriced" regardless of
+  // which Gemini model was configured. Published list prices, Sep 2026.
+  'gemini-2.5-flash-lite': { input: 0.1, output: 0.4 },
+  'gemini-3.5-flash-lite': { input: 0.3, output: 2.5 },
+  'gemini-2.5-flash': { input: 0.3, output: 2.5 },
+  'gemini-2.5-pro': { input: 1.25, output: 10 },
+  'gemini-embedding-001': { input: 0.15, output: 0 },
 };
 
 // Checked longest-key-first so "gpt-4.1-mini" matches before the shorter

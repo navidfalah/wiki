@@ -81,26 +81,113 @@ function bucketTable(rows: UsageBucket[], keyLabel: string): string {
     </table>`;
 }
 
-function dailySpendHtml(rows: UsageBucket[]): string {
-  if (!rows.length) return '<p class="text-sm text-gray-500">No token usage recorded yet.</p>';
-  const maxCost = Math.max(...rows.map((r) => r.cost), 0.0001);
-  return `
-    <div class="flex flex-col gap-2">
-      ${rows
-        .map((row) => {
-          const pct = Math.max(2, Math.round((row.cost / maxCost) * 100));
-          return `
-        <div class="flex items-center gap-3 text-xs">
-          <span class="w-24 shrink-0 text-gray-600">${escapeHtml(formatDay(row.key))}</span>
-          <div class="h-4 flex-1 overflow-hidden rounded bg-gray-100">
-            <div class="h-full rounded bg-accent/70" style="width: ${pct}%"></div>
-          </div>
-          <span class="w-20 shrink-0 text-right font-medium text-gray-900">${formatCost(row.cost, row.has_unpriced)}</span>
-          <span class="w-28 shrink-0 text-right text-gray-500">${row.total_tokens.toLocaleString()} tok</span>
-        </div>`;
-        })
-        .join('')}
-    </div>`;
+// Rounds a max value up to a "clean" number for axis ticks (1/2/2.5/5 x a
+// power of ten) -- e.g. 0.0734 -> 0.08, 460 -> 500, 12,400 -> 15,000 --
+// so gridlines read as round numbers instead of whatever the data happens
+// to peak at.
+function niceMax(value: number): number {
+  if (value <= 0) return 1;
+  const exponent = Math.floor(Math.log10(value));
+  const base = Math.pow(10, exponent);
+  const fraction = value / base;
+  const niceFraction = fraction <= 1 ? 1 : fraction <= 2 ? 2 : fraction <= 2.5 ? 2.5 : fraction <= 5 ? 5 : 10;
+  return niceFraction * base;
+}
+
+interface BarChartOptions {
+  valueOf: (row: UsageBucket) => number;
+  formatValue: (value: number, row: UsageBucket) => string;
+  formatAxisTick: (value: number) => string;
+}
+
+// A single-series (one hue -- no legend needed, the section title already
+// names the measure) daily bar chart: <=24px bars with a 4px rounded cap,
+// a 2px gap between bars, hairline gridlines at clean rounded values, and
+// a hover tooltip + lift on every bar (the mark itself is the hit target).
+function renderBarChart(containerId: string, rows: UsageBucket[], options: BarChartOptions) {
+  const container = document.getElementById(containerId)!;
+  if (!rows.length) {
+    container.innerHTML = '<p class="text-sm text-gray-500">No token usage recorded yet.</p>';
+    return;
+  }
+
+  const width = 640;
+  const height = 220;
+  const marginLeft = 56;
+  const marginBottom = 28;
+  const marginTop = 12;
+  const plotWidth = width - marginLeft - 12;
+  const plotHeight = height - marginTop - marginBottom;
+
+  const values = rows.map(options.valueOf);
+  const maxValue = niceMax(Math.max(...values, 0));
+  const barSlot = plotWidth / rows.length;
+  const barWidth = Math.min(24, barSlot - 2);
+  const tickCount = 4;
+  const ticks = Array.from({ length: tickCount + 1 }, (_, i) => (maxValue / tickCount) * i);
+
+  // Show at most ~8 x-axis labels so days don't overlap into an unreadable smear.
+  const labelEvery = Math.max(1, Math.ceil(rows.length / 8));
+
+  const gridlines = ticks
+    .map((tick) => {
+      const y = marginTop + plotHeight - (tick / maxValue) * plotHeight;
+      return `<line x1="${marginLeft}" y1="${y}" x2="${width - 12}" y2="${y}" stroke="#e5e7eb" stroke-width="1" />
+              <text x="${marginLeft - 8}" y="${y}" text-anchor="end" dominant-baseline="middle" class="fill-gray-400" font-size="10">${escapeHtml(options.formatAxisTick(tick))}</text>`;
+    })
+    .join('');
+
+  const bars = rows
+    .map((row, i) => {
+      const value = options.valueOf(row);
+      const barHeight = maxValue > 0 ? (value / maxValue) * plotHeight : 0;
+      const x = marginLeft + i * barSlot + (barSlot - barWidth) / 2;
+      const y = marginTop + plotHeight - barHeight;
+      const showLabel = i % labelEvery === 0 || i === rows.length - 1;
+      return `
+        <g class="usage-bar-group" data-tooltip="${escapeHtml(`${formatDay(row.key)}: ${options.formatValue(value, row)}`)}">
+          <rect x="${x - 4}" y="${marginTop}" width="${barWidth + 8}" height="${plotHeight}" fill="transparent" class="usage-bar-hit" tabindex="0" />
+          <rect x="${x}" y="${y}" width="${barWidth}" height="${Math.max(barHeight, 1)}" rx="3" class="usage-bar fill-accent transition-colors" />
+          ${
+            showLabel
+              ? `<text x="${x + barWidth / 2}" y="${height - 8}" text-anchor="middle" class="fill-gray-500" font-size="10">${escapeHtml(formatDay(row.key).replace(/, \d{4}$/, ''))}</text>`
+              : ''
+          }
+        </g>`;
+    })
+    .join('');
+
+  container.innerHTML = `
+    <svg viewBox="0 0 ${width} ${height}" class="w-full" role="img" aria-label="Daily chart">
+      <line x1="${marginLeft}" y1="${marginTop + plotHeight}" x2="${width - 12}" y2="${marginTop + plotHeight}" stroke="#d1d5db" stroke-width="1" />
+      ${gridlines}
+      ${bars}
+    </svg>`;
+
+  const tooltip = document.getElementById('usage-chart-tooltip')!;
+  container.querySelectorAll<SVGGElement>('.usage-bar-group').forEach((group) => {
+    const bar = group.querySelector('.usage-bar') as SVGRectElement;
+    const show = (event: Event) => {
+      bar.classList.add('fill-accent-dark');
+      const text = group.dataset.tooltip ?? '';
+      tooltip.textContent = text;
+      tooltip.classList.remove('hidden');
+      const rect = (event.currentTarget as Element).getBoundingClientRect();
+      const containerRect = container.getBoundingClientRect();
+      const parentRect = container.parentElement!.getBoundingClientRect();
+      tooltip.style.left = `${rect.left + rect.width / 2 - parentRect.left}px`;
+      tooltip.style.top = `${containerRect.top - parentRect.top - 8}px`;
+      tooltip.style.transform = 'translate(-50%, -100%)';
+    };
+    const hide = () => {
+      bar.classList.remove('fill-accent-dark');
+      tooltip.classList.add('hidden');
+    };
+    group.addEventListener('pointerenter', show);
+    group.addEventListener('pointerleave', hide);
+    group.addEventListener('focus', show, true);
+    group.addEventListener('blur', hide, true);
+  });
 }
 
 function render(data: UsageSummary) {
@@ -122,7 +209,16 @@ function render(data: UsageSummary) {
     noteEl.innerHTML = `<p class="text-xs text-gray-400">Costs are estimated from published list prices, not your actual invoice.</p>`;
   }
 
-  document.getElementById('usage-daily')!.innerHTML = dailySpendHtml(data.by_day);
+  renderBarChart('usage-daily-cost-chart', data.by_day, {
+    valueOf: (row) => row.cost,
+    formatValue: (value, row) => formatCost(value, row.has_unpriced),
+    formatAxisTick: (value) => `$${value < 1 ? value.toFixed(2) : value.toFixed(0)}`,
+  });
+  renderBarChart('usage-daily-tokens-chart', data.by_day, {
+    valueOf: (row) => row.total_tokens,
+    formatValue: (value) => `${value.toLocaleString()} tokens`,
+    formatAxisTick: (value) => (value >= 1000 ? `${(value / 1000).toFixed(value >= 10000 ? 0 : 1)}K` : value.toFixed(0)),
+  });
   document.getElementById('usage-by-process')!.innerHTML = bucketTable(data.by_process, 'Process');
   document.getElementById('usage-by-model')!.innerHTML = bucketTable(data.by_model, 'Model');
 }

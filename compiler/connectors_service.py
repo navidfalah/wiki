@@ -33,6 +33,8 @@ from connectors.credentials import ConnectorCredentials
 from connectors.imap_email import ImapConnector
 from connectors.oauth2 import OAuth2Connector
 from connectors.postgres_db import PostgresConnector
+from connectors.sample_data import seed_sample_sqlite_db
+from connectors.sqlite_db import SqliteConnector
 from connectors.registry import CONNECTOR_DISPLAY_NAMES, CONNECTOR_IDS, CONNECTOR_REQUIRES_OAUTH
 from models import PROJECT_ROOT
 
@@ -249,6 +251,20 @@ def connect_postgres(
     return {"connected": True, "connector_id": "postgres", "account_label": account_label}
 
 
+def connect_sqlite(account_label: str, db_path: str) -> dict:
+    """SQLite needs nothing but a file path -- no host, no password, no
+    server to reach. `password` is left unset on the stored credentials;
+    CredentialStore encrypts the record regardless (it's keyed by
+    CONNECTOR_SECRET_KEY, not by whether there's a password field)."""
+    if not account_label:
+        raise ValueError("'account_label' is required")
+    if not db_path:
+        raise ValueError("'db_path' is required")
+    creds = ConnectorCredentials(connector_id="sqlite", account_label=account_label, extra={"db_path": db_path})
+    _credential_store().save(creds)
+    return {"connected": True, "connector_id": "sqlite", "account_label": account_label}
+
+
 def _build_connector(
     connector_id: str,
     account_label: str,
@@ -257,6 +273,7 @@ def _build_connector(
     http_post=None,
     imap_client_factory=None,
     pg_client_factory=None,
+    sqlite_client_factory=None,
 ):
     """Loads stored credentials, refreshes an OAuth2 token if it's expired
     (ensure_fresh(), persisting the refreshed token back), and returns a
@@ -301,6 +318,10 @@ def _build_connector(
             **kwargs,
         )
 
+    if connector_id == "sqlite":
+        kwargs = {} if sqlite_client_factory is None else {"client_factory": sqlite_client_factory}
+        return SqliteConnector(db_path=creds.extra.get("db_path", ""), **kwargs)
+
     raise ConnectorError(f"Unknown connector: {connector_id}")
 
 
@@ -341,3 +362,68 @@ def import_item(connector_id: str, account_label: str, item_id: str, item_title:
 def disconnect(connector_id: str, account_label: str) -> dict:
     removed = _credential_store().delete(connector_id, account_label)
     return {"disconnected": removed, "connector_id": connector_id, "account_label": account_label}
+
+
+# Where the bundled sample SQLite database lives -- alongside the other
+# mutable, bind-mounted state in data/ (see paths.ts's DATA_DIR equivalent
+# on the Node side), not checked into git.
+SAMPLE_SQLITE_PATH = PROJECT_ROOT / "data" / "sample.sqlite"
+
+# Matches docker-compose.yml's `postgres` service defaults exactly (and
+# frontend/src/client/database.ts's SAMPLE_VALUES) -- the same sample
+# database, just auto-connected instead of requiring the "Fill the form
+# with the sample database's values" button + a manual Connect click.
+_SAMPLE_POSTGRES = {
+    "account_label": "sample",
+    "host": "postgres",
+    "port": 5432,
+    "dbname": "aurora_kb",
+    "user": "wiki_reader",
+    "password": "aurora_sample_pw",
+    "schema": "public",
+}
+_SAMPLE_SQLITE_ACCOUNT_LABEL = "sample-sqlite"
+
+
+def ensure_default_connections() -> dict:
+    """Called once at backend startup (see backend/src/index.ts) so the
+    /database page shows two already-connected sample accounts out of the
+    box: the existing sample Postgres database, and a bundled sample
+    SQLite file (seeded with genuinely different content -- field devices
+    and support tickets, distinct from Postgres's departments/employees/
+    projects) that needs no server at all.
+
+    Idempotent and additive only: never overwrites an account a user has
+    already connected (checked by account_label, not recreated if
+    present), and the Postgres sample account is stored the same way a
+    manual "Connect" click would store it -- no live connectivity test, so
+    this succeeds even when no Postgres server is actually reachable yet
+    (e.g. `docker compose up` hasn't been run); browsing that account's
+    tables will simply fail until it is.
+    """
+    store = _credential_store()
+    connected: list[str] = []
+    skipped: list[str] = []
+
+    seed_sample_sqlite_db(SAMPLE_SQLITE_PATH)
+    if store.load("sqlite", _SAMPLE_SQLITE_ACCOUNT_LABEL) is None:
+        connect_sqlite(_SAMPLE_SQLITE_ACCOUNT_LABEL, str(SAMPLE_SQLITE_PATH))
+        connected.append(f"sqlite/{_SAMPLE_SQLITE_ACCOUNT_LABEL}")
+    else:
+        skipped.append(f"sqlite/{_SAMPLE_SQLITE_ACCOUNT_LABEL}")
+
+    if store.load("postgres", _SAMPLE_POSTGRES["account_label"]) is None:
+        connect_postgres(
+            _SAMPLE_POSTGRES["account_label"],
+            _SAMPLE_POSTGRES["host"],
+            _SAMPLE_POSTGRES["password"],
+            port=_SAMPLE_POSTGRES["port"],
+            dbname=_SAMPLE_POSTGRES["dbname"],
+            user=_SAMPLE_POSTGRES["user"],
+            schema=_SAMPLE_POSTGRES["schema"],
+        )
+        connected.append(f"postgres/{_SAMPLE_POSTGRES['account_label']}")
+    else:
+        skipped.append(f"postgres/{_SAMPLE_POSTGRES['account_label']}")
+
+    return {"connected": connected, "already_connected": skipped}

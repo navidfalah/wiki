@@ -74,8 +74,22 @@ def _make_progress_callback(
     *,
     label: str,
     log_every: int = 1,
+    run: "PipelineRun | None" = None,
+    step_name: str = "",
+    recent_window: int = 20,
 ) -> Callable[[int, int, str], None]:
-    """Update Rich progress bar and print plain lines for dashboard/SSE logs."""
+    """Update Rich progress bar and print plain lines for dashboard/SSE logs.
+
+    When ``run``/``step_name`` are given, also persists a small rolling
+    window of the most recent items processed (e.g. "42/91:
+    notes/meeting.md") onto that step in the pipeline run record -- see
+    PipelineRun.update_step_progress -- so the Pipelines/Dashboard UI can
+    show what a long-running step is actually doing instead of just
+    "running" with no detail. Persisted every ``log_every`` calls (same
+    cadence as the console log line) plus always on the final call, so a
+    step with hundreds of items doesn't do a disk write per item.
+    """
+    recent: list[str] = []
 
     def on_progress(current: int, total: int, detail: str) -> None:
         pct = (100.0 * current / total) if total else 0.0
@@ -86,12 +100,18 @@ def _make_progress_callback(
             total=max(total, 1),
             description=f"{label} [dim]{short}[/]",
         )
-        if current == 1 or current == total or current % log_every == 0:
+        is_log_tick = current == 1 or current == total or current % log_every == 0
+        if is_log_tick:
             console.print(
                 f"[cyan]{label}[/] {current}/{total} ({pct:.1f}%) — {detail}",
                 soft_wrap=True,
             )
             sys.stdout.flush()
+        if run is not None and step_name:
+            recent.append(detail)
+            del recent[:-recent_window]
+            if is_log_tick:
+                run.update_step_progress(step_name, current=current, total=total, recent=list(recent))
 
     return on_progress
 
@@ -168,6 +188,8 @@ def step_extract(
     extra_system_context: str = "",
     redact_pii: bool = False,
     exclude_prefixes: frozenset[str] | None = None,
+    run: "PipelineRun | None" = None,
+    step_name: str = "",
 ) -> dict:
     """Step 2: Extract topics, entities, and concepts from each chunk."""
     mode = "LLM"
@@ -191,6 +213,8 @@ def step_extract(
             task,
             label="Extract",
             log_every=5 if total > 50 else 1,
+            run=run,
+            step_name=step_name,
         )
         extractions = extract_topics_from_raw_files(
             llm=llm,
@@ -233,6 +257,8 @@ def step_synthesize(
     web_search_max_topics: int = web_search.DEFAULT_MAX_TOPICS,
     web_search_provider: str | None = None,
     web_search_api_key: str | None = None,
+    run: "PipelineRun | None" = None,
+    step_name: str = "",
 ) -> dict:
     """Step 3: Group by topic and write draft wiki pages to temp_output/."""
     grouped = group_chunks_by_topic(extractions)
@@ -301,6 +327,8 @@ def step_synthesize(
             task,
             label="Synthesize",
             log_every=3 if regen_count > 30 else 1,
+            run=run,
+            step_name=step_name,
         )
         written, skipped = synthesize_topic_wiki_pages(
             grouped,
@@ -385,6 +413,8 @@ def step_link(
     removed_filenames: set[str],
     force: bool,
     extractions: dict | None = None,
+    run: "PipelineRun | None" = None,
+    step_name: str = "",
 ) -> list[Path]:
     """Step 5: Incrementally inject links and export affected pages.
 
@@ -412,6 +442,8 @@ def step_link(
                     task,
                     label="Link",
                     log_every=5 if total > 40 else 1,
+                    run=run,
+                    step_name=step_name,
                 )
             assert log_cb["fn"] is not None
             log_cb["fn"](current, total, detail)
@@ -531,6 +563,8 @@ def run_pipeline(
             extra_system_context=extra_system_context,
             redact_pii=redact_pii,
             exclude_prefixes=exclude_prefixes,
+            run=run,
+            step_name=current_step_name,
         )
         topic_total = sum(
             len(c.get("topics", []))
@@ -576,6 +610,8 @@ def run_pipeline(
             web_search_max_topics=web_search_max_topics,
             web_search_provider=web_search_provider,
             web_search_api_key=web_search_api_key,
+            run=run,
+            step_name=current_step_name,
         )
         llm.usage_log.extend(thinking_llm.usage_log)
         run.finish_step(
@@ -639,6 +675,8 @@ def run_pipeline(
             removed_filenames=synth_result["removed_filenames"],
             force=force,
             extractions=extractions,
+            run=run,
+            step_name=current_step_name,
         )
         run.finish_step(
             current_step_name,
@@ -646,7 +684,7 @@ def run_pipeline(
             detail=f"Linked {len(written)} pages",
             data={
                 "input": {"affected_titles": sorted(index_delta.affected_titles)},
-                "output": {"linked": written},
+                "output": {"linked": sorted(str(p) for p in written)},
             },
         )
     except Exception as exc:

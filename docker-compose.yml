@@ -28,10 +28,12 @@ services:
       OPENAI_EMBEDDING_MODEL: ${OPENAI_EMBEDDING_MODEL:-text-embedding-3-small}
       # Bootstrap admin account, created once on first boot (no-op if
       # data/users.json already has a user) -- see backend/src/lib/users.ts.
-      # Leave ADMIN_PASSWORD unset to get a random one printed to
-      # `docker compose logs backend` instead.
+      # Defaults to a known login (shown on the sign-in page itself) so a
+      # fresh install can always get in without digging through
+      # `docker compose logs backend` for a generated password -- override
+      # both for anything beyond local/sample use.
       ADMIN_USERNAME: ${ADMIN_USERNAME:-admin}
-      ADMIN_PASSWORD: ${ADMIN_PASSWORD:-}
+      ADMIN_PASSWORD: ${ADMIN_PASSWORD:-aurora_admin}
     volumes:
       # Mutable data shared with the host and (for docs/media) the
       # frontend service — not baked into the image, so a compile's output

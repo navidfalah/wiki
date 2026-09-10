@@ -10,7 +10,7 @@ tags:
   - mira-chen
   - teabuddy
   - trademark-clearance
-last_updated: "2026-09-02T06:40:29.024859+00:00"
+last_updated: "2026-09-10T14:38:57.278898+00:00"
 sidebar_label: Legal
 slug: /legal
 ---
@@ -20,30 +20,28 @@ slug: /legal
 # Legal
 
 ## Overview
-This page documents the preliminary trademark clearance and legal guidance regarding product names, branding, and co-marketing guidelines involving [Aurora Labs](./aurora-labs.md) and [TeaBuddy](./teabuddy.md), as provided by outside counsel.
+This page documents the preliminary trademark clearance and [legal](./legal.md) review regarding product marks and co-[marketing](./marketing.md) guidelines involving [Aurora Labs](./aurora-labs.md) and [TeaBuddy](./teabuddy.md). The review addresses specific brand names, potential conflicts, and formatting requirements for joint marketing efforts.
 
 ## Key Details
-* **[MeshSync](./meshsync.md) Trademark:** Cleared with a caveat regarding similar mesh [IoT](./iot.md) marks.
-* **TeaBuddy Trademark:** Cleared in class 21 for kitchen gadgets.
-* **"Puck" Branding:** The standalone term "Puck" is crowded; use "[TeaBuddy Puck](./teabuddy.md)" together.
-* **Prohibited / Restricted Terms:** 
-  * "SteepSync" must be avoided (previously rejected internally by Alex).
-  * "[Nova](./aurora-nova-widget-v2.md)" alone conflicts with an existing tech mark; use "[Nova Widget](./nova-widget.md)" instead.
-* **Co-Marketing Guidelines:** Co-marketing efforts are approved on the condition that logos are separated by a minimum of 24px.
+* **[MeshSync](./meshsync.md) Trademark:** Approved with a caveat concerning similar mesh [IoT](./iot.md) marks.
+* **TeaBuddy Trademark:** Approved in class 21 for kitchen gadgets.
+* **"[Puck](./teabuddy.md)" Trademark:** Considered a crowded space; the mark must be used together as "[TeaBuddy Puck](./teabuddy.md)".
+* **"SteepSync":** Already rejected internally by Alex.
+* **"[Nova](./aurora-nova-widget-v2.md)":** Using "Nova" alone conflicts with an existing tech mark; use "[Nova Widget](./nova-widget.md)" instead.
+* **Co-Marketing Guidelines:** Joint marketing is permitted provided that logos are separated by a minimum of 24 pixels.
 
 ## Related Entities
-* [Aurora Labs](./aurora-labs.md)
-* [TeaBuddy](./teabuddy.md)
-* Mira Chen
-* Alex Kim
+* **Aurora Labs**
+* **TeaBuddy**
+* **[Mira Chen](./aurora-nova-widget-v2.md)** (Aurora Labs)
+* **Alex Kim** (TeaBuddy)
+* **Outside Counsel**
 
 ## Related Concepts
 * Trademark Clearance
+* IoT Marks
 * Co-Marketing Guidelines
-* Intellectual Property
-
-## Contradictions
-* *None noted in current sources.*
+* Brand Separation
 
 ## References & Trust
 

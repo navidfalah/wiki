@@ -2,14 +2,13 @@
 id: sensors
 title: Sensors
 tags:
-  - ip67-rating
-  - lan-first-architecture
+  - aurora-labs-nova
   - meshsync
-  - mirachen
-  - nova-widget
+  - sensenode
+  - sensor-battery-life
   - sensors
   - wiki
-last_updated: "2026-09-01T21:25:32.066996+00:00"
+last_updated: "2026-09-10T14:40:37.686534+00:00"
 sidebar_label: Sensors
 slug: /sensors
 ---
@@ -19,29 +18,33 @@ slug: /sensors
 # Sensors
 
 ## Overview
-The "Sensors" topic covers the discussion surrounding the [Nova Widget](./nova-widget.md) beta, a local mesh soil sensor showcased on Hacker News in July 2026. Developed by user `mirachen`, the project emphasizes local-first connectivity, featuring [MeshSync](./meshsync.md), optional [MQTT](./mqtt.md) protocol support, and a strict no-mandatory-cloud design philosophy.
+Discussions within the [HomeLab](./homelab.md) community frequently evaluate various [sensor hardware](./sensor-hardware.md) ecosystems, focusing on features like local-only operation, battery longevity, weatherproofing, and subscription requirements. Notable hardware platforms discussed include the [Aurora Labs Nova](./aurora-nova-widget-v2.md) and [SenseNode](./sensenode.md).
 
 ## Key Details
-- **Product:** Nova Widget beta (Local mesh soil sensor)
-- **Creator / OP:** `mirachen`
-- **Connectivity:** LAN-first architecture with lower duty cycle and optional MQTT; avoids mandatory cloud dependencies and Wi-Fi-only approaches to optimize power and local reliability.
-- **[Power Management](./power-management.md):** Powered by a CR2032 battery taking 15-minute interval reads (battery math spreadsheet promised by the OP).
-- **Build & Durability:** Community and developer debate highlight ruggedness specifications, specifically comparing IP67 versus IP54 ratings, with the creator conceding that IP67 is appropriate for submersion use cases.
+- **Aurora Labs Nova**: 
+  - Features a [local-first](./local-first.md) approach using [MeshSync](./meshsync.md) (cloud-free operation).
+  - Manufacturer claims a [battery life](./battery-life.md) of up to 2 years based on 15-minute read intervals.
+  - Real-world teardown analysis and community estimates suggest a slightly lower actual lifespan of approximately 20 months.
+  - Currently undergoing [beta testing](./beta-testing.md) phases.
+- **SenseNode**:
+  - Offers superior environmental durability with an IP67 waterproof rating.
+  - Requires a subscription model, which is a point of criticism among some users.
 
 ## Related Entities
-- **[mirachen](./nova-widget.md):** OP and creator of the Nova Widget beta project.
-- **[Teabuddy](./teabuddy.md):** A separate product/team seen at a faire, distinct from the Nova Widget creators.
+- Aurora Labs Nova
+- SenseNode
 
 ## Related Concepts
-- **MeshSync:** The underlying mesh synchronization protocol used by the Nova Widget.
-- **LAN-First Architecture:** A design approach prioritizing local network communication over cloud-dependent setups.
-- **IP67 Rating:** Enclosure rating standard discussed for [hardware](./hardware.md) water and dust resistance, contrasted against IP54.
+- MeshSync
+- Sensor battery life
+- Local-only [home automation](./home-automation.md) / No-cloud architecture
+- Weatherproofing (IP67)
 
 ## Contradictions
-*There are no direct contradictions present in the source material, though minor clarifications were made regarding team independence from "Teabuddy" and the suitability of IP67 over IP54 ratings.*
+&gt; **Contradiction:** There is a discrepancy regarding the battery longevity of the Aurora Labs Nova sensor. The manufacturer officially claims a 2-year battery life at 15-minute read intervals, whereas a community teardown blog estimates the real-world lifespan to be around 20 months.
 
 ## References & Trust
 
 | # | Source | Type | Trust |
 |---|--------|------|-------|
-| 1 | `samples/forums/[SAMPLE]-2026-07-10-hackernews-thread-scrape.txt` | text | Unverified |
+| 1 | `articles/scraped-forum-thread.txt` | text | Medium |

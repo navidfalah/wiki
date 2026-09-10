@@ -9,13 +9,14 @@ dashboard "connect an app" screen would list.
 
 from __future__ import annotations
 
-CONNECTOR_IDS = ["gmail", "google_drive", "imap", "postgres"]
+CONNECTOR_IDS = ["gmail", "google_drive", "imap", "postgres", "sqlite"]
 
 CONNECTOR_DISPLAY_NAMES = {
     "gmail": "Gmail",
     "google_drive": "Google Drive",
     "imap": "Email (IMAP)",
     "postgres": "PostgreSQL Database",
+    "sqlite": "SQLite Database",
 }
 
 CONNECTOR_REQUIRES_OAUTH = {
@@ -23,4 +24,5 @@ CONNECTOR_REQUIRES_OAUTH = {
     "google_drive": True,
     "imap": False,
     "postgres": False,
+    "sqlite": False,
 }

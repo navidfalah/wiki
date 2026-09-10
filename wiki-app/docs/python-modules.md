@@ -6,11 +6,11 @@ tags:
   - compileremail-enginepy
   - compilerrag-enginepy
   - compilerresources-enginepy
-  - email-knowledge-ingestion
+  - email-ingestion
   - engine-pattern
   - python-modules
-  - wiki
-last_updated: "2026-09-06T15:22:34.921445+00:00"
+  - serverpy
+last_updated: "2026-09-10T14:40:09.919639+00:00"
 sidebar_label: Python Modules
 slug: /python-modules
 ---
@@ -20,33 +20,42 @@ slug: /python-modules
 # Python Modules
 
 ## Overview
-The application architecture relies on several small, pure Python modules ("engines") located under the `compiler/` directory. Following a consistent design pattern, these engine modules contain no FastAPI imports, perform the core domain work independently, and are fully unit-testable on their own. They are integrated into the application via `server.py`, which acts as a thin routing layer. Additionally, shared utilities are centralized to prevent circular dependencies between engines and the main server.
+
+The application architecture utilizes small, pure Python modules (referred to as "engines") located under the `compiler/` directory. Following the design pattern established by modules like `analytics.py`, `trust.py`, and `link_overrides.py`, these engine modules contain no FastAPI imports. This isolation allows them to perform heavy lifting and remain independently unit-testable, while `server.py` acts as a thin routing layer wiring them into the application.
 
 ## Key Details
-- **Design Pattern**: Pure Python modules under `compiler/` containing no FastAPI dependencies, making them independently unit-testable.
-- **`compiler/doc_utils.py`**: Houses frontmatter and topic-lookup helper functions shared across all engine modules and pre-existing raw-file/doc endpoints in `server.py`. Engine modules do not import `server.py` nor do they import each other.
-- **Dashboard Sections & Engines**:
-  - **[Email Knowledge Engine](./email-knowledge-engine.md) (`compiler/email_engine.py`)**: Backs the `/emails` route and treats every ingested `.eml` source as an independently browsable knowledge item.
-    - `list_emails(raw_dir=RAW_DIR)`: Parses headers (via `email_ingest.parse_eml` without LLM calls) for every `.eml` file under `data/raw/`, adding pipeline status (`Processed`/`Unprocessed`), trust level (via `trust.py`), and the count of contributed compiled topics.
-    - `get_email_detail(file_path, raw_dir=..., docs_dir=...)`: Retrieves full message bodies, attachments, and wiki pages synthesized from the thread's topics (`doc_utils.synthesized_pages_for_topics`). Raises `NotAnEmailError` for non-`.eml` paths and `FileNotFoundError` for missing files, which `server.py` maps to appropriate HTTP statuses.
-  - **Resources Engine (`compiler/resources_engine.py`)**: Backs the `/resources` route.
-  - **Chat ([RAG](./rag.md)) Engine (`compiler/rag_engine.py`)**: Backs the `/chat` route.
+
+### Dashboard Sections and Engine Mapping
+
+| Section | Route | Engine module | Frontend |
+|---|---|---|---|
+| [Email knowledge engine](./email-knowledge-engine.md) | `/emails` | `compiler/email_engine.py` | `src/pages/emails.js` + `src/components/EmailEngine/` |
+| Resources | `/resources` | `compiler/resources_engine.py` | `src/pages/resources.js` + `src/components/ResourcesExplorer/` |
+| Chat ([RAG](./rag.md)) | `/chat` | `compiler/rag_engine.py` | `src/pages/chat.js` + `src/components/ChatEngine/` |
+
+### Shared Utilities
+`compiler/doc_utils.py` contains frontmatter and topic-lookup helpers. These utilities are shared across all engine modules as well as pre-existing raw-file and document endpoints in `server.py`. To maintain clean modular boundaries, engine modules do not import `server.py` nor do they import each other.
+
+### Email Knowledge Engine (`email_engine.py`)
+The email engine treats every ingested `.eml` source as an independently browsable knowledge item instead of a basic raw file:
+- **`list_emails(raw_dir=RAW_DIR)`**: Parses headers using `email_ingest.parse_eml` (without requiring an LLM call) for all `.eml` files located under `data/raw/`. It returns each message's pipeline status (`Processed`/`Unprocessed`), its trust level evaluated via `trust.py`, and the count of topics it contributed to once compiled.
+- **`get_email_detail(file_path, raw_dir=..., docs_dir=...)`**: Retrieves the full message body, attachments, and the wiki pages synthesized from the thread's topics via `doc_utils.synthesized_pages_for_topics`. 
+- **Error Handling**: Raises `NotAnEmailError` for non-`.eml` paths and `FileNotFoundError` for missing files, which `server.py` translates to appropriate HTTP status codes.
 
 ## Related Entities
+
+- `server.py`
+- `compiler/doc_utils.py`
 - `compiler/email_engine.py`
 - `compiler/resources_engine.py`
 - `compiler/rag_engine.py`
-- `compiler/doc_utils.py`
-- `server.py`
-- `trust.py`
-- `link_overrides.py`
 
 ## Related Concepts
-- FastAPI routing layers
-- Engine design pattern (decoupled business logic)
-- Email knowledge ingestion and parsing
-- Retrieval-Augmented Generation (RAG) chat systems
-- Frontmatter and topic lookup utilities
+
+- Engine Pattern
+- Email Ingestion
+- RAG (Retrieval-Augmented Generation)
+- Frontend Integration
 
 ## References & Trust
 

@@ -23,7 +23,6 @@ import rag_engine
 import synthesizer
 import trust_eval_dataset
 from entity_graph import entity_graph_payload
-from trust_eval_dataset import load_trust_eval_dataset
 
 
 def _read_stdin_json() -> dict:
@@ -168,48 +167,6 @@ def cmd_review_correct() -> dict:
     return {"saved": asdict(correction)}
 
 
-def cmd_review_candidates() -> dict:
-    """Active-learning review queue (task #9 / active_learning.py): the
-    pilot dataset's claim groups, run through trust propagation (task #2)
-    and select_review_candidates_for_dataset(), each candidate annotated
-    with whatever correction a human already saved for it (if any) so the
-    dashboard can show resolved items instead of re-flagging them forever.
-    """
-    dataset = load_trust_eval_dataset()
-    candidates = active_learning.select_review_candidates_for_dataset(dataset.claim_groups)
-    corrections_by_claim = {c.claim_id: c for c in active_learning.load_corrections()}
-    return {
-        "candidates": [
-            {**asdict(candidate), "correction": asdict(corrections_by_claim[candidate.claim_id]) if candidate.claim_id in corrections_by_claim else None}
-            for candidate in candidates
-        ],
-        "total": len(candidates),
-    }
-
-
-def cmd_review_corrections_list() -> dict:
-    corrections = active_learning.load_corrections()
-    return {"corrections": [asdict(c) for c in corrections], "total": len(corrections)}
-
-
-def cmd_review_correction_save() -> dict:
-    payload = _read_stdin_json()
-    claim_id = str(payload.get("claim_id", "")).strip()
-    group_id = str(payload.get("group_id", "")).strip()
-    verdict = str(payload.get("verdict", "")).strip()
-    note = str(payload.get("note", "")).strip()
-    quote = str(payload.get("quote", ""))
-    if not claim_id:
-        raise ValueError("'claim_id' is required")
-    if not group_id:
-        raise ValueError("'group_id' is required")
-    if verdict not in active_learning.VERDICTS:
-        raise ValueError(f"Unknown verdict {verdict!r}; must be one of {sorted(active_learning.VERDICTS)}")
-    correction = active_learning.Correction(claim_id=claim_id, group_id=group_id, verdict=verdict, note=note, quote_excerpt=quote[:200])
-    active_learning.save_correction(correction)
-    return {"saved": True, "correction": asdict(correction)}
-
-
 def cmd_entity_graph() -> dict:
     return entity_graph_payload()
 
@@ -263,6 +220,17 @@ def cmd_connectors_postgres_connect() -> dict:
     return connectors_service.connect_postgres(account_label, host, password, port=port, dbname=dbname, user=user, schema=schema)
 
 
+def cmd_connectors_sqlite_connect() -> dict:
+    payload = _read_stdin_json()
+    account_label = str(payload.get("account_label", "")).strip()
+    db_path = str(payload.get("db_path", "")).strip()
+    return connectors_service.connect_sqlite(account_label, db_path)
+
+
+def cmd_connectors_ensure_defaults() -> dict:
+    return connectors_service.ensure_default_connections()
+
+
 def cmd_connectors_items_list() -> dict:
     payload = _read_stdin_json()
     connector_id = str(payload.get("connector_id", "")).strip()
@@ -313,15 +281,14 @@ COMMANDS = {
     "email-delete": cmd_email_delete,
     "review-queue": cmd_review_queue,
     "review-correct": cmd_review_correct,
-    "review-candidates": cmd_review_candidates,
-    "review-corrections-list": cmd_review_corrections_list,
-    "review-correction-save": cmd_review_correction_save,
     "entity-graph": cmd_entity_graph,
     "connectors-catalog": cmd_connectors_catalog,
     "connectors-oauth-start": cmd_connectors_oauth_start,
     "connectors-oauth-callback": cmd_connectors_oauth_callback,
     "connectors-imap-connect": cmd_connectors_imap_connect,
     "connectors-postgres-connect": cmd_connectors_postgres_connect,
+    "connectors-sqlite-connect": cmd_connectors_sqlite_connect,
+    "connectors-ensure-defaults": cmd_connectors_ensure_defaults,
     "connectors-items-list": cmd_connectors_items_list,
     "connectors-item-import": cmd_connectors_item_import,
     "connectors-disconnect": cmd_connectors_disconnect,

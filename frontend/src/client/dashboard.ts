@@ -1,4 +1,5 @@
 import { saveCache, loadCache, showOfflineBanner, hideOfflineBanner, onReconnect } from './lib/cache';
+import { copyButtonHtml, initCopyButtons } from './lib/copy';
 
 const apiBase = document.querySelector('meta[name="api-base"]')?.getAttribute('content') ?? '';
 
@@ -146,6 +147,7 @@ interface LiveStep {
   status: 'running' | 'success' | 'error';
   detail: string | null;
   error: string | null;
+  progress?: { current: number; total: number; recent: string[] } | null;
 }
 
 function stepIcon(status: string): string {
@@ -166,34 +168,59 @@ function stepTone(status: string): string {
 // build runs) so expanding a failed step's log doesn't snap shut on the next
 // poll tick.
 const expandedErrorSteps = new Set<string>();
+const expandedProgressSteps = new Set<string>();
+
+// Rendered left-to-right on desktop (top-to-bottom on narrow screens, where
+// five side-by-side boxes wouldn't leave room for the step names) -- a
+// chevron between boxes reads as a pipeline flowing forward instead of an
+// unordered stack of cards.
+const STEP_ARROW = `<span class="hidden shrink-0 self-center text-gray-300 md:block" aria-hidden="true">›</span>`;
 
 function renderBuildSteps(liveSteps: LiveStep[]) {
   const byName = new Map(liveSteps.map((s) => [s.name, s]));
-  el('build-steps').innerHTML = BUILD_STEP_NAMES.map((name) => {
+  el('build-steps').innerHTML = BUILD_STEP_NAMES.map((name, index) => {
     const step = byName.get(name);
     const status = step?.status ?? 'pending';
     const hasError = Boolean(step?.error);
-    const expanded = hasError && expandedErrorSteps.has(name);
+    const hasProgress = status === 'running' && Boolean(step?.progress?.recent?.length);
+    const canToggle = hasError || hasProgress;
+    const expanded = (hasError && expandedErrorSteps.has(name)) || (hasProgress && expandedProgressSteps.has(name));
     const errorFirstLine = step?.error ? step.error.split('\n')[0] : '';
-    return `
-      <div class="rounded-lg border ${stepTone(status)}">
+    const progressCounter = step?.progress ? `${step.progress.current}/${step.progress.total}` : '';
+    const box = `
+      <div class="min-w-0 rounded-lg border ${stepTone(status)} md:flex-1">
         <button
           type="button"
           data-step-toggle="${escapeHtml(name)}"
-          class="flex w-full items-center gap-2.5 px-3 py-1.5 text-left ${hasError ? 'cursor-pointer' : 'cursor-default'}"
-          ${hasError ? '' : 'disabled'}>
+          class="flex w-full items-center gap-2.5 px-3 py-1.5 text-left ${canToggle ? 'cursor-pointer' : 'cursor-default'}"
+          ${canToggle ? '' : 'disabled'}>
           <span class="flex h-4 w-4 shrink-0 items-center justify-center text-[10px] font-bold">${stepIcon(status)}</span>
-          <span class="min-w-0 flex-1 text-xs font-medium">${escapeHtml(name.replace(/^\d+\.\s*/, ''))}</span>
-          ${step?.detail ? `<span class="truncate text-[11px] opacity-80">${escapeHtml(step.detail)}</span>` : ''}
+          <span class="min-w-0 flex-1 truncate text-xs font-medium">${escapeHtml(name.replace(/^\d+\.\s*/, ''))}</span>
+          ${progressCounter ? `<span class="shrink-0 text-[11px] tabular-nums opacity-80">${escapeHtml(progressCounter)}</span>` : ''}
+          ${step?.detail ? `<span class="hidden truncate text-[11px] opacity-80 lg:inline">${escapeHtml(step.detail)}</span>` : ''}
           ${step?.error ? `<span class="truncate text-[11px]">${escapeHtml(errorFirstLine)}</span>` : ''}
           ${hasError ? `<span class="shrink-0 text-[10px] underline opacity-80">${expanded ? 'hide log' : 'view log'}</span>` : ''}
+          ${!hasError && hasProgress ? `<span class="shrink-0 text-[10px] underline opacity-80">${expanded ? 'hide activity' : 'view activity'}</span>` : ''}
         </button>
         ${
-          expanded
-            ? `<pre class="max-h-64 overflow-auto whitespace-pre-wrap break-words border-t border-red-200 bg-red-50/70 px-3 py-2 font-mono text-[11px] text-red-800">${escapeHtml(step!.error!)}</pre>`
+          expanded && hasError
+            ? `<div class="copy-wrap relative border-t border-red-200">
+                 <pre class="copy-source max-h-64 overflow-auto whitespace-pre-wrap break-words bg-red-50/70 px-3 py-2 pr-8 font-mono text-[11px] text-red-800">${escapeHtml(step!.error!)}</pre>
+                 ${copyButtonHtml('absolute right-1.5 top-1.5 bg-red-50 text-red-800')}
+               </div>`
+            : ''
+        }
+        ${
+          expanded && !hasError && hasProgress
+            ? `<ul class="max-h-64 space-y-0.5 overflow-auto border-t border-amber-200 bg-amber-50/70 px-3 py-2 font-mono text-[11px] text-amber-900">${step!
+                .progress!.recent.slice()
+                .reverse()
+                .map((item) => `<li class="truncate">${escapeHtml(item)}</li>`)
+                .join('')}</ul>`
             : ''
         }
       </div>`;
+    return index === 0 ? box : STEP_ARROW + box;
   }).join('');
 
   el('build-steps')
@@ -201,9 +228,16 @@ function renderBuildSteps(liveSteps: LiveStep[]) {
     .forEach((btn) => {
       btn.addEventListener('click', () => {
         const name = btn.dataset.stepToggle ?? '';
-        if (!byName.get(name)?.error) return;
-        if (expandedErrorSteps.has(name)) expandedErrorSteps.delete(name);
-        else expandedErrorSteps.add(name);
+        const step = byName.get(name);
+        if (step?.error) {
+          if (expandedErrorSteps.has(name)) expandedErrorSteps.delete(name);
+          else expandedErrorSteps.add(name);
+        } else if (step?.progress?.recent?.length) {
+          if (expandedProgressSteps.has(name)) expandedProgressSteps.delete(name);
+          else expandedProgressSteps.add(name);
+        } else {
+          return;
+        }
         renderBuildSteps(liveSteps);
       });
     });
@@ -399,12 +433,10 @@ function initBuild() {
   });
 
   runButton.addEventListener('click', async () => {
+    let alreadyRunning = false;
     try {
       const status = await apiFetch('/api/build/status');
-      if (status.running) {
-        setMessage('A build is already running.');
-        return;
-      }
+      alreadyRunning = Boolean(status.running);
     } catch {
       setMessage(`Cannot reach API at ${apiBase}.`);
       return;
@@ -412,7 +444,10 @@ function initBuild() {
 
     currentRunId = null;
     renderBuildSteps([]);
-    setMessage('Starting compiler pipeline…');
+    // A build already running doesn't block this one -- /api/build/stream
+    // queues it (one deep) and starts it automatically once the current
+    // build finishes, rather than rejecting the request outright.
+    setMessage(alreadyRunning ? 'A build is already running — queuing this one…' : 'Starting compiler pipeline…');
     setBadge('running');
     runButton.disabled = true;
     stopButton.classList.remove('hidden');
@@ -434,6 +469,8 @@ function initBuild() {
       if (payload.type === 'run_id') {
         currentRunId = payload.run_id;
         startBuildPolling();
+      } else if (payload.type === 'queued') {
+        setMessage(payload.message);
       } else if (payload.type === 'error') {
         setMessage(`Error: ${payload.message}`);
       } else if (payload.type === 'done') {
@@ -946,6 +983,7 @@ function initExplorer() {
 }
 
 initBuild();
+initCopyButtons();
 initSourcesPicker();
 initRunOptions();
 initSources();

@@ -19,6 +19,7 @@ import {
   setChatSessionResourceScope,
 } from '../lib/chatSessions';
 import { listEvents, logEvent } from '../lib/activityLog';
+import { listConnectorEvents, logConnectorEvent } from '../lib/connectorActivity';
 import { describeLlmBackend } from '../lib/llmBackend';
 import { requireAdmin, requireAuth } from '../lib/authMiddleware';
 import { createSession, deleteSession } from '../lib/sessions';
@@ -96,7 +97,13 @@ export function registerRoutes(app: Express): void {
       const password = String(req.body?.password ?? '');
       if (!username || !password) throw new HttpError(400, 'Username and password are required');
       const user = verifyPassword(username, password);
-      if (!user) throw new HttpError(401, 'Invalid username or password');
+      if (!user) {
+        logEvent(username || '(blank)', 'Failed login attempt', `Unknown username or wrong password`, {
+          level: 'warn',
+          category: 'auth',
+        });
+        throw new HttpError(401, 'Invalid username or password');
+      }
       const publicUser = { id: user.id, username: user.username, role: user.role, created_at: user.created_at };
       const token = createSession(publicUser);
       logEvent(publicUser.username, 'Logged in');
@@ -115,8 +122,10 @@ export function registerRoutes(app: Express): void {
 
   app.get(
     '/api/activity',
-    wrap((_req, res) => {
-      res.json({ events: listEvents() });
+    wrap((req, res) => {
+      const requested = Number(req.query.limit);
+      const limit = Number.isFinite(requested) && requested > 0 ? Math.min(requested, 5000) : 500;
+      res.json({ events: listEvents(limit) });
     }),
   );
 
@@ -1101,36 +1110,6 @@ export function registerRoutes(app: Express): void {
     }),
   );
 
-  // --- Active-learning review queue (bridged to active_learning.py) --------
-
-  app.get(
-    '/api/review/candidates',
-    wrap(async (_req, res) => {
-      res.json(await runCli('review-candidates'));
-    }),
-  );
-
-  app.get(
-    '/api/review/corrections',
-    wrap(async (_req, res) => {
-      res.json(await runCli('review-corrections-list'));
-    }),
-  );
-
-  app.post(
-    '/api/review/corrections',
-    wrap(async (req, res) => {
-      const { claim_id: claimId, group_id: groupId, verdict, note, quote } = req.body ?? {};
-      try {
-        const result = await runCli('review-correction-save', { claim_id: claimId, group_id: groupId, verdict, note, quote });
-        logEvent(req.user?.username, 'Submitted review correction', `${claimId} → ${verdict}`);
-        res.json(result);
-      } catch (err: any) {
-        throw new HttpError(400, err.message);
-      }
-    }),
-  );
-
   // --- Entity graph (bridged to entity_graph.py) ----------------------------
 
   app.get(
@@ -1194,11 +1173,31 @@ export function registerRoutes(app: Express): void {
     '/api/connectors/postgres/connect',
     wrap(async (req, res) => {
       const { account_label: accountLabel, host, password, port, dbname, user, schema } = req.body ?? {};
+      const startedAt = Date.now();
       try {
         const result = await runCli('connectors-postgres-connect', { account_label: accountLabel, host, password, port, dbname, user, schema });
         logEvent(req.user?.username, 'Connected external account', `postgres → ${accountLabel}`);
+        logConnectorEvent({
+          username: req.user?.username,
+          connectorId: 'postgres',
+          accountLabel: accountLabel ?? null,
+          action: 'connect',
+          detail: `Connected to ${dbname}@${host}:${port ?? 5432}`,
+          success: true,
+          durationMs: Date.now() - startedAt,
+        });
         res.json(result);
       } catch (err: any) {
+        logConnectorEvent({
+          username: req.user?.username,
+          connectorId: 'postgres',
+          accountLabel: accountLabel ?? null,
+          action: 'connect',
+          detail: `Failed to connect to ${dbname}@${host}:${port ?? 5432}`,
+          success: false,
+          durationMs: Date.now() - startedAt,
+          error: err.message,
+        });
         throw new HttpError(400, err.message);
       }
     }),
@@ -1208,10 +1207,31 @@ export function registerRoutes(app: Express): void {
     '/api/connectors/:id/items',
     wrap(async (req, res) => {
       const { account_label: accountLabel, query, limit } = req.body ?? {};
+      const startedAt = Date.now();
       try {
         const result = await runCli('connectors-items-list', { connector_id: req.params.id, account_label: accountLabel, query, limit });
+        const count = Array.isArray(result?.items) ? result.items.length : undefined;
+        logConnectorEvent({
+          username: req.user?.username,
+          connectorId: req.params.id,
+          accountLabel: accountLabel ?? null,
+          action: 'browse',
+          detail: count !== undefined ? `Listed ${count} table(s)${query ? ` matching "${query}"` : ''}` : 'Listed tables',
+          success: true,
+          durationMs: Date.now() - startedAt,
+        });
         res.json(result);
       } catch (err: any) {
+        logConnectorEvent({
+          username: req.user?.username,
+          connectorId: req.params.id,
+          accountLabel: accountLabel ?? null,
+          action: 'browse',
+          detail: 'Failed to list tables',
+          success: false,
+          durationMs: Date.now() - startedAt,
+          error: err.message,
+        });
         if (err.errorType === 'not_connected') throw new HttpError(409, err.message);
         if (err.errorType === 'not_configured') throw new HttpError(400, err.message);
         throw new HttpError(400, err.message);
@@ -1223,6 +1243,7 @@ export function registerRoutes(app: Express): void {
     '/api/connectors/:id/items/import',
     wrap(async (req, res) => {
       const { account_label: accountLabel, item_id: itemId, item_title: itemTitle } = req.body ?? {};
+      const startedAt = Date.now();
       try {
         const result = await runCli('connectors-item-import', {
           connector_id: req.params.id,
@@ -1231,8 +1252,27 @@ export function registerRoutes(app: Express): void {
           item_title: itemTitle,
         });
         logEvent(req.user?.username, 'Imported item from connector', `${req.params.id} → ${result.raw_path}`);
+        logConnectorEvent({
+          username: req.user?.username,
+          connectorId: req.params.id,
+          accountLabel: accountLabel ?? null,
+          action: 'import',
+          detail: `Imported ${itemTitle ?? itemId} → ${result.raw_path}`,
+          success: true,
+          durationMs: Date.now() - startedAt,
+        });
         res.json(result);
       } catch (err: any) {
+        logConnectorEvent({
+          username: req.user?.username,
+          connectorId: req.params.id,
+          accountLabel: accountLabel ?? null,
+          action: 'import',
+          detail: `Failed to import ${itemTitle ?? itemId}`,
+          success: false,
+          durationMs: Date.now() - startedAt,
+          error: err.message,
+        });
         if (err.errorType === 'not_connected') throw new HttpError(409, err.message);
         throw new HttpError(400, err.message);
       }
@@ -1244,7 +1284,22 @@ export function registerRoutes(app: Express): void {
     wrap(async (req, res) => {
       const result = await runCli('connectors-disconnect', { connector_id: req.params.id, account_label: req.params.accountLabel });
       logEvent(req.user?.username, 'Disconnected external account', `${req.params.id} → ${req.params.accountLabel}`);
+      logConnectorEvent({
+        username: req.user?.username,
+        connectorId: req.params.id,
+        accountLabel: req.params.accountLabel,
+        action: 'disconnect',
+        detail: `Disconnected ${req.params.accountLabel}`,
+        success: true,
+      });
       res.json(result);
+    }),
+  );
+
+  app.get(
+    '/api/connectors/:id/activity',
+    wrap((req, res) => {
+      res.json({ events: listConnectorEvents(req.params.id) });
     }),
   );
 

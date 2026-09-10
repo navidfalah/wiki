@@ -7,7 +7,7 @@ import json
 import re
 from collections.abc import Callable
 from dataclasses import asdict, dataclass, field
-from datetime import UTC, datetime
+from datetime import datetime, timezone
 from pathlib import Path
 
 import email_ingest
@@ -222,7 +222,7 @@ def scan_raw_file_changes(
 
 
 def _utc_now_iso() -> str:
-    return datetime.now(UTC).isoformat()
+    return datetime.now(timezone.utc).isoformat()
 
 
 def _raw_chunk_from_dict(rel_source: str, chunk_dict: dict) -> RawChunk:
@@ -442,10 +442,31 @@ def read_raw_chunks(
 
 
 def _parse_extraction_json(raw: str) -> dict:
+    """Parses the {...} JSON blob out of an extraction response.
+
+    LLMs -- especially smaller/cheaper models at temperature=0 --
+    occasionally emit almost-valid JSON; a trailing comma before a closing
+    `}`/`]` is the single most common failure mode (it's exactly what
+    produces json's confusing "Expecting property name enclosed in double
+    quotes" error, since the parser is looking for the next key after the
+    comma and finds the closing brace instead). That one repair is tried
+    before giving up, and a persistent failure raises with the actual
+    response text attached -- not just the JSONDecodeError -- so it's
+    debuggable instead of just "line 14 column 5" with no way to see what
+    the model actually said.
+    """
     match = re.search(r"\{.*\}", raw, re.DOTALL)
     if not match:
-        raise ValueError("LLM response did not contain JSON")
-    return json.loads(match.group())
+        raise ValueError(f"LLM response did not contain JSON:\n{raw[:2000]}")
+    candidate = match.group()
+    try:
+        return json.loads(candidate)
+    except json.JSONDecodeError:
+        repaired = re.sub(r",(\s*[}\]])", r"\1", candidate)
+        try:
+            return json.loads(repaired)
+        except json.JSONDecodeError as exc:
+            raise ValueError(f"LLM returned malformed JSON ({exc}):\n{raw[:2000]}") from exc
 
 
 def extract_chunk_topics(
@@ -486,7 +507,31 @@ def extract_chunk_topics(
     # concepts as JSON), not prose generation — it should return the same
     # answer for the same input, not sample creatively.
     raw = client.generate_response(prompt, system_prompt, temperature=0.0)
-    data = _parse_extraction_json(raw)
+    try:
+        data = _parse_extraction_json(raw)
+    except ValueError as first_error:
+        # _parse_extraction_json's own trailing-comma repair already covers
+        # the single most common malformation; this covers everything else
+        # (a missing closing brace, an unescaped quote, ...) with one
+        # corrective retry -- quoting the model's own broken output and the
+        # exact parser error back at it, rather than a bigger repair-regex
+        # arms race against every way a model can almost-but-not-quite emit
+        # JSON. use_cache=False: a retry needs a fresh sample, not whatever
+        # (if anything) happens to be cached for this modified prompt.
+        retry_prompt = (
+            f"{prompt}\n\n---\n\nYour previous response was not valid JSON: {first_error}\n\n"
+            f"Previous response:\n{raw}\n\n"
+            "Reply again with ONLY the corrected JSON object -- no markdown fences, no "
+            "commentary, every object and array properly closed."
+        )
+        raw_retry = client.generate_response(retry_prompt, system_prompt, temperature=0.0, use_cache=False)
+        try:
+            data = _parse_extraction_json(raw_retry)
+        except ValueError as second_error:
+            raise ValueError(
+                f"LLM returned malformed JSON twice in a row for {chunk.source_path} "
+                f"(chunk {chunk.chunk_index}). First error: {first_error}. Retry error: {second_error}"
+            ) from second_error
 
     return ChunkExtraction(
         source_path=chunk.source_path,

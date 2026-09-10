@@ -13,7 +13,7 @@ if (providerError) {
   errorBox.textContent = `The provider returned an error: ${providerError}`;
 } else if (!code || !state) {
   errorBox.classList.remove('hidden');
-  errorBox.textContent = 'Missing code/state in the callback URL -- try connecting again from the Connectors page.';
+  errorBox.textContent = 'Missing code/state in the callback URL -- try connecting again from the Resources page\'s Connectors tab.';
 }
 
 document.getElementById('callback-form')?.addEventListener('submit', async (event) => {
@@ -34,7 +34,7 @@ document.getElementById('callback-form')?.addEventListener('submit', async (even
       throw new Error(err.error || `Request failed (${res.status})`);
     }
     (window as any).queueToast?.(`Connected ${accountLabel}.`, 'success');
-    window.location.href = '/connectors';
+    window.location.href = '/resources?tab=connectors';
   } catch (err: any) {
     errorBox.classList.remove('hidden');
     errorBox.textContent = err.message || 'Failed to complete connection.';

@@ -2,24 +2,46 @@
 
 <h1 class="text-2xl font-semibold tracking-tight text-gray-900">Logs</h1>
 <p class="mt-1 max-w-2xl text-sm text-gray-600">
-  Every change made in this app — files added or removed, folders created, the compiler
-  started or stopped, settings updated — with who did it and when. Read-only browsing
-  (previewing a file, asking chat a question) isn't logged here.
+  User actions (files, folders, sources, settings, the compiler) and system events (startup, crash recovery,
+  failed logins, unhandled errors) in one timeline. Read-only browsing (previewing a file, asking chat a
+  question) still isn't logged here -- this is an audit trail of changes and notable events, not a full
+  request log.
 </p>
 
-<div class="mt-4 flex items-center gap-2">
+<div class="mt-4 flex flex-wrap items-center gap-2">
+  <select id="logs-level-filter" class="rounded-lg border border-gray-300 bg-white px-2.5 py-1.5 text-sm text-gray-700">
+    <option value="">All levels</option>
+    <option value="error">Error</option>
+    <option value="warn">Warning</option>
+    <option value="info">Info</option>
+  </select>
+  <select id="logs-category-filter" class="rounded-lg border border-gray-300 bg-white px-2.5 py-1.5 text-sm text-gray-700">
+    <option value="">All categories</option>
+  </select>
+  <input
+    id="logs-search"
+    type="search"
+    placeholder="Search user, action, detail…"
+    class="min-w-[12rem] flex-1 rounded-lg border border-gray-300 px-2.5 py-1.5 text-sm text-gray-700" />
+  <label class="flex items-center gap-1.5 text-xs text-gray-600">
+    <input id="logs-auto-refresh" type="checkbox" class="rounded border-gray-300 text-accent focus:ring-accent/30" />
+    Auto-refresh
+  </label>
   <span id="logs-status" class="text-xs text-gray-500"></span>
-  <button id="logs-refresh" type="button" class="ml-auto inline-flex items-center justify-center gap-2 rounded-lg border border-gray-300 bg-white px-3 py-1.5 text-sm font-medium text-gray-700 hover:bg-gray-50">Refresh</button>
+  <button id="logs-refresh" type="button" class="inline-flex items-center justify-center gap-2 rounded-lg border border-gray-300 bg-white px-3 py-1.5 text-sm font-medium text-gray-700 hover:bg-gray-50">Refresh</button>
 </div>
 
 <div class="mt-3 overflow-hidden rounded-xl border border-gray-200 bg-white shadow-card">
   <table class="w-full text-left text-sm">
-    <thead class="border-b border-gray-100 bg-gray-50 text-xs uppercase tracking-wide text-gray-500">
+    <thead class="border-b border-gray-100 bg-gray-50 text-xs text-gray-500">
       <tr>
         <th class="px-4 py-2.5 font-medium">When</th>
+        <th class="px-4 py-2.5 font-medium">Level</th>
+        <th class="px-4 py-2.5 font-medium">Category</th>
         <th class="px-4 py-2.5 font-medium">User</th>
         <th class="px-4 py-2.5 font-medium">Action</th>
         <th class="px-4 py-2.5 font-medium">Detail</th>
+        <th class="px-2 py-2.5 font-medium"><span class="sr-only">Copy</span></th>
       </tr>
     </thead>
     <tbody id="logs-body" class="divide-y divide-gray-100"></tbody>

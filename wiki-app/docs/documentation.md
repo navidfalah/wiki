@@ -3,14 +3,14 @@ id: documentation
 title: Documentation
 tags:
   - alex
+  - aurora-nova-widget
   - battery-specification
+  - battery-status-indication
+  - contradiction-documentation
   - documentation
-  - engineering-timeline
-  - jonah
-  - mira
-  - wiki
-  - wiki-ingestion
-last_updated: "2026-09-02T06:39:15.116655+00:00"
+  - docusaurus
+  - meshsink
+last_updated: "2026-09-10T14:37:53.773237+00:00"
 sidebar_label: Documentation
 slug: /documentation
 ---
@@ -20,30 +20,32 @@ slug: /documentation
 # Documentation
 
 ## Overview
-Documentation management, specification alignment, and [wiki ingestion](./wiki-management.md) are critical components for maintaining accurate technical records across engineering and marketing teams. A June 2026 sync fragment highlights the importance of capturing corrections—such as [battery specifications](./battery-specifications.md) and engineering timelines—directly into internal documentation systems like the wiki.
+Documentation serves as a foundational component for managing project knowledge, tracking [product specifications](./product-specifications.md), and handling [customer support](./customer-support.md) inquiries. Maintaining accurate wiki pages involves addressing contradictions explicitly, streamlining pipelines (such as compiling raw text files to Markdown and Docusaurus), and eliminating orphan pages through automated linters.
 
 ## Key Details
-- **Engineering Timeline:** Marketing may propose aggressive timelines (e.g., two years), but engineering requirements dictate an eighteen-month minimum at ten nodes.
-- **Battery Specification Correction:** An external blog post by Alex incorrectly specified the battery type as CR2450; the actual component used is the CR2032. 
-- **Wiki Ingestion:** The team emphasized the need to ingest corrections regarding technical specifications (such as the battery correction) into the wiki to ensure single-source-of-truth accuracy.
-- **Lost Action Items:** Due to a recording corruption during the sync, critical action items including revalidating battery math and replying to a [Hardware](./hardware.md) Habit comment were left unresolved.
+* **[Battery Specifications](./battery-specifications.md) & Corrections:** Early confusion arose regarding the [Aurora Nova Widget](./aurora-nova-widget.md) battery specification due to conflicting reports between an initial teardown blog (which listed a CR2450 battery) and official documentation (specifying a CR2032 battery). The teardown blog was subsequently corrected.
+* **Battery Longevity & Usage Factors:** [Marketing](./marketing.md) materials claim a 2-year [battery life](./battery-life.md), whereas forum discussions sometimes cite 18 months.
+* **Battery Status Indication:** Proposed [hardware](./hardware.md) features include a color-coded LED indicator on devices to signal critical "I'm dying" battery states.
+* **Documentation Maintenance:** Best practices emphasize documenting contradictions explicitly within wiki pages and overcoming the common issue of outdated index files.
 
 ## Related Entities
-- **Alex:** Author of a blog post containing an incorrect battery specification.
-- **Jonah:** Team member who identified the battery discrepancy from Alex's blog.
-- **[Mira](./aurora-nova-widget-v2.md):** Team member who recommended ingesting corrections into the wiki and noted engineering timeline constraints.
-- **Hardware Habit:** Platform or commenter associated with an unaddressed comment action item.
+* **Aurora Nova Widget:** The hardware product subject to battery specification inquiries and documentation updates.
+* **Alex:** Author of the teardown blog that initially listed the incorrect battery type.
+* **[Aurora Labs](./aurora-labs.md):** The organization associated with the beta unit and widget development.
+* **[Mira](./aurora-nova-widget-v2.md):** Support agent who handled ticket #2201 clarifying battery specs.
+* **[TeaBuddy](./teabuddy.md):** A separate product and company often mistaken for sharing the same application.
+* **[MeshSync](./meshsync.md) / MeshSink:** A naming iteration considered and rejected multiple times.
 
 ## Related Concepts
-- **Wiki Ingestion:** The process of updating internal documentation repositories with verified corrections and team notes.
-- **Battery Specifications:** Hardware components (specifically CR2032 versus CR2450) requiring precise documentation.
-- **Engineering Timelines:** Managing product lifecycle expectations between engineering minimums and marketing projections.
+* **Docusaurus:** Used as the publishing platform for Markdown-based wiki pages and documentation pipelines.
+* **[Wiki Maintenance](./wiki-maintenance.md):** Concepts include linting to detect and prevent orphan pages, and compiling raw text notes (`.txt` to `.md`).
 
 ## Contradictions
-*(No contradictions present in the current source material.)*
+&gt; **Contradiction:** Discrepancies exist between marketing materials and community forums regarding battery life longevity. Marketing states a 2-year battery life, while forum posts suggest 18 months. Additionally, an earlier teardown blog incorrectly reported a CR2450 battery instead of the official CR2032 specification.
 
 ## References & Trust
 
 | # | Source | Type | Trust |
 |---|--------|------|-------|
-| 1 | `transcripts/2026-06-05-sync-fragment.txt` | text | Medium |
+| 1 | `notes/ideas/backlog-shower-thoughts.txt` | text | Medium |
+| 2 | `samples/support/[SAMPLE]-2026-07-01-ticket-2201-battery-docs.txt` | text | Unverified |

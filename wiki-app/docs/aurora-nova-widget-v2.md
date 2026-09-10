@@ -2,15 +2,15 @@
 id: aurora-nova-widget-v2
 title: Aurora Nova Widget v2
 tags:
-  - alex-rivera
-  - aurora-labs
   - aurora-nova-widget-v2
-  - hardware-habit
-  - ip67-enclosure
-  - lorawan
+  - aurora-nova-widget-v2-beta
+  - homelab
+  - jonah
   - meshsync
-  - nova-widget-v2
-last_updated: "2026-09-02T06:38:34.765432+00:00"
+  - mira
+  - mqtt-rejoin-storms
+  - mqtt-schema-v2
+last_updated: "2026-09-10T14:37:00.707649+00:00"
 sidebar_label: Aurora Nova Widget v2
 slug: /aurora-nova-widget-v2
 ---
@@ -20,29 +20,38 @@ slug: /aurora-nova-widget-v2
 # Aurora Nova Widget v2
 
 ## Overview
-The **[Aurora Nova Widget](./aurora-nova-widget.md) v2** is a pre-release garden sensor developed by **[Aurora Labs](./aurora-labs.md)**. Evaluated as a beta unit in a [hardware](./hardware.md) teardown by **Alex Rivera** on the *Hardware Habit* blog, it positions itself as an open alternative to commercial [sensors](./sensors.md) like the [SenseNode SN-400](./sensenode-sn-400.md) by avoiding cloud lock-in and gateway subscription fees.
+The [Aurora Nova Widget](./aurora-nova-widget.md) v2 (currently in beta) is a smart home device tailored for [homelab](./homelab.md) enthusiasts seeking a local setup without cloud subscriptions. It utilizes [MeshSync](./meshsync.md) technology for device communication. While powerful, users have encountered scaling challenges and [MQTT](./mqtt.md) rejoin storms when deploying multiple nodes in a mesh network topology.
 
 ## Key Details
-- **Connectivity & Architecture:** Utilizes an nRF52840 microcontroller combined with a custom **[MeshSync](./meshsync.md)** mesh network (Bluetooth/mesh-based), bypassing the need for [LoRaWAN](./lorawan.md) and gateway subscriptions.
-- **Data & Export:** Features open [MQTT export](./mqtt-export.md) capability, requiring no user account for alerts or data access.
-- **Power & Battery:** Powered by a **CR2032** coin cell battery (corrected from an initial mistaken report of a CR2450 cell). Aurora Labs claims a 2-year [battery life](./battery-life.md) at 15-minute readings, targeting an average draw of 85 µA. Independent power profiling over a 48-hour sample measured an average of **~92 µA** with a 3-node mesh.
-- **Enclosure & Weather Sealing:** Built with an **IP54** plastic enclosure, offering moderate weather resistance that is visibly less sealed compared to heavy-duty IP67 alternatives.
+- **[Firmware](./firmware.md) Versions & [Bug Fixes](./bug-fixes.md):**
+  - Version 0.3.7 exhibits duplicate messages during MQTT rejoin storms.
+  - Version 0.3.8 (and newer) introduces fixes for the MeshSync rejoin loop and rejoin storms, and requires MQTT Schema v2.
+- **Network Scaling & Limitations:**
+  - Adding 8 or more nodes can cause the entire mesh to stop reporting for hours, requiring a power cycle.
+  - Support recommends limiting setups to 6 nodes until patches are fully deployed.
+- **Power & Battery:**
+  -
+- **[MQTT Integration](./mqtt-integration.md):**
+  - [MQTT export](./mqtt-export.md) is supported, but users should filter the neighbors topic and utilize MQTT Schema v2 on firmware 0.3.8+.
 
 ## Related Entities
-- **Aurora Labs:** Manufacturer of the [Nova Widget v2](./nova-widget-v2.md).
-- **Alex Rivera:** Author of the *Hardware Habit* blog who conducted the hardware teardown and power profiling.
-- **SenseNode SN-400:** A competing $49 garden sensor featuring an IP67 enclosure, LoRaWAN connectivity, and cloud dashboard requirements.
+- **[Aurora Labs](./aurora-labs.md):** Manufacturer/developer of the widget.
+- **Mira:** Support agent handling technical tickets.
+- **Jonah:** Internal team member tracking [documentation](./documentation.md) and product comparisons.
+- **[SenseNode](./sensenode.md):** A competing or alternative device noted for simpler topology and cloud subscription requirements.
+- **[TeaBuddy](./teabuddy.md):** A kitchen-focused companion device that lacks MQTT support and operates via a [BLE](./ble.md) app only.
 
 ## Related Concepts
-- **MeshSync:** Custom mesh protocol utilized by the Nova Widget v2 for local communication without LoRaWAN fees.
-- **IP54 Enclosure:** Moderate dust and water splash protection rating used on the Aurora beta unit.
-- **Open MQTT Export:** Protocol implementation allowing direct data retrieval without cloud service lock-in.
+- **MeshSync:** The local mesh protocol used by the widget to avoid cloud subscriptions, introducing complexity at scale.
+- **MQTT Rejoin Storms:** Network traffic congestion and duplicate message generation occurring when multiple nodes simultaneously attempt to rejoin the mesh.
+- **MQTT Schema v2:** The required data schema for firmware 0.3.8 and above.
+- **Homelab Integration:** Community-driven setups connecting local [hardware](./hardware.md) to platforms like [Home Assistant](./home-assistant.md).
 
 ## Contradictions
-&gt; **Contradiction:** There is a discrepancy regarding the expected battery lifespan of the Nova Widget v2. Aurora Labs claims a 2-year lifespan based on 15-minute readings, whereas Alex Rivera's independent power profiling (yielding ~92 µA average draw) estimates a shorter lifespan of approximately **~20 months**. Additionally, an earlier version of the Hardware Habit post incorrectly stated the unit used a CR2450 battery before being corrected to a CR2032 cell.
 
 ## References & Trust
 
 | # | Source | Type | Trust |
 |---|--------|------|-------|
-| 1 | `articles/2026-05-20-competitor-teardown-blog.md` | text | Medium |
+| 1 | `samples/support/[SAMPLE]-2026-06-27-ticket-2099-mesh-rejoin.txt` | text | Unverified |
+| 2 | `samples/support/[SAMPLE]-2026-07-04-ticket-2210-mqtt-setup.txt` | text | Unverified |
