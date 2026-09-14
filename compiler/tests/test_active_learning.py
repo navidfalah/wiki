@@ -136,6 +136,25 @@ def test_save_correction_deduplicates_by_claim_id(tmp_path):
     assert loaded[0].note == "changed my mind"
 
 
+def test_save_correction_does_not_dedupe_same_claim_id_across_different_groups(tmp_path):
+    """Regression: claim ids are only unique within their own group (e.g.
+    two different claim groups both using "a" as a claim id), so
+    deduplicating on claim_id alone would let a correction for one
+    group's claim "a" silently replace a different group's claim "a"."""
+    path = tmp_path / "corrections.json"
+    save_correction(
+        Correction(claim_id="a", group_id="g1", verdict="confirm_correct", note="group 1", quote_excerpt="q"), path
+    )
+    save_correction(
+        Correction(claim_id="a", group_id="g2", verdict="confirm_incorrect", note="group 2", quote_excerpt="q"), path
+    )
+
+    loaded = {c.group_id: c for c in load_corrections(path)}
+    assert len(loaded) == 2
+    assert loaded["g1"].note == "group 1"
+    assert loaded["g2"].note == "group 2"
+
+
 def test_load_corrections_returns_empty_list_for_missing_file(tmp_path):
     assert load_corrections(tmp_path / "does-not-exist.json") == []
 

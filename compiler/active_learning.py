@@ -161,11 +161,17 @@ def load_corrections(path: Path | None = None) -> list[Correction]:
 
 
 def save_correction(correction: Correction, path: Path | None = None) -> Path:
-    """Append one correction to the store, deduplicating by claim_id (a
-    newer correction for the same claim replaces the older one — a human
-    changed their mind, or refined an earlier note)."""
+    """Append one correction to the store, deduplicating by (group_id,
+    claim_id) (a newer correction for the same claim replaces the older
+    one — a human changed their mind, or refined an earlier note).
+    claim_id alone isn't a safe dedup key: a claim's id is only unique
+    within its own group (e.g. "c1" in two different claim groups), so
+    keying on claim_id alone would let a correction for one group's claim
+    silently replace an unrelated claim's correction in another group."""
     target = path or CORRECTIONS_PATH
-    corrections = [c for c in load_corrections(target) if c.claim_id != correction.claim_id]
+    corrections = [
+        c for c in load_corrections(target) if (c.group_id, c.claim_id) != (correction.group_id, correction.claim_id)
+    ]
     corrections.append(correction)
 
     target.parent.mkdir(parents=True, exist_ok=True)
