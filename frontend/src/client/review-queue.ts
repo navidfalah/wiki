@@ -116,10 +116,10 @@ function candidateRow(candidate: Candidate): string {
       </p>`
     : '';
 
-  return `<div class="review-row rounded-xl border border-gray-200 bg-white p-4 shadow-card" data-key="${escapeHtml(key)}" data-reason="${candidate.reason}" data-reviewed="${correction ? '1' : '0'}">
+  return `<div class="review-row rounded-xl border border-gray-200 bg-white p-4 shadow-card" data-key="${escapeHtml(key)}" data-reason="${escapeHtml(candidate.reason)}" data-reviewed="${correction ? '1' : '0'}">
     <div class="flex flex-wrap items-start justify-between gap-2">
       <div class="flex flex-wrap items-center gap-2">
-        <span class="rounded-full border px-2 py-0.5 text-[11px] font-medium ${REASON_STYLE[candidate.reason]}">${REASON_LABEL[candidate.reason] ?? candidate.reason}</span>
+        <span class="rounded-full border px-2 py-0.5 text-[11px] font-medium ${REASON_STYLE[candidate.reason]}">${escapeHtml(REASON_LABEL[candidate.reason] ?? candidate.reason)}</span>
         <span class="text-xs text-gray-400">score ${candidate.score.toFixed(2)}</span>
         <span class="text-xs text-gray-400">${escapeHtml(candidate.group_id)} / ${escapeHtml(candidate.claim_id)}</span>
       </div>
@@ -284,11 +284,11 @@ function attentionDocLink(item: AttentionItem): string {
 }
 
 function attentionRow(item: AttentionItem): string {
-  return `<div class="attention-row flex flex-wrap items-start gap-3 rounded-xl border border-gray-200 bg-white p-4 shadow-card" data-kind="${item.kind}">
-    <span class="mt-0.5 shrink-0 rounded-full border px-2 py-0.5 text-[11px] font-medium ${ATTENTION_SEVERITY_STYLE[item.severity]}">${item.severity}</span>
+  return `<div class="attention-row flex flex-wrap items-start gap-3 rounded-xl border border-gray-200 bg-white p-4 shadow-card" data-kind="${escapeHtml(item.kind)}">
+    <span class="mt-0.5 shrink-0 rounded-full border px-2 py-0.5 text-[11px] font-medium ${ATTENTION_SEVERITY_STYLE[item.severity]}">${escapeHtml(item.severity)}</span>
     <div class="min-w-0 flex-1">
       <div class="flex flex-wrap items-center gap-2">
-        <span class="text-xs font-medium text-gray-400">${ATTENTION_KIND_LABEL[item.kind] ?? item.kind}</span>
+        <span class="text-xs font-medium text-gray-400">${escapeHtml(ATTENTION_KIND_LABEL[item.kind] ?? item.kind)}</span>
         <p class="truncate text-sm font-medium text-gray-900">${escapeHtml(item.title)}</p>
       </div>
       <p class="mt-0.5 text-sm text-gray-600">${escapeHtml(item.detail)}</p>
