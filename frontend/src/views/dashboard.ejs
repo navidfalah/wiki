@@ -17,8 +17,8 @@
         <span id="build-status-badge" class="inline-flex items-center gap-1 rounded-full bg-gray-100 px-2 py-0.5 text-xs font-medium text-gray-600">Ready</span>
       </div>
       <div class="flex flex-wrap items-center gap-3">
-        <button id="sources-picker-toggle" type="button" class="inline-flex items-center justify-center gap-2 rounded-lg border border-gray-300 bg-white px-3 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50">Sources to include <span id="sources-picker-count" class="text-xs text-gray-400"></span></button>
-        <button id="run-options-toggle" type="button" class="inline-flex items-center justify-center gap-2 rounded-lg border border-gray-300 bg-white px-3 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50">Run options <span id="run-options-count" class="text-xs text-gray-400"></span></button>
+        <button id="sources-picker-toggle" type="button" aria-haspopup="true" aria-expanded="false" aria-controls="sources-picker" class="inline-flex items-center justify-center gap-2 rounded-lg border border-gray-300 bg-white px-3 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50">Sources to include <span id="sources-picker-count" class="text-xs text-gray-400"></span></button>
+        <button id="run-options-toggle" type="button" aria-haspopup="true" aria-expanded="false" aria-controls="run-options" class="inline-flex items-center justify-center gap-2 rounded-lg border border-gray-300 bg-white px-3 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50">Run options <span id="run-options-count" class="text-xs text-gray-400"></span></button>
         <label class="flex items-center gap-2 text-sm text-gray-600" title="Off: only new/changed files are (re)processed, resuming where the last run left off. On: every file is reprocessed from scratch.">
           <input id="force-rebuild" type="checkbox" class="rounded border-gray-300 text-accent focus:ring-accent/30" />
           Rebuild all files
@@ -87,7 +87,7 @@
         <h2 class="flex items-center gap-2 text-base font-semibold text-gray-900">Source folders</h2>
         <p id="sources-subtitle" class="mt-0.5 text-xs text-gray-500">Folders the compiler reads raw notes, emails, and files from.</p>
       </div>
-      <button id="add-source-toggle" type="button" class="inline-flex items-center justify-center gap-2 rounded-lg border border-source-border px-4 py-2 text-sm font-medium text-source hover:bg-source-bg">+ Add folder</button>
+      <button id="add-source-toggle" type="button" aria-haspopup="true" aria-expanded="false" aria-controls="add-source-form" class="inline-flex items-center justify-center gap-2 rounded-lg border border-source-border px-4 py-2 text-sm font-medium text-source hover:bg-source-bg">+ Add folder</button>
     </div>
     <div id="add-source-form" class="hidden border-b border-gray-100 p-5"></div>
     <div id="sources-grid" class="grid gap-3 p-5 sm:grid-cols-2 lg:grid-cols-3"></div>
@@ -101,8 +101,8 @@
     <div class="flex flex-wrap items-center justify-between gap-2 border-b border-gray-100 px-5 py-2.5">
       <nav id="breadcrumbs" class="flex min-w-0 flex-wrap items-center gap-1 text-sm"></nav>
       <div class="flex items-center gap-2">
-        <input id="file-search" type="search" placeholder="Search this folder…" class="w-40 rounded-lg border border-gray-300 px-2.5 py-1 text-sm focus:border-accent focus:outline-none focus:ring-2 focus:ring-accent/20" />
-        <button id="new-folder-toggle" type="button" class="inline-flex items-center justify-center gap-2 rounded-lg border border-gray-300 bg-white px-3 py-1 text-xs font-medium text-gray-700 hover:bg-gray-50">+ New folder</button>
+        <input id="file-search" type="search" placeholder="Search this folder…" aria-label="Search this folder" class="w-40 rounded-lg border border-gray-300 px-2.5 py-1 text-sm focus:border-accent focus:outline-none focus:ring-2 focus:ring-accent/20" />
+        <button id="new-folder-toggle" type="button" aria-haspopup="true" aria-expanded="false" aria-controls="new-folder-form" class="inline-flex items-center justify-center gap-2 rounded-lg border border-gray-300 bg-white px-3 py-1 text-xs font-medium text-gray-700 hover:bg-gray-50">+ New folder</button>
         <button id="upload-files-toggle" type="button" title="Supports text, markdown, email (.eml), images, audio, PDF, CSV/TSV, JSON, XML, HTML, YAML, and dozens more formats — office docs, archives, and video are accepted as downloadable attachments." class="inline-flex items-center justify-center gap-2 rounded-lg bg-accent px-3 py-1 text-xs font-medium text-white hover:bg-accent-dark">⬆ Upload files</button>
         <input id="upload-files-input" type="file" multiple class="hidden" />
       </div>

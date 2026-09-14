@@ -58,8 +58,8 @@
 <template id="profile-row-template">
   <div class="profile-row px-5 py-4" data-id="">
     <div class="flex flex-wrap items-center gap-2">
-      <input type="text" data-field="label" placeholder="Label (e.g. Gemini prod)" class="min-w-0 flex-1 rounded-lg border border-gray-300 px-2.5 py-1.5 text-sm focus:border-accent focus:outline-none focus:ring-2 focus:ring-accent/20" />
-      <select data-field="provider" class="rounded-lg border border-gray-300 px-2 py-1.5 text-sm focus:border-accent focus:outline-none focus:ring-2 focus:ring-accent/20">
+      <input type="text" data-field="label" placeholder="Label (e.g. Gemini prod)" aria-label="Profile label" class="min-w-0 flex-1 rounded-lg border border-gray-300 px-2.5 py-1.5 text-sm focus:border-accent focus:outline-none focus:ring-2 focus:ring-accent/20" />
+      <select data-field="provider" aria-label="Provider" class="rounded-lg border border-gray-300 px-2 py-1.5 text-sm focus:border-accent focus:outline-none focus:ring-2 focus:ring-accent/20">
         <option value="openai">OpenAI</option>
         <option value="gemini">Gemini</option>
         <option value="local">Local Gemma</option>
@@ -68,10 +68,10 @@
       <button type="button" data-action="remove" class="rounded-lg px-2 py-1.5 text-xs font-medium text-red-600 hover:bg-red-50">Remove</button>
     </div>
     <div class="mt-2 grid gap-2 sm:grid-cols-2">
-      <input type="text" data-field="base_url" placeholder="Base URL" class="rounded-lg border border-gray-300 px-2.5 py-1.5 text-sm focus:border-accent focus:outline-none focus:ring-2 focus:ring-accent/20" />
-      <input type="text" data-field="model" placeholder="Model" autocomplete="off" class="rounded-lg border border-gray-300 px-2.5 py-1.5 text-sm focus:border-accent focus:outline-none focus:ring-2 focus:ring-accent/20" />
+      <input type="text" data-field="base_url" placeholder="Base URL" aria-label="Base URL" class="rounded-lg border border-gray-300 px-2.5 py-1.5 text-sm focus:border-accent focus:outline-none focus:ring-2 focus:ring-accent/20" />
+      <input type="text" data-field="model" placeholder="Model" autocomplete="off" aria-label="Model" class="rounded-lg border border-gray-300 px-2.5 py-1.5 text-sm focus:border-accent focus:outline-none focus:ring-2 focus:ring-accent/20" />
     </div>
-    <input type="password" data-field="api_key" placeholder="API key" autocomplete="off" class="mt-2 w-full rounded-lg border border-gray-300 px-2.5 py-1.5 text-sm focus:border-accent focus:outline-none focus:ring-2 focus:ring-accent/20" />
+    <input type="password" data-field="api_key" placeholder="API key" autocomplete="off" aria-label="API key" class="mt-2 w-full rounded-lg border border-gray-300 px-2.5 py-1.5 text-sm focus:border-accent focus:outline-none focus:ring-2 focus:ring-accent/20" />
     <p data-field="key-hint" class="mt-1 text-xs text-gray-400"></p>
 
     <details class="mt-2 rounded-lg border border-gray-100 bg-gray-50 px-3 py-2">
