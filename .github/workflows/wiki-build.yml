@@ -1,9 +1,20 @@
+# DISABLED: this workflow builds and deploys the old Docusaurus
+# `wiki-app/` site to GitHub Pages, but that site was replaced by a live
+# Express+TS backend/frontend (see the README's stack note and
+# documentation/11-wiki-app-and-dashboards.md) -- `wiki-app/` is now just
+# the compiler's generated docs/media output, with no package.json, so the
+# `npm ci`/`npm run build` steps below fail immediately. More fundamentally,
+# a static Pages deploy can't serve this app at all anymore: it needs a
+# running Node backend, a Python subprocess for the compiler/chat/email
+# engines, and a persistent data/ directory, none of which GitHub Pages
+# provides. Automatic triggering is removed (workflow_dispatch only, so it
+# stays runnable by hand for reference/debugging without failing on every
+# push to main) until there's a real deployment target for the live app
+# (e.g. a container host) to replace this with.
 name: Wiki Build and Deploy
 
 on:
-  push:
-    branches:
-      - main
+  workflow_dispatch: {}
 
 permissions:
   contents: read
