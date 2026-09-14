@@ -3,10 +3,14 @@ import_claim_group()/export_claim_group() round-tripping, and
 propagate_group_trust_from_store() matching propagate_group_trust() exactly.
 """
 
-from graph_store import GraphStore, export_claim_group, import_claim_group
+from graph_store import GraphStore, _claim_node_id, export_claim_group, import_claim_group
 from trust import load_trust_config
 from trust_eval_dataset import Claim, ClaimGroup, Relation, load_trust_eval_dataset
-from trust_propagation import DEFAULT_CONFIG, propagate_group_trust, propagate_group_trust_from_store
+from trust_propagation import (
+    DEFAULT_CONFIG,
+    propagate_group_trust,
+    propagate_group_trust_from_store,
+)
 
 
 def _claim(cid: str, **overrides) -> Claim:
@@ -69,11 +73,40 @@ def test_export_claim_group_drops_edges_pointing_outside_the_group(tmp_path):
         ClaimGroup(id="g2", domain="t", subject="t", description="t", claims=[_claim("b")]),
     )
     # An edge that (hypothetically) crosses groups — not produced by
-    # import_claim_group itself, but the store doesn't forbid it.
-    store.add_edge("a", "b", "corroborates")
+    # import_claim_group itself, but the store doesn't forbid it. Uses the
+    # same namespaced node ids import_claim_group() actually stores claims
+    # under (see _claim_node_id()), not the bare claim ids, so this
+    # exercises the real cross-group-filtering path rather than attaching
+    # to nodes that don't exist.
+    store.add_edge(_claim_node_id("g1", "a"), _claim_node_id("g2", "b"), "corroborates")
 
     exported_g1 = export_claim_group(store, "g1")
     assert exported_g1.relations == []
+
+
+def test_import_claim_group_does_not_collide_across_groups_reusing_a_claim_id(tmp_path):
+    """Regression: trust_eval_dataset.py's schema only guarantees a claim
+    id is unique within its own group, but GraphStore's nodes table used
+    to be keyed by the bare claim id -- a single global namespace. Two
+    groups both containing a claim id "c1" would silently overwrite each
+    other's node on import (INSERT OR REPLACE on the same primary key),
+    so the first group's claim would vanish from export_claim_group()
+    with no error."""
+    store = GraphStore(tmp_path / "graph.sqlite")
+    import_claim_group(
+        store,
+        ClaimGroup(id="g1", domain="t", subject="t", description="t", claims=[_claim("c1", value="from group 1")]),
+    )
+    import_claim_group(
+        store,
+        ClaimGroup(id="g2", domain="t", subject="t", description="t", claims=[_claim("c1", value="from group 2")]),
+    )
+
+    exported_g1 = export_claim_group(store, "g1")
+    exported_g2 = export_claim_group(store, "g2")
+
+    assert [c.value for c in exported_g1.claims] == ["from group 1"]
+    assert [c.value for c in exported_g2.claims] == ["from group 2"]
 
 
 def test_import_claim_group_persists_every_group_from_the_real_pilot_dataset(tmp_path):

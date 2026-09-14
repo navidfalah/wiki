@@ -157,6 +157,22 @@ class GraphStore:
 _CLAIM_GROUP_NODE_TYPE = "claim_group"
 
 
+def _claim_node_id(group_id: str, claim_id: str) -> str:
+    """Node ids for claim nodes are namespaced by their group.
+
+    trust_eval_dataset.py's schema only guarantees a claim id is unique
+    *within* its own group (validate_dataset() checks uniqueness per
+    group, never across groups) -- but GraphStore's nodes table is one
+    global id-keyed namespace (INSERT OR REPLACE on a single PRIMARY KEY).
+    Without this, two different groups both containing a claim id "c1"
+    would silently overwrite each other's node on import: the second
+    import's INSERT OR REPLACE clobbers the first claim's attrs in place,
+    so export_claim_group() for the first group would come back missing
+    that claim entirely, with no error anywhere.
+    """
+    return f"{group_id}::{claim_id}"
+
+
 def import_claim_group(store: GraphStore, group) -> None:
     """Load one trust_eval_dataset.ClaimGroup (task #1's in-memory schema)
     into a GraphStore — the adapter that turns the pilot dataset's JSON
@@ -173,9 +189,10 @@ def import_claim_group(store: GraphStore, group) -> None:
     )
     claim_nodes = [
         Node(
-            id=claim.id,
+            id=_claim_node_id(group.id, claim.id),
             node_type="claim",
             attrs={
+                "claim_id": claim.id,
                 "group_id": group.id,
                 "source_path": claim.source_path,
                 "source_type": claim.source_type,
@@ -189,7 +206,12 @@ def import_claim_group(store: GraphStore, group) -> None:
         for claim in group.claims
     ]
     edges = [
-        Edge(from_id=rel.from_id, to_id=rel.to_id, edge_type=rel.type, attrs={})
+        Edge(
+            from_id=_claim_node_id(group.id, rel.from_id),
+            to_id=_claim_node_id(group.id, rel.to_id),
+            edge_type=rel.type,
+            attrs={},
+        )
         for rel in group.relations
     ]
     store.add_nodes([group_node, *claim_nodes])
@@ -218,7 +240,7 @@ def export_claim_group(store: GraphStore, group_id: str):
     claim_nodes = [n for n in store.all_nodes(node_type="claim") if n.attrs.get("group_id") == group_id]
     claims = [
         Claim(
-            id=n.id,
+            id=n.attrs.get("claim_id", n.id),
             source_path=n.attrs.get("source_path", ""),
             source_type=n.attrs.get("source_type", "text"),
             date=n.attrs.get("date", ""),
@@ -229,16 +251,21 @@ def export_claim_group(store: GraphStore, group_id: str):
         )
         for n in claim_nodes
     ]
-    claim_ids = {c.id for c in claims}
+    # Maps each claim's namespaced node id back to its bare claim.id, so
+    # edges (stored between namespaced node ids -- see _claim_node_id())
+    # can be reconstructed as Relations between the bare ids callers expect.
+    claim_id_by_node_id = {_claim_node_id(group_id, c.id): c.id for c in claims}
 
     seen_edges: set[tuple[str, str, str]] = set()
     relations: list[Relation] = []
     for claim in claims:
-        for edge in store.neighbors(claim.id):
-            key = (edge.from_id, edge.to_id, edge.edge_type)
-            if edge.to_id in claim_ids and key not in seen_edges:
+        for edge in store.neighbors(_claim_node_id(group_id, claim.id)):
+            if edge.to_id not in claim_id_by_node_id:
+                continue
+            key = (claim.id, claim_id_by_node_id[edge.to_id], edge.edge_type)
+            if key not in seen_edges:
                 seen_edges.add(key)
-                relations.append(Relation(from_id=edge.from_id, to_id=edge.to_id, type=edge.edge_type))
+                relations.append(Relation(from_id=key[0], to_id=key[1], type=edge.edge_type))
 
     return ClaimGroup(
         id=group_id,
