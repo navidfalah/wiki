@@ -33,24 +33,33 @@ doc 29 named the exact missing piece — and it closes a loop the dashboard
 already half-exposes (the "Use review corrections" pipeline toggle existed
 with nothing to toggle on until now).
 
-### 2. External connectors: wire Gmail/Drive/IMAP into the app
+### 2. External connectors: wire Gmail/Drive/IMAP into the app — closed
 
-`compiler/connectors/` (Gmail, Drive, IMAP, OAuth2 with PKCE, encrypted
-credential storage, 73 tests) has **zero references** anywhere in
-`backend/`, `frontend/`, or `cli.py` — confirmed by grep, not by trusting
-doc 34's own "not wired in yet" note. This is the single largest dormant
-feature in the repo: a real product capability (pull a Gmail thread or a
-Drive doc straight into the wiki) sitting fully built behind zero UI.
+Was: `compiler/connectors/` (Gmail, Drive, IMAP, OAuth2 with PKCE,
+encrypted credential storage, 73 tests) had **zero references** anywhere
+in `backend/`, `frontend/`, or `cli.py` — confirmed by grep at the time,
+not by trusting doc 34's own "not wired in yet" note. Ranked as the single
+largest dormant feature in the repo.
 
-**Why it's ranked below the review queue despite being higher-value:**
-larger surface area (OAuth redirect/callback routes, a "connect an app"
-dashboard screen, and — the part with no existing analog — an adapter
-turning `Connector.list_items()`/`fetch_item()` output into the
-`Passage`/raw-document shape `main.py`'s ingestion already consumes from
-`data/raw/`), and it needs a real Google Cloud OAuth client to test past
-the fake-based unit tests, which this environment doesn't have. Doc 34's
-own "what a real wiring would still need" list is an accurate scope for
-this task; nothing found here changes it.
+**Stale within minutes of being written**: a follow-up commit ("Wire
+external connectors into the dashboard and compile pipeline") landed the
+same day and closed this gap end-to-end — OAuth start/callback, item
+browsing, import into `data/raw/`, encrypted credential storage,
+disconnect, and activity logging, all through generic `/api/connectors/:id/*`
+routes and a "Connectors" tab in `resources.ts`. Doc 34 itself was updated
+in that commit to describe the live wiring; this doc wasn't, and kept
+describing the pre-wiring state. IMAP needed nothing further (same
+connect → browse → import pattern already proven by the Postgres
+connector). Gmail/Drive are code-complete too — the only remaining step is
+operational, not implementation: register a real Google Cloud OAuth
+client and set `GMAIL_CLIENT_ID`/`GMAIL_CLIENT_SECRET`/etc. in `.env`.
+
+One real, small gap fell out of re-auditing this: the `/database` page's
+SQLite connect form posted to `/api/connectors/sqlite/connect`, and the
+Python side (`cli.py`'s `connectors-sqlite-connect` command) already
+supported it, but the Express route was never added — a live 404. Fixed
+alongside this doc update by mirroring the existing `imap/connect`/
+`postgres/connect` route blocks.
 
 ### 3. Faithfulness score in the live chat UI — closed
 
@@ -135,6 +144,6 @@ candidates for a future pass, not committed to.
 ## Next
 
 - [29-active-learning.md](./29-active-learning.md), [35-review-queue-ui.md](./35-review-queue-ui.md) — gap #1, closed
+- [34-external-connectors.md](./34-external-connectors.md) — gap #2, closed (see above)
 - [28-faithfulness-evaluation.md](./28-faithfulness-evaluation.md) — gap #3, closed (see above)
-- [34-external-connectors.md](./34-external-connectors.md) — the highest-value remaining gap
-- [26-entity-resolution.md](./26-entity-resolution.md), [27-temporal-modeling.md](./27-temporal-modeling.md) — the other two ranked gaps still open
+- [26-entity-resolution.md](./26-entity-resolution.md), [27-temporal-modeling.md](./27-temporal-modeling.md) — the two remaining ranked gaps, still open
