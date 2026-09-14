@@ -58,7 +58,7 @@ let graph: ReturnType<typeof ForceGraph<GraphNode, GraphLink>> | null = null;
 let allNodes: GraphNode[] = [];
 let allLinks: GraphLink[] = [];
 let matchedIds = new Set<string>();
-let selectedIds = new Set<string>();
+const selectedIds = new Set<string>();
 let hoverNode: GraphNode | null = null;
 let maxDegree = 1;
 
@@ -221,7 +221,7 @@ async function exportSelected() {
       selectionExportLabel.textContent = label;
     });
     window.showToast?.(`Exported ${count} file${count === 1 ? '' : 's'}`, 'success');
-  } catch (err) {
+  } catch (_err) {
     window.showToast?.('Export failed.', 'error');
   } finally {
     selectionExportBtn.disabled = false;
@@ -238,7 +238,7 @@ async function exportAllFiles(button: HTMLButtonElement) {
       button.querySelector('.block')!.textContent = label;
     });
     window.showToast?.(`Exported the whole network — ${count} pages`, 'success');
-  } catch (err) {
+  } catch (_err) {
     window.showToast?.('Export failed.', 'error');
   } finally {
     button.disabled = false;
@@ -556,7 +556,7 @@ async function load() {
     const resize = () => graph?.width(container.clientWidth).height(container.clientHeight);
     new ResizeObserver(resize).observe(container);
     resize();
-  } catch (err) {
+  } catch (_err) {
     showEmpty(`Cannot reach API at ${apiBase}.`);
   }
 }

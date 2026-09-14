@@ -156,7 +156,7 @@ function renderProfiles() {
     const maxTokensInput = row.querySelector('[data-field="max_tokens"]') as HTMLInputElement;
     maxTokensInput.value = profile.max_tokens === null ? '' : String(profile.max_tokens);
     maxTokensInput.addEventListener('input', () => {
-      maxTokensInput.value === '' ? (profile.max_tokens = null) : (profile.max_tokens = Number(maxTokensInput.value));
+      profile.max_tokens = maxTokensInput.value === '' ? null : Number(maxTokensInput.value);
     });
 
     const reasoningSelect = row.querySelector('[data-field="reasoning_effort"]') as HTMLSelectElement;

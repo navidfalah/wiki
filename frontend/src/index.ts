@@ -75,7 +75,6 @@ app.use((_req, res) => {
 // from an SSR fetch) falls through to Express's default production error
 // handler, which renders a blank page and logs nothing -- exactly what
 // makes "nothing there" impossible to diagnose from the browser alone.
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
 app.use((err: any, _req: Request, res: Response, _next: NextFunction) => {
   // eslint-disable-next-line no-console
   console.error('[frontend] Unhandled request error:', err);

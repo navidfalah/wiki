@@ -14,7 +14,8 @@
     "dev:client": "esbuild src/client/*.ts --bundle --outdir=dist-static/js --sourcemap --watch",
     "dev:server": "tsx watch src/index.ts",
     "start": "node dist/index.js",
-    "typecheck": "tsc --noEmit"
+    "typecheck": "tsc --noEmit",
+    "lint": "eslint src"
   },
   "dependencies": {
     "@types/cookie-parser": "^1.4.10",
@@ -26,14 +27,17 @@
     "http-proxy-middleware": "^3.0.7"
   },
   "devDependencies": {
+    "@eslint/js": "^9.39.5",
     "@types/ejs": "^3.1.5",
     "@types/express": "^4.17.21",
     "@types/node": "^20.14.2",
     "autoprefixer": "^10.4.20",
     "esbuild": "^0.24.0",
+    "eslint": "^9.39.5",
     "postcss": "^8.4.47",
     "tailwindcss": "^3.4.19",
     "tsx": "^4.19.2",
-    "typescript": "^5.5.4"
+    "typescript": "^5.5.4",
+    "typescript-eslint": "^8.70.0"
   }
 }
