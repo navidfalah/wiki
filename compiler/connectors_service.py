@@ -270,6 +270,7 @@ def _build_connector(
     account_label: str,
     *,
     http_get=None,
+    http_get_text=None,
     http_post=None,
     imap_client_factory=None,
     pg_client_factory=None,
@@ -294,6 +295,11 @@ def _build_connector(
             kwargs["http_get"] = http_get
         if http_post is not None:
             kwargs["http_post"] = http_post
+        # http_get_text only applies to DriveConnector (its /export
+        # endpoint returns raw text, not JSON); GmailConnector has no such
+        # parameter, so this must not be forwarded for connector_id == "gmail".
+        if http_get_text is not None and connector_id == "google_drive":
+            kwargs["http_get_text"] = http_get_text
         return connector_cls(base.config, creds.access_token, **kwargs)
 
     if connector_id == "imap":

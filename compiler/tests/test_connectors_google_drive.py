@@ -11,9 +11,10 @@ class FakeHttpGet:
         return self.responses.pop(0)
 
 
-def _connector(http_get):
+def _connector(http_get, http_get_text=None):
     config = build_config("cid", "csecret", "https://app.example.com/callback")
-    return DriveConnector(config, access_token="tok123", http_get=http_get)
+    kwargs = {} if http_get_text is None else {"http_get_text": http_get_text}
+    return DriveConnector(config, access_token="tok123", http_get=http_get, **kwargs)
 
 
 def test_list_items_maps_files():
@@ -44,6 +45,14 @@ def test_list_items_builds_query_with_escaping():
 
 
 def test_fetch_item_returns_exported_text():
-    http_get = FakeHttpGet([{"text": "file contents here"}])
-    connector = _connector(http_get)
-    assert connector.fetch_item("f1") == "file contents here"
+    """The /export endpoint returns the document's raw exported content,
+    not JSON -- unlike the metadata endpoints list_items uses -- so
+    fetch_item must go through a raw-text getter, not the JSON-decoding
+    one. A response that isn't valid JSON at all (e.g. a plain-text
+    export) must not blow up here."""
+    http_get_text = FakeHttpGet(["file contents here, not { valid json"])
+    connector = _connector(http_get=FakeHttpGet([]), http_get_text=http_get_text)
+    assert connector.fetch_item("f1") == "file contents here, not { valid json"
+    url, headers, params = http_get_text.calls[0]
+    assert url.endswith("/files/f1/export")
+    assert params == {"mimeType": "text/plain"}
