@@ -1,4 +1,5 @@
 import { apiBase } from './lib/api';
+import { escapeHtml } from './lib/dom';
 
 interface PipelineSettings {
   critic_pass: boolean;
@@ -51,8 +52,8 @@ function renderFolders(excludedFolders: string[]) {
     const label = document.createElement('label');
     label.className = 'flex items-center justify-between gap-3 px-5 py-3 text-sm';
     label.innerHTML = `
-      <span class="font-mono text-gray-800">data/raw/${folder}</span>
-      <input type="checkbox" data-folder="${folder}" class="rounded border-gray-300 text-accent focus:ring-accent/30" ${excluded.has(folder) ? '' : 'checked'} />
+      <span class="font-mono text-gray-800">data/raw/${escapeHtml(folder)}</span>
+      <input type="checkbox" data-folder="${escapeHtml(folder)}" class="rounded border-gray-300 text-accent focus:ring-accent/30" ${excluded.has(folder) ? '' : 'checked'} />
     `;
     container.appendChild(label);
   }
@@ -66,7 +67,12 @@ function readForm(): PipelineSettings {
     result[key] = el.type === 'checkbox' ? el.checked : Number(el.value);
   });
   const excluded_folders = topLevelFolders.filter((folder) => {
-    const input = document.querySelector<HTMLInputElement>(`[data-folder="${folder}"]`);
+    // CSS.escape, not escapeHtml: this builds an attribute selector, not
+    // HTML -- a folder name containing a `"` would otherwise break the
+    // selector's quoting and throw a SyntaxError, since folder names are
+    // only restricted server-side against path separators and dots, not
+    // quote/bracket characters.
+    const input = document.querySelector<HTMLInputElement>(`[data-folder="${CSS.escape(folder)}"]`);
     return input ? !input.checked : false;
   });
   return { ...result, excluded_folders } as PipelineSettings;
