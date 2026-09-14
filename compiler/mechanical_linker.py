@@ -85,7 +85,16 @@ def auto_link_exact_titles(
 
     linked_titles: list[str] = []
     for title, filename in candidates:
-        pattern = re.compile(rf"\b{re.escape(title)}\b(?:'s)?", re.IGNORECASE)
+        # Not \b on both sides: \b only matches at a word/non-word
+        # transition, so it can never match immediately after a title that
+        # itself ends in a non-word character (e.g. "C++" followed by a
+        # space -- both sides non-word, no boundary there at all), silently
+        # defeating the "guaranteed floor" this module promises for exactly
+        # that class of title. (?<!\w)/(?!\w) behave identically to \b for
+        # an ordinary word-ending title but also correctly match a
+        # punctuation-ending one, since they only check the side outside
+        # the title, not both sides of the transition.
+        pattern = re.compile(rf"(?<!\w){re.escape(title)}(?!\w)(?:'s)?", re.IGNORECASE)
 
         # Two different kinds of "don't touch here": code fences, inline
         # code, and headings aren't real prose at all, so a match inside

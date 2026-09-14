@@ -49,6 +49,28 @@ def test_parse_frontmatter_tags_strips_quotes():
     assert meta["tags_list"] == ["power", "hardware"]
 
 
+def test_parse_frontmatter_tags_flow_style_array():
+    # `tags: [power, hardware]` is equally valid YAML as the block-style
+    # dash list -- previously silently dropped (stored as a literal string
+    # under meta["tags"], tags_list never populated), so a page with
+    # clearly-declared tags looked untagged to every caller.
+    content = "---\ntitle: Battery\ntags: [power, hardware]\n---\nBody.\n"
+    meta = parse_frontmatter(content)
+    assert meta["tags_list"] == ["power", "hardware"]
+
+
+def test_parse_frontmatter_tags_flow_style_array_strips_quotes_and_spaces():
+    content = '---\ntags: [ "power" , \'hardware\' ]\n---\nBody.\n'
+    meta = parse_frontmatter(content)
+    assert meta["tags_list"] == ["power", "hardware"]
+
+
+def test_parse_frontmatter_tags_flow_style_empty_array():
+    content = "---\ntitle: Battery\ntags: []\n---\nBody.\n"
+    meta = parse_frontmatter(content)
+    assert "tags_list" not in meta
+
+
 def test_strip_frontmatter_removes_header():
     content = "---\ntitle: Battery\n---\nBody text.\n"
     assert strip_frontmatter(content) == "Body text.\n"

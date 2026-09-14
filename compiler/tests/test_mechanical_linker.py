@@ -87,6 +87,27 @@ def test_matches_simple_possessive_form():
     assert "[MeshSync's](./meshsync.md)" in result.body
 
 
+def test_links_a_title_ending_in_punctuation():
+    # \b requires a word/non-word transition on both sides -- it can never
+    # match right after a title ending in a non-word character (here "+"
+    # followed by a space, both non-word), which silently defeated linking
+    # for exactly this class of title.
+    body = "We evaluated C++ for the embedded firmware."
+    result = auto_link_exact_titles(body, {"C++": "cpp.md"}, self_title="X")
+    assert "[C++](./cpp.md)" in result.body
+    assert result.linked_titles == ["C++"]
+
+
+def test_does_not_link_a_punctuation_ending_title_as_a_substring():
+    body = "C++11 is a later standard than C++."
+    result = auto_link_exact_titles(body, {"C++": "cpp.md"}, self_title="X")
+    # The first mention is "C++11" -- not an exact title match (extra "11"
+    # right after with no boundary), so linking should skip to the second,
+    # exact "C++." mention instead of matching inside "C++11".
+    assert "[C++11]" not in result.body
+    assert "[C++](./cpp.md)" in result.body
+
+
 def test_is_idempotent():
     body = "MeshSync is the protocol."
     once = auto_link_exact_titles(body, {"MeshSync": "meshsync.md"}, self_title="X")

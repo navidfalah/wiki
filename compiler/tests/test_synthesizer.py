@@ -8,6 +8,7 @@ from synthesizer import (
     compute_file_md5,
     discover_raw_source_files,
     extract_chunk_topics,
+    group_chunks_by_topic,
     scan_raw_file_changes,
     slugify,
     split_text_into_chunks,
@@ -16,6 +17,43 @@ from synthesizer import (
 
 def test_slugify_lowercases_and_hyphenates():
     assert slugify("MeshSync Protocol") == "meshsync-protocol"
+
+
+def _chunk(source: str, chunk_index: int, topics: list[str]) -> dict:
+    return {"chunk_index": chunk_index, "text": "x", "topics": topics, "entities": [], "concepts": []}
+
+
+def test_group_chunks_by_topic_merges_slug_colliding_topic_variants():
+    # "Battery Life", "battery life", and "Battery Life!" all slugify to
+    # "battery-life" -- previously each became its own dict key, and
+    # synthesize_topic_wiki_pages() derives its output filename from that
+    # same slug, so the second/third topic processed would silently
+    # overwrite the first topic's page with no error. Grouping must merge
+    # them into a single topic instead of colliding downstream.
+    extractions = {
+        "files": [
+            {"source": "a.txt", "chunks": [_chunk("a.txt", 0, ["Battery Life"])]},
+            {"source": "b.txt", "chunks": [_chunk("b.txt", 0, ["battery life"])]},
+            {"source": "c.txt", "chunks": [_chunk("c.txt", 0, ["Battery Life!"])]},
+        ]
+    }
+    grouped = group_chunks_by_topic(extractions)
+
+    assert len(grouped) == 1
+    (topic_name, entries), = grouped.items()
+    assert slugify(topic_name) == "battery-life"
+    assert {e["source"] for e in entries} == {"a.txt", "b.txt", "c.txt"}
+
+
+def test_group_chunks_by_topic_keeps_distinct_topics_separate():
+    extractions = {
+        "files": [
+            {"source": "a.txt", "chunks": [_chunk("a.txt", 0, ["Battery Life"])]},
+            {"source": "b.txt", "chunks": [_chunk("b.txt", 0, ["Firmware Update"])]},
+        ]
+    }
+    grouped = group_chunks_by_topic(extractions)
+    assert set(grouped.keys()) == {"Battery Life", "Firmware Update"}
 
 
 def test_parse_extraction_json_parses_clean_json():

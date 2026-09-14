@@ -642,6 +642,18 @@ def group_chunks_by_topic(extractions: dict) -> dict[str, list[dict]]:
     """
     Group all raw text chunks by their extracted topic names.
 
+    Topics are deduplicated by slug, not by exact string: the LLM extracts
+    topic names per chunk independently, so "Battery Life", "battery life",
+    and "Battery Life!" are three different strings that would otherwise
+    become three different dict keys here. Since synthesize_topic_wiki_pages()
+    derives each topic's output filename by slugifying the key
+    (slug("Battery Life") == slug("battery life") == "battery-life"), leaving
+    them as separate keys means whichever one is written last silently
+    overwrites the other's page on disk -- no error, no warning, one topic's
+    content just disappears. Grouping by slug here, before that write ever
+    happens, means variant spellings merge into one topic (whichever variant
+    was encountered first becomes the display name) instead of colliding.
+
     Returns:
         {
           "Topic Name": [
@@ -659,6 +671,7 @@ def group_chunks_by_topic(extractions: dict) -> dict[str, list[dict]]:
         }
     """
     grouped: dict[str, list[dict]] = {}
+    canonical_by_slug: dict[str, str] = {}
 
     for file_entry in extractions.get("files", []):
         source = file_entry["source"]
@@ -676,7 +689,9 @@ def group_chunks_by_topic(extractions: dict) -> dict[str, list[dict]]:
                 topic_key = topic.strip()
                 if not topic_key:
                     continue
-                grouped.setdefault(topic_key, []).append(payload)
+                slug = slugify(topic_key) or "untitled-topic"
+                canonical = canonical_by_slug.setdefault(slug, topic_key)
+                grouped.setdefault(canonical, []).append(payload)
 
     return dict(sorted(grouped.items(), key=lambda item: item[0].lower()))
 
