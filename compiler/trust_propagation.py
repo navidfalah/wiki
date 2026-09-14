@@ -140,9 +140,34 @@ def propagate_group_trust(
         elif rel.type == "supersedes":
             superseded_by[rel.to_id].append(rel.from_id)
 
+    # A claim with NO relations at all -- doesn't appear as either side of
+    # any edge in the group -- has zero support every round, and that's
+    # fixed from the start: _sigmoid(0, k) is always exactly 0.5, a fixed
+    # *neutral* value, not "no evidence". Without this check such a claim
+    # would get pulled toward 0.5 every iteration (e.g. a verified-source
+    # prior of 1.0 blending down to 0.6 under the default config) instead
+    # of keeping its own prior untouched, contradicting both this module's
+    # docstring ("a claim with no relations at all just keeps its prior
+    # score untouched") and the prior_weight design rationale above.
+    #
+    # Deliberately checked against group.relations directly, not against
+    # corroborators/contradictors/superseded_by (which only capture
+    # *incoming* edges): a claim that only ever corroborates or supersedes
+    # someone else (outgoing-only) still has zero incoming support and
+    # would look "isolated" by that narrower test, but it does have a
+    # relation, and this dataset's real claim groups rely on such claims
+    # still going through the normal blend (see
+    # test_ranking_within_group_prefers_correct_over_superseded_claims).
+    related_ids = {rel.from_id for rel in group.relations} | {rel.to_id for rel in group.relations}
+    isolated = {cid for cid in claims_by_id if cid not in related_ids}
+
     for _ in range(config.iterations):
         next_scores: dict[str, float] = {}
         for cid in claims_by_id:
+            if cid in isolated:
+                next_scores[cid] = priors[cid]
+                continue
+
             support = 0.0
             support += config.corroborate_weight * sum(scores[s] for s in corroborators[cid])
             support -= config.contradict_weight * sum(scores[s] for s in contradictors[cid])
