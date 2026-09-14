@@ -55,6 +55,22 @@ describe('resolveHref', () => {
       fs.rmSync(tmpDir, { recursive: true, force: true });
     }
   });
+
+  it('rejects a /docs/-absolute link that escapes the docs dir', () => {
+    // path.resolve/path.join normalize ".." segments -- without an
+    // explicit containment check on this branch (unlike the relative-link
+    // branch above), this would resolve to a path outside docsDir instead
+    // of being rejected the same way an equivalent relative link is.
+    const tmpDir = fs.mkdtempSync(path.join(os.tmpdir(), 'dlc-'));
+    const docs = path.join(tmpDir, 'docs');
+    fs.mkdirSync(docs);
+    const source = path.join(docs, 'a.md');
+    try {
+      expect(resolveHref('/docs/../../etc/passwd.md', source, docs)).toBeNull();
+    } finally {
+      fs.rmSync(tmpDir, { recursive: true, force: true });
+    }
+  });
 });
 
 describe('iterMarkdownFiles and findBrokenLinks', () => {

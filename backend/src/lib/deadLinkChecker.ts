@@ -25,6 +25,19 @@ export function iterMarkdownFiles(docsDir: string): string[] {
   return files.sort();
 }
 
+// Both branches below resolve a link target against docsDir and must
+// reject anything that escapes it (a `..` segment, e.g. `/docs/../../x` or
+// `../../x` -- path.join/path.resolve happily normalize those into a path
+// outside docsDir with no error). This used to be checked only in the
+// relative-link branch; the /docs/-absolute branch resolved a path with no
+// containment check at all, so an escaping absolute link wasn't flagged
+// the way an equivalent relative one would be.
+function withinDocsDir(resolved: string, docsDir: string): string | null {
+  const docsResolved = path.resolve(docsDir);
+  if (resolved !== docsResolved && !resolved.startsWith(docsResolved + path.sep)) return null;
+  return resolved;
+}
+
 export function resolveHref(href: string, sourceFile: string, docsDir: string): string | null {
   href = href.trim();
   if (href === '' || href === '#' || href.startsWith('#')) return null;
@@ -33,16 +46,15 @@ export function resolveHref(href: string, sourceFile: string, docsDir: string): 
   if (href.startsWith('/docs/')) {
     const rel = decodeURIComponent(href.slice('/docs/'.length).replace(/^\/+/, ''));
     if (!rel) return null;
-    return path.join(docsDir, rel.endsWith('.md') ? rel : `${rel}.md`);
+    const resolved = path.resolve(docsDir, rel.endsWith('.md') ? rel : `${rel}.md`);
+    return withinDocsDir(resolved, docsDir);
   }
 
   if (!href.endsWith('.md')) return null;
   const clean = href.startsWith('./') ? href.slice(2) : href;
   const sourceDir = path.dirname(sourceFile);
   const resolved = path.resolve(sourceDir, clean);
-  const docsResolved = path.resolve(docsDir);
-  if (resolved !== docsResolved && !resolved.startsWith(docsResolved + path.sep)) return null;
-  return resolved;
+  return withinDocsDir(resolved, docsDir);
 }
 
 export interface BrokenLink {

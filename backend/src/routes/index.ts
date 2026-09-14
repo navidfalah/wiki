@@ -46,7 +46,7 @@ import {
 } from '../lib/linkOverrides';
 import { deletePipelineRun, getPipelineRun, listPipelineRuns } from '../lib/pipelineRuns';
 import { computeUsageSummary } from '../lib/tokenUsage';
-import { isBuildRunning, runCli, stopBuild, streamChat, streamCompilerBuild } from '../lib/pythonBridge';
+import { getCurrentRunId, isBuildRunning, runCli, stopBuild, streamChat, streamCompilerBuild } from '../lib/pythonBridge';
 import { createFolder, deleteFile, deleteFolder, discoverRawFolders, FolderError, moveFile, uploadFiles } from '../lib/rawFolders';
 import {
   AUDIO_PREVIEW_EXTENSIONS,
@@ -721,7 +721,12 @@ export function registerRoutes(app: Express): void {
     wrap((req, res) => {
       const run = getPipelineRun(req.params.id);
       if (!run) throw new HttpError(404, `Pipeline run not found: ${req.params.id}`);
-      const wasRunning = run.status === 'running' && isBuildRunning();
+      // isBuildRunning() alone only says *some* build is active, not that
+      // it's this one -- a stale run stuck at status "running" (e.g. an
+      // orphan-reconciliation write that failed) would otherwise cause
+      // deleting it to stop a different, unrelated build that's genuinely
+      // in progress.
+      const wasRunning = run.status === 'running' && isBuildRunning() && getCurrentRunId() === req.params.id;
       if (wasRunning) {
         stopBuild();
         logEvent(req.user?.username, 'Stopped compiler run', req.params.id);
@@ -1204,6 +1209,40 @@ export function registerRoutes(app: Express): void {
           accountLabel: accountLabel ?? null,
           action: 'connect',
           detail: `Failed to connect to ${dbname}@${host}:${port ?? 5432}`,
+          success: false,
+          durationMs: Date.now() - startedAt,
+          error: err.message,
+        });
+        throw new HttpError(400, err.message);
+      }
+    }),
+  );
+
+  app.post(
+    '/api/connectors/sqlite/connect',
+    wrap(async (req, res) => {
+      const { account_label: accountLabel, db_path: dbPath } = req.body ?? {};
+      const startedAt = Date.now();
+      try {
+        const result = await runCli('connectors-sqlite-connect', { account_label: accountLabel, db_path: dbPath });
+        logEvent(req.user?.username, 'Connected external account', `sqlite → ${accountLabel}`);
+        logConnectorEvent({
+          username: req.user?.username,
+          connectorId: 'sqlite',
+          accountLabel: accountLabel ?? null,
+          action: 'connect',
+          detail: `Connected to ${dbPath}`,
+          success: true,
+          durationMs: Date.now() - startedAt,
+        });
+        res.json(result);
+      } catch (err: any) {
+        logConnectorEvent({
+          username: req.user?.username,
+          connectorId: 'sqlite',
+          accountLabel: accountLabel ?? null,
+          action: 'connect',
+          detail: `Failed to connect to ${dbPath}`,
           success: false,
           durationMs: Date.now() - startedAt,
           error: err.message,
