@@ -1134,6 +1134,15 @@ export function registerRoutes(app: Express): void {
     }),
   );
 
+  // --- Temporal facts (bridged to temporal_model.py) ------------------------
+
+  app.get(
+    '/api/temporal-facts',
+    wrap(async (_req, res) => {
+      res.json(await runCli('temporal-facts'));
+    }),
+  );
+
   // --- External connectors (bridged to connectors_service.py) --------------
 
   app.get(

@@ -21,6 +21,7 @@ import connectors_service
 import email_engine
 import rag_engine
 import synthesizer
+import temporal_model
 import trust_eval_dataset
 from entity_graph import entity_graph_payload
 
@@ -171,6 +172,43 @@ def cmd_entity_graph() -> dict:
     return entity_graph_payload()
 
 
+def cmd_temporal_facts() -> dict:
+    """Read-only bi-temporal view of the claim graph (temporal_model.py,
+    documentation/27-temporal-modeling.md): for every claim group, when
+    each claim was valid and which ones are still current -- derived
+    purely from each claim's `date` field and the group's `supersedes`
+    edges, no gold_label involved. Same "run against the live
+    data/trust_eval_dataset.json" posture as cmd_review_queue().
+    """
+    dataset = trust_eval_dataset.load_trust_eval_dataset()
+    groups = []
+    for group in dataset.claim_groups:
+        timeline = temporal_model.build_group_timeline(group)
+        claims_by_id = {claim.id: claim for claim in group.claims}
+        facts = [
+            {
+                "claim_id": claim_id,
+                "value": claims_by_id[claim_id].value,
+                "source_path": claims_by_id[claim_id].source_path,
+                "date": claims_by_id[claim_id].date,
+                "valid_from": fact.valid_from.isoformat() if fact.valid_from else None,
+                "valid_until": fact.valid_until.isoformat() if fact.valid_until else None,
+                "is_current": fact.is_current,
+            }
+            for claim_id, fact in timeline.items()
+        ]
+        facts.sort(key=lambda f: (f["valid_from"] is None, f["valid_from"] or "", f["claim_id"]))
+        groups.append(
+            {
+                "group_id": group.id,
+                "domain": group.domain,
+                "subject": group.subject,
+                "facts": facts,
+            }
+        )
+    return {"groups": groups}
+
+
 def cmd_connectors_catalog() -> dict:
     return {"connectors": connectors_service.catalog()}
 
@@ -282,6 +320,7 @@ COMMANDS = {
     "review-queue": cmd_review_queue,
     "review-correct": cmd_review_correct,
     "entity-graph": cmd_entity_graph,
+    "temporal-facts": cmd_temporal_facts,
     "connectors-catalog": cmd_connectors_catalog,
     "connectors-oauth-start": cmd_connectors_oauth_start,
     "connectors-oauth-callback": cmd_connectors_oauth_callback,

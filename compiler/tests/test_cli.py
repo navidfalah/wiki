@@ -111,6 +111,27 @@ def test_entity_graph_reflects_the_real_state_file():
     assert result["counts"]["total_entities"] == len(result["entities"])
 
 
+def test_temporal_facts_runs_end_to_end_on_the_real_pilot_dataset():
+    result = cli.cmd_temporal_facts()
+
+    assert result["groups"]  # the pilot dataset has real claim groups
+    group = next(g for g in result["groups"] if g["group_id"] == "nova_read_interval")
+    assert {"group_id", "domain", "subject", "facts"} <= group.keys()
+    assert group["facts"]
+
+    fact = next(f for f in group["facts"] if f["claim_id"] == "nri-1")
+    assert {"claim_id", "value", "source_path", "date", "valid_from", "valid_until", "is_current"} <= fact.keys()
+    assert fact["valid_from"] == "2026-05-01"
+    assert fact["is_current"] is False  # superseded by a later claim in the same group
+
+    current_facts = [f for f in group["facts"] if f["is_current"]]
+    assert current_facts  # every group must have at least one still-current claim
+
+
+def test_temporal_facts_command_is_registered():
+    assert cli.COMMANDS["temporal-facts"] is cli.cmd_temporal_facts
+
+
 def _isolate_connectors(tmp_path, monkeypatch):
     store = CredentialStore(store_dir=tmp_path / "store", secret_key=generate_secret_key())
     monkeypatch.setattr(connectors_service, "_credential_store", lambda: store)
