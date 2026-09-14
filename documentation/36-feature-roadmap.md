@@ -90,26 +90,41 @@ after a full session reload once the stream's `"done"` event fires
 not instantly from that event — a minor, currently-accepted UX gap, not a
 missing feature.
 
-### 4. Entity resolution: heuristic tier only
+### 4. Entity resolution: heuristic tier only — closed
 
-`mechanical_linker.py` wires `resolve_entities()` but explicitly without
-`embed_fn`/`llm` (see its own comment at the call site) — the
-embedding and LLM adjudication tiers doc 26 built and evaluated are real
-and tested but never reached from a live compile. A named, direct
-follow-up in doc 26 itself. Medium effort: thread an `LLMClient` (already
-constructed elsewhere in the pipeline) through to the mechanical linker's
-call, behind an opt-in flag matching the `--critic-pass`/`--use-corrections`
-convention.
+Was: `mechanical_linker.py` wired `resolve_entities()` but explicitly
+without `embed_fn`/`llm` — the embedding and LLM adjudication tiers doc 26
+built and evaluated were real and tested but never reached from a live
+compile.
 
-### 5. Temporal model not wired into any live query path
+Now shipped: `build_alias_topic_index()` takes optional `embed_fn`/`llm`
+params and passes them straight through to `resolve_entities()`;
+`link_and_export_pages()` takes a `resolve_entities_llm` flag that, when
+set, threads the `LLMClient` it already constructs (`require_llm()`, one
+line above the call site) through as both — its `embed_text` bound method
+as `embed_fn`, the client itself as `llm`. Off by default (extra
+LLM/embedding calls on every linking run for a strictly-additive alias
+expansion most compiles don't need), same convention as
+`--critic-pass`/`--use-corrections`: a `--resolve-entities-llm` CLI flag /
+`WIKI_RESOLVE_ENTITIES_LLM` env var threads it through `run_pipeline()` →
+`step_link()` → `link_and_export_pages()`. Covered by
+`test_mechanical_linker.py` and `test_linker.py`.
 
-`temporal_model.py`'s bi-temporal `as_of()` queries (task #7) are covered
-by `temporal_model_eval.py` and tests only — no API route, no dashboard
-surface, no pipeline step builds a live bi-temporal fact store from real
-compiled claims. Doc 27 names a "self-corrected graph" as a follow-up in
-the same spirit. Higher effort than it looks: needs a real adapter from
-compiled pages/claims into the bi-temporal fact shape, not just an API
-wrapper around existing eval fixtures.
+### 5. Temporal model not wired into any live query path — closed
+
+Was: `temporal_model.py`'s bi-temporal `as_of()` queries (task #7) were
+covered by `temporal_model_eval.py` and tests only — no API route, no
+dashboard surface.
+
+Now shipped, read-only: `cli.py`'s new `cmd_temporal_facts` command
+(`temporal-facts`) runs `temporal_model.build_group_timeline()` against
+the live `data/trust_eval_dataset.json` for every claim group — the same
+"run against the live pilot dataset" posture `cmd_review_queue` already
+established, not the deeper "adapt real compiled claims into the
+bi-temporal shape" project doc 27's own Limitations section describes as
+future work (still open, and a materially bigger job than an API
+wrapper). Exposed via `GET /api/temporal-facts` in the Express backend.
+Covered by `test_cli.py`.
 
 ### 6. Active learning against a live corpus, not just the pilot dataset
 
@@ -146,4 +161,5 @@ candidates for a future pass, not committed to.
 - [29-active-learning.md](./29-active-learning.md), [35-review-queue-ui.md](./35-review-queue-ui.md) — gap #1, closed
 - [34-external-connectors.md](./34-external-connectors.md) — gap #2, closed (see above)
 - [28-faithfulness-evaluation.md](./28-faithfulness-evaluation.md) — gap #3, closed (see above)
-- [26-entity-resolution.md](./26-entity-resolution.md), [27-temporal-modeling.md](./27-temporal-modeling.md) — the two remaining ranked gaps, still open
+- [26-entity-resolution.md](./26-entity-resolution.md) — gap #4, closed (see above)
+- [27-temporal-modeling.md](./27-temporal-modeling.md) — gap #5, closed (see above; doc 27's own Limitations section still names the larger "real compiled claims" adapter as open)

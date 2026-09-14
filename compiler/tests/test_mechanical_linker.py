@@ -169,6 +169,31 @@ def test_build_alias_topic_index_unmatched_cluster_adds_nothing():
     assert "Jonah Park" not in expanded
 
 
+def test_build_alias_topic_index_defaults_to_heuristic_tier_only():
+    # "Mira" and "Mirabelle" don't hit the heuristic auto-merge threshold
+    # (no exact match, no subset-of-tokens relationship), so without an
+    # embed_fn they must stay unaliased -- confirming the default really
+    # is offline/deterministic, as documented.
+    topic_index = {"Mira": "mira.md"}
+    mentions = [Mention("Mira", "a.md"), Mention("Mirabelle", "b.md")]
+    expanded = build_alias_topic_index(topic_index, mentions)
+    assert "Mirabelle" not in expanded
+
+
+def test_build_alias_topic_index_threads_embed_fn_into_resolve_entities():
+    # With an embed_fn that considers "Mira" and "Mirabelle" close, the
+    # embedding tier should resolve what the heuristic tier alone left
+    # escalated -- proving embed_fn actually reaches resolve_entities()
+    # rather than being silently dropped.
+    vectors = {"mira": [1.0, 0.0], "mirabelle": [0.95, 0.05]}
+    embed_fn = lambda text: vectors.get(text.strip().lower(), [0.0, 1.0])  # noqa: E731
+
+    topic_index = {"Mira": "mira.md"}
+    mentions = [Mention("Mira", "a.md"), Mention("Mirabelle", "b.md")]
+    expanded = build_alias_topic_index(topic_index, mentions, embed_fn=embed_fn)
+    assert expanded["Mirabelle"] == "mira.md"
+
+
 def test_mentions_from_extractions_builds_mentions_from_entities():
     extractions = {
         "files": [
