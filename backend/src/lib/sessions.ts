@@ -7,8 +7,8 @@
  */
 import crypto from 'node:crypto';
 import fs from 'node:fs';
-import path from 'node:path';
 import { SESSIONS_FILE } from '../paths';
+import { atomicWriteJson } from './atomicWrite';
 import type { PublicUser, Role } from './users';
 
 const SESSION_TTL_MS = 30 * 24 * 60 * 60 * 1000; // 30 days
@@ -38,8 +38,7 @@ function load(): SessionsFile {
 }
 
 function save(data: SessionsFile): void {
-  fs.mkdirSync(path.dirname(SESSIONS_FILE), { recursive: true });
-  fs.writeFileSync(SESSIONS_FILE, JSON.stringify(data, null, 2));
+  atomicWriteJson(SESSIONS_FILE, data);
 }
 
 function pruneExpired(data: SessionsFile): SessionsFile {
@@ -76,5 +75,19 @@ export function deleteSession(token: string | undefined): void {
   if (!token) return;
   const data = load();
   data.sessions = data.sessions.filter((s) => s.token !== token);
+  save(data);
+}
+
+/** Revokes every session belonging to one user -- call this whenever a
+ * user's access should stop immediately (deleted, password changed after
+ * a suspected leak, role changed) rather than waiting for their existing
+ * bearer tokens to hit the 30-day TTL on their own. Without this, a
+ * deleted user's token keeps authenticating (getSessionUser trusts the
+ * cached username/role snapshot from login, it never re-checks the user
+ * still exists) and a password reset doesn't invalidate whatever tokens
+ * were already issued under the old password. */
+export function deleteSessionsForUser(userId: string): void {
+  const data = load();
+  data.sessions = data.sessions.filter((s) => s.user_id !== userId);
   save(data);
 }
