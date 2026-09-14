@@ -139,7 +139,9 @@ function runBuildNow(res: Response, options: CompilerBuildOptions): void {
     ...(criticPass && criticSamples && criticSamples > 1 ? [`--critic-samples=${criticSamples}`] : []),
     ...(criticPass && criticRegenerate ? ['--critic-regenerate'] : []),
     ...(useCorrections ? ['--use-corrections'] : []),
-    ...(redactPii ? ['--redact-pii'] : []),
+    // main.py now defaults --redact-pii to on, so the "off" case must be
+    // passed explicitly rather than simply omitted.
+    ...(redactPii ? ['--redact-pii'] : ['--no-redact-pii']),
     ...(webSearch ? ['--web-search'] : []),
   ];
   sseEvent(res, 'start', { message: 'Starting compiler pipeline…', command: `${PYTHON_BIN} ${args.join(' ')}` });

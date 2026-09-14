@@ -1,6 +1,5 @@
 import crypto from 'node:crypto';
 import fs from 'node:fs';
-import os from 'node:os';
 import path from 'node:path';
 import { afterAll, beforeAll, describe, expect, it, vi } from 'vitest';
 
@@ -20,7 +19,8 @@ const { tmpRoot, docsDir, rawDir, indexJson, stateFile, linkOverridesFile, revie
   };
 });
 
-vi.mock('../paths', () => ({
+vi.mock('../paths', async (importOriginal) => ({
+  ...(await importOriginal<typeof import('../paths')>()),
   OUTPUT_DIR: docsDir,
   RAW_DIR: rawDir,
   INDEX_JSON: indexJson,

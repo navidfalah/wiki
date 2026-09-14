@@ -32,7 +32,7 @@ const DEFAULT_SETTINGS: PipelineSettings = {
   critic_samples: 1,
   critic_regenerate: false,
   use_corrections: false,
-  redact_pii: false,
+  redact_pii: true,
   web_search: false,
   excluded_folders: [],
 };

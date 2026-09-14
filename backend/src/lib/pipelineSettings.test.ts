@@ -1,5 +1,4 @@
 import fs from 'node:fs';
-import os from 'node:os';
 import path from 'node:path';
 import { afterAll, afterEach, describe, expect, it, vi } from 'vitest';
 
@@ -21,7 +20,7 @@ const DEFAULTS = {
   critic_samples: 1,
   critic_regenerate: false,
   use_corrections: false,
-  redact_pii: false,
+  redact_pii: true,
   web_search: false,
   excluded_folders: [],
 };
@@ -131,6 +130,9 @@ describe('savePipelineSettings', () => {
   });
 
   it('persists to disk and round-trips through loadPipelineSettings', () => {
+    // Booleans omitted from the save payload coerce to false here (same as
+    // every other boolean field) -- this only differs from DEFAULTS for
+    // redact_pii since that's the one field whose *load* default is true.
     savePipelineSettings({ critic_pass: true, critic_samples: 4, excluded_folders: ['drafts'] });
     expect(fs.existsSync(SETTINGS_FILE)).toBe(true);
     const reloaded = loadPipelineSettings();
@@ -139,6 +141,7 @@ describe('savePipelineSettings', () => {
       critic_pass: true,
       critic_samples: 4,
       excluded_folders: ['drafts'],
+      redact_pii: false,
     });
   });
 

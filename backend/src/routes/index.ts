@@ -111,6 +111,16 @@ export function registerRoutes(app: Express): void {
     }),
   );
 
+  // Below this line, every /api/* route requires a signed-in user. Most
+  // routes stop there deliberately -- requireAdmin only gates user
+  // management (below), not compiles/raw-files/connectors/etc. This is the
+  // "one team, with roles" model documented in users.ts: an admin decides
+  // who's on the team at all (no public signup), and everyone let in is
+  // trusted with the rest of the wiki, the same way any collaborator
+  // invited into a shared personal tool would be. Splitting that further
+  // (e.g. a role that can't touch connector credentials) is a real option
+  // if this ever needs to host less-trusted collaborators, but isn't
+  // something to add speculatively ahead of that need.
   app.use('/api', requireAuth);
 
   app.post('/api/auth/logout', (req, res) => {

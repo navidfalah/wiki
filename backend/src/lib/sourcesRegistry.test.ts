@@ -1,5 +1,4 @@
 import fs from 'node:fs';
-import os from 'node:os';
 import path from 'node:path';
 import { afterAll, afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 
@@ -11,7 +10,11 @@ const { tmpRoot, RAW_DIR, SOURCES_FILE } = vi.hoisted(() => {
   return { tmpRoot: root, RAW_DIR: path.join(root, 'raw'), SOURCES_FILE: path.join(root, 'sources.json') };
 });
 
-vi.mock('../paths', () => ({ RAW_DIR, SOURCES_FILE }));
+vi.mock('../paths', async (importOriginal) => ({
+  ...(await importOriginal<typeof import('../paths')>()),
+  RAW_DIR,
+  SOURCES_FILE,
+}));
 
 import { addSource, listSources, removeSource, setEnabled, SourceError, syncSymlinks } from './sourcesRegistry';
 import { discoverRawSourceFiles } from './rawFiles';
