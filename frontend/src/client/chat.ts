@@ -580,6 +580,11 @@ async function createSession() {
 async function deleteSession(id: string) {
   const target = sessions.find((s) => s.id === id);
   if (!confirm(`Delete "${target?.title ?? 'this chat'}"? This can't be undone.`)) return;
+  // Unlike selectSession() (which always stops streaming since it's about
+  // to switch sessions), only stop it here if we're deleting the session
+  // that's actually streaming -- otherwise deleting an unrelated chat
+  // would cut off an in-progress response in a different, still-open one.
+  if (id === activeSession?.id) stopStreaming();
   await apiFetch(`/api/chat/sessions/${id}`, { method: 'DELETE' });
   await loadSessions();
   if (id === activeSession?.id) {

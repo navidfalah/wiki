@@ -8,7 +8,8 @@ import { HttpError, wrap } from '../lib/httpError';
 import { buildAnalytics, getTagDetail } from '../lib/analytics';
 import { buildAttentionReport } from '../lib/attentionEngine';
 import {
-  appendChatSessionTurn,
+  appendAssistantTurn,
+  appendUserTurn,
   createChatSession,
   deleteChatSession,
   listChatSessions,
@@ -949,6 +950,13 @@ export function registerRoutes(app: Express): void {
     const docScope = corpusSource === 'wiki' && session.resource_scope ? resolveDocPaths(session.resource_scope) : null;
     const history = session.messages.map((m) => ({ role: m.role, content: m.content }));
 
+    // Persisted before streamChat runs, not after it succeeds: streamChat
+    // can fail partway through (a dropped connection, an LLM error), and
+    // that used to mean the user's own question was never saved at all --
+    // reopening the session made the whole exchange vanish with no trace,
+    // even though the composer had already cleared it client-side.
+    appendUserTurn(req.params.id, message);
+
     try {
       const result = await streamChat(res, {
         message,
@@ -960,7 +968,7 @@ export function registerRoutes(app: Express): void {
       const sourcesWithSlug = (result.sources ?? []).map((s) =>
         corpusSource === 'wiki' ? { ...s, slug: s.doc_path.replace(/\.md$/, '') } : { ...s },
       );
-      appendChatSessionTurn(req.params.id, message, result.answer, sourcesWithSlug, result.faithfulness);
+      appendAssistantTurn(req.params.id, result.answer, sourcesWithSlug, result.faithfulness);
     } catch {
       /* already reported to the client as an SSE 'error' event by streamChat */
     }

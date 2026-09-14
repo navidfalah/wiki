@@ -19,7 +19,9 @@ const { tmpRoot, CHAT_HISTORY_FILE, CHAT_SESSIONS_DIR, CHAT_SESSIONS_INDEX } = v
 vi.mock('../paths', () => ({ CHAT_HISTORY_FILE, CHAT_SESSIONS_DIR, CHAT_SESSIONS_INDEX }));
 
 import {
+  appendAssistantTurn,
   appendChatSessionTurn,
+  appendUserTurn,
   createChatSession,
   deleteChatSession,
   listChatSessions,
@@ -189,6 +191,47 @@ describe('appendChatSessionTurn', () => {
 
   it('returns null for an unknown session id', () => {
     expect(appendChatSessionTurn('11111111-1111-1111-1111-111111111111', 'q', 'a')).toBeNull();
+  });
+});
+
+describe('appendUserTurn / appendAssistantTurn', () => {
+  it('persists the user message on its own, before any assistant reply exists', () => {
+    const session = createChatSession();
+    const updated = appendUserTurn(session.id, 'hello');
+    expect(updated?.messages).toHaveLength(1);
+    expect(updated?.messages[0]).toMatchObject({ role: 'user', content: 'hello' });
+
+    // Simulates a session reload after streamChat failed part-way through
+    // (dropped connection, LLM error) and appendAssistantTurn was never
+    // called -- the user's own question must still be there, not silently
+    // lost with the whole exchange.
+    const reloaded = loadChatSession(session.id);
+    expect(reloaded?.messages).toHaveLength(1);
+    expect(reloaded?.messages[0]).toMatchObject({ role: 'user', content: 'hello' });
+  });
+
+  it('appendAssistantTurn appends the reply to whatever appendUserTurn already saved', () => {
+    const session = createChatSession();
+    appendUserTurn(session.id, 'hello');
+    const sources = [{ doc_path: 'a.md', title: 'A', slug: 'a' }];
+    const updated = appendAssistantTurn(session.id, 'hi there', sources);
+
+    expect(updated?.messages).toHaveLength(2);
+    expect(updated?.messages[1]).toMatchObject({ role: 'assistant', content: 'hi there', sources });
+  });
+
+  it('appendUserTurn derives the session title the same way appendChatSessionTurn does', () => {
+    const session = createChatSession();
+    const updated = appendUserTurn(session.id, 'What is Aurora Labs?');
+    expect(updated?.title).toBe('What is Aurora Labs?');
+  });
+
+  it('appendUserTurn returns null for an unknown session id', () => {
+    expect(appendUserTurn('11111111-1111-1111-1111-111111111111', 'q')).toBeNull();
+  });
+
+  it('appendAssistantTurn returns null for an unknown session id', () => {
+    expect(appendAssistantTurn('11111111-1111-1111-1111-111111111111', 'a')).toBeNull();
   });
 });
 

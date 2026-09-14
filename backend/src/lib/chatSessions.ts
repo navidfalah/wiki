@@ -213,9 +213,28 @@ export function deleteChatSession(id: string): boolean {
   return true;
 }
 
-export function appendChatSessionTurn(
+/**
+ * Persists just the user's half of a turn -- call this BEFORE starting the
+ * (possibly slow, possibly failing) assistant response, not after, so a
+ * dropped connection or an LLM error mid-stream doesn't silently lose the
+ * user's own question: appendAssistantTurn() below adds the reply once one
+ * exists, but if it never gets called the user's message still survived.
+ */
+export function appendUserTurn(id: string, userMessage: string): ChatSession | null {
+  const session = loadChatSession(id);
+  if (!session) return null;
+  const now = new Date().toISOString();
+  session.messages.push({ role: 'user', content: userMessage, at: now });
+  session.updated_at = now;
+  if (session.title === DEFAULT_TITLE) {
+    session.title = userMessage.length > 60 ? `${userMessage.slice(0, 60)}…` : userMessage;
+  }
+  saveSession(session);
+  return session;
+}
+
+export function appendAssistantTurn(
   id: string,
-  userMessage: string,
   assistantMessage: string,
   sources?: ChatSource[],
   faithfulness?: ChatFaithfulness,
@@ -223,12 +242,23 @@ export function appendChatSessionTurn(
   const session = loadChatSession(id);
   if (!session) return null;
   const now = new Date().toISOString();
-  session.messages.push({ role: 'user', content: userMessage, at: now });
   session.messages.push({ role: 'assistant', content: assistantMessage, sources, faithfulness, at: now });
   session.updated_at = now;
-  if (session.title === DEFAULT_TITLE) {
-    session.title = userMessage.length > 60 ? `${userMessage.slice(0, 60)}…` : userMessage;
-  }
   saveSession(session);
   return session;
+}
+
+/** Convenience wrapper for callers that already have both halves of a turn
+ * up front (e.g. a non-streaming round trip) -- streamChat's route uses
+ * appendUserTurn/appendAssistantTurn separately instead, precisely so a
+ * failure between the two still keeps the user's message. */
+export function appendChatSessionTurn(
+  id: string,
+  userMessage: string,
+  assistantMessage: string,
+  sources?: ChatSource[],
+  faithfulness?: ChatFaithfulness,
+): ChatSession | null {
+  appendUserTurn(id, userMessage);
+  return appendAssistantTurn(id, assistantMessage, sources, faithfulness);
 }
