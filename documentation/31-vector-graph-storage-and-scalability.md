@@ -56,7 +56,8 @@ personal wiki would actually contain), then times: BM25 indexing+query
 vectors — see "What isn't measured" below for why real embeddings aren't
 used).
 
-Real numbers, this machine, `python scalability_benchmark.py`:
+Original numbers (JSON-encoded embeddings, norm recomputed from scratch
+for every stored vector on every query):
 
 | Corpus size | BM25 index (ms) | BM25 query (ms) | Vector insert (ms) | Vector query (ms) |
 |---|---|---|---|---|
@@ -66,28 +67,56 @@ Real numbers, this machine, `python scalability_benchmark.py`:
 | 5,000 | 0.66 | 21.74 | 376.18 | 361.45 |
 | 10,000 | 1.60 | 51.42 | 987.99 | 984.45 |
 
-**Honest, somewhat surprising finding: the naive `VectorStore` does not
+**Honest, somewhat surprising finding: the naive `VectorStore` did not
 scale competitively against in-memory BM25 in this range.** At 10,000
-documents, BM25 (rebuilding its index from scratch every call) takes ~51ms
+documents, BM25 (rebuilding its index from scratch every call) took ~51ms
 to query; the "persistent" vector store — which only has to *search*, since
-insertion already happened — takes ~984ms, roughly 19x slower, and its
-insert cost (~988ms for 10k records) is comparable to its query cost. Two
-concrete reasons, not a mystery: (1) `VectorStore.search()` fetches and
-JSON-deserializes *every* stored vector on every call
-(`all_records()` — no way to search without materializing the whole
-table with a brute-force design), and (2) BM25 operates on plain Python
+insertion already happened — took ~984ms, roughly 19x slower, and its
+insert cost (~988ms for 10k records) was comparable to its query cost. Two
+concrete reasons, not a mystery: (1) `VectorStore.search()` fetched and
+JSON-deserialized *every* stored vector on every call, recomputing each
+one's L2 norm from scratch every time even though a stored vector's norm
+never changes between queries, and (2) BM25 operates on plain Python
 lists already held in memory, with no serialization or disk I/O at all.
-This is, concretely, *why* production vector databases use an ANN index
-(HNSW, IVF, etc.) instead of brute force — this benchmark reproduces the
-motivation for that design choice rather than assuming it.
+
+**Update — the two avoidable costs in (1) are now fixed, without adding
+ANN indexing or any new dependency.** `vector_store.py` now stores each
+embedding as packed binary doubles (`array('d', ...).tobytes()`) instead
+of JSON text, and persists each vector's L2 norm alongside it at upsert
+time instead of recomputing it on every query — `search()` now computes
+exactly one norm from scratch per call (the query's), not one per stored
+record. Same machine, same `python scalability_benchmark.py`, after that
+change:
+
+| Corpus size | BM25 index (ms) | BM25 query (ms) | Vector insert (ms) | Vector query (ms) |
+|---|---|---|---|---|
+| 10 | 0.05 | 0.04 | 1.38 | 0.34 |
+| 100 | 0.10 | 0.39 | 2.93 | 1.25 |
+| 1,000 | 0.53 | 3.67 | 17.52 | 9.18 |
+| 5,000 | 1.90 | 19.37 | 79.94 | 47.11 |
+| 10,000 | 4.88 | 42.67 | 153.67 | 87.21 |
+
+At 10,000 documents, vector query time drops from ~984ms to ~87ms (~11x
+faster) and insert time from ~988ms to ~154ms (~6x faster) — vector query
+is now only ~2x slower than BM25, not ~19x. This is still an O(n)
+brute-force scan (every stored vector is still visited on every query,
+same as before) — it just no longer does unnecessary repeated work inside
+that scan. It does *not* change the underlying complexity, and this is
+still, concretely, *why* production vector databases use an ANN index
+(HNSW, IVF, etc.) instead of brute force at real web scale — this
+benchmark still reproduces the motivation for that design choice, it just
+shows brute force has more constant-factor headroom than the original
+implementation used.
 
 **Practical reading for this project:** at the corpus sizes a personal
 wiki plausibly reaches (task #5's 24-passage pilot, or even a few thousand
 compiled pages), BM25 alone remains a perfectly reasonable default —
-exactly what `rag_engine.retrieve()` already does. `VectorStore` becomes
-worth its complexity only once (a) embeddings are actually in play (task
-#5's `retrieve_hybrid()` tier) *and* (b) an ANN index replaces the
-brute-force scan — neither of which this task claims to have delivered.
+exactly what `rag_engine.retrieve()` already does, and now even a
+brute-force `VectorStore` stays within single-digit-to-low-double-digit
+milliseconds up to 1,000 documents. `VectorStore` becomes worth reaching
+for an ANN index only once (a) embeddings are actually in play (task #5's
+`retrieve_hybrid()` tier) *and* (b) corpus size grows well past what these
+numbers cover — neither of which this task claims to have delivered.
 
 ## What isn't measured
 

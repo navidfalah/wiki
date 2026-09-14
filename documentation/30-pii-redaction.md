@@ -64,9 +64,13 @@ anywhere) alongside its placeholder.
 extraction prompt — and only the prompt. The `ChunkExtraction.text` stored
 locally (for dashboard browsing, `state.json`, etc.) keeps the original,
 unredacted text; redaction only affects what actually leaves the machine.
-Off by default — `main.py --redact-pii` / `WIKI_REDACT_PII=true` opt in,
-same convention as `--critic-pass` (task #4) and `--use-corrections`
-(task #9).
+**On by default** — unlike `--critic-pass` (task #4) and `--use-corrections`
+(task #9), which are cost/quality opt-ins, the default policy here only
+ever strips categories (SSN, credit card, API key, phone, IPv4) that are
+unambiguously safe to redact and never in tension with entity resolution
+(see the table above) — there's no real reason for a chunk of raw text to
+reach the LLM with a live SSN or API key in it. Use `main.py --no-redact-pii`
+or `WIKI_REDACT_PII=false` to opt back out.
 
 ## Evaluation: no API key needed, for once
 
@@ -164,4 +168,4 @@ separately-named policy — not a side effect of enabling the location tier.
 ## Next
 
 - [26-entity-resolution.md](./26-entity-resolution.md) — the feature this module's default policy is deliberately designed not to interfere with
-- [24-extraction-critic.md](./24-extraction-critic.md) / [29-active-learning.md](./29-active-learning.md) — the other opt-in `main.py` flags following the same off-by-default convention
+- [24-extraction-critic.md](./24-extraction-critic.md) / [29-active-learning.md](./29-active-learning.md) — the other `main.py` flags, both still off-by-default cost/quality opt-ins (this one is the exception, on by default)
