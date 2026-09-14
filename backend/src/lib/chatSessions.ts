@@ -10,6 +10,7 @@ import crypto from 'node:crypto';
 import fs from 'node:fs';
 import path from 'node:path';
 import { CHAT_HISTORY_FILE, CHAT_SESSIONS_DIR, CHAT_SESSIONS_INDEX } from '../paths';
+import { atomicWriteJson } from './atomicWrite';
 
 export interface ChatSource {
   doc_path: string;
@@ -80,8 +81,7 @@ function loadIndex(): ChatSessionSummary[] {
 }
 
 function saveIndex(index: ChatSessionSummary[]): void {
-  fs.mkdirSync(CHAT_SESSIONS_DIR, { recursive: true });
-  fs.writeFileSync(CHAT_SESSIONS_INDEX, JSON.stringify(index, null, 2));
+  atomicWriteJson(CHAT_SESSIONS_INDEX, index);
 }
 
 function summaryOf(session: ChatSession): ChatSessionSummary {
@@ -98,8 +98,7 @@ function summaryOf(session: ChatSession): ChatSessionSummary {
 }
 
 function saveSession(session: ChatSession): void {
-  fs.mkdirSync(CHAT_SESSIONS_DIR, { recursive: true });
-  fs.writeFileSync(sessionFile(session.id), JSON.stringify(session, null, 2));
+  atomicWriteJson(sessionFile(session.id), session);
   const index = loadIndex().filter((s) => s.id !== session.id);
   index.push(summaryOf(session));
   saveIndex(index);

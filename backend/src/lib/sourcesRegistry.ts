@@ -9,6 +9,7 @@ import crypto from 'node:crypto';
 import fs from 'node:fs';
 import path from 'node:path';
 import { RAW_DIR, SOURCES_FILE } from '../paths';
+import { atomicWriteJson } from './atomicWrite';
 import { walkEntries } from './fsWalk';
 
 export interface SourceEntry {
@@ -66,8 +67,7 @@ function load(): Registry {
 }
 
 function save(data: Registry): void {
-  fs.mkdirSync(path.dirname(SOURCES_FILE), { recursive: true });
-  fs.writeFileSync(SOURCES_FILE, JSON.stringify(data, null, 2) + '\n', 'utf-8');
+  atomicWriteJson(SOURCES_FILE, data);
 }
 
 function countFiles(dir: string): number {

@@ -24,8 +24,8 @@
  */
 import crypto from 'node:crypto';
 import fs from 'node:fs';
-import path from 'node:path';
 import { ACTIVITY_LOG_FILE } from '../paths';
+import { atomicWriteJson } from './atomicWrite';
 
 const MAX_EVENTS = 5000;
 
@@ -77,8 +77,7 @@ function load(): ActivityLogFile {
 }
 
 function save(data: ActivityLogFile): void {
-  fs.mkdirSync(path.dirname(ACTIVITY_LOG_FILE), { recursive: true });
-  fs.writeFileSync(ACTIVITY_LOG_FILE, JSON.stringify({ version: 2, events: data.events }, null, 2));
+  atomicWriteJson(ACTIVITY_LOG_FILE, { version: 2, events: data.events });
 }
 
 // Longest/most-specific phrases first, same convention as

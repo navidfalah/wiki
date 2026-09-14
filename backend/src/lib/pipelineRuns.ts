@@ -6,6 +6,7 @@
 import fs from 'node:fs';
 import path from 'node:path';
 import { PIPELINE_RUNS_DIR, PIPELINE_RUNS_INDEX } from '../paths';
+import { atomicWriteJson } from './atomicWrite';
 
 // Matches PipelineRun.start()'s id format: YYYYMMDD-HHMMSS-<6 hex chars>.
 const RUN_ID_RE = /^\d{8}-\d{6}-[0-9a-f]{6}$/;
@@ -65,14 +66,21 @@ export function getPipelineRun(id: string): PipelineRunDetail | null {
   }
 }
 
-function patchIndexStatus(ids: string[], status: string): void {
+// finishedAt is passed in rather than computed here with its own
+// `new Date()` call -- this index row is a cached summary of the detail
+// file's own finished_at (set independently, a few lines away in
+// markRunAbandoned), and two separate `new Date().toISOString()` calls a
+// handful of statements apart can legitimately return different
+// millisecond values, leaving the index and detail file disagreeing about
+// exactly when the same run finished.
+function patchIndexStatus(ids: string[], status: string, finishedAt: string): void {
   if (!ids.length) return;
   try {
     const entries = JSON.parse(fs.readFileSync(PIPELINE_RUNS_INDEX, 'utf-8'));
     if (Array.isArray(entries)) {
       const idSet = new Set(ids);
-      const updated = entries.map((e) => (idSet.has(e?.id) ? { ...e, status, finished_at: new Date().toISOString() } : e));
-      fs.writeFileSync(PIPELINE_RUNS_INDEX, JSON.stringify(updated, null, 2));
+      const updated = entries.map((e) => (idSet.has(e?.id) ? { ...e, status, finished_at: finishedAt } : e));
+      atomicWriteJson(PIPELINE_RUNS_INDEX, updated);
     }
   } catch {
     // Index is a cache of the per-run files; leave it be if unreadable.
@@ -86,6 +94,21 @@ function patchIndexStatus(ids: string[], status: string): void {
  * path), so this is safe to call speculatively any time a build's
  * subprocess exits without knowing whether Python's own cleanup ran.
  * Returns whether it actually changed anything.
+ *
+ * Not actually racing PipelineRun.finish() for the SAME run, despite both
+ * being unlocked read-modify-write on the same file from separate
+ * processes: compiler/pipeline_tracker.py's _save()/finish() are fully
+ * synchronous and themselves write atomically (temp file + rename, same
+ * pattern as atomicWriteJson below), so Python's last write for a run is
+ * always complete before that process can exit -- and this is only ever
+ * called from pythonBridge.ts's child.on('close', ...), which Node only
+ * fires after the subprocess has actually exited. What both sides DO
+ * share unprotected is index.json, which isn't scoped to one run's
+ * lifecycle -- this function's patchIndexStatus() call and a concurrent
+ * compile's own PipelineRun.start()/finish() (a genuinely different,
+ * unrelated run) can race for real. atomicWriteJson at least turns that
+ * into "whichever write lands last wins outright" instead of a
+ * truncated/corrupt file if the loser's write is caught mid-write.
  */
 export function markRunAbandoned(id: string, reason: string): boolean {
   if (!RUN_ID_RE.test(id)) return false;
@@ -105,8 +128,8 @@ export function markRunAbandoned(id: string, reason: string): boolean {
         step.error = reason;
       }
     }
-    fs.writeFileSync(filePath, JSON.stringify(detail, null, 2));
-    patchIndexStatus([id], 'error');
+    atomicWriteJson(filePath, detail);
+    patchIndexStatus([id], 'error', finishedAt);
     return true;
   } catch {
     return false;
@@ -153,7 +176,7 @@ export function deletePipelineRun(id: string): { removed: boolean; reason?: 'not
       const entries = JSON.parse(fs.readFileSync(PIPELINE_RUNS_INDEX, 'utf-8'));
       if (Array.isArray(entries)) {
         const filtered = entries.filter((e) => e?.id !== id);
-        fs.writeFileSync(PIPELINE_RUNS_INDEX, JSON.stringify(filtered, null, 2));
+        atomicWriteJson(PIPELINE_RUNS_INDEX, filtered);
       }
     } catch {
       // Index is a cache of the per-run files; leave it be if unreadable.
