@@ -83,7 +83,10 @@ class ImapConnector(Connector):
             criteria = f'TEXT "{query}"' if query else "ALL"
             _, data = client.search(None, criteria)
             message_ids = data[0].split() if data and data[0] else []
-            message_ids = message_ids[-limit:]
+            # message_ids[-limit:] would be wrong for limit=0: Python
+            # treats -0 as 0, so message_ids[-0:] == message_ids[0:], i.e.
+            # every message instead of none.
+            message_ids = message_ids[-limit:] if limit > 0 else []
             items = []
             for message_id in reversed(message_ids):
                 _, fetched = client.fetch(message_id, "(BODY.PEEK[HEADER.FIELDS (SUBJECT FROM)])")
