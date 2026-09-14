@@ -41,6 +41,14 @@ def generate_secret_key() -> str:
 def _slug(value: str) -> str:
     if not _SAFE_ID_RE.match(value):
         raise ValueError(f"unsafe identifier for credential filename: {value!r}")
+    if "__" in value:
+        # "__" is the literal separator _path joins connector_id and
+        # account_label with. Without this check, connector_id="a",
+        # account_label="b__c" and connector_id="a__b", account_label="c"
+        # both produce the filename "a__b__c.enc" -- one account's
+        # credentials would silently overwrite the other's. Forbidding
+        # "__" inside either half makes the join point unambiguous.
+        raise ValueError(f"identifier may not contain '__': {value!r}")
     return value
 
 
