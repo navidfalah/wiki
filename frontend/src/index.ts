@@ -75,18 +75,42 @@ app.use((_req, res) => {
 // from an SSR fetch) falls through to Express's default production error
 // handler, which renders a blank page and logs nothing -- exactly what
 // makes "nothing there" impossible to diagnose from the browser alone.
+//
+// This lands here for two very different kinds of failure, and they get
+// different treatment. A backend-connectivity error (the proxy middleware
+// above can throw one for ANY /api/** request, even pre-login) carries a
+// Node network error code (ECONNREFUSED, ENOTFOUND, ...) and nothing more
+// sensitive than "couldn't reach that host" -- safe to show verbatim to
+// whoever's running their own instance, and worth the specific diagnostic
+// steps since that's genuinely the likely cause. Anything else reaching
+// this handler is an unexpected bug in a mounted router (wikiRouter,
+// dashboardRouter, ...), and its .message could carry template/file-path
+// detail that has no business in an HTTP response -- that case gets a
+// generic message instead, with the real detail only in the server log.
+const CONNECTIVITY_ERROR_CODES = new Set([
+  'ECONNREFUSED',
+  'ECONNRESET',
+  'ENOTFOUND',
+  'EHOSTUNREACH',
+  'ETIMEDOUT',
+]);
+
 app.use((err: any, _req: Request, res: Response, _next: NextFunction) => {
   // eslint-disable-next-line no-console
   console.error('[frontend] Unhandled request error:', err);
-  res
-    .status(500)
-    .send(
-      `<pre>Server error while rendering this page.\n\n` +
-        `Likely cause: the frontend could not reach the backend at BACKEND_API_URL=${BACKEND_API_URL}.\n` +
-        `Check: docker compose logs backend   (is it running and healthy?)\n` +
-        `       docker compose exec frontend wget -qO- ${BACKEND_API_URL}/api/health\n\n` +
-        `${err?.message ?? err}</pre>`,
-    );
+  if (CONNECTIVITY_ERROR_CODES.has(err?.code)) {
+    res
+      .status(500)
+      .send(
+        `<pre>Server error while rendering this page.\n\n` +
+          `Likely cause: the frontend could not reach the backend at BACKEND_API_URL=${BACKEND_API_URL}.\n` +
+          `Check: docker compose logs backend   (is it running and healthy?)\n` +
+          `       docker compose exec frontend wget -qO- ${BACKEND_API_URL}/api/health\n\n` +
+          `${err.message}</pre>`,
+      );
+    return;
+  }
+  res.status(500).send('<pre>Server error while rendering this page. Check the frontend container logs for detail.</pre>');
 });
 
 app.listen(PORT, () => {
