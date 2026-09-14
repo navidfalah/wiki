@@ -73,9 +73,18 @@ export function createFolder(
   checkNotManaged(relPath, managedNames);
   const newDir = path.join(rawDir, relPath);
   assertWithin(rawDir, path.dirname(newDir));
-  if (fs.existsSync(newDir)) throw new FolderError(`Already exists: ${relPath}`);
 
-  fs.mkdirSync(newDir);
+  // No existsSync pre-check: two concurrent requests for the same new
+  // folder could both pass it and the second mkdirSync would silently
+  // land on a directory the first request just created. mkdirSync without
+  // {recursive: true} already fails atomically with EEXIST if the path
+  // exists -- catching that instead of checking first closes the race.
+  try {
+    fs.mkdirSync(newDir);
+  } catch (err: any) {
+    if (err?.code === 'EEXIST') throw new FolderError(`Already exists: ${relPath}`);
+    throw err;
+  }
   return relPath;
 }
 
@@ -130,10 +139,17 @@ export function uploadFiles(
     const name = sanitizeUploadName(file.originalName);
     const destination = path.join(destDir, name);
     assertWithin(rawDir, path.dirname(destination));
-    if (fs.existsSync(destination)) {
-      throw new FolderError(`A file named ${name} already exists there`);
+    // No existsSync pre-check: two concurrent uploads of the same
+    // filename could both pass it and the second write would silently
+    // clobber the first with no warning to either caller. The 'wx' flag
+    // makes the create-and-write atomic at the OS level -- it fails with
+    // EEXIST instead of truncating an existing file.
+    try {
+      fs.writeFileSync(destination, file.buffer, { flag: 'wx' });
+    } catch (err: any) {
+      if (err?.code === 'EEXIST') throw new FolderError(`A file named ${name} already exists there`);
+      throw err;
     }
-    fs.writeFileSync(destination, file.buffer);
     saved.push(parent ? `${parent}/${name}` : name);
   }
   return saved;
@@ -180,10 +196,21 @@ export function moveFile(
 
   const baseName = path.basename(source);
   const destination = path.join(destDir, baseName);
-  if (fs.existsSync(destination)) {
-    throw new FolderError(`A file named ${baseName} already exists there`);
-  }
 
-  fs.renameSync(source, destination);
+  // No existsSync pre-check, and not a plain renameSync either: POSIX
+  // rename() silently overwrites an existing destination rather than
+  // failing (unlike mkdir/open with O_EXCL), so a plain rename here would
+  // still lose a concurrent write to the same destination path with no
+  // warning to either caller. linkSync fails atomically with EEXIST if
+  // the destination exists, so link-then-unlink-the-source gives the same
+  // move semantics with that race closed (both paths are under rawDir, so
+  // always the same filesystem -- link works the same as rename does here).
+  try {
+    fs.linkSync(source, destination);
+  } catch (err: any) {
+    if (err?.code === 'EEXIST') throw new FolderError(`A file named ${baseName} already exists there`);
+    throw err;
+  }
+  fs.unlinkSync(source);
   return destinationDirRel ? `${destinationDirRel}/${baseName}` : baseName;
 }
