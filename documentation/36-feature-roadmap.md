@@ -52,18 +52,34 @@ the fake-based unit tests, which this environment doesn't have. Doc 34's
 own "what a real wiring would still need" list is an accurate scope for
 this task; nothing found here changes it.
 
-### 3. Faithfulness score not surfaced in the live chat UI
+### 3. Faithfulness score in the live chat UI — closed
 
-`faithfulness_heuristic.py` (offline, no API key needed — task #8) and
-`faithfulness_eval.py` (LLM-judge mode) are exercised only by
-`compiler/tests/` and the eval harness; `rag_engine.py`'s live
-`answer_question()` path never calls either. A chat answer today gives no
-signal to the person reading it about how grounded it is. Wiring the
-heuristic (extractive-mode answers are faithful by construction per doc
-28; generated-mode answers could get a live heuristic score) into the
-`/api/chat` response and rendering it as a small badge in `chat.ts` is
-contained — one new field on an existing response shape, one UI badge —
-and needs no external credentials to demo.
+Was: `faithfulness_heuristic.py` (offline, no API key needed — task #8)
+exercised only by `compiler/tests/` and the eval harness, with
+`rag_engine.py`'s live `answer_question()` path never calling it — a chat
+answer gave no signal about how grounded it was.
+
+Now shipped end-to-end: `rag_engine._faithfulness_signal()` calls the
+heuristic for generated-mode answers (extractive-mode answers skip it,
+since they're faithful by construction per doc 28 — quoted verbatim from
+retrieved passages) and returns a `"faithfulness"` field alongside
+`"answer"`/`"sources"`/`"mode"` from both `answer_question()` and
+`answer_question_stream()`. That field passes through `cli.py` unchanged
+(plain dict/NDJSON pass-through, no schema to update), gets typed as
+`ChatFaithfulness` in `pythonBridge.ts` and `chatSessions.ts` (optional
+everywhere, so old persisted sessions without it don't break), and renders
+as a small badge in `chat.ts`'s `faithfulnessBadgeHtml()` — a fixed
+"Grounded · verbatim" pill for extractive answers, or a
+"~N% grounded · estimate" pill (color-coded, with a title hedging it's a
+heuristic proxy, not an LLM judge) for generated ones. Covered by
+`test_faithfulness_heuristic.py` and `test_rag_engine.py`'s faithfulness
+assertions.
+
+One real rough edge left: the streaming chat path only shows the badge
+after a full session reload once the stream's `"done"` event fires
+(faithfulness can't be computed until the complete answer text exists),
+not instantly from that event — a minor, currently-accepted UX gap, not a
+missing feature.
 
 ### 4. Entity resolution: heuristic tier only
 
@@ -118,6 +134,7 @@ candidates for a future pass, not committed to.
 
 ## Next
 
-- [29-active-learning.md](./29-active-learning.md), [35-review-queue-ui.md](./35-review-queue-ui.md) — the gap closed this session
+- [29-active-learning.md](./29-active-learning.md), [35-review-queue-ui.md](./35-review-queue-ui.md) — gap #1, closed
+- [28-faithfulness-evaluation.md](./28-faithfulness-evaluation.md) — gap #3, closed (see above)
 - [34-external-connectors.md](./34-external-connectors.md) — the highest-value remaining gap
-- [26-entity-resolution.md](./26-entity-resolution.md), [27-temporal-modeling.md](./27-temporal-modeling.md), [28-faithfulness-evaluation.md](./28-faithfulness-evaluation.md) — the other three ranked gaps
+- [26-entity-resolution.md](./26-entity-resolution.md), [27-temporal-modeling.md](./27-temporal-modeling.md) — the other two ranked gaps still open
