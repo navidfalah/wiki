@@ -811,13 +811,15 @@ def main() -> None:
     )
     parser.add_argument(
         "--redact-pii",
-        action="store_true",
-        default=os.getenv("WIKI_REDACT_PII", "").lower() in {"1", "true", "yes"},
+        action=argparse.BooleanOptionalAction,
+        default=os.getenv("WIKI_REDACT_PII", "true").lower() not in {"0", "false", "no"},
         help=(
             "Redact SSNs, credit cards, API keys, phone numbers, and IPv4 addresses "
             "(pii_redaction.py's default policy — NOT email addresses or names, see "
             "its module docstring) from chunk text before it's sent to the LLM for "
-            "extraction. Also enabled by setting WIKI_REDACT_PII=true."
+            "extraction. On by default (these categories are unambiguously safe to "
+            "strip and never conflict with entity resolution); use --no-redact-pii or "
+            "WIKI_REDACT_PII=false to send chunk text unredacted."
         ),
     )
     parser.add_argument(
