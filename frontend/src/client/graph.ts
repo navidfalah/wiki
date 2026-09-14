@@ -1,13 +1,13 @@
 import ForceGraph, { NodeObject, LinkObject } from 'force-graph';
 import { forceCollide } from 'd3-force-3d';
+import { apiBase } from './lib/api';
+import { escapeHtml } from './lib/dom';
 
 declare global {
   interface Window {
     showToast?: (message: string, type?: string) => void;
   }
 }
-
-const apiBase = document.querySelector('meta[name="api-base"]')?.getAttribute('content') ?? '';
 
 interface Topic {
   id: string;
@@ -321,12 +321,6 @@ function shouldLabel(node: GraphNode, globalScale: number, topHubIds: Set<string
   if (selectedIds.has(node.id)) return true;
   if (topHubIds.has(node.id)) return true;
   return globalScale > 2.4;
-}
-
-function escapeHtml(text: string): string {
-  const div = document.createElement('div');
-  div.textContent = text;
-  return div.innerHTML;
 }
 
 function renderStats(nodeCount: number, linkCount: number, overrideCount: number) {

@@ -1,4 +1,4 @@
-const apiBase = document.querySelector('meta[name="api-base"]')?.getAttribute('content') ?? '';
+import { apiBase } from './lib/api';
 
 interface CompanySettings {
   company_name: string;

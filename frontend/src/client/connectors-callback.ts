@@ -1,4 +1,5 @@
-const apiBase = document.querySelector('meta[name="api-base"]')?.getAttribute('content') ?? '';
+import { apiBase } from './lib/api';
+
 const connectorId = (window as any).__connectorId as string;
 
 const params = new URLSearchParams(window.location.search);

@@ -1,15 +1,10 @@
+import { apiBase } from './lib/api';
+import { escapeHtml } from './lib/dom';
+
 declare global {
   interface Window {
     showToast?: (message: string, type?: string) => void;
   }
-}
-
-const apiBase = document.querySelector('meta[name="api-base"]')?.getAttribute('content') ?? '';
-
-function escapeHtml(text: string | null | undefined): string {
-  const div = document.createElement('div');
-  div.textContent = text ?? '';
-  return div.innerHTML;
 }
 
 function statCard(value: string, label: string, warn = false): string {

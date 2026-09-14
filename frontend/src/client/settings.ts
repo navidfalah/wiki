@@ -1,4 +1,6 @@
-const apiBase = document.querySelector('meta[name="api-base"]')?.getAttribute('content') ?? '';
+import { apiBase } from './lib/api';
+import { escapeHtml } from './lib/dom';
+
 const UNCHANGED = '__unchanged__';
 
 type Provider = 'openai' | 'gemini' | 'local' | 'custom';
@@ -219,11 +221,6 @@ function renderAssignments() {
   });
 }
 
-function escapeHtml(text: string): string {
-  const div = document.createElement('div');
-  div.textContent = text ?? '';
-  return div.innerHTML;
-}
 
 function renderLocalLlmForm() {
   const container = document.getElementById('local-llm-form')!;

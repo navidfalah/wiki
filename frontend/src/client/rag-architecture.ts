@@ -1,4 +1,5 @@
-const apiBase = document.querySelector('meta[name="api-base"]')?.getAttribute('content') ?? '';
+import { apiBase } from './lib/api';
+import { escapeHtml } from './lib/dom';
 
 type Architecture = 'hybrid' | 'naive' | 'hyde' | 'fusion' | 'graph' | 'corrective';
 type RetrievalMode = 'bm25' | 'hybrid' | 'hybrid_rerank';
@@ -87,12 +88,6 @@ function renderPresetSelect() {
   select.value = presets.some((p) => p.id === previousValue) ? previousValue : presets[0].id;
   loadBtn.disabled = false;
   deleteBtn.disabled = false;
-}
-
-function escapeHtml(text: string): string {
-  const div = document.createElement('div');
-  div.textContent = text ?? '';
-  return div.innerHTML;
 }
 
 async function loadPresets() {

@@ -1,31 +1,7 @@
-const apiBase = document.querySelector('meta[name="api-base"]')?.getAttribute('content') ?? '';
+import { apiBase, apiFetch } from './lib/api';
+import { el, escapeHtml } from './lib/dom';
+
 const LAST_SESSION_KEY = 'wiki-chat-last-session';
-
-function el(id: string): HTMLElement {
-  const found = document.getElementById(id);
-  if (!found) throw new Error(`Missing #${id}`);
-  return found;
-}
-
-function escapeHtml(text: string): string {
-  const div = document.createElement('div');
-  div.textContent = text ?? '';
-  return div.innerHTML;
-}
-
-async function apiFetch(path: string, opts?: RequestInit): Promise<any> {
-  const res = await fetch(`${apiBase}${path}`, opts);
-  if (!res.ok) {
-    let message = await res.text();
-    try {
-      message = JSON.parse(message).detail ?? message;
-    } catch {
-      /* plain text */
-    }
-    throw new Error(message || `Request failed (${res.status})`);
-  }
-  return res.status === 204 ? null : res.json();
-}
 
 // Minimal, dependency-free renderer for the light markdown LLM answers come
 // back in: fenced ```code``` blocks, **bold**, `code`, and "* "/"- " bullet
@@ -649,37 +625,46 @@ el('chat-scope-raw').addEventListener('click', () => {
   updateCorpusSource('raw').catch((err) => window.showToast?.(err.message, 'error'));
 });
 
-el('chat-resources-toggle').addEventListener('click', () => {
-  if ((el('chat-resources-toggle') as HTMLButtonElement).disabled) return;
-  el('chat-mode-panel').classList.add('hidden');
-  el('chat-model-panel').classList.add('hidden');
-  el('chat-resources-panel').classList.toggle('hidden');
+// Keeps a disclosure toggle's aria-expanded in sync with the panel it
+// controls, instead of only toggling the `hidden` class -- screen reader
+// users otherwise have no way to tell these buttons open something.
+function setPanelOpen(toggle: HTMLElement, panel: HTMLElement, open: boolean) {
+  panel.classList.toggle('hidden', !open);
+  toggle.setAttribute('aria-expanded', String(open));
+}
+
+const resourcesToggleBtn = el('chat-resources-toggle');
+const resourcesPanelEl = el('chat-resources-panel');
+const modeToggleBtn = el('chat-mode-toggle');
+const modePanelEl = el('chat-mode-panel');
+const modelToggleBtn = el('chat-model-toggle');
+const modelPanelEl = el('chat-model-panel');
+
+resourcesToggleBtn.addEventListener('click', () => {
+  if ((resourcesToggleBtn as HTMLButtonElement).disabled) return;
+  setPanelOpen(modeToggleBtn, modePanelEl, false);
+  setPanelOpen(modelToggleBtn, modelPanelEl, false);
+  setPanelOpen(resourcesToggleBtn, resourcesPanelEl, resourcesPanelEl.classList.contains('hidden'));
 });
-el('chat-mode-toggle').addEventListener('click', () => {
-  el('chat-resources-panel').classList.add('hidden');
-  el('chat-model-panel').classList.add('hidden');
-  el('chat-mode-panel').classList.toggle('hidden');
+modeToggleBtn.addEventListener('click', () => {
+  setPanelOpen(resourcesToggleBtn, resourcesPanelEl, false);
+  setPanelOpen(modelToggleBtn, modelPanelEl, false);
+  setPanelOpen(modeToggleBtn, modePanelEl, modePanelEl.classList.contains('hidden'));
 });
-el('chat-model-toggle').addEventListener('click', () => {
-  el('chat-resources-panel').classList.add('hidden');
-  el('chat-mode-panel').classList.add('hidden');
-  el('chat-model-panel').classList.toggle('hidden');
+modelToggleBtn.addEventListener('click', () => {
+  setPanelOpen(resourcesToggleBtn, resourcesPanelEl, false);
+  setPanelOpen(modeToggleBtn, modePanelEl, false);
+  setPanelOpen(modelToggleBtn, modelPanelEl, modelPanelEl.classList.contains('hidden'));
 });
 document.addEventListener('click', (event) => {
-  const panel = el('chat-resources-panel');
-  const toggle = el('chat-resources-toggle');
-  if (!panel.contains(event.target as Node) && !toggle.contains(event.target as Node)) {
-    panel.classList.add('hidden');
+  if (!resourcesPanelEl.contains(event.target as Node) && !resourcesToggleBtn.contains(event.target as Node)) {
+    setPanelOpen(resourcesToggleBtn, resourcesPanelEl, false);
   }
-  const modePanel = el('chat-mode-panel');
-  const modeToggle = el('chat-mode-toggle');
-  if (!modePanel.contains(event.target as Node) && !modeToggle.contains(event.target as Node)) {
-    modePanel.classList.add('hidden');
+  if (!modePanelEl.contains(event.target as Node) && !modeToggleBtn.contains(event.target as Node)) {
+    setPanelOpen(modeToggleBtn, modePanelEl, false);
   }
-  const modelPanel = el('chat-model-panel');
-  const modelToggle = el('chat-model-toggle');
-  if (!modelPanel.contains(event.target as Node) && !modelToggle.contains(event.target as Node)) {
-    modelPanel.classList.add('hidden');
+  if (!modelPanelEl.contains(event.target as Node) && !modelToggleBtn.contains(event.target as Node)) {
+    setPanelOpen(modelToggleBtn, modelPanelEl, false);
   }
 });
 el('chat-mode-retrieval-options')
@@ -798,6 +783,7 @@ el('chat-form').addEventListener('submit', (event) => {
 
   let assistantText = '';
   let pendingSources: ChatSource[] = [];
+  let pendingFaithfulness: ChatFaithfulness | undefined;
   const container = el('chat-messages');
   // This row element is created once and stays attached for the whole
   // stream; only its inner content is replaced on each delta. (Repeatedly
@@ -818,6 +804,9 @@ el('chat-form').addEventListener('submit', (event) => {
     const cursor = !done && assistantText ? '<span class="stream-cursor"></span>' : '';
     placeholder.innerHTML = bubbleInnerHtml('assistant', bodyHtml + cursor, {
       sourcesHtml: sourcesChipHtml(pendingSources),
+      // Faithfulness can't be known until the full answer text exists, so
+      // only the final render (done=true) has anything to show here.
+      faithfulnessHtml: done ? faithfulnessBadgeHtml(pendingFaithfulness) : '',
       streaming: !done,
     });
     if (isNearBottom(container) || !assistantText) container.scrollTop = container.scrollHeight;
@@ -839,10 +828,15 @@ el('chat-form').addEventListener('submit', (event) => {
       assistantText += payload.text ?? '';
       renderStreaming();
     } else if (payload.type === 'done') {
+      pendingFaithfulness = payload.faithfulness;
+      renderStreaming(true);
       source.close();
       streamingSource = null;
       finalizeStreamingBubble = null;
       setComposerBusy(false);
+      // Reload in the background to pick up the persisted session state
+      // (message ids, etc.) -- the badge/answer are already on screen from
+      // the render above, so this reload no longer gates seeing them.
       selectSession(activeSession!.id).catch(() => {
         /* keep the streamed content on screen even if the reload fails */
       });

@@ -1,12 +1,6 @@
 import { copyButtonHtml, initCopyButtons } from './lib/copy';
-
-const apiBase = document.querySelector('meta[name="api-base"]')?.getAttribute('content') ?? '';
-
-function escapeHtml(text: string): string {
-  const div = document.createElement('div');
-  div.textContent = text ?? '';
-  return div.innerHTML;
-}
+import { apiBase } from './lib/api';
+import { escapeHtml } from './lib/dom';
 
 interface ActivityEvent {
   id: string;
