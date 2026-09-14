@@ -12,6 +12,7 @@ import crypto from 'node:crypto';
 import fs from 'node:fs';
 import path from 'node:path';
 import { PROJECT_ROOT } from '../paths';
+import { atomicWriteJson } from './atomicWrite';
 import { buildRagSettings, loadRagSettings, RagSettings, RagSettingsError, saveRagSettings } from './ragSettings';
 
 export const RAG_PRESETS_FILE = path.join(PROJECT_ROOT, 'data', 'rag_presets.json');
@@ -33,8 +34,7 @@ function readJsonSafe(filePath: string): any | null {
 }
 
 function writePresets(presets: RagPreset[]): void {
-  fs.mkdirSync(path.dirname(RAG_PRESETS_FILE), { recursive: true });
-  fs.writeFileSync(RAG_PRESETS_FILE, JSON.stringify(presets, null, 2));
+  atomicWriteJson(RAG_PRESETS_FILE, presets);
 }
 
 export function listRagPresets(): RagPreset[] {

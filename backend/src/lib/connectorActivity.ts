@@ -9,8 +9,8 @@
  */
 import crypto from 'node:crypto';
 import fs from 'node:fs';
-import path from 'node:path';
 import { CONNECTOR_ACTIVITY_FILE } from '../paths';
+import { atomicWriteJson } from './atomicWrite';
 
 const MAX_EVENTS = 500;
 
@@ -45,8 +45,7 @@ function load(): ConnectorActivityFile {
 }
 
 function save(data: ConnectorActivityFile): void {
-  fs.mkdirSync(path.dirname(CONNECTOR_ACTIVITY_FILE), { recursive: true });
-  fs.writeFileSync(CONNECTOR_ACTIVITY_FILE, JSON.stringify(data, null, 2));
+  atomicWriteJson(CONNECTOR_ACTIVITY_FILE, data);
 }
 
 export function logConnectorEvent(params: {

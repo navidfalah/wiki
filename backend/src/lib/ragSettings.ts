@@ -20,6 +20,7 @@
 import fs from 'node:fs';
 import path from 'node:path';
 import { PROJECT_ROOT } from '../paths';
+import { atomicWriteJson } from './atomicWrite';
 
 export const RAG_SETTINGS_FILE = path.join(PROJECT_ROOT, 'data', 'rag_settings.json');
 
@@ -122,7 +123,6 @@ export function buildRagSettings(input: any, existing: RagSettings): RagSettings
 
 export function saveRagSettings(input: any): RagSettings {
   const settings = buildRagSettings(input, loadRagSettings());
-  fs.mkdirSync(path.dirname(RAG_SETTINGS_FILE), { recursive: true });
-  fs.writeFileSync(RAG_SETTINGS_FILE, JSON.stringify(settings, null, 2));
+  atomicWriteJson(RAG_SETTINGS_FILE, settings);
   return settings;
 }
