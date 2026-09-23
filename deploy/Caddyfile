@@ -1,0 +1,43 @@
+# Reverse proxy + automatic HTTPS for wissensbau.de (see docker-compose.prod.yml).
+# DOMAIN comes from the environment (.env); Caddy obtains and renews the
+# Let's Encrypt certificate by itself once the DNS A/AAAA records point here.
+# For a local dry run set DOMAIN=localhost (Caddy then uses its own local CA).
+
+{$DOMAIN:wissensbau.de} {
+	# Compress only text-like responses. The allow-list matters: Server-Sent
+	# Events (build logs, chat streaming) must stay uncompressed or the browser
+	# would see nothing until the buffer fills.
+	encode {
+		zstd
+		gzip 5
+		match {
+			header Content-Type text/html*
+			header Content-Type text/css*
+			header Content-Type text/plain*
+			header Content-Type text/markdown*
+			header Content-Type application/javascript*
+			header Content-Type application/json*
+			header Content-Type application/xml*
+			header Content-Type image/svg+xml*
+		}
+	}
+
+	header {
+		Strict-Transport-Security "max-age=31536000"
+		X-Content-Type-Options nosniff
+		# SAMEORIGIN, not DENY: the app embeds its own PDF/file previews.
+		X-Frame-Options SAMEORIGIN
+		Referrer-Policy strict-origin-when-cross-origin
+		Permissions-Policy "camera=(), microphone=(), geolocation=()"
+		-Server
+	}
+
+	reverse_proxy frontend:3000 {
+		# Stream immediately (SSE build logs / chat), never buffer.
+		flush_interval -1
+	}
+}
+
+www.{$DOMAIN:wissensbau.de} {
+	redir https://{$DOMAIN:wissensbau.de}{uri} permanent
+}

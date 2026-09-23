@@ -78,3 +78,19 @@ export function deleteSession(token: string | undefined): void {
   data.sessions = data.sessions.filter((s) => s.token !== token);
   save(data);
 }
+
+/** Signs a user out everywhere -- used on delete, role change and password reset. Returns how many sessions were removed. */
+export function deleteSessionsForUser(userId: string): number {
+  const data = load();
+  const before = data.sessions.length;
+  data.sessions = data.sessions.filter((s) => s.user_id !== userId);
+  if (data.sessions.length !== before) save(data);
+  return before - data.sessions.length;
+}
+
+/** Active (unexpired) session count per user id, for the admin panel. Never exposes tokens. */
+export function countActiveSessionsByUser(): Record<string, number> {
+  const counts: Record<string, number> = {};
+  for (const s of pruneExpired(load()).sessions) counts[s.user_id] = (counts[s.user_id] ?? 0) + 1;
+  return counts;
+}

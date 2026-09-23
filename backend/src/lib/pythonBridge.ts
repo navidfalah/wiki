@@ -10,6 +10,11 @@ import { COMPILER_DIR, PYTHON_BIN } from '../paths';
 import { envOverridesForSpawn } from './llmSettings';
 import { logSystemEvent } from './activityLog';
 import { markRunAbandoned } from './pipelineRuns';
+import { Semaphore } from './semaphore';
+
+/** Caps concurrent short-lived `cli.py` processes (chat, emails, connectors).
+ * The compiler build is already serialized separately (buildRunning). */
+const pythonSlots = new Semaphore(Number(process.env.PY_MAX_CONCURRENCY ?? 2));
 
 // eslint-disable-next-line no-control-regex
 const ANSI_ESCAPE_RE = /\x1B(?:[@-Z\\-_]|\[[0-?]*[ -/]*[@-~])/g;
@@ -199,7 +204,11 @@ function runBuildNow(res: Response, options: CompilerBuildOptions): void {
     // until the next backend restart's reconcileOrphanedPipelineRuns().
     // A no-op if Python's own run.finish() already wrote success/error.
     if (runId) {
-      markRunAbandoned(runId, wasStopped ? 'Interrupted: stopped by user.' : `Interrupted: process exited with code ${code}.`);
+      markRunAbandoned(
+        runId,
+        wasStopped ? 'Stopped by user.' : `Interrupted: process exited with code ${code}.`,
+        wasStopped ? 'stopped' : 'error',
+      );
     }
     // Success and a user-requested stop are already the Pipelines page's
     // own story (full step-by-step detail); only an unexpected failure is
@@ -258,7 +267,14 @@ export function streamChat(res: Response, input: ChatStreamInput): Promise<ChatS
     'X-Accel-Buffering': 'no',
   });
 
-  return new Promise((resolve, reject) => {
+  // The slot is requested only after the SSE headers are out, so a queued
+  // chat shows as an open (idle) stream rather than a hung request.
+  return pythonSlots.acquire().then((releaseSlot) => new Promise<ChatStreamResult>((resolve, reject) => {
+    if (res.destroyed) {
+      releaseSlot();
+      reject(new PythonCliError('Client disconnected before the chat started'));
+      return;
+    }
     const child = spawn(PYTHON_BIN, ['cli.py', 'chat-stream'], {
       cwd: COMPILER_DIR,
       env: {
@@ -266,6 +282,8 @@ export function streamChat(res: Response, input: ChatStreamInput): Promise<ChatS
         ...envOverridesForSpawn(input.llmProfileId ? { chat: input.llmProfileId } : {}),
       },
     });
+    child.on('close', releaseSlot);
+    child.on('error', releaseSlot);
 
     let settled = false;
     let buffer = '';
@@ -331,7 +349,7 @@ export function streamChat(res: Response, input: ChatStreamInput): Promise<ChatS
       }),
     );
     child.stdin.end();
-  });
+  }));
 }
 
 export class PythonCliError extends Error {
@@ -339,11 +357,13 @@ export class PythonCliError extends Error {
 }
 
 export function runCli<T = any>(command: string, input?: unknown): Promise<T> {
-  return new Promise((resolve, reject) => {
+  return pythonSlots.acquire().then((releaseSlot) => new Promise<T>((resolve, reject) => {
     const child = spawn(PYTHON_BIN, ['cli.py', command], {
       cwd: COMPILER_DIR,
       env: { ...process.env, ...envOverridesForSpawn() },
     });
+    child.on('close', releaseSlot);
+    child.on('error', releaseSlot);
     let stdout = '';
     let stderr = '';
     child.stdout.on('data', (chunk) => (stdout += chunk));
@@ -369,5 +389,5 @@ export function runCli<T = any>(command: string, input?: unknown): Promise<T> {
       child.stdin.write(JSON.stringify(input));
     }
     child.stdin.end();
-  });
+  }));
 }

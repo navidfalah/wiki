@@ -4,13 +4,24 @@ import { registerRoutes } from './routes';
 import { reconcileOrphanedPipelineRuns } from './lib/pipelineRuns';
 import { runCli } from './lib/pythonBridge';
 import { logSystemEvent } from './lib/activityLog';
+import { langFromRequest, localizeMessage } from './lib/localizeMessage';
 
 const app = express();
 const PORT = Number(process.env.PORT ?? 8000);
 
+app.disable('x-powered-by');
+
+// In production the browser only ever talks to the frontend origin (which
+// proxies /api), so CORS is irrelevant there; it's kept for local dev where
+// the browser may hit :8000 directly. Set CORS_ORIGINS (comma-separated) to
+// allow other origins, e.g. https://wissensbau.de.
+const corsOrigins = (process.env.CORS_ORIGINS ?? 'http://localhost:3000,http://127.0.0.1:3000')
+  .split(',')
+  .map((o) => o.trim())
+  .filter(Boolean);
 app.use(
   cors({
-    origin: ['http://localhost:3000', 'http://127.0.0.1:3000'],
+    origin: corsOrigins,
     methods: ['GET', 'POST', 'PUT', 'DELETE'],
   }),
 );
@@ -41,7 +52,7 @@ app.use((err: any, req: Request, res: Response, _next: NextFunction) => {
   if (status >= 500) {
     logSystemEvent('Unhandled request error', `${req.method} ${req.originalUrl} -- ${err.message ?? err}`, 'error');
   }
-  res.status(status).json({ detail: err.message ?? 'Internal server error' });
+  res.status(status).json({ detail: localizeMessage(err.message ?? 'Internal server error', langFromRequest(req)) });
 });
 
 const reconciled = reconcileOrphanedPipelineRuns();
@@ -59,19 +70,27 @@ if (reconciled.length) {
 // (or any other failure) just means the /database page falls back to its
 // normal empty state -- logged here rather than surfaced to a user who
 // didn't take any action to trigger it.
-runCli<{ connected: string[]; already_connected: string[] }>('connectors-ensure-defaults')
-  .then(({ connected }) => {
-    if (connected.length) {
+// SKIP_DEFAULT_CONNECTIONS=true (set in docker-compose.prod.yml) skips this
+// entirely: a production install has no sample Postgres to point at, and it
+// saves a Python process spawn at every boot.
+if (process.env.SKIP_DEFAULT_CONNECTIONS === 'true') {
+  // eslint-disable-next-line no-console
+  console.log('Skipped default sample connections (SKIP_DEFAULT_CONNECTIONS=true)');
+} else {
+  runCli<{ connected: string[]; already_connected: string[] }>('connectors-ensure-defaults')
+    .then(({ connected }) => {
+      if (connected.length) {
+        // eslint-disable-next-line no-console
+        console.log(`Connected default sample account(s): ${connected.join(', ')}`);
+        logSystemEvent('Connected default sample account(s)', connected.join(', '));
+      }
+    })
+    .catch((err) => {
       // eslint-disable-next-line no-console
-      console.log(`Connected default sample account(s): ${connected.join(', ')}`);
-      logSystemEvent('Connected default sample account(s)', connected.join(', '));
-    }
-  })
-  .catch((err) => {
-    // eslint-disable-next-line no-console
-    console.log(`Skipped default sample connections: ${err.message}`);
-    logSystemEvent('Skipped default sample connections', err.message, 'warn');
-  });
+      console.log(`Skipped default sample connections: ${err.message}`);
+      logSystemEvent('Skipped default sample connections', err.message, 'warn');
+    });
+}
 
 logSystemEvent('Backend started', `pid ${process.pid}, port ${PORT}`);
 

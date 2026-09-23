@@ -14,13 +14,13 @@ export interface PipelineRunSummary {
   id: string;
   started_at: string;
   finished_at: string | null;
-  status: 'running' | 'success' | 'error';
+  status: 'running' | 'success' | 'error' | 'stopped';
   force: boolean;
 }
 
 export interface PipelineRunStep {
   name: string;
-  status: 'running' | 'success' | 'error';
+  status: 'running' | 'success' | 'error' | 'stopped';
   started_at: string;
   finished_at: string | null;
   detail: string | null;
@@ -81,13 +81,16 @@ function patchIndexStatus(ids: string[], status: string): void {
 
 /**
  * Marks one run (and any of its steps still "running") as finished with
- * `reason`, but only if it's still recorded as "running" on disk -- a
- * no-op if PipelineRun.finish() already ran (the normal success/error
- * path), so this is safe to call speculatively any time a build's
+ * `reason` under `status`, but only if it's still recorded as "running" on
+ * disk -- a no-op if PipelineRun.finish() already ran (the normal success/
+ * error path), so this is safe to call speculatively any time a build's
  * subprocess exits without knowing whether Python's own cleanup ran.
- * Returns whether it actually changed anything.
+ * `status` defaults to "error" (an actual crash/kill this process didn't
+ * request) -- pass "stopped" for a deliberate user-requested stop, so it
+ * reads as "you did this on purpose" rather than a red traceback-style
+ * failure. Returns whether it actually changed anything.
  */
-export function markRunAbandoned(id: string, reason: string): boolean {
+export function markRunAbandoned(id: string, reason: string, status: 'error' | 'stopped' = 'error'): boolean {
   if (!RUN_ID_RE.test(id)) return false;
   const filePath = path.join(PIPELINE_RUNS_DIR, `${id}.json`);
   if (!fs.existsSync(filePath)) return false;
@@ -95,18 +98,18 @@ export function markRunAbandoned(id: string, reason: string): boolean {
     const detail = JSON.parse(fs.readFileSync(filePath, 'utf-8')) as PipelineRunDetail;
     if (detail.status !== 'running') return false;
     const finishedAt = new Date().toISOString();
-    detail.status = 'error';
+    detail.status = status;
     detail.finished_at = finishedAt;
     detail.error = reason;
     for (const step of detail.steps) {
       if (step.status === 'running') {
-        step.status = 'error';
+        step.status = status;
         step.finished_at = finishedAt;
         step.error = reason;
       }
     }
     fs.writeFileSync(filePath, JSON.stringify(detail, null, 2));
-    patchIndexStatus([id], 'error');
+    patchIndexStatus([id], status);
     return true;
   } catch {
     return false;

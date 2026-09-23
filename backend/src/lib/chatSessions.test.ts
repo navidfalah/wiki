@@ -27,6 +27,7 @@ import {
   loadChatSession,
   renameChatSession,
   setChatSessionResourceScope,
+  truncateChatSession,
 } from './chatSessions';
 
 function resetSessionsDir(): void {
@@ -190,6 +191,49 @@ describe('appendChatSessionTurn', () => {
 
   it('returns null for an unknown session id', () => {
     expect(appendChatSessionTurn('11111111-1111-1111-1111-111111111111', 'q', 'a')).toBeNull();
+  });
+});
+
+describe('truncateChatSession', () => {
+  it('drops every message from `keep` onward, e.g. a message and its reply', () => {
+    const session = createChatSession();
+    appendChatSessionTurn(session.id, 'first question', 'first answer');
+    appendChatSessionTurn(session.id, 'second question', 'second answer');
+    // Messages are [user0, assistant0, user1, assistant1] -- keep=2 drops
+    // the second turn, as "edit"/"resend" on user1 would.
+    const truncated = truncateChatSession(session.id, 2);
+    expect(truncated?.messages).toHaveLength(2);
+    expect(truncated?.messages[0].content).toBe('first question');
+    expect(truncated?.messages[1].content).toBe('first answer');
+  });
+
+  it('keep=0 clears every message', () => {
+    const session = createChatSession();
+    appendChatSessionTurn(session.id, 'q', 'a');
+    const truncated = truncateChatSession(session.id, 0);
+    expect(truncated?.messages).toEqual([]);
+  });
+
+  it('is a no-op (returns the session unchanged) when keep equals the current length', () => {
+    const session = createChatSession();
+    appendChatSessionTurn(session.id, 'q', 'a');
+    const truncated = truncateChatSession(session.id, 2);
+    expect(truncated?.messages).toHaveLength(2);
+  });
+
+  it('returns null when keep exceeds the message count', () => {
+    const session = createChatSession();
+    appendChatSessionTurn(session.id, 'q', 'a');
+    expect(truncateChatSession(session.id, 99)).toBeNull();
+  });
+
+  it('returns null for a negative keep', () => {
+    const session = createChatSession();
+    expect(truncateChatSession(session.id, -1)).toBeNull();
+  });
+
+  it('returns null for an unknown session id', () => {
+    expect(truncateChatSession('11111111-1111-1111-1111-111111111111', 0)).toBeNull();
   });
 });
 

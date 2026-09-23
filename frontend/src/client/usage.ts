@@ -1,4 +1,5 @@
 import { saveCache, loadCache, showOfflineBanner, hideOfflineBanner, onReconnect } from './lib/cache';
+import { currentLang, formatNumber, t, th } from './lib/i18n';
 
 const apiBase = document.querySelector('meta[name="api-base"]')?.getAttribute('content') ?? '';
 const CACHE_KEY = 'usage:summary';
@@ -38,30 +39,30 @@ function statCard(value: string, label: string): string {
 }
 
 function formatCost(cost: number, hasUnpriced: boolean): string {
-  const amount = `$${cost.toFixed(cost < 1 ? 4 : 2)}`;
+  const amount = `$${formatNumber(cost, { minimumFractionDigits: cost < 1 ? 4 : 2, maximumFractionDigits: cost < 1 ? 4 : 2 })}`;
   return hasUnpriced ? `${amount}+` : amount;
 }
 
 function formatDay(day: string): string {
-  if (day === 'unknown') return 'Unknown date';
+  if (day === 'unknown') return t('usage.unknownDate');
   try {
-    return new Date(`${day}T00:00:00Z`).toLocaleDateString(undefined, { month: 'short', day: 'numeric', year: 'numeric' });
+    return new Date(`${day}T00:00:00Z`).toLocaleDateString(currentLang === 'de' ? 'de-DE' : 'en-GB', { month: 'short', day: 'numeric', year: 'numeric' });
   } catch {
     return day;
   }
 }
 
 function bucketTable(rows: UsageBucket[], keyLabel: string): string {
-  if (!rows.length) return '<p class="text-sm text-gray-500">No token usage recorded yet.</p>';
+  if (!rows.length) return `<p class="text-sm text-gray-500">${th('usage.noUsage')}</p>`;
   return `
     <table class="w-full text-left text-xs">
       <thead>
         <tr class="text-gray-500">
           <th class="py-1 pr-2 font-medium">${escapeHtml(keyLabel)}</th>
-          <th class="py-1 pr-2 text-right font-medium">Calls</th>
-          <th class="py-1 pr-2 text-right font-medium">Cache hits</th>
-          <th class="py-1 pr-2 text-right font-medium">Total tokens</th>
-          <th class="py-1 text-right font-medium">Est. cost</th>
+          <th class="py-1 pr-2 text-right font-medium">${th('usage.th.calls')}</th>
+          <th class="py-1 pr-2 text-right font-medium">${th('usage.th.cacheHits')}</th>
+          <th class="py-1 pr-2 text-right font-medium">${th('usage.th.totalTokens')}</th>
+          <th class="py-1 text-right font-medium">${th('usage.th.estCost')}</th>
         </tr>
       </thead>
       <tbody>
@@ -70,9 +71,9 @@ function bucketTable(rows: UsageBucket[], keyLabel: string): string {
             (row) => `
           <tr class="border-t border-gray-100">
             <td class="py-1 pr-2 text-gray-700">${escapeHtml(row.key)}</td>
-            <td class="py-1 pr-2 text-right text-gray-700">${row.calls.toLocaleString()}</td>
-            <td class="py-1 pr-2 text-right text-gray-700">${row.cache_hits.toLocaleString()}</td>
-            <td class="py-1 pr-2 text-right font-medium text-gray-900">${row.total_tokens.toLocaleString()}</td>
+            <td class="py-1 pr-2 text-right text-gray-700">${formatNumber(row.calls)}</td>
+            <td class="py-1 pr-2 text-right text-gray-700">${formatNumber(row.cache_hits)}</td>
+            <td class="py-1 pr-2 text-right font-medium text-gray-900">${formatNumber(row.total_tokens)}</td>
             <td class="py-1 text-right font-medium text-gray-900">${formatCost(row.cost, row.has_unpriced)}</td>
           </tr>`,
           )
@@ -107,7 +108,7 @@ interface BarChartOptions {
 function renderBarChart(containerId: string, rows: UsageBucket[], options: BarChartOptions) {
   const container = document.getElementById(containerId)!;
   if (!rows.length) {
-    container.innerHTML = '<p class="text-sm text-gray-500">No token usage recorded yet.</p>';
+    container.innerHTML = `<p class="text-sm text-gray-500">${th('usage.noUsage')}</p>`;
     return;
   }
 
@@ -158,7 +159,7 @@ function renderBarChart(containerId: string, rows: UsageBucket[], options: BarCh
     .join('');
 
   container.innerHTML = `
-    <svg viewBox="0 0 ${width} ${height}" class="w-full" role="img" aria-label="Daily chart">
+    <svg viewBox="0 0 ${width} ${height}" class="w-full" role="img" aria-label="${th('usage.chart.aria')}">
       <line x1="${marginLeft}" y1="${marginTop + plotHeight}" x2="${width - 12}" y2="${marginTop + plotHeight}" stroke="#d1d5db" stroke-width="1" />
       ${gridlines}
       ${bars}
@@ -192,21 +193,21 @@ function renderBarChart(containerId: string, rows: UsageBucket[], options: BarCh
 
 function render(data: UsageSummary) {
   document.getElementById('usage-cards')!.innerHTML = [
-    statCard(formatCost(data.totals.cost, data.totals.has_unpriced), 'Estimated total spend'),
-    statCard(data.totals.total_tokens.toLocaleString(), 'Total tokens'),
-    statCard(data.totals.calls.toLocaleString(), 'LLM calls'),
-    statCard(data.totals.cache_hits.toLocaleString(), 'Cache hits'),
+    statCard(formatCost(data.totals.cost, data.totals.has_unpriced), t('usage.card.spend')),
+    statCard(formatNumber(data.totals.total_tokens), t('usage.card.tokens')),
+    statCard(formatNumber(data.totals.calls), t('usage.card.calls')),
+    statCard(formatNumber(data.totals.cache_hits), t('usage.card.cacheHits')),
   ].join('');
 
   const noteEl = document.getElementById('usage-note')!;
   if (data.runs_counted === 0) {
-    noteEl.innerHTML = `<p class="rounded-lg bg-gray-50 px-3 py-2 text-xs text-gray-600">No pipeline runs with recorded token usage yet. Run the compiler on the <a href="/pipelines" class="font-medium text-accent hover:underline">Pipelines</a> page to see usage here.</p>`;
+    noteEl.innerHTML = `<p class="rounded-lg bg-gray-50 px-3 py-2 text-xs text-gray-600">${t('usage.note.noRunsHtml')}</p>`;
   } else if (data.llm_backend.mode === 'local') {
-    noteEl.innerHTML = `<p class="rounded-lg bg-amber-50 px-3 py-2 text-xs text-amber-700">Currently running a local model (${escapeHtml(data.llm_backend.model)}) -- it doesn't report token counts, so any figures below are from earlier cloud runs.</p>`;
+    noteEl.innerHTML = `<p class="rounded-lg bg-amber-50 px-3 py-2 text-xs text-amber-700">${th('usage.note.local', { model: data.llm_backend.model })}</p>`;
   } else if (data.unpriced_models.length) {
-    noteEl.innerHTML = `<p class="rounded-lg bg-gray-50 px-3 py-2 text-xs text-gray-600">Costs are estimated from published list prices. No price is on file for: ${escapeHtml(data.unpriced_models.join(', '))} -- totals marked "+" don't include their usage.</p>`;
+    noteEl.innerHTML = `<p class="rounded-lg bg-gray-50 px-3 py-2 text-xs text-gray-600">${th('usage.note.unpriced', { models: data.unpriced_models.join(', ') })}</p>`;
   } else {
-    noteEl.innerHTML = `<p class="text-xs text-gray-400">Costs are estimated from published list prices, not your actual invoice.</p>`;
+    noteEl.innerHTML = `<p class="text-xs text-gray-400">${th('usage.note.estimated')}</p>`;
   }
 
   renderBarChart('usage-daily-cost-chart', data.by_day, {
@@ -216,11 +217,11 @@ function render(data: UsageSummary) {
   });
   renderBarChart('usage-daily-tokens-chart', data.by_day, {
     valueOf: (row) => row.total_tokens,
-    formatValue: (value) => `${value.toLocaleString()} tokens`,
+    formatValue: (value) => t('usage.chart.tokens', { tokens: formatNumber(value) }),
     formatAxisTick: (value) => (value >= 1000 ? `${(value / 1000).toFixed(value >= 10000 ? 0 : 1)}K` : value.toFixed(0)),
   });
-  document.getElementById('usage-by-process')!.innerHTML = bucketTable(data.by_process, 'Process');
-  document.getElementById('usage-by-model')!.innerHTML = bucketTable(data.by_model, 'Model');
+  document.getElementById('usage-by-process')!.innerHTML = bucketTable(data.by_process, t('usage.th.process'));
+  document.getElementById('usage-by-model')!.innerHTML = bucketTable(data.by_model, t('usage.th.model'));
 }
 
 async function load() {
@@ -229,7 +230,7 @@ async function load() {
 
   try {
     const res = await fetch(`${apiBase}/api/usage`);
-    if (!res.ok) throw new Error(`Request failed (${res.status})`);
+    if (!res.ok) throw new Error(t('common.requestFailed', { status: res.status }));
     const data: UsageSummary = await res.json();
     saveCache(CACHE_KEY, data);
     hideOfflineBanner();
@@ -238,7 +239,7 @@ async function load() {
     if (cached) {
       showOfflineBanner(cached.savedAt);
     } else {
-      document.getElementById('usage-cards')!.innerHTML = `<p class="col-span-full text-sm text-red-600">Cannot reach API at ${escapeHtml(apiBase)}.</p>`;
+      document.getElementById('usage-cards')!.innerHTML = `<p class="col-span-full text-sm text-red-600">${th('common.cannotReachApi')}</p>`;
     }
   }
 }

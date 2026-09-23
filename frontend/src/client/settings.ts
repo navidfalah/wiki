@@ -1,3 +1,5 @@
+import { t, th } from './lib/i18n';
+
 const apiBase = document.querySelector('meta[name="api-base"]')?.getAttribute('content') ?? '';
 const UNCHANGED = '__unchanged__';
 
@@ -51,11 +53,11 @@ const MODEL_PRESETS: Record<Provider, string[]> = {
 };
 
 const REASONING_EFFORTS: { value: ReasoningEffort; label: string }[] = [
-  { value: '', label: 'Off (default)' },
-  { value: 'minimal', label: 'Minimal' },
-  { value: 'low', label: 'Low' },
-  { value: 'medium', label: 'Medium' },
-  { value: 'high', label: 'High' },
+  { value: '', label: t('settings.effort.off') },
+  { value: 'minimal', label: t('settings.effort.minimal') },
+  { value: 'low', label: t('settings.effort.low') },
+  { value: 'medium', label: t('settings.effort.medium') },
+  { value: 'high', label: t('settings.effort.high') },
 ];
 
 /** Creates one <datalist> per provider (once) so model inputs can reference
@@ -73,10 +75,10 @@ function ensureModelDatalists() {
 
 type Purpose = 'default' | 'thinking' | 'chat' | 'embedding';
 const PURPOSES: { key: Purpose; label: string; hint: string }[] = [
-  { key: 'default', label: 'Default', hint: 'Extraction, indexing, cross-linking' },
-  { key: 'thinking', label: 'Thinking', hint: 'Synthesis -- the reasoning-heavy step that writes wiki pages' },
-  { key: 'chat', label: 'Chat', hint: 'Interactive RAG Q&A -- answering questions in the wiki chat' },
-  { key: 'embedding', label: 'Embeddings', hint: 'Vector search / hybrid retrieval' },
+  { key: 'default', label: t('settings.purpose.default'), hint: t('settings.purpose.defaultHint') },
+  { key: 'thinking', label: t('settings.purpose.thinking'), hint: t('settings.purpose.thinkingHint') },
+  { key: 'chat', label: t('settings.purpose.chat'), hint: t('settings.purpose.chatHint') },
+  { key: 'embedding', label: t('settings.purpose.embedding'), hint: t('settings.purpose.embeddingHint') },
 ];
 
 interface LocalLlmConfig {
@@ -109,7 +111,7 @@ function renderProfiles() {
   const template = document.getElementById('profile-row-template') as HTMLTemplateElement;
   container.innerHTML = '';
   if (!state.profiles.length) {
-    container.innerHTML = '<p class="p-5 text-sm text-gray-500">No providers yet -- add one.</p>';
+    container.innerHTML = `<p class="p-5 text-sm text-gray-500">${th('settings.noProviders')}</p>`;
     return;
   }
   for (const profile of state.profiles) {
@@ -168,15 +170,13 @@ function renderProfiles() {
     });
 
     const keyInput = row.querySelector('[data-field="api_key"]') as HTMLInputElement;
-    keyInput.placeholder = profile.has_key ? profile.api_key : 'API key';
+    keyInput.placeholder = profile.has_key ? profile.api_key : t('settings.apiKey');
     keyInput.addEventListener('input', () => {
       editedKeys[profile.id] = keyInput.value;
     });
 
     const hint = row.querySelector('[data-field="key-hint"]') as HTMLElement;
-    hint.textContent = profile.has_key
-      ? `Currently set (${profile.api_key}). Leave blank to keep it.`
-      : 'No key set yet.';
+    hint.textContent = profile.has_key ? t('settings.keyCurrent', { key: profile.api_key }) : t('settings.keyNone');
 
     const removeBtn = row.querySelector('[data-action="remove"]') as HTMLButtonElement;
     removeBtn.addEventListener('click', () => {
@@ -193,7 +193,7 @@ function renderProfiles() {
 function renderAssignments() {
   const container = document.getElementById('assignments-form')!;
   if (!state.profiles.length) {
-    container.innerHTML = '<p class="text-sm text-gray-500">Add a provider first.</p>';
+    container.innerHTML = `<p class="text-sm text-gray-500">${th('settings.addFirst')}</p>`;
     return;
   }
   container.innerHTML = PURPOSES.map(
@@ -205,7 +205,7 @@ function renderAssignments() {
         ${state.profiles
           .map(
             (profile) =>
-              `<option value="${profile.id}" ${state.assignments[p.key] === profile.id ? 'selected' : ''}>${escapeHtml(profile.label || 'Untitled')}</option>`,
+              `<option value="${profile.id}" ${state.assignments[p.key] === profile.id ? 'selected' : ''}>${escapeHtml(profile.label || t('settings.untitled'))}</option>`,
           )
           .join('')}
       </select>
@@ -230,25 +230,25 @@ function renderLocalLlmForm() {
   const cfg = state.local_llm;
   container.innerHTML = `
     <label class="flex flex-col gap-1">
-      <span class="text-xs font-medium text-gray-600">Hugging Face repo</span>
+      <span class="text-xs font-medium text-gray-600">${th('settings.local.repo')}</span>
       <input data-local="model_repo" type="text" value="${escapeHtml(cfg.model_repo)}" class="rounded-lg border border-gray-300 px-2.5 py-1.5 text-sm focus:border-accent focus:outline-none focus:ring-2 focus:ring-accent/20" />
     </label>
     <label class="flex flex-col gap-1">
-      <span class="text-xs font-medium text-gray-600">GGUF filename</span>
+      <span class="text-xs font-medium text-gray-600">${th('settings.local.file')}</span>
       <input data-local="model_file" type="text" value="${escapeHtml(cfg.model_file)}" class="rounded-lg border border-gray-300 px-2.5 py-1.5 text-sm focus:border-accent focus:outline-none focus:ring-2 focus:ring-accent/20" />
     </label>
     <div class="grid grid-cols-2 gap-2">
       <label class="flex flex-col gap-1">
-        <span class="text-xs font-medium text-gray-600">Model alias</span>
+        <span class="text-xs font-medium text-gray-600">${th('settings.local.alias')}</span>
         <input data-local="model_alias" type="text" value="${escapeHtml(cfg.model_alias)}" class="rounded-lg border border-gray-300 px-2.5 py-1.5 text-sm focus:border-accent focus:outline-none focus:ring-2 focus:ring-accent/20" />
       </label>
       <label class="flex flex-col gap-1">
-        <span class="text-xs font-medium text-gray-600">Context length</span>
+        <span class="text-xs font-medium text-gray-600">${th('settings.local.context')}</span>
         <input data-local="context" type="number" min="512" step="512" value="${cfg.context}" class="rounded-lg border border-gray-300 px-2.5 py-1.5 text-sm focus:border-accent focus:outline-none focus:ring-2 focus:ring-accent/20" />
       </label>
     </div>
     <label class="flex flex-col gap-1">
-      <span class="text-xs font-medium text-gray-600">Chat format</span>
+      <span class="text-xs font-medium text-gray-600">${th('settings.local.chatFormat')}</span>
       <input data-local="chat_format" type="text" value="${escapeHtml(cfg.chat_format)}" class="rounded-lg border border-gray-300 px-2.5 py-1.5 text-sm focus:border-accent focus:outline-none focus:ring-2 focus:ring-accent/20" />
     </label>
   `;
@@ -266,21 +266,21 @@ async function loadLocalLlmStatus() {
     const res = await fetch(`${apiBase}/api/settings/llm/local-status`);
     const data = await res.json();
     if (data.reachable) {
-      badge.textContent = 'Reachable';
+      badge.textContent = t('settings.status.reachable');
       badge.className = 'shrink-0 rounded-full bg-emerald-50 px-2 py-0.5 text-xs font-medium text-emerald-700';
     } else {
-      badge.textContent = 'Not running';
+      badge.textContent = t('settings.status.notRunning');
       badge.className = 'shrink-0 rounded-full bg-gray-100 px-2 py-0.5 text-xs font-medium text-gray-500';
     }
   } catch {
-    badge.textContent = 'Unknown';
+    badge.textContent = t('settings.status.unknown');
   }
 }
 
 async function load() {
   try {
     const res = await fetch(`${apiBase}/api/settings/llm`);
-    if (!res.ok) throw new Error(`Request failed (${res.status})`);
+    if (!res.ok) throw new Error(t('common.requestFailed', { status: res.status }));
     state = await res.json();
     editedKeys = {};
     renderProfiles();
@@ -289,7 +289,7 @@ async function load() {
     loadLocalLlmStatus();
   } catch {
     document.getElementById('profiles-list')!.innerHTML =
-      `<p class="p-5 text-sm text-red-600">Cannot reach API at ${escapeHtml(apiBase)}.</p>`;
+      `<p class="p-5 text-sm text-red-600">${th('common.cannotReachApi')}</p>`;
   }
 }
 
@@ -315,7 +315,7 @@ function addProfile() {
 async function save() {
   const btn = document.getElementById('save-settings-btn') as HTMLButtonElement;
   btn.disabled = true;
-  btn.textContent = 'Saving…';
+  btn.textContent = t('settings.saving');
   try {
     const payload = {
       profiles: state.profiles.map((p) => ({
@@ -340,18 +340,18 @@ async function save() {
     });
     if (!res.ok) {
       const err = await res.json().catch(() => ({}));
-      throw new Error(err.error || `Request failed (${res.status})`);
+      throw new Error(err.error || t('common.requestFailed', { status: res.status }));
     }
     state = await res.json();
     editedKeys = {};
     renderProfiles();
     renderAssignments();
-    (window as any).showToast?.('Settings saved.');
+    (window as any).showToast?.(t('settings.saved'));
   } catch (err: any) {
-    (window as any).showToast?.(err.message || 'Could not save settings.', 'error');
+    (window as any).showToast?.(err.message || t('settings.saveFailed'), 'error');
   } finally {
     btn.disabled = false;
-    btn.textContent = 'Save settings';
+    btn.textContent = t('settings.saveAll');
   }
 }
 

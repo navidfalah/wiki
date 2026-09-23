@@ -1,0 +1,14 @@
+<%# Language switcher. Posts nowhere: /lang/:code sets the cookie and redirects back to `next`. %>
+<%
+  const langs = [{ code: 'en', label: 'EN', name: 'English' }, { code: 'de', label: 'DE', name: 'Deutsch' }];
+  const next = encodeURIComponent(typeof currentPath !== 'undefined' && currentPath ? currentPath : '/');
+  const onDark = typeof variant !== 'undefined' && variant === 'dark';
+%>
+<div class="flex shrink-0 items-center gap-1 border-t border-gray-100 px-4 py-2.5 text-xs" role="group" aria-label="<%= t('common.language') %>">
+  <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="text-gray-400" aria-hidden="true"><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg>
+  <% langs.forEach(function(l) { %>
+    <a href="/lang/<%= l.code %>?next=<%= next %>" hreflang="<%= l.code %>" lang="<%= l.code %>" title="<%= l.name %>"
+       class="rounded-md px-2 py-1 font-semibold no-underline transition-colors <%= lang === l.code ? 'bg-accent/10 text-accent' : 'text-gray-500 hover:bg-gray-100 hover:text-gray-900' %>"
+       <%= lang === l.code ? 'aria-current=true' : '' %>><%= l.label %></a>
+  <% }); %>
+</div>

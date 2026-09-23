@@ -1,16 +1,23 @@
+# Root-context builds (backend/Dockerfile) only need backend/ and compiler/.
+# Everything mutable or huge is mounted as a volume at runtime -- keeping it
+# out of the build context makes builds faster and images smaller.
 .git
 .github
-node_modules
-wiki-app/node_modules
-wiki-app/build
-wiki-app/.docusaurus
+.claude
+.env
+.env.*
+**/node_modules
+**/__pycache__
+**/*.pyc
+data
+wiki-app
+frontend
+documentation
+docker
+backend/dist
+backend/src/**/*.test.ts
 compiler/.venv
 compiler/temp_output
-**/__pycache__
-*.pyc
-.env
-data/.llm-cache.sqlite
-data/state.json
-data/review_corrections.json
-data/user_study_results.json
-data/last-compile.log
+compiler/tests
+compiler/scripts
+*.md

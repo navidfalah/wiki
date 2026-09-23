@@ -1,5 +1,6 @@
 import ForceGraph, { NodeObject, LinkObject } from 'force-graph';
 import { forceCollide } from 'd3-force-3d';
+import { t, th, tn } from './lib/i18n';
 
 declare global {
   interface Window {
@@ -135,20 +136,20 @@ function renderSelectionBar() {
   selectionBar.classList.remove('hidden');
   selectionBar.classList.add('flex');
   const nodes = allNodes.filter((n) => selectedIds.has(n.id));
-  selectionCountEl.textContent = `${nodes.length} selected`;
-  selectionExportLabel.textContent = `Export ${nodes.length} file${nodes.length === 1 ? '' : 's'}`;
+  selectionCountEl.textContent = t('graph.selection.count', { count: nodes.length });
+  selectionExportLabel.textContent = tn('graph.selection.exportFiles', nodes.length);
   selectionChipsEl.innerHTML = nodes
     .slice(0, 24)
     .map(
       (n) => `
     <span data-chip="${escapeHtml(n.id)}" class="inline-flex items-center gap-1 rounded-full bg-white px-2 py-0.5 text-xs font-medium text-gray-700 shadow-sm ring-1 ring-gray-200">
       ${escapeHtml(n.name)}
-      <button data-remove="${escapeHtml(n.id)}" aria-label="Remove ${escapeHtml(n.name)} from selection" class="text-gray-400 hover:text-gray-700">×</button>
+      <button data-remove="${escapeHtml(n.id)}" aria-label="${escapeHtml(t('graph.selection.remove', { name: n.name }))}" class="text-gray-400 hover:text-gray-700">×</button>
     </span>`,
     )
     .join('');
   if (nodes.length > 24) {
-    selectionChipsEl.innerHTML += `<span class="text-xs text-gray-400">+ ${nodes.length - 24} more</span>`;
+    selectionChipsEl.innerHTML += `<span class="text-xs text-gray-400">${th('graph.more', { count: nodes.length - 24 })}</span>`;
   }
   selectionChipsEl.querySelectorAll<HTMLButtonElement>('[data-remove]').forEach((btn) => {
     btn.addEventListener('click', (event) => {
@@ -184,7 +185,7 @@ async function exportNodesAsFiles(nodes: GraphNode[], onProgress: (label: string
   const docs: { node: GraphNode; body: string }[] = [];
   for (let i = 0; i < nodes.length; i++) {
     const node = nodes[i];
-    onProgress(`Fetching ${i + 1}/${nodes.length}…`);
+    onProgress(t('graph.fetching', { current: i + 1, total: nodes.length }));
     const res = await fetch(`${apiBase}/api/docs/${node.filename}`);
     if (!res.ok) continue;
     const doc = await res.json();
@@ -202,7 +203,7 @@ async function exportNodesAsFiles(nodes: GraphNode[], onProgress: (label: string
     const sections = docs
       .map((d) => `\n\n${'='.repeat(72)}\n${d.node.name}\n${'='.repeat(72)}\n\n${d.body}`)
       .join('');
-    const header = `Topic graph export — ${docs.length} pages\nGenerated ${new Date().toISOString()}\n\n${toc}`;
+    const header = `${t('graph.exportHeader', { count: docs.length })}\n${t('graph.generated', { date: new Date().toISOString() })}\n\n${toc}`;
     downloadBlob(
       `topic-graph-export-${docs.length}-pages.txt`,
       new Blob([header + sections], { type: 'text/plain;charset=utf-8' }),
@@ -220,9 +221,9 @@ async function exportSelected() {
     const count = await exportNodesAsFiles(nodes, (label) => {
       selectionExportLabel.textContent = label;
     });
-    window.showToast?.(`Exported ${count} file${count === 1 ? '' : 's'}`, 'success');
+    window.showToast?.(tn('graph.exportedFiles', count), 'success');
   } catch (err) {
-    window.showToast?.('Export failed.', 'error');
+    window.showToast?.(t('graph.exportFailed'), 'error');
   } finally {
     selectionExportBtn.disabled = false;
     selectionExportLabel.textContent = originalLabel;
@@ -237,9 +238,9 @@ async function exportAllFiles(button: HTMLButtonElement) {
     const count = await exportNodesAsFiles(allNodes, (label) => {
       button.querySelector('.block')!.textContent = label;
     });
-    window.showToast?.(`Exported the whole network — ${count} pages`, 'success');
+    window.showToast?.(t('graph.exportedAll', { count }), 'success');
   } catch (err) {
-    window.showToast?.('Export failed.', 'error');
+    window.showToast?.(t('graph.exportFailed'), 'error');
   } finally {
     button.disabled = false;
     button.innerHTML = original;
@@ -259,22 +260,22 @@ function exportGraphJSON() {
     }),
   };
   downloadBlob('topic-graph.json', new Blob([JSON.stringify(payload, null, 2)], { type: 'application/json' }));
-  window.showToast?.('Exported graph structure', 'success');
+  window.showToast?.(t('graph.exportedStructure'), 'success');
 }
 
 function exportGraphImage() {
   const canvas = container.querySelector('canvas');
   if (!canvas) {
-    window.showToast?.('Graph is not ready yet.', 'error');
+    window.showToast?.(t('graph.notReady'), 'error');
     return;
   }
   canvas.toBlob((blob) => {
     if (!blob) {
-      window.showToast?.('Could not capture the graph image.', 'error');
+      window.showToast?.(t('graph.captureFailed'), 'error');
       return;
     }
     downloadBlob('topic-graph.png', blob);
-    window.showToast?.('Exported current view as an image', 'success');
+    window.showToast?.(t('graph.exportedImage'), 'success');
   }, 'image/png');
 }
 
@@ -331,10 +332,10 @@ function escapeHtml(text: string): string {
 
 function renderStats(nodeCount: number, linkCount: number, overrideCount: number) {
   const cards = [
-    { label: 'Topics', value: String(nodeCount), tone: 'bg-generated-bg text-generated' },
-    { label: 'Links', value: String(linkCount), tone: 'bg-gray-100 text-gray-600' },
-    { label: 'Manual overrides', value: String(overrideCount), tone: 'bg-amber-50 text-amber-600' },
-    { label: 'Most-linked topic', value: allNodes.length ? topHub()?.name ?? '—' : '—', tone: 'bg-source-bg text-source' },
+    { label: t('graph.stat.topics'), value: String(nodeCount), tone: 'bg-generated-bg text-generated' },
+    { label: t('graph.stat.links'), value: String(linkCount), tone: 'bg-gray-100 text-gray-600' },
+    { label: t('graph.stat.overrides'), value: String(overrideCount), tone: 'bg-amber-50 text-amber-600' },
+    { label: t('graph.stat.topHub'), value: allNodes.length ? topHub()?.name ?? '—' : '—', tone: 'bg-source-bg text-source' },
   ];
   statsEl.innerHTML = cards
     .map(
@@ -361,7 +362,7 @@ function renderHubChips() {
     return;
   }
   hubsEl.innerHTML =
-    `<span class="mr-1 text-gray-400">Jump to hub:</span>` +
+    `<span class="mr-1 text-gray-400">${th('graph.jumpToHub')}</span>` +
     top
       .map(
         (n) =>
@@ -393,25 +394,25 @@ function showInspector(node: GraphNode) {
   inspectorEl.innerHTML = `
     <div class="flex items-start justify-between gap-2">
       <p class="text-sm font-semibold text-gray-900">${escapeHtml(node.name)}</p>
-      <a href="/wiki/${encodeURIComponent(slug)}" title="Open page" class="shrink-0 text-gray-400 hover:text-accent">
+      <a href="/wiki/${encodeURIComponent(slug)}" title="${th('graph.openPage')}" class="shrink-0 text-gray-400 hover:text-accent">
         <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"></path><polyline points="15 3 21 3 21 9"></polyline><line x1="10" y1="14" x2="21" y2="3"></line></svg>
       </a>
     </div>
-    <p class="mt-0.5 text-xs text-gray-500">${node.degree} connection${node.degree === 1 ? '' : 's'}</p>
+    <p class="mt-0.5 text-xs text-gray-500">${escapeHtml(tn('graph.connections', node.degree))}</p>
     <div class="mt-2 max-h-48 overflow-auto text-xs text-gray-600">
       ${
         shown.length
-          ? `<ul class="space-y-0.5">${shown.map((t) => `<li class="truncate">· ${escapeHtml(t)}</li>`).join('')}</ul>${
-              extra > 0 ? `<p class="mt-1 text-gray-400">+ ${extra} more</p>` : ''
+          ? `<ul class="space-y-0.5">${shown.map((title) => `<li class="truncate">· ${escapeHtml(title)}</li>`).join('')}</ul>${
+              extra > 0 ? `<p class="mt-1 text-gray-400">${escapeHtml(t('graph.more', { count: extra }))}</p>` : ''
             }`
-          : '<p class="text-gray-400">No connections yet.</p>'
+          : `<p class="text-gray-400">${th('graph.noConnections')}</p>`
       }
     </div>
     <button id="graph-inspector-select" class="mt-3 w-full rounded-lg border px-2.5 py-1.5 text-xs font-medium transition-colors ${
       selected
         ? 'border-accent/40 bg-accent/10 text-accent hover:bg-accent/15'
         : 'border-gray-300 bg-white text-gray-700 hover:bg-gray-50'
-    }">${selected ? '✓ Selected for export' : '+ Select for export'}</button>`;
+    }">${selected ? th('graph.selectedForExport') : th('graph.selectForExport')}</button>`;
 
   document.getElementById('graph-inspector-select')?.addEventListener('click', () => {
     toggleSelection(node);
@@ -435,7 +436,7 @@ function applySearch() {
   const needle = searchInput.value.trim().toLowerCase();
   matchedIds = needle ? new Set(allNodes.filter((n) => n.name.toLowerCase().includes(needle)).map((n) => n.id)) : new Set();
   selectMatchesButton.disabled = matchedIds.size === 0;
-  selectMatchesButton.textContent = matchedIds.size ? `Select matches (${matchedIds.size})` : 'Select matches';
+  selectMatchesButton.textContent = matchedIds.size ? t('graph.selectMatchesCount', { count: matchedIds.size }) : t('graph.selectMatches');
   graph?.nodeColor(graph.nodeColor());
   graph?.linkColor(graph.linkColor());
 }
@@ -443,13 +444,13 @@ function applySearch() {
 async function load() {
   try {
     const res = await fetch(`${apiBase}/api/knowledge-graph`);
-    if (!res.ok) throw new Error(`API returned ${res.status}`);
+    if (!res.ok) throw new Error(t('graph.apiReturned', { status: res.status }));
     const data = await res.json();
     const topics: Topic[] = data.topics ?? [];
     const links: EffectiveLink[] = data.effective_links ?? [];
 
     if (!topics.length) {
-      showEmpty('No topics indexed yet. Run the compiler first.');
+      showEmpty(t('graph.empty'));
       return;
     }
 
@@ -557,7 +558,7 @@ async function load() {
     new ResizeObserver(resize).observe(container);
     resize();
   } catch (err) {
-    showEmpty(`Cannot reach API at ${apiBase}.`);
+    showEmpty(t('common.cannotReachApi'));
   }
 }
 

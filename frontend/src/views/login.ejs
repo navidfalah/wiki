@@ -1,49 +1,66 @@
 <!doctype html>
-<html lang="en">
+<html lang="<%= lang %>">
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Sign in · Aurora Labs Wiki</title>
-  <link rel="stylesheet" href="/css/app.css" />
+  <title><%= t('login.title') %> · <%= t('common.brand') %></title>
+  <meta name="robots" content="noindex" />
+  <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+  <%- include('partials/fonts') %>
+  <link rel="stylesheet" href="/css/app.css?v=<%= assetV %>" />
 </head>
 <body class="app-shell flex min-h-screen items-center justify-center bg-gray-50 text-gray-900">
-  <div class="w-full max-w-sm rounded-xl border border-gray-200 bg-white p-6 shadow-card">
-    <h1 class="text-lg font-semibold tracking-tight text-gray-900">Aurora Labs Wiki</h1>
-    <p class="mt-1 text-sm text-gray-500">Sign in to continue.</p>
+  <div class="w-full max-w-sm px-4">
+    <div class="rounded-xl border border-gray-200 bg-white p-6 shadow-card">
+      <div class="flex items-center gap-2">
+        <span class="flex h-8 w-8 items-center justify-center rounded-lg bg-accent">
+          <svg viewBox="0 0 32 32" width="20" height="20" aria-hidden="true"><g fill="#fff"><rect x="6" y="19" width="9" height="7" rx="1.5"/><rect x="17" y="19" width="9" height="7" rx="1.5"/><rect x="11.5" y="8" width="9" height="9" rx="1.5" opacity=".85"/></g></svg>
+        </span>
+        <h1 class="text-lg font-semibold tracking-tight text-gray-900"><%= t('common.brand') %></h1>
+      </div>
+      <p class="mt-2 text-sm text-gray-500"><%= t('login.subtitle') %></p>
 
-    <% if (typeof error !== 'undefined' && error) { %>
-      <p class="mt-4 rounded-lg bg-red-50 px-3 py-2 text-sm text-red-700"><%= error %></p>
-    <% } %>
+      <% if (typeof error !== 'undefined' && error) { %>
+        <p class="mt-4 rounded-lg bg-red-50 px-3 py-2 text-sm text-red-700" role="alert"><%= error %></p>
+      <% } %>
 
-    <form method="POST" action="/login" class="mt-4 flex flex-col gap-3">
-      <input type="hidden" name="next" value="<%= typeof next !== 'undefined' ? next : '' %>" />
-      <label class="text-xs font-medium text-gray-600">
-        Username
-        <input name="username" type="text" required autofocus class="mt-1 w-full rounded-lg border border-gray-300 px-3 py-2 text-sm focus:border-accent focus:outline-none focus:ring-2 focus:ring-accent/20" />
-      </label>
-      <label class="text-xs font-medium text-gray-600">
-        Password
-        <input name="password" type="password" required class="mt-1 w-full rounded-lg border border-gray-300 px-3 py-2 text-sm focus:border-accent focus:outline-none focus:ring-2 focus:ring-accent/20" />
-      </label>
-      <button type="submit" class="mt-1 rounded-lg bg-accent px-4 py-2 text-sm font-medium text-white hover:bg-accent-dark">Sign in</button>
-    </form>
+      <form method="POST" action="/login" class="mt-4 flex flex-col gap-3">
+        <input type="hidden" name="next" value="<%= typeof next !== 'undefined' ? next : '' %>" />
+        <label class="text-xs font-medium text-gray-600">
+          <%= t('login.username') %>
+          <input name="username" type="text" autocomplete="username" required autofocus class="mt-1 w-full rounded-lg border border-gray-300 px-3 py-2 text-sm focus:border-accent focus:outline-none focus:ring-2 focus:ring-accent/20" />
+        </label>
+        <label class="text-xs font-medium text-gray-600">
+          <%= t('login.password') %>
+          <input name="password" type="password" autocomplete="current-password" required class="mt-1 w-full rounded-lg border border-gray-300 px-3 py-2 text-sm focus:border-accent focus:outline-none focus:ring-2 focus:ring-accent/20" />
+        </label>
+        <button type="submit" class="mt-1 rounded-lg bg-accent px-4 py-2 text-sm font-medium text-white hover:bg-accent-dark"><%= t('login.submit') %></button>
+      </form>
 
-    <div class="mt-4 rounded-lg border border-gray-200 bg-gray-50 px-3 py-2 text-xs text-gray-600">
-      <p>
-        Default login: <code class="rounded bg-white px-1 py-0.5">admin</code> /
-        <code class="rounded bg-white px-1 py-0.5">aurora_admin</code>
-        -- set <code class="rounded bg-white px-1 py-0.5">ADMIN_USERNAME</code>/<code class="rounded bg-white px-1 py-0.5">ADMIN_PASSWORD</code>
-        before first boot to pick your own, or change it under Settings → Users once signed in.
-      </p>
-      <button type="button" id="use-default-login-btn" class="mt-1.5 font-medium text-accent hover:text-accent-dark">Fill in default login</button>
+      <% if (typeof showDefaultLogin === 'undefined' || showDefaultLogin) { %>
+      <div class="mt-4 rounded-lg border border-gray-200 bg-gray-50 px-3 py-2 text-xs text-gray-600">
+        <p>
+          <%= t('login.defaultHint.intro') %> <code class="rounded bg-white px-1 py-0.5">admin</code> /
+          <code class="rounded bg-white px-1 py-0.5">aurora_admin</code>
+          -- <%- t('login.defaultHint.setEnvHtml') %>
+        </p>
+        <button type="button" id="use-default-login-btn" class="mt-1.5 font-medium text-accent hover:text-accent-dark"><%= t('login.defaultHint.fill') %></button>
+      </div>
+      <% } %>
     </div>
+    <div class="mt-3 overflow-hidden rounded-lg bg-white/70">
+      <%- include('partials/lang-switch', { variant: 'login' }) %>
+    </div>
+    <p class="mt-3 text-center text-xs text-gray-400"><a href="/" class="hover:text-gray-600"><%= t('login.back') %></a></p>
   </div>
 
+  <% if (typeof showDefaultLogin === 'undefined' || showDefaultLogin) { %>
   <script>
     document.getElementById('use-default-login-btn')?.addEventListener('click', function () {
       document.querySelector('input[name="username"]').value = 'admin';
       document.querySelector('input[name="password"]').value = 'aurora_admin';
     });
   </script>
+  <% } %>
 </body>
 </html>

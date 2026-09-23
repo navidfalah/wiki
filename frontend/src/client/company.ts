@@ -1,3 +1,5 @@
+import { t } from './lib/i18n';
+
 const apiBase = document.querySelector('meta[name="api-base"]')?.getAttribute('content') ?? '';
 
 interface CompanySettings {
@@ -35,10 +37,10 @@ function readForm(): CompanySettings {
 async function load() {
   try {
     const res = await fetch(`${apiBase}/api/settings/company`);
-    if (!res.ok) throw new Error(`Request failed (${res.status})`);
+    if (!res.ok) throw new Error(t('common.requestFailed', { status: res.status }));
     fillForm(await res.json());
   } catch {
-    (window as any).showToast?.(`Cannot reach API at ${apiBase}.`, 'error');
+    (window as any).showToast?.(t('common.cannotReachApi'), 'error');
   }
 }
 
@@ -46,7 +48,7 @@ async function save() {
   const btn = document.getElementById('save-company-btn') as HTMLButtonElement;
   const hint = document.getElementById('company-saved-hint') as HTMLElement;
   btn.disabled = true;
-  btn.textContent = 'Saving…';
+  btn.textContent = t('company.saving');
   try {
     const res = await fetch(`${apiBase}/api/settings/company`, {
       method: 'PUT',
@@ -55,16 +57,16 @@ async function save() {
     });
     if (!res.ok) {
       const err = await res.json().catch(() => ({}));
-      throw new Error(err.error || `Request failed (${res.status})`);
+      throw new Error(err.error || t('common.requestFailed', { status: res.status }));
     }
     fillForm(await res.json());
-    hint.textContent = `Saved at ${new Date().toLocaleTimeString()}`;
-    (window as any).showToast?.('Company profile saved.');
+    hint.textContent = t('company.savedAt', { time: new Date().toLocaleTimeString(document.documentElement.lang === 'de' ? 'de-DE' : 'en-GB') });
+    (window as any).showToast?.(t('company.saved'));
   } catch (err: any) {
-    (window as any).showToast?.(err.message || 'Could not save company profile.', 'error');
+    (window as any).showToast?.(err.message || t('company.saveFailed'), 'error');
   } finally {
     btn.disabled = false;
-    btn.textContent = 'Save';
+    btn.textContent = t('common.save');
   }
 }
 

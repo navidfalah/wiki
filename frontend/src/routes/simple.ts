@@ -3,39 +3,33 @@ import { PUBLIC_API_URL } from '../config';
 
 const router = Router();
 
-const pages: { path: string; view: string; title: string; active: string; clientScript: string }[] = [
-  { path: '/pipelines', view: 'pipelines', title: 'Pipelines', active: 'Pipelines', clientScript: 'pipelines' },
+const pages: { path: string; view: string; titleKey: string; active: string; clientScript: string }[] = [
+  { path: '/pipelines', view: 'pipelines', titleKey: 'pipelines.title', active: 'Pipelines', clientScript: 'pipelines' },
   {
     path: '/pipeline-architecture',
     view: 'pipeline-architecture',
-    title: 'Pipeline Architecture',
+    titleKey: 'pipeline-architecture.title',
     active: 'Pipeline Architecture',
     clientScript: 'pipeline-architecture',
   },
-  { path: '/rag-architecture', view: 'rag-architecture', title: 'RAG Architecture', active: 'RAG Architecture', clientScript: 'rag-architecture' },
-  { path: '/chat', view: 'chat', title: 'Chat', active: 'Chat', clientScript: 'chat' },
-  { path: '/resources', view: 'resources', title: 'Resources', active: 'Resources', clientScript: 'resources' },
-  { path: '/graph', view: 'graph', title: 'Topic Graph', active: 'Graph', clientScript: 'graph' },
-  { path: '/entities', view: 'entities', title: 'Entities', active: 'Entities', clientScript: 'entities' },
-  { path: '/analytics', view: 'analytics', title: 'Analytics', active: 'Analytics', clientScript: 'analytics' },
-  { path: '/usage', view: 'usage', title: 'Token Usage & Cost', active: 'Usage', clientScript: 'usage' },
-  {
-    path: '/review-queue',
-    view: 'review-queue',
-    title: 'Review & Attention',
-    active: 'Review Queue',
-    clientScript: 'review-queue',
-  },
-  { path: '/settings', view: 'settings', title: 'Settings', active: 'Settings', clientScript: 'settings' },
-  { path: '/company', view: 'company', title: 'Company Profile', active: 'Company', clientScript: 'company' },
-  { path: '/logs', view: 'logs', title: 'Logs', active: 'Logs', clientScript: 'logs' },
+  { path: '/rag-architecture', view: 'rag-architecture', titleKey: 'rag-architecture.title', active: 'RAG Architecture', clientScript: 'rag-architecture' },
+  { path: '/chat', view: 'chat', titleKey: 'chat.title', active: 'Chat', clientScript: 'chat' },
+  { path: '/resources', view: 'resources', titleKey: 'resources.title', active: 'Resources', clientScript: 'resources' },
+  { path: '/graph', view: 'graph', titleKey: 'graph.title', active: 'Graph', clientScript: 'graph' },
+  { path: '/entities', view: 'entities', titleKey: 'entities.title', active: 'Entities', clientScript: 'entities' },
+  { path: '/analytics', view: 'analytics', titleKey: 'analytics.title', active: 'Analytics', clientScript: 'analytics' },
+  { path: '/usage', view: 'usage', titleKey: 'usage.title', active: 'Usage', clientScript: 'usage' },
+  { path: '/review-queue', view: 'review-queue', titleKey: 'review-queue.title', active: 'Review Queue', clientScript: 'review-queue' },
+  { path: '/settings', view: 'settings', titleKey: 'settings.title', active: 'Settings', clientScript: 'settings' },
+  { path: '/company', view: 'company', titleKey: 'company.title', active: 'Company', clientScript: 'company' },
+  { path: '/logs', view: 'logs', titleKey: 'logs.title', active: 'Logs', clientScript: 'logs' },
 ];
 
 for (const page of pages) {
   router.get(page.path, (_req, res) => {
     res.render(page.view, {
       apiBase: PUBLIC_API_URL,
-      title: page.title,
+      title: res.locals.t(page.titleKey),
       active: page.active,
       clientScript: page.clientScript,
     });
@@ -51,7 +45,7 @@ router.get('/connectors/callback/:id', (req, res) => {
   const connectorId = req.params.id;
   res.render('connectors-callback', {
     apiBase: PUBLIC_API_URL,
-    title: 'Finish connecting',
+    title: res.locals.t('connectors-callback.pageTitle'),
     active: 'Connectors',
     clientScript: 'connectors-callback',
     connectorId,

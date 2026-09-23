@@ -1,0 +1,6 @@
+# Only for the legacy standalone FastAPI server (compiler/server.py, run_server.sh,
+# compiler/Dockerfile). The Express backend spawns main.py/cli.py directly and never
+# imports these, so production images skip them (saves ~40 MB and idle RAM).
+-r requirements.txt
+fastapi>=0.115.0
+uvicorn[standard]>=0.32.0

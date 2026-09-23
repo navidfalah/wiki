@@ -104,6 +104,20 @@ describe('markRunAbandoned', () => {
     expect(index[0].status).toBe('error');
   });
 
+  it('marks a run "stopped" (not "error") when the caller passes that status, e.g. a deliberate user stop', () => {
+    writeRun('20260910-162917-c3e903');
+    writeIndex([{ id: '20260910-162917-c3e903', started_at: 't', finished_at: null, status: 'running', force: false }]);
+
+    const changed = markRunAbandoned('20260910-162917-c3e903', 'Stopped by user.', 'stopped');
+
+    expect(changed).toBe(true);
+    const run = getPipelineRun('20260910-162917-c3e903');
+    expect(run?.status).toBe('stopped');
+    expect(run?.steps.find((s) => s.name === '3. Synthesis')?.status).toBe('stopped');
+    const index = JSON.parse(fs.readFileSync(PIPELINE_RUNS_INDEX, 'utf-8'));
+    expect(index[0].status).toBe('stopped');
+  });
+
   it('is a no-op when PipelineRun.finish() already ran (the normal success/error path)', () => {
     writeRun('20260910-170000-cccccc', { status: 'success', finished_at: 't', error: null });
 

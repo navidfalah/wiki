@@ -20,7 +20,9 @@ import {
   findUserByUsername,
   findUserById,
   listUsers,
+  resetPasswordById,
   setPassword,
+  setRole,
   UserError,
   verifyPassword,
 } from './users';
@@ -194,5 +196,41 @@ describe('ensureBootstrapAdmin', () => {
     ensureBootstrapAdmin();
     expect(listUsers()).toHaveLength(1);
     expect(findUserByUsername('admin')).toBeUndefined();
+  });
+});
+
+describe('setRole', () => {
+  it('promotes and demotes when another admin remains', () => {
+    const a = createUser('alice', 'password123', 'admin');
+    const b = createUser('bob', 'password123', 'user');
+    expect(setRole(b.id, 'admin').role).toBe('admin');
+    expect(setRole(a.id, 'user').role).toBe('user');
+    expect(findUserById(a.id)?.role).toBe('user');
+  });
+
+  it('refuses to demote the last admin', () => {
+    const a = createUser('alice', 'password123', 'admin');
+    createUser('bob', 'password123', 'user');
+    expect(() => setRole(a.id, 'user')).toThrow(UserError);
+    expect(findUserById(a.id)?.role).toBe('admin');
+  });
+
+  it('rejects an unknown user', () => {
+    expect(() => setRole('nope', 'admin')).toThrow(UserError);
+  });
+});
+
+describe('resetPasswordById', () => {
+  it('replaces the password so only the new one verifies', () => {
+    const u = createUser('alice', 'password123', 'admin');
+    resetPasswordById(u.id, 'brand-new-pass');
+    expect(verifyPassword('alice', 'password123')).toBeNull();
+    expect(verifyPassword('alice', 'brand-new-pass')).not.toBeNull();
+  });
+
+  it('enforces the minimum length and unknown ids', () => {
+    const u = createUser('alice', 'password123');
+    expect(() => resetPasswordById(u.id, 'short')).toThrow(UserError);
+    expect(() => resetPasswordById('nope', 'long-enough-1')).toThrow(UserError);
   });
 });

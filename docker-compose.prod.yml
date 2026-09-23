@@ -1,0 +1,136 @@
+# Production stack for https://wissensbau.de on a small server.
+#
+#   docker compose -f docker-compose.prod.yml up -d --build
+#   (or ./deploy/deploy.sh, which also checks .env and fixes volume ownership)
+#
+# Differences from docker-compose.yml (the dev stack):
+#   - Caddy in front: automatic HTTPS, compression, security headers. It is
+#     the ONLY thing published on the host (80/443); frontend and backend are
+#     reachable only on the internal Docker network.
+#   - No sample Postgres, no local-llm, no live code mounts.
+#   - Hard memory limits + capped Node heaps + capped Python concurrency, so
+#     one busy chat or compile can't take the whole box down.
+#   - Non-root containers, no extra capabilities, rotated logs.
+#
+# Rough memory budget with the defaults below (idle -> limit):
+#   caddy ~15 MB (64 MB cap) · frontend ~60 MB (160 MB cap)
+#   backend ~90 MB idle, 768 MB cap covers 2 concurrent Python processes
+#   => comfortable on 1 GB RAM, happy on 2 GB. Tune via the *_MEM_LIMIT vars.
+
+name: wissensbau
+
+x-logging: &logging
+  driver: json-file
+  options:
+    max-size: "10m"
+    max-file: "3"
+
+x-hardening: &hardening
+  init: true
+  restart: unless-stopped
+  security_opt:
+    - no-new-privileges:true
+  cap_drop:
+    - ALL
+  logging: *logging
+
+services:
+  caddy:
+    <<: *hardening
+    image: caddy:2-alpine
+    container_name: wissensbau-caddy
+    environment:
+      DOMAIN: ${DOMAIN:-wissensbau.de}
+    ports:
+      - "${HTTP_PORT:-80}:80"
+      - "${HTTPS_PORT:-443}:443"
+      - "${HTTPS_PORT:-443}:443/udp"
+    volumes:
+      - ./deploy/Caddyfile:/etc/caddy/Caddyfile:ro
+      # Certificates + ACME account: keep these, or every restart re-issues
+      # certs and quickly hits Let's Encrypt rate limits.
+      - caddy-data:/data
+      - caddy-config:/config
+    cap_add:
+      - NET_BIND_SERVICE
+    depends_on:
+      frontend:
+        condition: service_healthy
+    mem_limit: ${CADDY_MEM_LIMIT:-64m}
+
+  frontend:
+    <<: *hardening
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    image: wissensbau-frontend
+    container_name: wissensbau-frontend
+    environment:
+      BACKEND_API_URL: http://backend:8000
+      # Relative: the browser calls this same origin's /api proxy, which turns
+      # the session cookie into the Authorization header the backend wants.
+      PUBLIC_API_URL: ""
+      NODE_ENV: production
+      NODE_OPTIONS: --max-old-space-size=${FRONTEND_HEAP_MB:-96}
+      # One proxy hop (Caddy) in front: trust its X-Forwarded-* for req.ip.
+      TRUST_PROXY: "1"
+      COOKIE_SECURE: "true"
+      SHOW_DEFAULT_LOGIN_HINT: "false"
+      # No sample Postgres container in production -- hide that callout.
+      SHOW_SAMPLE_DB_HINT: "false"
+      SITE_URL: https://${DOMAIN:-wissensbau.de}
+      LANDING_DESIGN: ${LANDING_DESIGN:-a}
+      LEGAL_IMPRINT_URL: ${LEGAL_IMPRINT_URL:-}
+      LEGAL_PRIVACY_URL: ${LEGAL_PRIVACY_URL:-}
+    expose:
+      - "3000"
+    depends_on:
+      backend:
+        condition: service_healthy
+    read_only: true
+    tmpfs:
+      - /tmp:size=16m
+    mem_limit: ${FRONTEND_MEM_LIMIT:-160m}
+
+  backend:
+    <<: *hardening
+    build:
+      context: .
+      dockerfile: backend/Dockerfile
+    image: wissensbau-backend
+    container_name: wissensbau-backend
+    env_file:
+      - path: .env
+        required: false
+    environment:
+      NODE_ENV: production
+      NODE_OPTIONS: --max-old-space-size=${BACKEND_HEAP_MB:-160}
+      OPENAI_BASE_URL: ${OPENAI_BASE_URL:-https://api.openai.com/v1}
+      OPENAI_MODEL: ${OPENAI_MODEL:-gpt-4o-mini}
+      OPENAI_EMBEDDING_MODEL: ${OPENAI_EMBEDDING_MODEL:-text-embedding-3-small}
+      # Bootstrap admin, created once on first boot when data/users.json has no
+      # users. The password is mandatory here: production never falls back to a
+      # well-known default.
+      ADMIN_USERNAME: ${ADMIN_USERNAME:-admin}
+      ADMIN_PASSWORD: ${ADMIN_PASSWORD:?Set ADMIN_PASSWORD in .env before the first start}
+      # Chat/email/connector calls each spawn a Python process (~100+ MB).
+      # Cap how many run at once so a burst queues instead of OOM-killing.
+      PY_MAX_CONCURRENCY: ${PY_MAX_CONCURRENCY:-2}
+      # There is no sample Postgres in production; skip the boot-time spawn.
+      SKIP_DEFAULT_CONNECTIONS: "true"
+      CORS_ORIGINS: https://${DOMAIN:-wissensbau.de}
+    expose:
+      - "8000"
+    volumes:
+      - ./data:/app/data
+      - ./wiki-app/docs:/app/wiki-app/docs
+      - ./wiki-app/static/media:/app/wiki-app/static/media
+      - temp-output:/app/compiler/temp_output
+    tmpfs:
+      - /tmp:size=64m
+    mem_limit: ${BACKEND_MEM_LIMIT:-768m}
+
+volumes:
+  caddy-data:
+  caddy-config:
+  temp-output:

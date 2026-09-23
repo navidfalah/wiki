@@ -113,7 +113,7 @@ services:
       # with host=localhost from outside Docker (e.g. testing the connector
       # against this container without going through the frontend proxy).
       # Same override pattern as BACKEND_PORT/FRONTEND_PORT above.
-      - "${POSTGRES_PORT:-5432}:5432"
+      - "127.0.0.1:${POSTGRES_PORT:-5432}:5432"
     healthcheck:
       test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-wiki_reader} -d ${POSTGRES_DB:-aurora_kb}"]
       interval: 5s

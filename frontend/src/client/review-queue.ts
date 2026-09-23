@@ -4,6 +4,9 @@ declare global {
   }
 }
 
+import { formatDateTime, formatNumber, t, th } from './lib/i18n';
+import { attentionDetail } from './lib/serverText';
+
 const apiBase = document.querySelector('meta[name="api-base"]')?.getAttribute('content') ?? '';
 
 function escapeHtml(text: string | null | undefined): string {
@@ -76,21 +79,17 @@ interface Candidate {
   correction: Correction | null;
 }
 
-const REASON_LABEL: Record<string, string> = {
-  low_confidence: 'Low confidence',
-  unresolved_contradiction: 'Unresolved contradiction',
-};
+const reasonLabel = (reason: string): string => t(`review-queue.reason.${reason}`);
 
 const REASON_STYLE: Record<string, string> = {
   low_confidence: 'bg-amber-50 text-amber-700 border-amber-200',
   unresolved_contradiction: 'bg-red-50 text-red-700 border-red-200',
 };
 
-const VERDICT_LABEL: Record<string, string> = {
-  confirm_correct: 'Correct',
-  confirm_incorrect: 'Incorrect',
-  confirm_superseded: 'Superseded',
-  confirm_scope_dependent: 'Scope-dependent',
+const verdictLabel = (verdict: string): string => {
+  const key = `review-queue.verdict.${verdict}`;
+  const label = t(key);
+  return label === key ? verdict : label;
 };
 
 let allCandidates: Candidate[] = [];
@@ -103,7 +102,7 @@ function candidateKey(c: Candidate): string {
 
 function verdictOptions(selected: string | undefined): string {
   return verdicts
-    .map((v) => `<option value="${v}" ${v === selected ? 'selected' : ''}>${escapeHtml(VERDICT_LABEL[v] ?? v)}</option>`)
+    .map((v) => `<option value="${v}" ${v === selected ? 'selected' : ''}>${escapeHtml(verdictLabel(v))}</option>`)
     .join('');
 }
 
@@ -111,12 +110,12 @@ function candidateRow(candidate: Candidate): string {
   const key = candidateKey(candidate);
   const correction = candidate.correction;
   const contradictsNote = candidate.contradicts
-    ? `<p class="mt-1 text-xs text-gray-500">Contradicts claim <code class="rounded bg-gray-100 px-1 py-0.5">${escapeHtml(candidate.contradicts)}</code></p>`
+    ? `<p class="mt-1 text-xs text-gray-500">${th('review-queue.contradicts', { id: candidate.contradicts })}</p>`
     : '';
   const reviewedNote = correction
     ? `<p class="mt-2 rounded-lg bg-emerald-50 px-3 py-2 text-xs text-emerald-700">
-        ✓ Reviewed as <strong>${escapeHtml(VERDICT_LABEL[correction.verdict] ?? correction.verdict)}</strong>${
-          correction.note ? ` -- ${escapeHtml(correction.note)}` : ''
+        ${th('review-queue.reviewedAs', { verdict: verdictLabel(correction.verdict) })}${
+          correction.note ? th('review-queue.reviewedNote', { note: correction.note }) : ''
         }
       </p>`
     : '';
@@ -124,8 +123,8 @@ function candidateRow(candidate: Candidate): string {
   return `<div class="review-row rounded-xl border border-gray-200 bg-white p-4 shadow-card" data-key="${escapeHtml(key)}" data-reason="${candidate.reason}" data-reviewed="${correction ? '1' : '0'}">
     <div class="flex flex-wrap items-start justify-between gap-2">
       <div class="flex flex-wrap items-center gap-2">
-        <span class="rounded-full border px-2 py-0.5 text-[11px] font-medium ${REASON_STYLE[candidate.reason]}">${REASON_LABEL[candidate.reason] ?? candidate.reason}</span>
-        <span class="text-xs text-gray-400">score ${candidate.score.toFixed(2)}</span>
+        <span class="rounded-full border px-2 py-0.5 text-[11px] font-medium ${REASON_STYLE[candidate.reason]}">${escapeHtml(reasonLabel(candidate.reason))}</span>
+        <span class="text-xs text-gray-400">${th('review-queue.score', { score: formatNumber(candidate.score, { minimumFractionDigits: 2, maximumFractionDigits: 2 }) })}</span>
         <span class="text-xs text-gray-400">${escapeHtml(candidate.group_id)} / ${escapeHtml(candidate.claim_id)}</span>
       </div>
       <span class="text-xs text-gray-400">${escapeHtml(candidate.source_path)}</span>
@@ -137,10 +136,10 @@ function candidateRow(candidate: Candidate): string {
       <select name="verdict" class="rounded-lg border border-gray-300 bg-white px-2.5 py-1.5 text-sm focus:border-accent focus:outline-none focus:ring-2 focus:ring-accent/20">
         ${verdictOptions(correction?.verdict)}
       </select>
-      <input name="note" type="text" placeholder="Note (optional)" value="${escapeHtml(correction?.note)}"
+      <input name="note" type="text" placeholder="${th('review-queue.notePlaceholder')}" value="${escapeHtml(correction?.note)}"
         class="min-w-[220px] flex-1 rounded-lg border border-gray-300 px-2.5 py-1.5 text-sm focus:border-accent focus:outline-none focus:ring-2 focus:ring-accent/20" />
       <button type="submit" class="rounded-lg bg-accent px-3 py-1.5 text-sm font-medium text-white hover:bg-accent-dark">
-        ${correction ? 'Update verdict' : 'Save verdict'}
+        ${correction ? th('review-queue.updateVerdict') : th('review-queue.saveVerdict')}
       </button>
     </form>
   </div>`;
@@ -160,7 +159,7 @@ function renderReview() {
   if (!filtered.length) {
     list.innerHTML = '';
     empty.classList.remove('hidden');
-    empty.textContent = allCandidates.length ? 'Nothing in this category.' : 'Nothing needs review right now.';
+    empty.textContent = allCandidates.length ? t('review-queue.nothingCategory') : t('review-queue.nothingReview');
     return;
   }
   empty.classList.add('hidden');
@@ -196,15 +195,15 @@ async function onSubmitCorrection(event: SubmitEvent) {
     });
     if (!res.ok) {
       const body = await res.json().catch(() => ({}));
-      throw new Error(body.error || `API returned ${res.status}`);
+      throw new Error(body.error || t('review-queue.apiReturned', { status: res.status }));
     }
     const data = await res.json();
     candidate.correction = data.saved;
-    window.showToast?.('Verdict saved', 'success');
+    window.showToast?.(t('review-queue.verdictSaved'), 'success');
     renderReview();
     setTabBadge('review', allCandidates.filter((c) => !c.correction).length);
   } catch (err: any) {
-    window.showToast?.(err?.message || 'Could not save verdict.', 'error');
+    window.showToast?.(err?.message || t('review-queue.verdictFailed'), 'error');
   } finally {
     submitBtn.disabled = false;
   }
@@ -213,23 +212,23 @@ async function onSubmitCorrection(event: SubmitEvent) {
 async function loadReview() {
   try {
     const res = await fetch(`${apiBase}/api/review-queue`);
-    if (!res.ok) throw new Error(`API returned ${res.status}`);
+    if (!res.ok) throw new Error(t('review-queue.apiReturned', { status: res.status }));
     const data = await res.json();
     allCandidates = data.candidates ?? [];
     verdicts = data.verdicts ?? [];
 
     const reviewed = allCandidates.filter((c) => c.correction).length;
     document.getElementById('review-stats')!.innerHTML = [
-      statCard(String(allCandidates.length), 'Flagged claims', allCandidates.length > reviewed),
-      statCard(String(allCandidates.filter((c) => c.reason === 'low_confidence').length), 'Low confidence'),
-      statCard(String(allCandidates.filter((c) => c.reason === 'unresolved_contradiction').length), 'Unresolved contradictions'),
-      statCard(String(reviewed), 'Reviewed', false),
+      statCard(String(allCandidates.length), t('review-queue.stat.flagged'), allCandidates.length > reviewed),
+      statCard(String(allCandidates.filter((c) => c.reason === 'low_confidence').length), t('review-queue.stat.low')),
+      statCard(String(allCandidates.filter((c) => c.reason === 'unresolved_contradiction').length), t('review-queue.stat.contradictions')),
+      statCard(String(reviewed), t('review-queue.stat.reviewed'), false),
     ].join('');
 
     setTabBadge('review', allCandidates.length - reviewed);
     renderReview();
   } catch {
-    document.getElementById('review-stats')!.innerHTML = `<p class="col-span-full text-sm text-red-600">Cannot reach API at ${escapeHtml(apiBase)}.</p>`;
+    document.getElementById('review-stats')!.innerHTML = `<p class="col-span-full text-sm text-red-600">${th('common.cannotReachApi')}</p>`;
   }
 }
 
@@ -259,13 +258,10 @@ interface AttentionItem {
   raw_path?: string;
 }
 
-const ATTENTION_KIND_LABEL: Record<string, string> = {
-  orphan_topic: 'Unreachable page',
-  dead_end_topic: 'Dead end',
-  dead_link: 'Dead link',
-  ungrounded_topic: 'No source data',
-  unprocessed_file: 'Unprocessed file',
-  review_finding: 'Reviewer finding',
+const attentionKindLabel = (kind: string): string => {
+  const key = `review-queue.kind.${kind}`;
+  const label = t(key);
+  return label === key ? kind : label;
 };
 
 const ATTENTION_SEVERITY_STYLE: Record<string, string> = {
@@ -280,7 +276,7 @@ let attentionFilter = 'all';
 function attentionDocLink(item: AttentionItem): string {
   if (item.doc_path) {
     const slug = item.doc_path.replace(/\.md$/, '');
-    return `<a href="/wiki/${encodeURIComponent(slug)}" class="text-xs font-medium text-accent no-underline hover:underline">Open page →</a>`;
+    return `<a href="/wiki/${encodeURIComponent(slug)}" class="text-xs font-medium text-accent no-underline hover:underline">${th('review-queue.openPage')}</a>`;
   }
   if (item.raw_path) {
     return `<span class="text-xs text-gray-400">${escapeHtml(item.raw_path)}</span>`;
@@ -290,13 +286,13 @@ function attentionDocLink(item: AttentionItem): string {
 
 function attentionRow(item: AttentionItem): string {
   return `<div class="attention-row flex flex-wrap items-start gap-3 rounded-xl border border-gray-200 bg-white p-4 shadow-card" data-kind="${item.kind}">
-    <span class="mt-0.5 shrink-0 rounded-full border px-2 py-0.5 text-[11px] font-medium ${ATTENTION_SEVERITY_STYLE[item.severity]}">${item.severity}</span>
+    <span class="mt-0.5 shrink-0 rounded-full border px-2 py-0.5 text-[11px] font-medium ${ATTENTION_SEVERITY_STYLE[item.severity]}">${escapeHtml(t(`review-queue.severity.${item.severity}`))}</span>
     <div class="min-w-0 flex-1">
       <div class="flex flex-wrap items-center gap-2">
-        <span class="text-xs font-medium text-gray-400">${ATTENTION_KIND_LABEL[item.kind] ?? item.kind}</span>
+        <span class="text-xs font-medium text-gray-400">${escapeHtml(attentionKindLabel(item.kind))}</span>
         <p class="truncate text-sm font-medium text-gray-900">${escapeHtml(item.title)}</p>
       </div>
-      <p class="mt-0.5 text-sm text-gray-600">${escapeHtml(item.detail)}</p>
+      <p class="mt-0.5 text-sm text-gray-600">${escapeHtml(attentionDetail(item.detail))}</p>
     </div>
     <div class="shrink-0">${attentionDocLink(item)}</div>
   </div>`;
@@ -310,7 +306,7 @@ function renderAttention() {
   if (!filtered.length) {
     list.innerHTML = '';
     empty.classList.remove('hidden');
-    empty.textContent = attentionItems.length ? 'Nothing in this category.' : 'Nothing needs attention right now.';
+    empty.textContent = attentionItems.length ? t('review-queue.nothingCategory') : t('review-queue.nothingAttention');
     return;
   }
   empty.classList.add('hidden');
@@ -325,28 +321,28 @@ async function loadAttention() {
 
     const c = data.counts ?? {};
     document.getElementById('attention-cards')!.innerHTML = [
-      statCard(String(c.total ?? 0), 'Total flagged', (c.total ?? 0) > 0),
-      statCard(String(c.orphan_or_dead_end_topics ?? 0), 'Unreachable / dead-end pages', (c.orphan_or_dead_end_topics ?? 0) > 0),
-      statCard(String(c.dead_links ?? 0), 'Dead links', (c.dead_links ?? 0) > 0),
-      statCard(String(c.ungrounded_topics ?? 0), 'No source data', (c.ungrounded_topics ?? 0) > 0),
-      statCard(String(c.unprocessed_files ?? 0), 'Unprocessed files', (c.unprocessed_files ?? 0) > 0),
-      statCard(String(c.review_findings ?? 0), 'Reviewer findings', (c.review_findings ?? 0) > 0),
+      statCard(String(c.total ?? 0), t('review-queue.card.total'), (c.total ?? 0) > 0),
+      statCard(String(c.orphan_or_dead_end_topics ?? 0), t('review-queue.card.unreachable'), (c.orphan_or_dead_end_topics ?? 0) > 0),
+      statCard(String(c.dead_links ?? 0), t('review-queue.card.deadLinks'), (c.dead_links ?? 0) > 0),
+      statCard(String(c.ungrounded_topics ?? 0), t('review-queue.card.ungrounded'), (c.ungrounded_topics ?? 0) > 0),
+      statCard(String(c.unprocessed_files ?? 0), t('review-queue.card.unprocessed'), (c.unprocessed_files ?? 0) > 0),
+      statCard(String(c.review_findings ?? 0), t('review-queue.card.reviewer'), (c.review_findings ?? 0) > 0),
     ].join('');
 
     const note = document.getElementById('attention-review-note')!;
     if (data.review_report?.exists) {
       note.classList.remove('hidden');
-      const when = data.review_report.generated_at ? new Date(data.review_report.generated_at).toLocaleString() : 'unknown time';
-      note.innerHTML = `Reviewer findings come from <code class="rounded bg-gray-100 px-1 py-0.5">compiler/review_report.txt</code>, generated ${escapeHtml(when)}. Run <code class="rounded bg-gray-100 px-1 py-0.5">python compiler/reviewer.py</code> again to refresh them.`;
+      const when = data.review_report.generated_at ? formatDateTime(data.review_report.generated_at) : t('review-queue.unknownTime');
+      note.innerHTML = th('review-queue.reportNoteHtml', { when });
     } else {
       note.classList.remove('hidden');
-      note.innerHTML = `No review report found yet -- run <code class="rounded bg-gray-100 px-1 py-0.5">python compiler/reviewer.py</code> to have the LLM check pages against their sources.`;
+      note.innerHTML = t('review-queue.noReportHtml');
     }
 
     setTabBadge('attention', c.total ?? 0);
     renderAttention();
   } catch {
-    document.getElementById('attention-cards')!.innerHTML = `<p class="col-span-full text-sm text-red-600">Cannot reach API at ${escapeHtml(apiBase)}.</p>`;
+    document.getElementById('attention-cards')!.innerHTML = `<p class="col-span-full text-sm text-red-600">${th('common.cannotReachApi')}</p>`;
   }
 }
 

@@ -1,4 +1,6 @@
-# LLM Wiki
+# LLM Wiki — Wissensbau
+
+> **Non-commercial research project.** Live prototype: **[wissensbau.de](https://wissensbau.de)** (English & German UI, Sora + Inter typography). Deployment guide: [documentation/40-production-deployment.md](./documentation/40-production-deployment.md).
 
 Personal knowledge base built on the **[Karpathy LLM Wiki pattern](https://gist.github.com/karpathy/442a6bf555914893e9891c11519de94f)**: drop messy raw notes into `data/raw/`, run a Python compiler pipeline, and browse the result through an Express + TypeScript + Tailwind app with a single unified nav (wiki pages and dashboards in one product, not a docs site with a dashboard bolted on).
 
@@ -28,10 +30,11 @@ The sample domain is fictional **Aurora Labs** (open IoT sensors), cross-linked 
 10. [Dummy data generation](#dummy-data-generation)
 11. [Data layout](#data-layout)
 12. [Configuration](#configuration)
-13. [CI/CD](#cicd)
-14. [Development workflows](#development-workflows)
-15. [Troubleshooting](#troubleshooting)
-16. [Contributing and agent workflows](#contributing-and-agent-workflows)
+13. [Deployment (wissensbau.de)](#deployment-wissensbaude)
+14. [CI/CD](#cicd)
+15. [Development workflows](#development-workflows)
+16. [Troubleshooting](#troubleshooting)
+17. [Contributing and agent workflows](#contributing-and-agent-workflows)
 
 ---
 
@@ -108,7 +111,8 @@ flowchart TB
 | LLM client | OpenAI SDK + SQLite cache | Extraction, synthesis, link injection, and chat retrieval (required for extraction) |
 | Backend API | Express + TypeScript | REST endpoints and SSE build streaming on port **8000**; ports the read/write engines to TS, spawns `python3` for the compile and for chat/email (`compiler/cli.py`) |
 | Frontend | Express + TypeScript + EJS | Server-rendered wiki pages and dashboards (`/wiki`, `/dashboard`, `/chat`, `/emails`, `/resources`, `/analytics`, `/graph`) — one nav, no client framework, port **3000** |
-| Styling | Tailwind CSS 3 + `@tailwindcss/typography` | Dashboard UI + rendered-markdown `prose` styling |
+| Styling | Tailwind CSS 3 + `@tailwindcss/typography`, self-hosted **Sora** + **Inter** | Dashboard UI + rendered-markdown `prose` styling |
+| Languages | English + German (`frontend/src/i18n/`) | Every page, with a type-checked key set — see [documentation/41](./documentation/41-internationalization-and-fonts.md) |
 | Client interactivity | Hand-written TypeScript, bundled per-page with esbuild | No React/framework — `dashboard.ts`, `chat.ts`, etc. |
 | Build UX | Server-Sent Events | Live compiler log stream from `/api/build/stream` |
 | CI | GitHub Actions | Compile + build + GitHub Pages deploy |
@@ -123,9 +127,12 @@ wiki/
 ├── AGENTS.md                    # Agent/human workflow schema
 ├── PROMPTS.md                   # Example Cursor prompts
 ├── build_wiki.sh                # One-command: compile + build backend + build frontend
+├── docker-compose.yml           # Dev stack (backend, frontend, sample Postgres, optional local LLM)
+├── docker-compose.prod.yml      # Production stack for wissensbau.de (Caddy + frontend + backend, resource-limited)
+├── deploy/                      # Caddyfile (HTTPS reverse proxy) + deploy.sh
 ├── .env.example                 # API key template (copy to .env)
 ├── .github/workflows/
-│   └── wiki-build.yml           # CI: compile → build → GitHub Pages
+│   └── pr-checks.yml            # CI: compiler lint/tests, backend + frontend typecheck/build, Docker/Caddy validation
 │
 ├── data/
 │   ├── raw/                     # Raw sources: text, .eml, images, audio, files — you add here
@@ -733,10 +740,16 @@ OPENAI_MODEL=gpt-4o-mini
 | `WIKI_WEB_SEARCH_ENABLED` | No | `true` to enrich synthesis with live internet search by default (same as `--web-search`) |
 | `WIKI_WEB_SEARCH_PROVIDER` | No | `duckduckgo` (default, no key needed), `serpapi`, or `bing` |
 | `WIKI_WEB_SEARCH_API_KEY` | Only for `serpapi`/`bing` | API key for the chosen search provider |
+| `DOMAIN` | Production | Public domain (default `wissensbau.de`); used by Caddy, cookies and canonical URLs |
+| `ADMIN_USERNAME` / `ADMIN_PASSWORD` | Production | Bootstrap admin created on first boot (password mandatory with `docker-compose.prod.yml`) |
+| `LANDING_DESIGN` | No | Landing page design variant `a` / `b` / `c` (default `a`); preview with `/?design=b` |
+| `LEGAL_IMPRINT_URL` / `LEGAL_PRIVACY_URL` | No | Impressum / Datenschutz links in the landing footer |
+
+See [documentation/40-production-deployment.md](./documentation/40-production-deployment.md#configuration-reference) for the resource-limit variables (`BACKEND_MEM_LIMIT`, `PY_MAX_CONCURRENCY`, …).
 
 The compiler loads `.env` from the repo root via `python-dotenv` in `llm_client.py`.
 
-### Docusaurus (`wiki-app/docusaurus.config.js`)
+### Legacy Docusaurus setting (no longer used by the current stack)
 
 ```javascript
 customFields: {
@@ -762,24 +775,31 @@ Edit via the Knowledge Graph Explorer UI or PUT `/api/knowledge-graph/overrides`
 
 ---
 
+## Deployment (wissensbau.de)
+
+The production stack is `docker-compose.prod.yml`: **Caddy** (automatic HTTPS for `wissensbau.de`) → **frontend** → **backend**, with hard memory limits, capped Python concurrency and non-root containers — sized for a small server (idle footprint of the whole stack ≈ 65 MB RAM).
+
+```bash
+cp .env.example .env      # set DOMAIN, ADMIN_USERNAME, ADMIN_PASSWORD, OPENAI_API_KEY
+./deploy/deploy.sh        # builds and starts; re-run (or --pull) to update
+```
+
+Point the `A`/`AAAA` records of `wissensbau.de` and `www.wissensbau.de` at the server and open ports 80/443. `ADMIN_PASSWORD` is mandatory in production; users are then managed in the **Admin panel** (`/users`). Public routes: `/` (German landing page), `/en` (English); everything else requires sign-in. Full guide — sizing, tuning knobs, security notes, backups, troubleshooting — in [documentation/40-production-deployment.md](./documentation/40-production-deployment.md).
+
+---
+
 ## CI/CD
 
-Workflow: `.github/workflows/wiki-build.yml`
+Workflow: `.github/workflows/pr-checks.yml` (pull requests to `main`):
 
-**Trigger:** push to `main`
+| Job | Checks |
+|-----|--------|
+| `compiler` | `ruff check`, `pytest` |
+| `backend` | `tsc` typecheck, `vitest`, build |
+| `frontend` | `tsc` typecheck, full build (fonts + Tailwind + client bundles) |
+| `docker` | validates `docker-compose.prod.yml` and the `Caddyfile`, builds both production images |
 
-**Build job:**
-
-1. Checkout
-2. Python 3.12 — `pip install -r compiler/requirements.txt`
-3. `python compiler/main.py` (requires `OPENAI_API_KEY` repo secret)
-4. Node 20 — `npm ci` in `wiki-app/`
-5. `npm run build` with `GITHUB_PAGES=true`
-6. Upload `wiki-app/build` as Pages artifact
-
-**Deploy job:** GitHub Pages via `actions/deploy-pages@v4`
-
-Enable **GitHub Pages** (source: GitHub Actions) in repository settings. Site URL pattern: `https://<org>.github.io/<repo>/`.
+The former GitHub Pages workflow (Docusaurus) was removed: the site is served by the Express frontend at [wissensbau.de](https://wissensbau.de) instead.
 
 ---
 
@@ -881,7 +901,7 @@ Only one SSE compile can run at a time. Wait for the current build to finish or 
 - Procedural bulk data can produce 1000+ files; expect longer compile times
 - Use incremental runs (default, no `--force`) during development to reduce API calls
 
-### GitHub Pages broken links
+### GitHub Pages broken links (legacy — Pages deployment was removed)
 
 Production `baseUrl` is `/<repo>/`. Local dev uses `/`. Broken link warnings in build logs are often path-prefix related; check `docusaurus.config.js` `baseUrl` logic.
 

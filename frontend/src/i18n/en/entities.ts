@@ -1,0 +1,17 @@
+export const entities = {
+  'entities.title': 'Entities',
+  'entities.introHtml': 'Per-chunk extraction returns a name <em>string</em> per mention -- "Mira Chen", "Mira", and "mira.chen@auroralabs.example" don\'t know they\'re the same person. This resolves mentions from every processed source into clusters (heuristic tier, deterministic, no LLM call) -- the real entity graph behind the topic/mention graph <code class="rounded bg-gray-100 px-1 py-0.5">linker.py</code> builds. Entities cited across more sources are listed first.',
+  'entities.filterPlaceholder': 'Filter by name…',
+  'entities.refresh': '↻ Refresh',
+  'entities.card.entities': 'Resolved entities',
+  'entities.card.mentions': 'Total mentions',
+  'entities.card.multiSource': 'Cited across sources',
+  'entities.card.merged': 'Merged name variants',
+  'entities.also': 'also: {names}',
+  'entities.sources_one': '{count} source',
+  'entities.sources_other': '{count} sources',
+  'entities.mentions_one': '{count} mention',
+  'entities.mentions_other': '{count} mentions',
+  'entities.noMatch': 'No entities match that filter.',
+  'entities.none': 'No entities resolved yet -- run the compiler pipeline first.',
+} as const;

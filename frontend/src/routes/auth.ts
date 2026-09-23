@@ -1,5 +1,5 @@
 import express, { Router } from 'express';
-import { BACKEND_API_URL } from '../config';
+import { BACKEND_API_URL, SHOW_DEFAULT_LOGIN_HINT } from '../config';
 import { clearSessionCookie, getToken, setSessionCookie } from '../lib/auth';
 
 const router = Router();
@@ -11,7 +11,7 @@ function safeNext(next: unknown): string {
 }
 
 router.get('/login', (req, res) => {
-  res.render('login', { next: safeNext(req.query.next), error: null });
+  res.render('login', { next: safeNext(req.query.next), error: null, showDefaultLogin: SHOW_DEFAULT_LOGIN_HINT });
 });
 
 router.post('/login', formParser, async (req, res) => {
@@ -22,18 +22,26 @@ router.post('/login', formParser, async (req, res) => {
   try {
     const backendRes = await fetch(`${BACKEND_API_URL}/api/auth/login`, {
       method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
+      // X-Client-IP lets the backend's login throttle see the real visitor
+      // rather than this container (req.ip honours Caddy's X-Forwarded-For
+      // via `trust proxy`, see index.ts).
+      headers: { 'Content-Type': 'application/json', 'X-Client-IP': req.ip ?? '', 'X-Lang': res.locals.lang },
       body: JSON.stringify({ username, password }),
     });
+    if (backendRes.status === 429) {
+      const minutes = Math.max(1, Math.ceil(Number(backendRes.headers.get('retry-after') ?? 900) / 60));
+      res.status(429).render('login', { next, error: res.locals.tn('login.errorThrottled', minutes), showDefaultLogin: SHOW_DEFAULT_LOGIN_HINT });
+      return;
+    }
     if (!backendRes.ok) {
-      res.status(401).render('login', { next, error: 'Invalid username or password.' });
+      res.status(401).render('login', { next, error: res.locals.t('login.errorInvalid'), showDefaultLogin: SHOW_DEFAULT_LOGIN_HINT });
       return;
     }
     const data = (await backendRes.json()) as { token: string };
     setSessionCookie(res, data.token);
     res.redirect(next);
   } catch {
-    res.status(500).render('login', { next, error: `Cannot reach the API at ${BACKEND_API_URL}.` });
+    res.status(500).render('login', { next, error: res.locals.t('login.errorUnreachable'), showDefaultLogin: SHOW_DEFAULT_LOGIN_HINT });
   }
 });
 

@@ -1,10 +1,8 @@
 <%- include('partials/head', { title, apiBase, active }) %>
 
-<h1 class="text-2xl font-semibold tracking-tight text-gray-900">Topic Graph</h1>
+<h1 class="text-2xl font-semibold tracking-tight text-gray-900"><%= t('graph.title') %></h1>
 <p class="mt-1 max-w-2xl text-sm text-gray-600">
-  Every topic and the pages it links to. Node size and color track how connected a topic is —
-  bigger, warmer nodes are hubs. Hover a node to inspect it, drag to rearrange, scroll to zoom,
-  <strong class="font-medium text-gray-700">click a node to select it</strong> for export.
+  <%- t('graph.introHtml') %>
 </p>
 
 <div id="graph-stats" class="mt-4 grid grid-cols-2 gap-3 sm:grid-cols-4"></div>
@@ -12,54 +10,54 @@
 <div class="mt-4 rounded-xl border border-gray-200 bg-white p-3 shadow-card">
   <div class="flex flex-wrap items-center gap-2">
     <div class="relative flex-1 min-w-[220px] max-w-sm">
-      <input id="graph-search" type="search" placeholder="Search topics…"
+      <input id="graph-search" type="search" placeholder="<%= t('graph.searchPlaceholder') %>"
         class="w-full rounded-lg border border-gray-300 py-1.5 pl-8 pr-3 text-sm focus:border-accent focus:outline-none focus:ring-2 focus:ring-accent/20" />
       <svg class="pointer-events-none absolute left-2.5 top-1/2 -translate-y-1/2 text-gray-400" viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
     </div>
     <button id="graph-select-matches" type="button" disabled
       class="inline-flex items-center justify-center gap-1.5 rounded-lg border border-gray-300 bg-white px-3 py-1.5 text-sm font-medium text-gray-700 hover:bg-gray-50 disabled:cursor-not-allowed disabled:opacity-40">
-      Select matches
+      <%= t('graph.selectMatches') %>
     </button>
     <button id="graph-fit" type="button"
-      class="inline-flex items-center justify-center gap-1.5 rounded-lg border border-gray-300 bg-white px-3 py-1.5 text-sm font-medium text-gray-700 hover:bg-gray-50">⤢ Fit view</button>
+      class="inline-flex items-center justify-center gap-1.5 rounded-lg border border-gray-300 bg-white px-3 py-1.5 text-sm font-medium text-gray-700 hover:bg-gray-50"><%= t('graph.fit') %></button>
 
     <details id="graph-network-export" class="relative">
       <summary class="inline-flex list-none items-center justify-center gap-1.5 rounded-lg border border-gray-300 bg-white px-3 py-1.5 text-sm font-medium text-gray-700 hover:bg-gray-50 [&::-webkit-details-marker]:hidden">
         <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="7 10 12 15 17 10"></polyline><line x1="12" y1="15" x2="12" y2="3"></line></svg>
-        Export network
+        <%= t('graph.exportNetwork') %>
         <svg viewBox="0 0 24 24" width="12" height="12" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"></polyline></svg>
       </summary>
       <div class="absolute right-0 z-10 mt-1.5 w-64 rounded-lg border border-gray-200 bg-white p-1.5 text-sm shadow-panel">
         <button id="graph-export-all-files" type="button" class="flex w-full items-start gap-2 rounded-md px-2.5 py-2 text-left hover:bg-gray-50">
           <span class="mt-0.5">📄</span>
           <span>
-            <span class="block font-medium text-gray-800">All pages (.txt)</span>
-            <span class="block text-xs text-gray-500">Every topic in the graph, bundled into one file</span>
+            <span class="block font-medium text-gray-800"><%= t('graph.export.allTitle') %></span>
+            <span class="block text-xs text-gray-500"><%= t('graph.export.allHint') %></span>
           </span>
         </button>
         <button id="graph-export-json" type="button" class="flex w-full items-start gap-2 rounded-md px-2.5 py-2 text-left hover:bg-gray-50">
           <span class="mt-0.5">🕸️</span>
           <span>
-            <span class="block font-medium text-gray-800">Graph structure (.json)</span>
-            <span class="block text-xs text-gray-500">Nodes + links, for use elsewhere</span>
+            <span class="block font-medium text-gray-800"><%= t('graph.export.jsonTitle') %></span>
+            <span class="block text-xs text-gray-500"><%= t('graph.export.jsonHint') %></span>
           </span>
         </button>
         <button id="graph-export-image" type="button" class="flex w-full items-start gap-2 rounded-md px-2.5 py-2 text-left hover:bg-gray-50">
           <span class="mt-0.5">🖼️</span>
           <span>
-            <span class="block font-medium text-gray-800">Current view (.png)</span>
-            <span class="block text-xs text-gray-500">Snapshot of the canvas as it looks now</span>
+            <span class="block font-medium text-gray-800"><%= t('graph.export.imageTitle') %></span>
+            <span class="block text-xs text-gray-500"><%= t('graph.export.imageHint') %></span>
           </span>
         </button>
       </div>
     </details>
 
     <div class="ml-auto flex flex-wrap items-center gap-3 text-xs text-gray-500">
-      <span class="flex items-center gap-1.5"><span class="inline-block h-2.5 w-2.5 rounded-full bg-generated-border"></span>Few links</span>
-      <span class="flex items-center gap-1.5"><span class="inline-block h-3 w-3 rounded-full bg-generated"></span>Well connected</span>
-      <span class="flex items-center gap-1.5"><span class="inline-block h-3.5 w-3.5 rounded-full bg-source"></span>Hub</span>
-      <span class="flex items-center gap-1.5"><span class="inline-block h-2.5 w-4 rounded-sm bg-amber-400"></span>Manual link</span>
-      <span class="flex items-center gap-1.5"><span class="inline-block h-3 w-3 rounded-full border-2 border-accent bg-white"></span>Selected</span>
+      <span class="flex items-center gap-1.5"><span class="inline-block h-2.5 w-2.5 rounded-full bg-generated-border"></span><%= t('graph.legend.few') %></span>
+      <span class="flex items-center gap-1.5"><span class="inline-block h-3 w-3 rounded-full bg-generated"></span><%= t('graph.legend.well') %></span>
+      <span class="flex items-center gap-1.5"><span class="inline-block h-3.5 w-3.5 rounded-full bg-source"></span><%= t('graph.legend.hub') %></span>
+      <span class="flex items-center gap-1.5"><span class="inline-block h-2.5 w-4 rounded-sm bg-amber-400"></span><%= t('graph.legend.manual') %></span>
+      <span class="flex items-center gap-1.5"><span class="inline-block h-3 w-3 rounded-full border-2 border-accent bg-white"></span><%= t('graph.legend.selected') %></span>
     </div>
   </div>
 
@@ -71,11 +69,11 @@
   <div id="graph-selection-chips" class="flex min-w-0 flex-1 flex-wrap gap-1.5"></div>
   <div class="ml-auto flex shrink-0 items-center gap-2">
     <button id="graph-selection-clear" type="button"
-      class="rounded-lg border border-gray-300 bg-white px-3 py-1.5 text-xs font-medium text-gray-600 hover:bg-gray-50">Clear</button>
+      class="rounded-lg border border-gray-300 bg-white px-3 py-1.5 text-xs font-medium text-gray-600 hover:bg-gray-50"><%= t('graph.selection.clear') %></button>
     <button id="graph-selection-export" type="button"
       class="inline-flex items-center gap-1.5 rounded-lg bg-accent px-3 py-1.5 text-xs font-medium text-white hover:opacity-90">
       <svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="7 10 12 15 17 10"></polyline><line x1="12" y1="15" x2="12" y2="3"></line></svg>
-      <span id="graph-selection-export-label">Export</span>
+      <span id="graph-selection-export-label"><%= t('graph.selection.export') %></span>
     </button>
   </div>
 </div>

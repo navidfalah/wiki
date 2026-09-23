@@ -1,3 +1,5 @@
+import { t } from './lib/i18n';
+
 const apiBase = document.querySelector('meta[name="api-base"]')?.getAttribute('content') ?? '';
 const connectorId = (window as any).__connectorId as string;
 
@@ -10,10 +12,10 @@ const errorBox = document.getElementById('callback-error') as HTMLElement;
 
 if (providerError) {
   errorBox.classList.remove('hidden');
-  errorBox.textContent = `The provider returned an error: ${providerError}`;
+  errorBox.textContent = t('connectors-callback.errProvider', { error: providerError });
 } else if (!code || !state) {
   errorBox.classList.remove('hidden');
-  errorBox.textContent = 'Missing code/state in the callback URL -- try connecting again from the Resources page\'s Connectors tab.';
+  errorBox.textContent = t('connectors-callback.errMissing');
 }
 
 document.getElementById('callback-form')?.addEventListener('submit', async (event) => {
@@ -31,13 +33,13 @@ document.getElementById('callback-form')?.addEventListener('submit', async (even
     });
     if (!res.ok) {
       const err = await res.json().catch(() => ({}));
-      throw new Error(err.error || `Request failed (${res.status})`);
+      throw new Error(err.error || t('common.requestFailed', { status: res.status }));
     }
-    (window as any).queueToast?.(`Connected ${accountLabel}.`, 'success');
+    (window as any).queueToast?.(t('connectors-callback.connected', { label: accountLabel }), 'success');
     window.location.href = '/resources?tab=connectors';
   } catch (err: any) {
     errorBox.classList.remove('hidden');
-    errorBox.textContent = err.message || 'Failed to complete connection.';
+    errorBox.textContent = err.message || t('connectors-callback.failed');
     submitBtn.disabled = false;
   }
 });

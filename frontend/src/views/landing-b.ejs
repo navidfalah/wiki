@@ -1,0 +1,188 @@
+<%
+  const svg = (inner, size) => `<svg viewBox="0 0 24 24" width="${size || 22}" height="${size || 22}" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">${inner}</svg>`;
+  const icons = {
+    files: svg('<path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="8" y1="13" x2="16" y2="13"/><line x1="8" y1="17" x2="14" y2="17"/>'),
+    wiki: svg('<path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/>'),
+    chat: svg('<path d="M21 11.5a8.4 8.4 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.4 8.4 0 0 1-3.8-.9L3 21l1.9-5.7a8.4 8.4 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.4 8.4 0 0 1 3.8-.9h.5a8.5 8.5 0 0 1 8 8z"/>'),
+    graph: svg('<circle cx="6" cy="6" r="2.5"/><circle cx="18" cy="8" r="2.5"/><circle cx="12" cy="18" r="2.5"/><line x1="8" y1="7" x2="16" y2="7.6"/><line x1="7" y1="8.2" x2="11" y2="15.6"/><line x1="17" y1="10.3" x2="13" y2="15.7"/>'),
+    plug: svg('<path d="M9 2v6"/><path d="M15 2v6"/><path d="M6 8h12v4a6 6 0 0 1-12 0z"/><path d="M12 18v4"/>'),
+    shield: svg('<path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/><polyline points="9 12 11 14 15 10"/>'),
+  };
+  const check = svg('<polyline points="20 6 9 17 4 12"/>', 16);
+  const arrow = svg('<line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/>', 16);
+  const loginHref = signedIn ? '/dashboard' : '/login';
+  const loginLabel = signedIn ? t.nav.dashboard : t.nav.login;
+  const flow = ['raw/', 'compile', 'wiki/', 'chat'];
+%><!doctype html>
+<html lang="<%= t.htmlLang %>" class="scroll-smooth">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title><%= t.metaTitle %></title>
+  <meta name="description" content="<%= t.metaDescription %>" />
+  <link rel="canonical" href="<%= canonical %>" />
+  <link rel="alternate" hreflang="de" href="<%= siteUrl %>/" />
+  <link rel="alternate" hreflang="en" href="<%= siteUrl %>/en" />
+  <meta property="og:type" content="website" />
+  <meta property="og:site_name" content="Wissensbau" />
+  <meta property="og:title" content="<%= t.metaTitle %>" />
+  <meta property="og:description" content="<%= t.metaDescription %>" />
+  <meta property="og:url" content="<%= canonical %>" />
+  <meta name="theme-color" content="#020617" />
+  <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+  <%- include('partials/fonts') %>
+  <link rel="stylesheet" href="/css/app.css?v=<%= assetV %>" />
+</head>
+<body class="bg-slate-950 font-sans text-slate-300 antialiased selection:bg-emerald-400/30">
+
+  <!-- Floating pill nav -->
+  <header class="sticky top-4 z-30 px-4">
+    <div class="mx-auto flex h-14 max-w-4xl items-center justify-between rounded-full border border-white/10 bg-slate-900/70 pl-5 pr-2 shadow-lg shadow-black/30 backdrop-blur-xl">
+      <a href="<%= lang === 'de' ? '/' : '/en' %>?design=b" class="flex items-center gap-2 no-underline">
+        <svg viewBox="0 0 32 32" width="22" height="22" aria-hidden="true"><g fill="#34d399"><rect x="6" y="19" width="9" height="7" rx="1.5"/><rect x="17" y="19" width="9" height="7" rx="1.5"/><rect x="11.5" y="8" width="9" height="9" rx="1.5" opacity=".8"/></g></svg>
+        <span class="font-semibold tracking-tight text-white">Wissensbau</span>
+      </a>
+      <nav class="hidden items-center gap-6 text-sm text-slate-400 md:flex" aria-label="Main">
+        <a href="#funktionen" class="no-underline hover:text-white"><%= t.nav.features %></a>
+        <a href="#ablauf" class="no-underline hover:text-white"><%= t.nav.how %></a>
+        <a href="#betrieb" class="no-underline hover:text-white"><%= t.nav.ops %></a>
+      </nav>
+      <div class="flex items-center gap-1">
+        <a href="/lang/<%= lang === 'de' ? 'en' : 'de' %>?next=<%= encodeURIComponent(t.nav.switchHref + '?design=b') %>" class="rounded-full px-3 py-1.5 text-xs font-semibold text-slate-400 no-underline hover:text-white"><%= t.nav.switchLabel %></a>
+        <a href="<%= loginHref %>" class="rounded-full bg-emerald-400 px-4 py-2 text-sm font-semibold text-slate-950 no-underline transition hover:bg-emerald-300"><%= loginLabel %></a>
+      </div>
+    </div>
+  </header>
+
+  <main>
+    <!-- Hero -->
+    <section class="relative overflow-hidden">
+      <div class="pointer-events-none absolute inset-0 -z-10" aria-hidden="true">
+        <div class="absolute left-1/2 top-[-12rem] h-[36rem] w-[60rem] -translate-x-1/2 rounded-full bg-emerald-500/20 blur-[120px]"></div>
+        <div class="absolute right-[-8rem] top-40 h-96 w-96 rounded-full bg-cyan-500/10 blur-[100px]"></div>
+        <div class="absolute inset-0 [background-image:radial-gradient(rgba(148,163,184,0.16)_1px,transparent_1px)] [background-size:26px_26px] [mask-image:radial-gradient(ellipse_at_center,black_20%,transparent_70%)]"></div>
+      </div>
+
+      <div class="mx-auto max-w-4xl px-5 pb-20 pt-20 text-center md:pb-28 md:pt-28">
+        <span class="inline-flex items-center gap-2 rounded-full border border-emerald-400/30 bg-emerald-400/10 px-3 py-1 font-mono text-xs text-emerald-300 animate-rise">
+          <span class="h-1.5 w-1.5 animate-pulse rounded-full bg-emerald-400"></span><%= t.hero.badge %>
+        </span>
+        <h1 class="mt-6 text-4xl font-semibold leading-[1.06] tracking-tight text-white sm:text-6xl animate-rise">
+          <%= t.hero.titleLead %>
+          <span class="bg-gradient-to-r from-emerald-300 via-teal-200 to-cyan-300 bg-clip-text text-transparent"><%= t.hero.titleAccent %></span>
+        </h1>
+        <p class="mx-auto mt-6 max-w-2xl text-lg leading-relaxed text-slate-400 animate-rise"><%= t.hero.text %></p>
+        <div class="mt-9 flex flex-wrap items-center justify-center gap-3 animate-rise">
+          <a href="<%= loginHref %>" class="inline-flex items-center gap-2 rounded-full bg-emerald-400 px-6 py-3 text-sm font-semibold text-slate-950 no-underline shadow-[0_0_40px_-8px_rgba(52,211,153,0.7)] transition hover:bg-emerald-300">
+            <%= signedIn ? t.nav.dashboard : t.hero.ctaPrimary %> <%- arrow %>
+          </a>
+          <a href="#ablauf" class="inline-flex items-center rounded-full border border-white/15 px-6 py-3 text-sm font-semibold text-slate-200 no-underline transition hover:bg-white/5"><%= t.hero.ctaSecondary %></a>
+        </div>
+
+        <!-- Pipeline strip -->
+        <div class="mx-auto mt-14 flex max-w-xl items-center justify-center gap-2 font-mono text-xs sm:text-sm" aria-hidden="true">
+          <% flow.forEach(function(step, i) { %>
+            <span class="rounded-lg border border-white/10 bg-white/5 px-3 py-1.5 <%= i === 1 ? 'border-emerald-400/40 text-emerald-300' : 'text-slate-300' %>"><%= step %></span>
+            <% if (i < flow.length - 1) { %><span class="text-slate-600">→</span><% } %>
+          <% }); %>
+        </div>
+        <p class="mt-5 font-mono text-[11px] tracking-wide text-slate-500"><%= t.hero.formats %></p>
+      </div>
+    </section>
+
+    <!-- Chat mock, wide -->
+    <section class="px-5 pb-24" aria-hidden="true">
+      <div class="mx-auto max-w-3xl overflow-hidden rounded-2xl border border-white/10 bg-slate-900/80 shadow-2xl shadow-emerald-900/20">
+        <div class="flex items-center gap-1.5 border-b border-white/10 px-4 py-3">
+          <span class="h-2.5 w-2.5 rounded-full bg-slate-700"></span><span class="h-2.5 w-2.5 rounded-full bg-slate-700"></span><span class="h-2.5 w-2.5 rounded-full bg-slate-700"></span>
+          <span class="ml-3 font-mono text-[11px] text-slate-500"><%= t.mock.page %></span>
+        </div>
+        <div class="space-y-4 p-6">
+          <div class="ml-auto max-w-[80%] rounded-2xl rounded-br-sm bg-emerald-400 px-4 py-2.5 text-sm font-medium text-slate-950"><%= t.mock.question %></div>
+          <div class="max-w-[88%] rounded-2xl rounded-bl-sm border border-white/10 bg-white/5 px-4 py-3 text-sm text-slate-200">
+            <p><%= t.mock.answer %></p>
+            <div class="mt-3 flex flex-wrap gap-1.5">
+              <% t.mock.sources.forEach(function(source, i) { %>
+                <span class="rounded-md border border-emerald-400/30 bg-emerald-400/10 px-2 py-0.5 font-mono text-[11px] text-emerald-300">[<%= i + 1 %>] <%= source %></span>
+              <% }); %>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- How it works -->
+    <section id="ablauf" class="scroll-mt-24 border-t border-white/10 py-20">
+      <div class="mx-auto max-w-6xl px-5">
+        <p class="font-mono text-sm text-emerald-400">// <%= t.how.eyebrow %></p>
+        <h2 class="mt-3 max-w-2xl text-3xl font-semibold tracking-tight text-white sm:text-4xl"><%= t.how.title %></h2>
+        <ol class="mt-12 grid gap-px overflow-hidden rounded-2xl border border-white/10 bg-white/10 sm:grid-cols-2 lg:grid-cols-4">
+          <% t.how.steps.forEach(function(step, i) { %>
+            <li class="bg-slate-950 p-6">
+              <span class="font-mono text-sm text-emerald-400">0<%= i + 1 %></span>
+              <h3 class="mt-3 text-lg font-semibold text-white"><%= step.title %></h3>
+              <p class="mt-2 text-sm leading-relaxed text-slate-400"><%= step.text %></p>
+            </li>
+          <% }); %>
+        </ol>
+      </div>
+    </section>
+
+    <!-- Features (bento) -->
+    <section id="funktionen" class="scroll-mt-24 py-20">
+      <div class="mx-auto max-w-6xl px-5">
+        <p class="font-mono text-sm text-emerald-400">// <%= t.features.eyebrow %></p>
+        <h2 class="mt-3 max-w-2xl text-3xl font-semibold tracking-tight text-white sm:text-4xl"><%= t.features.title %></h2>
+        <div class="mt-12 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+          <% t.features.items.forEach(function(item, i) { %>
+            <article class="group relative overflow-hidden rounded-2xl border border-white/10 bg-gradient-to-b from-white/[0.06] to-transparent p-6 transition hover:border-emerald-400/40 <%= i === 0 || i === 5 ? 'lg:col-span-2' : '' %>">
+              <div class="pointer-events-none absolute -right-10 -top-10 h-32 w-32 rounded-full bg-emerald-400/0 blur-2xl transition group-hover:bg-emerald-400/20" aria-hidden="true"></div>
+              <span class="flex h-10 w-10 items-center justify-center rounded-lg bg-emerald-400/10 text-emerald-300 ring-1 ring-emerald-400/20"><%- icons[item.icon] %></span>
+              <h3 class="mt-4 text-base font-semibold text-white"><%= item.title %></h3>
+              <p class="mt-2 max-w-lg text-sm leading-relaxed text-slate-400"><%= item.text %></p>
+            </article>
+          <% }); %>
+        </div>
+      </div>
+    </section>
+
+    <!-- Operations -->
+    <section id="betrieb" class="scroll-mt-24 px-5 pb-20">
+      <div class="mx-auto max-w-6xl rounded-3xl border border-emerald-400/20 bg-gradient-to-br from-emerald-400/10 via-transparent to-cyan-400/5 p-8 sm:p-12">
+        <div class="grid gap-10 lg:grid-cols-2 lg:items-center">
+          <div>
+            <p class="font-mono text-sm text-emerald-400">// <%= t.ops.eyebrow %></p>
+            <h2 class="mt-3 text-3xl font-semibold tracking-tight text-white sm:text-4xl"><%= t.ops.title %></h2>
+            <p class="mt-4 max-w-lg leading-relaxed text-slate-400"><%= t.ops.text %></p>
+          </div>
+          <ul class="space-y-3 font-mono text-sm">
+            <% t.ops.points.forEach(function(point) { %>
+              <li class="flex items-start gap-3 text-slate-200"><span class="mt-0.5 shrink-0 text-emerald-400"><%- check %></span><%= point %></li>
+            <% }); %>
+          </ul>
+        </div>
+      </div>
+    </section>
+
+    <!-- CTA -->
+    <section class="px-5 pb-24 text-center">
+      <h2 class="text-3xl font-semibold tracking-tight text-white sm:text-4xl"><%= t.cta.title %></h2>
+      <p class="mt-3 text-slate-400"><%= t.cta.text %></p>
+      <a href="<%= loginHref %>" class="mt-8 inline-flex items-center gap-2 rounded-full bg-emerald-400 px-7 py-3 text-sm font-semibold text-slate-950 no-underline shadow-[0_0_40px_-8px_rgba(52,211,153,0.7)] transition hover:bg-emerald-300">
+        <%= signedIn ? t.nav.dashboard : t.cta.button %> <%- arrow %>
+      </a>
+    </section>
+  </main>
+
+  <footer class="border-t border-white/10">
+    <div class="mx-auto flex max-w-6xl flex-col items-center justify-between gap-3 px-5 py-8 text-sm text-slate-500 sm:flex-row">
+      <p><span class="font-semibold text-slate-300">Wissensbau</span> · wissensbau.de · <%= t.footer.tagline %> <span class="opacity-70"><%= t.footer.note %></span></p>
+      <p class="flex items-center gap-4">
+        <% if (imprintUrl) { %><a href="<%= imprintUrl %>" class="no-underline hover:text-slate-200"><%= t.footer.imprint %></a><% } %>
+        <% if (privacyUrl) { %><a href="<%= privacyUrl %>" class="no-underline hover:text-slate-200"><%= t.footer.privacy %></a><% } %>
+        <span>© <%= year %></span>
+      </p>
+    </div>
+  </footer>
+</body>
+</html>

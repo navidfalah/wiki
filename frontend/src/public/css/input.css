@@ -1,6 +1,38 @@
+/* Self-hosted variable fonts (no third-party requests -- GDPR-friendly).
+ * Sora: UI, headings, brand. Inter: long-form reading (wiki articles, chat
+ * answers), where its neutral shapes and tall x-height are easier on the eye.
+ * Latin subset only; it covers every German character (äöüßÄÖÜ). */
+@font-face {
+  font-family: 'Sora';
+  font-style: normal;
+  font-weight: 100 800;
+  font-display: swap;
+  src: url('/fonts/sora-latin-wght-normal.woff2') format('woff2-variations');
+}
+@font-face {
+  font-family: 'Inter';
+  font-style: normal;
+  font-weight: 100 900;
+  font-display: swap;
+  src: url('/fonts/inter-latin-wght-normal.woff2') format('woff2-variations');
+}
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+@layer base {
+  html {
+    font-family: 'Sora', ui-sans-serif, system-ui, -apple-system, 'Segoe UI', sans-serif;
+  }
+  /* Rendered markdown and chat answers: Inter body, Sora headings. */
+  .prose {
+    font-family: 'Inter', ui-sans-serif, system-ui, sans-serif;
+  }
+  .prose :where(h1, h2, h3, h4) {
+    font-family: 'Sora', ui-sans-serif, system-ui, sans-serif;
+  }
+}
 
 .app-shell {
   background: linear-gradient(to bottom, rgb(248 250 252), rgb(255 255 255));
