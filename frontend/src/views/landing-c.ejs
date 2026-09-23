@@ -74,7 +74,7 @@
       </div>
 
       <!-- Brick wall band: the "Bau" in Wissensbau -->
-      <div class="mt-16 space-y-1.5" aria-hidden="true">
+      <div class="mt-16 space-y-1.5 overflow-hidden" aria-hidden="true">
         <% [0, 1, 2].forEach(function(row) { %>
           <div class="flex gap-1.5 <%= row === 1 ? '-ml-10' : '' %>">
             <% for (let i = 0; i < 14; i++) {

@@ -14,7 +14,7 @@ import { Semaphore } from './semaphore';
 
 /** Caps concurrent short-lived `cli.py` processes (chat, emails, connectors).
  * The compiler build is already serialized separately (buildRunning). */
-const pythonSlots = new Semaphore(Number(process.env.PY_MAX_CONCURRENCY ?? 2));
+const pythonSlots = new Semaphore(Number(process.env.PY_MAX_CONCURRENCY || 2));
 
 // eslint-disable-next-line no-control-regex
 const ANSI_ESCAPE_RE = /\x1B(?:[@-Z\\-_]|\[[0-?]*[ -/]*[@-~])/g;

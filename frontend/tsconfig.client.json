@@ -17,8 +17,5 @@
   },
   "include": [
     "src/client/**/*.ts"
-  ],
-  "exclude": [
-    "src/client/graph.ts"
   ]
 }

@@ -48,4 +48,16 @@ describe('Semaphore', () => {
     (await p2)();
     expect(order).toEqual([1, 2]);
   });
+
+  it('falls back to a single permit for non-numeric or too-small values', async () => {
+    for (const bad of [NaN, 0, -3, Infinity]) {
+      const sem = new Semaphore(bad);
+      const release = await sem.acquire();
+      let second = false;
+      void sem.acquire().then(() => (second = true));
+      await Promise.resolve();
+      expect(second).toBe(false);
+      release();
+    }
+  });
 });

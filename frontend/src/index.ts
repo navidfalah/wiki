@@ -20,7 +20,8 @@ app.disable('x-powered-by');
 // TRUST_PROXY=1 when sitting behind Caddy (docker-compose.prod.yml) so
 // req.ip/req.protocol reflect the real visitor; 0 otherwise, so a client on
 // a directly-exposed dev port can't spoof X-Forwarded-For.
-app.set('trust proxy', Number(process.env.TRUST_PROXY ?? 0));
+const trustProxyHops = Number.parseInt(process.env.TRUST_PROXY ?? '0', 10);
+app.set('trust proxy', Number.isFinite(trustProxyHops) && trustProxyHops > 0 ? trustProxyHops : 0);
 
 app.set('view engine', 'ejs');
 app.set('views', path.join(process.cwd(), 'src', 'views'));

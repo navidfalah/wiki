@@ -10,7 +10,9 @@ export class Semaphore {
   private readonly waiters: Array<() => void> = [];
 
   constructor(permits: number) {
-    this.available = Math.max(1, Math.floor(permits));
+    // A NaN (e.g. PY_MAX_CONCURRENCY=abc) or <1 value must not leave zero
+    // permits: nothing would ever be granted and every caller would hang.
+    this.available = Number.isFinite(permits) ? Math.max(1, Math.floor(permits)) : 1;
   }
 
   /** Resolves with a release function once a permit is free. Call it exactly once. */

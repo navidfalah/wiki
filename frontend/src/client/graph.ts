@@ -32,7 +32,7 @@ interface GraphNode extends NodeObject {
   neighborIds: Set<string>;
 }
 
-interface GraphLink extends LinkObject {
+interface GraphLink extends LinkObject<GraphNode> {
   origin: 'detected' | 'override';
 }
 
@@ -55,7 +55,11 @@ const exportAllFilesBtn = document.getElementById('graph-export-all-files') as H
 const exportJsonBtn = document.getElementById('graph-export-json') as HTMLButtonElement;
 const exportImageBtn = document.getElementById('graph-export-image') as HTMLButtonElement;
 
-let graph: ReturnType<typeof ForceGraph<GraphNode, GraphLink>> | null = null;
+// force-graph is a kapsule: `ForceGraph()(element)` builds the instance, which
+// its (class-shaped) typings don't express -- hence the narrow factory cast.
+const createGraph = ForceGraph as unknown as () => (element: HTMLElement) => ForceGraph<GraphNode, GraphLink>;
+
+let graph: ForceGraph<GraphNode, GraphLink> | null = null;
 let allNodes: GraphNode[] = [];
 let allLinks: GraphLink[] = [];
 let matchedIds = new Set<string>();
@@ -481,7 +485,7 @@ async function load() {
     renderStats(allNodes.length, allLinks.length, overrideCount);
     renderHubChips();
 
-    graph = ForceGraph<GraphNode, GraphLink>()(container)
+    graph = createGraph()(container)
       .graphData({ nodes: allNodes, links: allLinks })
       .nodeId('id')
       .nodeLabel('name')
