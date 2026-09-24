@@ -1,0 +1,31 @@
+<%# Shared footer for the public pages. Needs: t (landing copy), lang, imprintUrl, privacyUrl, year, contactEmail. %>
+<footer class="bg-stone-900 text-stone-400">
+  <div class="mx-auto grid max-w-6xl gap-8 px-5 py-10 text-sm sm:grid-cols-[1.4fr_1fr_1fr]">
+    <div>
+      <p class="flex items-center gap-2 font-sans text-base font-bold text-white">
+        <svg viewBox="0 0 32 32" width="20" height="20" aria-hidden="true"><g fill="#d97706"><rect x="3" y="18" width="12" height="7" rx="1"/><rect x="17" y="18" width="12" height="7" rx="1"/><rect x="10" y="8" width="12" height="8" rx="1" fill="#f59e0b"/></g></svg>
+        Wissensbau
+      </p>
+      <p class="mt-3 max-w-xs leading-relaxed text-stone-400"><%= t.footer.tagline %> <%= t.footer.note %></p>
+    </div>
+    <div>
+      <p class="text-xs font-semibold uppercase tracking-[0.18em] text-stone-500"><%= t.footer.explore %></p>
+      <ul class="mt-3 space-y-2">
+        <li><a href="<%= lang === 'de' ? '/' : '/en' %>#ablauf" class="no-underline hover:text-white"><%= t.nav.how %></a></li>
+        <li><a href="<%= lang === 'de' ? '/' : '/en' %>#funktionen" class="no-underline hover:text-white"><%= t.nav.features %></a></li>
+        <li><a href="<%= lang === 'de' ? '/' : '/en' %>#faq" class="no-underline hover:text-white"><%= t.nav.faq %></a></li>
+        <li><a href="/login" class="no-underline hover:text-white"><%= t.nav.login %></a></li>
+      </ul>
+    </div>
+    <div>
+      <p class="text-xs font-semibold uppercase tracking-[0.18em] text-stone-500"><%= t.footer.contact %></p>
+      <ul class="mt-3 space-y-2">
+        <li><a href="<%= t.nav.contactHref %>" class="no-underline hover:text-white"><%= t.nav.contact %></a></li>
+        <li><a href="mailto:<%= contactEmail %>" class="break-all no-underline hover:text-white"><%= contactEmail %></a></li>
+        <% if (imprintUrl) { %><li><a href="<%= imprintUrl %>" class="no-underline hover:text-white"><%= t.footer.imprint %></a></li><% } %>
+        <% if (privacyUrl) { %><li><a href="<%= privacyUrl %>" class="no-underline hover:text-white"><%= t.footer.privacy %></a></li><% } %>
+      </ul>
+    </div>
+  </div>
+  <div class="border-t border-white/10 px-5 py-4 text-center text-xs text-stone-500">wissensbau.de · © <%= year %></div>
+</footer>

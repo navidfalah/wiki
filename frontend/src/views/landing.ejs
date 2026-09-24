@@ -10,7 +10,6 @@
   };
   const arrow = svg('<line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/>', 18);
   const loginHref = signedIn ? '/dashboard' : '/login';
-  const loginLabel = signedIn ? t.nav.dashboard : t.nav.login;
   const serif = 'font-sans';
 %><!doctype html>
 <html lang="<%= t.htmlLang %>" class="scroll-smooth">
@@ -34,36 +33,21 @@
 </head>
 <body class="bg-[#faf6ef] font-sans text-stone-700 antialiased selection:bg-amber-200">
 
-  <header class="mx-auto flex max-w-6xl items-center justify-between px-5 py-6">
-    <a href="<%= lang === 'de' ? '/' : '/en' %>" class="flex items-center gap-2.5 no-underline">
-      <!-- brick mark -->
-      <svg viewBox="0 0 32 32" width="28" height="28" aria-hidden="true"><g fill="#b45309"><rect x="3" y="18" width="12" height="7" rx="1"/><rect x="17" y="18" width="12" height="7" rx="1"/><rect x="10" y="8" width="12" height="8" rx="1" fill="#d97706"/></g></svg>
-      <span class="<%= serif %> text-xl font-bold tracking-tight text-stone-900">Wissensbau</span>
-    </a>
-    <nav class="hidden items-center gap-8 text-sm text-stone-600 md:flex" aria-label="Main">
-      <a href="#funktionen" class="no-underline hover:text-stone-900"><%= t.nav.features %></a>
-      <a href="#ablauf" class="no-underline hover:text-stone-900"><%= t.nav.how %></a>
-      <a href="#betrieb" class="no-underline hover:text-stone-900"><%= t.nav.ops %></a>
-    </nav>
-    <div class="flex items-center gap-3">
-      <a href="/lang/<%= lang === 'de' ? 'en' : 'de' %>?next=<%= encodeURIComponent(t.nav.switchHref) %>" class="text-xs font-semibold text-stone-500 no-underline hover:text-stone-900"><%= t.nav.switchLabel %></a>
-      <a href="<%= loginHref %>" class="rounded-full border border-stone-900 px-4 py-2 text-sm font-medium text-stone-900 no-underline transition hover:bg-stone-900 hover:text-[#faf6ef]"><%= loginLabel %></a>
-    </div>
-  </header>
+  <%- include('partials/landing-header', { switchHref: t.nav.switchHref }) %>
 
   <main>
     <!-- Hero -->
-    <section class="mx-auto max-w-6xl px-5 pb-20 pt-10 md:pt-20">
+    <section class="mx-auto max-w-6xl px-5 pb-16 pt-6 md:pt-14">
       <div class="grid items-end gap-12 lg:grid-cols-[1.4fr_1fr]">
         <div>
           <p class="text-xs font-semibold uppercase tracking-[0.2em] text-amber-700 animate-rise"><%= t.hero.badge %></p>
-          <h1 class="<%= serif %> mt-5 text-5xl font-bold leading-[1.02] tracking-tight text-stone-900 sm:text-6xl lg:text-7xl animate-rise">
+          <h1 class="<%= serif %> mt-4 text-3xl font-bold leading-[1.1] tracking-tight text-stone-900 sm:text-4xl lg:text-5xl animate-rise">
             <%= t.hero.titleLead %>
             <em class="not-italic text-amber-700"><%= t.hero.titleAccent %></em>
           </h1>
         </div>
         <div class="animate-rise">
-          <p class="text-lg leading-relaxed text-stone-600"><%= t.hero.text %></p>
+          <p class="text-base leading-relaxed text-stone-600 sm:text-lg"><%= t.hero.text %></p>
           <div class="mt-7 flex flex-wrap items-center gap-3">
             <a href="<%= loginHref %>" class="inline-flex items-center gap-2 rounded-full bg-stone-900 px-6 py-3 text-sm font-semibold text-[#faf6ef] no-underline transition hover:bg-amber-800">
               <%= signedIn ? t.nav.dashboard : t.hero.ctaPrimary %> <%- arrow %>
@@ -88,6 +72,18 @@
       <p class="mt-5 text-xs tracking-wide text-stone-500"><%= t.hero.formats %></p>
     </section>
 
+    <!-- At a glance -->
+    <section class="border-y border-stone-300/70 bg-white/60">
+      <dl class="mx-auto grid max-w-6xl grid-cols-2 gap-y-6 px-5 py-8 lg:grid-cols-4">
+        <% t.stats.forEach(function(stat) { %>
+          <div class="lg:border-l lg:border-stone-300/70 lg:pl-6 lg:first:border-l-0 lg:first:pl-0">
+            <dt class="font-sans text-3xl font-bold text-amber-700"><%= stat.value %></dt>
+            <dd class="mt-1 max-w-[16rem] text-xs leading-snug text-stone-600"><%= stat.label %></dd>
+          </div>
+        <% }); %>
+      </dl>
+    </section>
+
     <!-- Quote-style demo -->
     <section class="border-y border-stone-300/70 bg-white/60 py-16">
       <div class="mx-auto grid max-w-6xl gap-10 px-5 lg:grid-cols-[1fr_1.3fr] lg:items-center">
@@ -106,10 +102,25 @@
       </div>
     </section>
 
+    <!-- Principles -->
+    <section class="mx-auto max-w-6xl px-5 pt-24">
+      <p class="text-xs font-semibold uppercase tracking-[0.2em] text-amber-700"><%= t.principles.eyebrow %></p>
+      <h2 class="font-sans mt-3 max-w-2xl text-3xl font-bold tracking-tight text-stone-900 sm:text-4xl"><%= t.principles.title %></h2>
+      <div class="mt-10 grid gap-5 md:grid-cols-3">
+        <% t.principles.items.forEach(function(item, i) { %>
+          <article class="rounded-2xl border border-stone-300 bg-white p-6 shadow-[4px_4px_0_0_rgba(180,83,9,0.12)]">
+            <span class="flex h-8 w-8 items-center justify-center rounded-full bg-amber-100 font-sans text-sm font-bold text-amber-800"><%= i + 1 %></span>
+            <h3 class="font-sans mt-4 text-lg font-bold text-stone-900"><%= item.title %></h3>
+            <p class="mt-2 text-sm leading-relaxed text-stone-600"><%= item.text %></p>
+          </article>
+        <% }); %>
+      </div>
+    </section>
+
     <!-- How it works: big numerals -->
     <section id="ablauf" class="scroll-mt-8 mx-auto max-w-6xl px-5 py-24">
       <p class="text-xs font-semibold uppercase tracking-[0.2em] text-amber-700"><%= t.how.eyebrow %></p>
-      <h2 class="<%= serif %> mt-3 max-w-2xl text-4xl font-bold tracking-tight text-stone-900 sm:text-5xl"><%= t.how.title %></h2>
+      <h2 class="<%= serif %> mt-3 max-w-2xl text-3xl font-bold tracking-tight text-stone-900 sm:text-4xl"><%= t.how.title %></h2>
       <ol class="mt-14 grid gap-x-10 gap-y-12 sm:grid-cols-2 lg:grid-cols-4">
         <% t.how.steps.forEach(function(step, i) { %>
           <li class="border-t-2 border-stone-900 pt-5">
@@ -125,7 +136,7 @@
     <section id="funktionen" class="scroll-mt-8 bg-stone-900 py-24 text-stone-300">
       <div class="mx-auto max-w-6xl px-5">
         <p class="text-xs font-semibold uppercase tracking-[0.2em] text-amber-400"><%= t.features.eyebrow %></p>
-        <h2 class="<%= serif %> mt-3 max-w-2xl text-4xl font-bold tracking-tight text-white sm:text-5xl"><%= t.features.title %></h2>
+        <h2 class="<%= serif %> mt-3 max-w-2xl text-3xl font-bold tracking-tight text-white sm:text-4xl"><%= t.features.title %></h2>
         <div class="mt-14 grid gap-x-16 md:grid-cols-2">
           <% t.features.items.forEach(function(item) { %>
             <article class="flex gap-5 border-t border-white/15 py-7">
@@ -140,12 +151,50 @@
       </div>
     </section>
 
+    <!-- Use cases -->
+    <section class="mx-auto max-w-6xl px-5 py-24">
+      <div class="grid gap-10 lg:grid-cols-[1fr_1.6fr]">
+        <div>
+          <p class="text-xs font-semibold uppercase tracking-[0.2em] text-amber-700"><%= t.usecases.eyebrow %></p>
+          <h2 class="font-sans mt-3 text-3xl font-bold tracking-tight text-stone-900 sm:text-4xl"><%= t.usecases.title %></h2>
+          <p class="mt-4 text-base leading-relaxed text-stone-600"><%= t.usecases.intro %></p>
+        </div>
+        <ul class="grid gap-x-8 sm:grid-cols-2">
+          <% t.usecases.items.forEach(function(item) { %>
+            <li class="border-t-2 border-stone-900 py-5">
+              <h3 class="font-sans text-lg font-bold text-stone-900"><%= item.title %></h3>
+              <p class="mt-2 text-sm leading-relaxed text-stone-600"><%= item.text %></p>
+            </li>
+          <% }); %>
+        </ul>
+      </div>
+    </section>
+
+    <!-- Stack -->
+    <section class="border-y border-stone-300/70 bg-white/60 py-24">
+      <div class="mx-auto max-w-6xl px-5">
+        <p class="text-xs font-semibold uppercase tracking-[0.2em] text-amber-700"><%= t.stack.eyebrow %></p>
+        <h2 class="font-sans mt-3 max-w-2xl text-3xl font-bold tracking-tight text-stone-900 sm:text-4xl"><%= t.stack.title %></h2>
+        <p class="mt-4 max-w-2xl text-base leading-relaxed text-stone-600"><%= t.stack.text %></p>
+        <div class="mt-10 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+          <% t.stack.layers.forEach(function(layer, i) { %>
+            <article class="relative rounded-2xl border border-stone-300 bg-[#faf6ef] p-5">
+              <p class="font-mono text-[11px] font-semibold uppercase tracking-wider text-amber-700">0<%= i + 1 %></p>
+              <h3 class="font-sans mt-2 text-lg font-bold text-stone-900"><%= layer.name %></h3>
+              <p class="mt-1 text-xs font-medium text-stone-500"><%= layer.tech %></p>
+              <p class="mt-3 text-sm leading-relaxed text-stone-600"><%= layer.text %></p>
+            </article>
+          <% }); %>
+        </div>
+      </div>
+    </section>
+
     <!-- Operations -->
     <section id="betrieb" class="scroll-mt-8 mx-auto max-w-6xl px-5 py-24">
       <div class="grid gap-12 lg:grid-cols-2">
         <div>
           <p class="text-xs font-semibold uppercase tracking-[0.2em] text-amber-700"><%= t.ops.eyebrow %></p>
-          <h2 class="<%= serif %> mt-3 text-4xl font-bold tracking-tight text-stone-900 sm:text-5xl"><%= t.ops.title %></h2>
+          <h2 class="<%= serif %> mt-3 text-3xl font-bold tracking-tight text-stone-900 sm:text-4xl"><%= t.ops.title %></h2>
           <p class="mt-5 max-w-lg text-lg leading-relaxed text-stone-600"><%= t.ops.text %></p>
         </div>
         <ul class="divide-y divide-stone-300 self-center border-y border-stone-300">
@@ -156,25 +205,53 @@
       </div>
     </section>
 
+    <!-- FAQ -->
+    <section id="faq" class="scroll-mt-8 border-t border-stone-300/70 bg-white/60 py-24">
+      <div class="mx-auto grid max-w-6xl gap-10 px-5 lg:grid-cols-[1fr_1.6fr]">
+        <div>
+          <p class="text-xs font-semibold uppercase tracking-[0.2em] text-amber-700"><%= t.faq.eyebrow %></p>
+          <h2 class="font-sans mt-3 text-3xl font-bold tracking-tight text-stone-900 sm:text-4xl"><%= t.faq.title %></h2>
+        </div>
+        <div class="divide-y divide-stone-300 border-y border-stone-300">
+          <% t.faq.items.forEach(function(item) { %>
+            <details class="group py-4">
+              <summary class="flex cursor-pointer list-none items-center justify-between gap-4 font-sans text-base font-semibold text-stone-900 [&::-webkit-details-marker]:hidden">
+                <%= item.q %>
+                <span class="shrink-0 text-amber-700 transition group-open:rotate-45" aria-hidden="true">+</span>
+              </summary>
+              <p class="mt-3 text-sm leading-relaxed text-stone-600"><%= item.a %></p>
+            </details>
+          <% }); %>
+        </div>
+      </div>
+    </section>
+
+    <!-- About -->
+    <section class="mx-auto max-w-6xl px-5 py-24">
+      <div class="grid items-center gap-8 rounded-3xl border border-stone-300 bg-white p-8 shadow-[6px_6px_0_0_rgba(180,83,9,0.15)] md:grid-cols-[auto_1fr_auto] md:p-10">
+        <span class="flex h-16 w-16 items-center justify-center rounded-full bg-amber-700 font-sans text-xl font-bold text-white" aria-hidden="true"><%= contactName.split(' ').map(function(w) { return w[0]; }).slice(0, 2).join('') %></span>
+        <div>
+          <p class="text-xs font-semibold uppercase tracking-[0.2em] text-amber-700"><%= t.about.eyebrow %></p>
+          <h2 class="font-sans mt-2 text-2xl font-bold tracking-tight text-stone-900"><%= t.about.title %></h2>
+          <p class="mt-2 max-w-2xl text-sm leading-relaxed text-stone-600"><%= t.about.text %></p>
+        </div>
+        <a href="<%= t.nav.contactHref %>" class="inline-flex items-center justify-center gap-2 rounded-full bg-stone-900 px-6 py-3 text-sm font-semibold text-[#faf6ef] no-underline transition hover:bg-amber-800"><%= t.about.button %> <%- arrow %></a>
+      </div>
+    </section>
+
     <!-- CTA -->
     <section class="bg-amber-700 px-5 py-20 text-center">
-      <h2 class="<%= serif %> mx-auto max-w-2xl text-4xl font-bold tracking-tight text-white sm:text-5xl"><%= t.cta.title %></h2>
+      <h2 class="<%= serif %> mx-auto max-w-2xl text-3xl font-bold tracking-tight text-white sm:text-4xl"><%= t.cta.title %></h2>
       <p class="mt-4 text-amber-100"><%= t.cta.text %></p>
-      <a href="<%= loginHref %>" class="mt-8 inline-flex items-center gap-2 rounded-full bg-white px-7 py-3 text-sm font-semibold text-stone-900 no-underline transition hover:bg-stone-900 hover:text-white">
-        <%= signedIn ? t.nav.dashboard : t.cta.button %> <%- arrow %>
-      </a>
+      <div class="mt-8 flex flex-wrap items-center justify-center gap-3">
+        <a href="<%= loginHref %>" class="inline-flex items-center gap-2 rounded-full bg-white px-7 py-3 text-sm font-semibold text-stone-900 no-underline transition hover:bg-stone-900 hover:text-white">
+          <%= signedIn ? t.nav.dashboard : t.cta.button %> <%- arrow %>
+        </a>
+        <a href="<%= t.nav.contactHref %>" class="inline-flex items-center gap-2 rounded-full border border-white/70 px-7 py-3 text-sm font-semibold text-white no-underline transition hover:bg-white hover:text-stone-900"><%= t.cta.contactButton %></a>
+      </div>
     </section>
   </main>
 
-  <footer class="bg-stone-900 text-stone-400">
-    <div class="mx-auto flex max-w-6xl flex-col items-center justify-between gap-3 px-5 py-8 text-sm sm:flex-row">
-      <p><span class="<%= serif %> font-bold text-white">Wissensbau</span> · wissensbau.de · <%= t.footer.tagline %> <span class="opacity-70"><%= t.footer.note %></span></p>
-      <p class="flex items-center gap-4">
-        <% if (imprintUrl) { %><a href="<%= imprintUrl %>" class="no-underline hover:text-white"><%= t.footer.imprint %></a><% } %>
-        <% if (privacyUrl) { %><a href="<%= privacyUrl %>" class="no-underline hover:text-white"><%= t.footer.privacy %></a><% } %>
-        <span>© <%= year %></span>
-      </p>
-    </div>
-  </footer>
+  <%- include('partials/landing-footer') %>
 </body>
 </html>

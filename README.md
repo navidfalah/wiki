@@ -743,6 +743,7 @@ OPENAI_MODEL=gpt-4o-mini
 | `DOMAIN` | Production | Public domain (default `wissensbau.de`); used by Caddy, cookies and canonical URLs |
 | `ADMIN_USERNAME` / `ADMIN_PASSWORD` | Production | Bootstrap admin created on first boot (password mandatory with `docker-compose.prod.yml`) |
 | `LEGAL_IMPRINT_URL` / `LEGAL_PRIVACY_URL` | No | Impressum / Datenschutz links in the landing footer |
+| `CONTACT_NAME` / `CONTACT_EMAIL` | No | Name and email on the public contact page (`/kontakt`, `/en/contact`) |
 
 See [documentation/40-production-deployment.md](./documentation/40-production-deployment.md#configuration-reference) for the resource-limit variables (`BACKEND_MEM_LIMIT`, `PY_MAX_CONCURRENCY`, …).
 

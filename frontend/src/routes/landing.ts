@@ -4,27 +4,45 @@
  * above the login gate in index.ts.
  */
 import { Router } from 'express';
-import { LEGAL_IMPRINT_URL, LEGAL_PRIVACY_URL, SITE_URL } from '../config';
+import { CONTACT_EMAIL, CONTACT_NAME, LEGAL_IMPRINT_URL, LEGAL_PRIVACY_URL, SITE_URL } from '../config';
 import { fetchCurrentUser, getToken } from '../lib/auth';
 import { explicitLang } from '../lib/i18nMiddleware';
-import { LANDING_COPY, Lang } from '../lib/landingContent';
+import { CONTACT_COPY, LANDING_COPY, Lang } from '../lib/landingContent';
 
 const router = Router();
 
-async function renderLanding(lang: Lang, req: import('express').Request, res: import('express').Response) {
+/** Variables every public page (landing, contact) needs for its shared header/footer. */
+async function publicPageVars(lang: Lang, req: import('express').Request) {
   // Only ask the backend who this is when there's a cookie to check; anonymous
   // visitors (the common case) cost nothing beyond rendering the template.
   const token = getToken(req);
   const user = token ? await fetchCurrentUser(token) : null;
-  res.render('landing', {
+  return {
     t: LANDING_COPY[lang],
     lang,
     signedIn: Boolean(user),
     siteUrl: SITE_URL,
-    canonical: lang === 'de' ? `${SITE_URL}/` : `${SITE_URL}/en`,
     imprintUrl: LEGAL_IMPRINT_URL,
     privacyUrl: LEGAL_PRIVACY_URL,
+    contactName: CONTACT_NAME,
+    contactEmail: CONTACT_EMAIL,
     year: new Date().getFullYear(),
+  };
+}
+
+async function renderLanding(lang: Lang, req: import('express').Request, res: import('express').Response) {
+  res.render('landing', {
+    ...(await publicPageVars(lang, req)),
+    canonical: lang === 'de' ? `${SITE_URL}/` : `${SITE_URL}/en`,
+  });
+}
+
+async function renderContact(lang: Lang, req: import('express').Request, res: import('express').Response) {
+  res.render('contact', {
+    ...(await publicPageVars(lang, req)),
+    c: CONTACT_COPY[lang],
+    canonical: lang === 'de' ? `${SITE_URL}/kontakt` : `${SITE_URL}/en/contact`,
+    switchHref: lang === 'de' ? '/en/contact' : '/kontakt',
   });
 }
 
@@ -42,6 +60,13 @@ router.get('/en', (req, res, next) => {
   renderLanding('en', req, res).catch(next);
 });
 
+router.get('/kontakt', (req, res, next) => {
+  renderContact('de', req, res).catch(next);
+});
+router.get('/en/contact', (req, res, next) => {
+  renderContact('en', req, res).catch(next);
+});
+
 // Amber background, matching the brand's brick mark and the accent color.
 const FAVICON = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32"><rect width="32" height="32" rx="8" fill="#b45309"/><g fill="#fff"><rect x="6" y="19" width="9" height="7" rx="1.5"/><rect x="17" y="19" width="9" height="7" rx="1.5"/><rect x="11.5" y="8" width="9" height="9" rx="1.5" opacity=".85"/></g></svg>`;
 
@@ -52,13 +77,14 @@ router.get('/favicon.svg', (_req, res) => {
 router.get('/robots.txt', (_req, res) => {
   res
     .type('text/plain')
-    .send(`User-agent: *\nAllow: /$\nAllow: /en$\nDisallow: /\n\nSitemap: ${SITE_URL}/sitemap.xml\n`);
+    .send(`User-agent: *\nAllow: /$\nAllow: /en$\nAllow: /kontakt$\nAllow: /en/contact$\nDisallow: /\n\nSitemap: ${SITE_URL}/sitemap.xml\n`);
 });
 
 router.get('/sitemap.xml', (_req, res) => {
   res.type('application/xml').send(
     `<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n` +
-      `  <url><loc>${SITE_URL}/</loc></url>\n  <url><loc>${SITE_URL}/en</loc></url>\n</urlset>\n`,
+      `  <url><loc>${SITE_URL}/</loc></url>\n  <url><loc>${SITE_URL}/en</loc></url>\n` +
+      `  <url><loc>${SITE_URL}/kontakt</loc></url>\n  <url><loc>${SITE_URL}/en/contact</loc></url>\n</urlset>\n`,
   );
 });
 

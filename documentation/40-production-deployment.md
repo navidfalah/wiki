@@ -164,6 +164,7 @@ All values go in `.env` (see `.env.example`):
 | `FRONTEND_PORT` | `3005` | Host port the app listens on; point Cloudflare Tunnel or the proxied DNS record here |
 | `ADMIN_USERNAME` / `ADMIN_PASSWORD` | `admin` / *(required)* | Bootstrap admin (first boot only) |
 | `LEGAL_IMPRINT_URL` / `LEGAL_PRIVACY_URL` | *(empty)* | Footer links (Impressum / Datenschutz) — shown when set |
+| `CONTACT_NAME` / `CONTACT_EMAIL` | Navid Falah / *(built-in)* | Person and address shown on the public contact page (`/kontakt`, `/en/contact`) and in the footer |
 | `BACKEND_MEM_LIMIT` | `768m` | Backend container cap |
 | `FRONTEND_MEM_LIMIT` | `160m` | Frontend container cap |
 | `BACKEND_HEAP_MB` / `FRONTEND_HEAP_MB` | `160` / `96` | Node heap ceilings |

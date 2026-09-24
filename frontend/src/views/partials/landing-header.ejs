@@ -1,0 +1,23 @@
+<%# Shared header for the public pages (landing + contact). Needs: t (landing copy), lang, signedIn, switchHref. %>
+<%
+  const home = lang === 'de' ? '/' : '/en';
+  const loginHref = signedIn ? '/dashboard' : '/login';
+  const loginLabel = signedIn ? t.nav.dashboard : t.nav.login;
+%>
+<header class="mx-auto flex max-w-6xl items-center justify-between gap-3 px-5 py-4">
+  <a href="<%= home %>" class="flex items-center gap-2 no-underline">
+    <svg viewBox="0 0 32 32" width="22" height="22" aria-hidden="true"><g fill="#b45309"><rect x="3" y="18" width="12" height="7" rx="1"/><rect x="17" y="18" width="12" height="7" rx="1"/><rect x="10" y="8" width="12" height="8" rx="1" fill="#d97706"/></g></svg>
+    <span class="font-sans text-base font-bold tracking-tight text-stone-900">Wissensbau</span>
+  </a>
+  <nav class="hidden items-center gap-6 text-xs font-medium text-stone-600 md:flex" aria-label="Main">
+    <a href="<%= home %>#funktionen" class="no-underline hover:text-stone-900"><%= t.nav.features %></a>
+    <a href="<%= home %>#ablauf" class="no-underline hover:text-stone-900"><%= t.nav.how %></a>
+    <a href="<%= home %>#betrieb" class="no-underline hover:text-stone-900"><%= t.nav.ops %></a>
+    <a href="<%= home %>#faq" class="no-underline hover:text-stone-900"><%= t.nav.faq %></a>
+    <a href="<%= t.nav.contactHref %>" class="no-underline hover:text-stone-900"><%= t.nav.contact %></a>
+  </nav>
+  <div class="flex items-center gap-2.5">
+    <a href="/lang/<%= lang === 'de' ? 'en' : 'de' %>?next=<%= encodeURIComponent(switchHref) %>" class="text-[11px] font-semibold text-stone-500 no-underline hover:text-stone-900"><%= t.nav.switchLabel %></a>
+    <a href="<%= loginHref %>" class="rounded-full border border-stone-900 px-3 py-1.5 text-xs font-medium text-stone-900 no-underline transition hover:bg-stone-900 hover:text-[#faf6ef]"><%= loginLabel %></a>
+  </div>
+</header>

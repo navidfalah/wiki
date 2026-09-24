@@ -29,12 +29,16 @@ export const PORT = Number(process.env.PORT ?? 3000);
  * sign-in page; production must not advertise a default password.
  * LEGAL_IMPRINT_URL / LEGAL_PRIVACY_URL add Impressum / Datenschutz links to
  * the landing footer (legally required for German sites) when set.
+ * CONTACT_NAME / CONTACT_EMAIL are shown on the public contact page and the
+ * landing "about" block; override them in .env to point elsewhere.
  */
 export const SITE_URL = (process.env.SITE_URL ?? 'https://wissensbau.de').replace(/\/+$/, '');
 export const COOKIE_SECURE = process.env.COOKIE_SECURE === 'true';
 export const SHOW_DEFAULT_LOGIN_HINT = process.env.SHOW_DEFAULT_LOGIN_HINT !== 'false';
 export const LEGAL_IMPRINT_URL = process.env.LEGAL_IMPRINT_URL ?? '';
 export const LEGAL_PRIVACY_URL = process.env.LEGAL_PRIVACY_URL ?? '';
+export const CONTACT_NAME = process.env.CONTACT_NAME || 'Navid Falah';
+export const CONTACT_EMAIL = process.env.CONTACT_EMAIL || 'navid.falah7@gmail.com';
 
 /**
  * SHOW_SAMPLE_DB_HINT=false hides the "sample Postgres container" callout on

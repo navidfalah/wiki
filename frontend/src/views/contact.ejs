@@ -1,0 +1,102 @@
+<%
+  const arrow = '<svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>';
+  const initials = contactName.split(' ').map(function(w) { return w[0]; }).slice(0, 2).join('');
+  const icons = [
+    '<path d="M12 2l3 7h7l-5.5 4.5L18.5 21 12 16.8 5.5 21l2-7.5L2 9h7z"/>',
+    '<path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/>',
+    '<circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/>',
+    '<path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/>',
+  ];
+%><!doctype html>
+<html lang="<%= c.htmlLang %>">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title><%= c.metaTitle %></title>
+  <meta name="description" content="<%= c.metaDescription %>" />
+  <link rel="canonical" href="<%= canonical %>" />
+  <link rel="alternate" hreflang="de" href="<%= siteUrl %>/kontakt" />
+  <link rel="alternate" hreflang="en" href="<%= siteUrl %>/en/contact" />
+  <meta property="og:type" content="website" />
+  <meta property="og:site_name" content="Wissensbau" />
+  <meta property="og:title" content="<%= c.metaTitle %>" />
+  <meta property="og:description" content="<%= c.metaDescription %>" />
+  <meta property="og:url" content="<%= canonical %>" />
+  <meta name="theme-color" content="#faf6ef" />
+  <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+  <%- include('partials/fonts') %>
+  <link rel="stylesheet" href="/css/app.css?v=<%= assetV %>" />
+</head>
+<body class="flex min-h-screen flex-col bg-[#faf6ef] font-sans text-stone-700 antialiased selection:bg-amber-200">
+
+  <%- include('partials/landing-header', { switchHref: switchHref }) %>
+
+  <main class="flex-1">
+    <section class="mx-auto max-w-6xl px-5 pb-10 pt-8 md:pt-14">
+      <p class="text-xs font-semibold uppercase tracking-[0.2em] text-amber-700 animate-rise"><%= c.eyebrow %></p>
+      <h1 class="mt-4 max-w-2xl text-3xl font-bold leading-[1.1] tracking-tight text-stone-900 sm:text-4xl lg:text-5xl animate-rise"><%= c.title %></h1>
+      <p class="mt-5 max-w-2xl text-base leading-relaxed text-stone-600 sm:text-lg animate-rise"><%= c.intro %></p>
+    </section>
+
+    <section class="mx-auto grid max-w-6xl gap-8 px-5 pb-24 lg:grid-cols-[1fr_1.2fr]">
+      <!-- Contact card -->
+      <div class="self-start rounded-3xl border border-stone-300 bg-white p-7 shadow-[6px_6px_0_0_rgba(180,83,9,0.15)]">
+        <p class="text-[11px] font-semibold uppercase tracking-[0.18em] text-stone-500"><%= c.cardLabel %></p>
+        <div class="mt-4 flex items-center gap-4">
+          <span class="flex h-14 w-14 shrink-0 items-center justify-center rounded-full bg-amber-700 text-lg font-bold text-white" aria-hidden="true"><%= initials %></span>
+          <div class="min-w-0">
+            <h2 class="text-xl font-bold tracking-tight text-stone-900"><%= contactName %></h2>
+            <p class="mt-0.5 text-xs text-stone-500"><%= c.roleLine %></p>
+          </div>
+        </div>
+
+        <div class="mt-6 border-t border-stone-200 pt-5">
+          <p class="text-[11px] font-semibold uppercase tracking-[0.18em] text-stone-500"><%= c.emailLabel %></p>
+          <p class="mt-1.5 break-all font-mono text-sm text-stone-900" id="contact-email"><%= contactEmail %></p>
+          <div class="mt-4 flex flex-wrap gap-2.5">
+            <a href="mailto:<%= contactEmail %>" class="inline-flex items-center gap-2 rounded-full bg-stone-900 px-5 py-2.5 text-sm font-semibold text-[#faf6ef] no-underline transition hover:bg-amber-800"><%= c.emailButton %> <%- arrow %></a>
+            <button type="button" id="copy-email" data-copied="<%= c.copiedLabel %>" class="rounded-full border border-stone-300 px-4 py-2.5 text-sm font-medium text-stone-700 transition hover:border-stone-900 hover:text-stone-900"><%= c.copyLabel %></button>
+          </div>
+        </div>
+
+        <div class="mt-6 rounded-xl bg-amber-50 px-4 py-3 text-xs leading-relaxed text-amber-900 ring-1 ring-amber-200">
+          <p class="font-semibold"><%= c.noteTitle %></p>
+          <p class="mt-1"><%= c.note %></p>
+        </div>
+      </div>
+
+      <!-- Topics -->
+      <div>
+        <h2 class="text-xl font-bold tracking-tight text-stone-900"><%= c.topicsTitle %></h2>
+        <ul class="mt-5 grid gap-4 sm:grid-cols-2">
+          <% c.topics.forEach(function(topic, i) { %>
+            <li class="rounded-2xl border border-stone-300 bg-white/70 p-5">
+              <span class="text-amber-700"><svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><%- icons[i % icons.length] %></svg></span>
+              <h3 class="mt-3 text-base font-bold text-stone-900"><%= topic.title %></h3>
+              <p class="mt-1.5 text-sm leading-relaxed text-stone-600"><%= topic.text %></p>
+            </li>
+          <% }); %>
+        </ul>
+        <a href="<%= lang === 'de' ? '/' : '/en' %>" class="mt-8 inline-block text-sm font-semibold text-stone-700 underline decoration-amber-600/50 underline-offset-4 hover:decoration-amber-700"><%= c.back %></a>
+      </div>
+    </section>
+  </main>
+
+  <%- include('partials/landing-footer') %>
+
+  <script>
+    (function () {
+      var btn = document.getElementById('copy-email');
+      var email = document.getElementById('contact-email');
+      if (!btn || !email || !navigator.clipboard) { if (btn) btn.hidden = true; return; }
+      var label = btn.textContent;
+      btn.addEventListener('click', function () {
+        navigator.clipboard.writeText(email.textContent.trim()).then(function () {
+          btn.textContent = btn.dataset.copied;
+          setTimeout(function () { btn.textContent = label; }, 1800);
+        });
+      });
+    })();
+  </script>
+</body>
+</html>

@@ -1,66 +1,135 @@
-<!doctype html>
+<%
+  const contactHref = lang === 'de' ? '/kontakt' : '/en/contact';
+  const showHint = typeof showDefaultLogin === 'undefined' || showDefaultLogin;
+  const inputCls = 'mt-1.5 w-full rounded-xl border border-stone-300 bg-white px-3.5 py-2.5 text-sm text-stone-900 placeholder-stone-400 transition focus:border-accent focus:outline-none focus:ring-4 focus:ring-accent/15';
+%><!doctype html>
 <html lang="<%= lang %>">
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title><%= t('login.title') %> · <%= t('common.brand') %></title>
   <meta name="robots" content="noindex" />
+  <meta name="theme-color" content="#faf6ef" />
   <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
   <%- include('partials/fonts') %>
   <link rel="stylesheet" href="/css/app.css?v=<%= assetV %>" />
 </head>
-<body class="app-shell flex min-h-screen items-center justify-center bg-gray-50 text-gray-900">
-  <div class="w-full max-w-sm px-4">
-    <div class="rounded-xl border border-gray-200 bg-white p-6 shadow-card">
-      <div class="flex items-center gap-2">
-        <span class="flex h-8 w-8 items-center justify-center rounded-lg bg-accent">
-          <svg viewBox="0 0 32 32" width="20" height="20" aria-hidden="true"><g fill="#fff"><rect x="6" y="19" width="9" height="7" rx="1.5"/><rect x="17" y="19" width="9" height="7" rx="1.5"/><rect x="11.5" y="8" width="9" height="9" rx="1.5" opacity=".85"/></g></svg>
-        </span>
-        <h1 class="text-lg font-semibold tracking-tight text-gray-900"><%= t('common.brand') %></h1>
+<body class="app-shell min-h-screen bg-[#faf6ef] text-stone-900 antialiased">
+  <div class="grid min-h-screen lg:grid-cols-[1.05fr_1fr]">
+
+    <!-- Brand panel -->
+    <aside class="relative hidden overflow-hidden bg-stone-900 text-stone-300 lg:flex lg:flex-col lg:justify-between lg:p-12" aria-hidden="false">
+      <div class="pointer-events-none absolute -right-16 -top-16 h-72 w-72 rounded-full bg-amber-700/25 blur-3xl"></div>
+      <a href="/" class="relative flex items-center gap-2.5 no-underline">
+        <svg viewBox="0 0 32 32" width="30" height="30" aria-hidden="true"><g fill="#d97706"><rect x="3" y="18" width="12" height="7" rx="1"/><rect x="17" y="18" width="12" height="7" rx="1"/><rect x="10" y="8" width="12" height="8" rx="1" fill="#f59e0b"/></g></svg>
+        <span class="text-lg font-bold tracking-tight text-white"><%= t('common.brand') %></span>
+      </a>
+
+      <div class="relative">
+        <p class="text-[11px] font-semibold uppercase tracking-[0.2em] text-amber-400"><%= t('login.panel.badge') %></p>
+        <h2 class="mt-4 max-w-md text-3xl font-bold leading-tight tracking-tight text-white xl:text-4xl"><%= t('login.panel.title') %></h2>
+        <ul class="mt-8 space-y-3 text-sm text-stone-300">
+          <% ['login.panel.p1', 'login.panel.p2', 'login.panel.p3'].forEach(function(key) { %>
+            <li class="flex items-center gap-3"><span class="h-2 w-2 shrink-0 rotate-45 bg-amber-500"></span><%= t(key) %></li>
+          <% }); %>
+        </ul>
       </div>
-      <p class="mt-2 text-sm text-gray-500"><%= t('login.subtitle') %></p>
 
-      <% if (typeof error !== 'undefined' && error) { %>
-        <p class="mt-4 rounded-lg bg-red-50 px-3 py-2 text-sm text-red-700" role="alert"><%= error %></p>
-      <% } %>
+      <!-- brick wall -->
+      <div class="relative space-y-1.5 overflow-hidden" aria-hidden="true">
+        <% [0, 1, 2].forEach(function(row) { %>
+          <div class="flex gap-1.5 <%= row === 1 ? '-ml-8' : '' %>">
+            <% for (let i = 0; i < 9; i++) {
+                 const tones = ['bg-amber-700/90', 'bg-amber-600/80', 'bg-orange-700/80', 'bg-amber-800/90', 'bg-stone-700', 'bg-amber-500/70'];
+                 const tone = tones[(i * 3 + row * 5) % tones.length]; %>
+              <span class="h-5 w-16 shrink-0 rounded-[3px] <%= tone %>"></span>
+            <% } %>
+          </div>
+        <% }); %>
+      </div>
+    </aside>
 
-      <form method="POST" action="/login" class="mt-4 flex flex-col gap-3">
-        <input type="hidden" name="next" value="<%= typeof next !== 'undefined' ? next : '' %>" />
-        <label class="text-xs font-medium text-gray-600">
-          <%= t('login.username') %>
-          <input name="username" type="text" autocomplete="username" required autofocus class="mt-1 w-full rounded-lg border border-gray-300 px-3 py-2 text-sm focus:border-accent focus:outline-none focus:ring-2 focus:ring-accent/20" />
-        </label>
-        <label class="text-xs font-medium text-gray-600">
-          <%= t('login.password') %>
-          <input name="password" type="password" autocomplete="current-password" required class="mt-1 w-full rounded-lg border border-gray-300 px-3 py-2 text-sm focus:border-accent focus:outline-none focus:ring-2 focus:ring-accent/20" />
-        </label>
-        <button type="submit" class="mt-1 rounded-lg bg-accent px-4 py-2 text-sm font-medium text-white hover:bg-accent-dark"><%= t('login.submit') %></button>
-      </form>
+    <!-- Form -->
+    <main class="flex flex-col px-5 py-6 sm:px-10">
+      <div class="flex items-center justify-between lg:justify-end">
+        <a href="/" class="flex items-center gap-2 no-underline lg:hidden">
+          <svg viewBox="0 0 32 32" width="24" height="24" aria-hidden="true"><g fill="#b45309"><rect x="3" y="18" width="12" height="7" rx="1"/><rect x="17" y="18" width="12" height="7" rx="1"/><rect x="10" y="8" width="12" height="8" rx="1" fill="#d97706"/></g></svg>
+          <span class="text-base font-bold tracking-tight text-stone-900"><%= t('common.brand') %></span>
+        </a>
+        <div class="overflow-hidden rounded-lg bg-white/70 ring-1 ring-stone-200">
+          <%- include('partials/lang-switch', { variant: 'login' }) %>
+        </div>
+      </div>
 
-      <% if (typeof showDefaultLogin === 'undefined' || showDefaultLogin) { %>
-      <div class="mt-4 rounded-lg border border-gray-200 bg-gray-50 px-3 py-2 text-xs text-gray-600">
-        <p>
-          <%= t('login.defaultHint.intro') %> <code class="rounded bg-white px-1 py-0.5">admin</code> /
-          <code class="rounded bg-white px-1 py-0.5">aurora_admin</code>
-          -- <%- t('login.defaultHint.setEnvHtml') %>
+      <div class="mx-auto flex w-full max-w-sm flex-1 flex-col justify-center py-10">
+        <h1 class="text-2xl font-bold tracking-tight text-stone-900"><%= t('login.welcome') %></h1>
+        <p class="mt-1.5 text-sm text-stone-500"><%= t('login.subtitle') %></p>
+
+        <% if (typeof error !== 'undefined' && error) { %>
+          <p class="mt-5 flex items-start gap-2 rounded-xl border border-red-200 bg-red-50 px-3.5 py-2.5 text-sm text-red-700" role="alert">
+            <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="mt-0.5 shrink-0" aria-hidden="true"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+            <span><%= error %></span>
+          </p>
+        <% } %>
+
+        <form method="POST" action="/login" class="mt-6 flex flex-col gap-4">
+          <input type="hidden" name="next" value="<%= typeof next !== 'undefined' ? next : '' %>" />
+          <label class="text-xs font-semibold text-stone-700">
+            <%= t('login.username') %>
+            <input name="username" type="text" autocomplete="username" required autofocus class="<%= inputCls %>" />
+          </label>
+          <label class="text-xs font-semibold text-stone-700">
+            <%= t('login.password') %>
+            <span class="relative block">
+              <input id="login-password" name="password" type="password" autocomplete="current-password" required class="<%= inputCls %> pr-11" />
+              <button type="button" id="toggle-password" data-show="<%= t('login.showPassword') %>" data-hide="<%= t('login.hidePassword') %>" aria-label="<%= t('login.showPassword') %>" aria-pressed="false" class="absolute right-1.5 top-1/2 mt-[3px] -translate-y-1/2 rounded-lg p-2 text-stone-400 transition hover:text-stone-700 focus:outline-none focus-visible:ring-2 focus-visible:ring-accent/40">
+                <svg id="eye-on" viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+                <svg id="eye-off" viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" class="hidden" aria-hidden="true"><path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"/><line x1="1" y1="1" x2="23" y2="23"/></svg>
+              </button>
+            </span>
+          </label>
+          <button type="submit" class="mt-1 rounded-xl bg-stone-900 px-4 py-3 text-sm font-semibold text-[#faf6ef] transition hover:bg-accent focus:outline-none focus-visible:ring-4 focus-visible:ring-accent/25"><%= t('login.submit') %></button>
+        </form>
+
+        <% if (showHint) { %>
+        <div class="mt-5 rounded-xl border border-stone-200 bg-white/70 px-3.5 py-3 text-xs text-stone-600">
+          <p>
+            <%= t('login.defaultHint.intro') %> <code class="rounded bg-stone-100 px-1 py-0.5">admin</code> /
+            <code class="rounded bg-stone-100 px-1 py-0.5">aurora_admin</code>
+            -- <%- t('login.defaultHint.setEnvHtml') %>
+          </p>
+          <button type="button" id="use-default-login-btn" class="mt-1.5 font-semibold text-accent hover:text-accent-dark"><%= t('login.defaultHint.fill') %></button>
+        </div>
+        <% } %>
+
+        <p class="mt-6 text-center text-xs text-stone-500">
+          <%= t('login.access') %> <%= t('login.noAccount') %>
+          <a href="<%= contactHref %>" class="font-semibold text-accent no-underline hover:text-accent-dark"><%= t('login.requestAccess') %></a>
         </p>
-        <button type="button" id="use-default-login-btn" class="mt-1.5 font-medium text-accent hover:text-accent-dark"><%= t('login.defaultHint.fill') %></button>
       </div>
-      <% } %>
-    </div>
-    <div class="mt-3 overflow-hidden rounded-lg bg-white/70">
-      <%- include('partials/lang-switch', { variant: 'login' }) %>
-    </div>
-    <p class="mt-3 text-center text-xs text-gray-400"><a href="/" class="hover:text-gray-600"><%= t('login.back') %></a></p>
+
+      <p class="text-center text-xs text-stone-400"><a href="/" class="no-underline hover:text-stone-600"><%= t('login.back') %></a></p>
+    </main>
   </div>
 
-  <% if (typeof showDefaultLogin === 'undefined' || showDefaultLogin) { %>
   <script>
-    document.getElementById('use-default-login-btn')?.addEventListener('click', function () {
-      document.querySelector('input[name="username"]').value = 'admin';
-      document.querySelector('input[name="password"]').value = 'aurora_admin';
-    });
+    (function () {
+      var input = document.getElementById('login-password');
+      var btn = document.getElementById('toggle-password');
+      btn.addEventListener('click', function () {
+        var show = input.type === 'password';
+        input.type = show ? 'text' : 'password';
+        document.getElementById('eye-on').classList.toggle('hidden', show);
+        document.getElementById('eye-off').classList.toggle('hidden', !show);
+        btn.setAttribute('aria-pressed', String(show));
+        btn.setAttribute('aria-label', show ? btn.dataset.hide : btn.dataset.show);
+      });
+      var fill = document.getElementById('use-default-login-btn');
+      if (fill) fill.addEventListener('click', function () {
+        document.querySelector('input[name="username"]').value = 'admin';
+        input.value = 'aurora_admin';
+      });
+    })();
   </script>
-  <% } %>
 </body>
 </html>
