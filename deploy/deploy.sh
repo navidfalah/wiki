@@ -1,8 +1,14 @@
 #!/usr/bin/env bash
 # Deploy / update the production stack on the server.
-#   ./deploy/deploy.sh            build + (re)start
-#   ./deploy/deploy.sh --pull     git pull first
-# Safe to re-run; it never touches data/.
+#   ./deploy/deploy.sh                build + (re)start (default: plain HTTP
+#                                      on FRONTEND_PORT, for Cloudflare Tunnel
+#                                      or a Cloudflare-proxied DNS record --
+#                                      see documentation/40)
+#   ./deploy/deploy.sh --pull         git pull first
+#   ./deploy/deploy.sh --caddy        also start the built-in Caddy service
+#                                      (its own Let's Encrypt HTTPS on 80/443,
+#                                      for deployments NOT behind Cloudflare)
+# Flags can be combined in any order. Safe to re-run; it never touches data/.
 set -euo pipefail
 
 cd "$(dirname "${BASH_SOURCE[0]}")/.."
@@ -17,7 +23,15 @@ set -a; source .env; set +a
 [[ -n "${ADMIN_PASSWORD:-}" ]] || die "ADMIN_PASSWORD is not set in .env."
 [[ -n "${OPENAI_API_KEY:-}" ]] || log "Warning: OPENAI_API_KEY is empty -- the compiler needs an LLM key (or a local LLM) to build."
 
-[[ "${1:-}" == "--pull" ]] && { log "git pull"; git pull --ff-only; }
+use_caddy=false
+for arg in "$@"; do
+  case "$arg" in
+    --pull) log "git pull"; git pull --ff-only ;;
+    --caddy) use_caddy=true ;;
+    *) die "Unknown flag: $arg (expected --pull and/or --caddy)" ;;
+  esac
+done
+$use_caddy && COMPOSE+=(--profile caddy)
 
 # Containers run as the unprivileged `node` user (uid 1000); the bind-mounted
 # folders must be writable by it.
@@ -27,11 +41,18 @@ if [[ "$(stat -c %u data 2>/dev/null || stat -f %u data)" != "1000" ]]; then
   sudo chown -R 1000:1000 data wiki-app/docs wiki-app/static/media
 fi
 
-log "Building and starting (domain: ${DOMAIN:-wissensbau.de})"
+caddy_note=""
+$use_caddy && caddy_note=", with built-in Caddy"
+log "Building and starting (domain: ${DOMAIN:-wissensbau.de}${caddy_note})"
 "${COMPOSE[@]}" up -d --build --remove-orphans
 
 log "Removing dangling images"
 docker image prune -f >/dev/null
 
 "${COMPOSE[@]}" ps
-log "Done. Visit https://${DOMAIN:-wissensbau.de}"
+if $use_caddy; then
+  log "Done. Caddy is serving https://${DOMAIN:-wissensbau.de} directly (ports ${HTTP_PORT:-80}/${HTTPS_PORT:-443})."
+else
+  log "Done. App is listening on http://localhost:${FRONTEND_PORT:-3005} -- point Cloudflare Tunnel"
+  log "(or a Cloudflare-proxied DNS record) at that port to serve https://${DOMAIN:-wissensbau.de}."
+fi

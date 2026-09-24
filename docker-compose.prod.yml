@@ -3,19 +3,27 @@
 #   docker compose -f docker-compose.prod.yml up -d --build
 #   (or ./deploy/deploy.sh, which also checks .env and fixes volume ownership)
 #
+# By default this publishes the app as **plain HTTP on FRONTEND_PORT (3005)**
+# and nothing else -- TLS and the public domain are handled by Cloudflare in
+# front (Tunnel or proxied DNS), not by this stack. See
+# documentation/40-production-deployment.md for the two Cloudflare setups.
+#
+# If you're NOT using Cloudflare and want this stack to get its own
+# Let's-Encrypt certificate instead, add `--profile caddy` to every command
+# (`docker compose -f docker-compose.prod.yml --profile caddy up -d --build`):
+# that starts an extra `caddy` service in front, publishing 80/443 instead.
+#
 # Differences from docker-compose.yml (the dev stack):
-#   - Caddy in front: automatic HTTPS, compression, security headers. It is
-#     the ONLY thing published on the host (80/443); frontend and backend are
-#     reachable only on the internal Docker network.
 #   - No sample Postgres, no local-llm, no live code mounts.
 #   - Hard memory limits + capped Node heaps + capped Python concurrency, so
 #     one busy chat or compile can't take the whole box down.
 #   - Non-root containers, no extra capabilities, rotated logs.
 #
 # Rough memory budget with the defaults below (idle -> limit):
-#   caddy ~15 MB (64 MB cap) · frontend ~60 MB (160 MB cap)
-#   backend ~90 MB idle, 768 MB cap covers 2 concurrent Python processes
-#   => comfortable on 1 GB RAM, happy on 2 GB. Tune via the *_MEM_LIMIT vars.
+#   frontend ~60 MB (160 MB cap) · backend ~90 MB idle, 768 MB cap covers 2
+#   concurrent Python processes (+ caddy ~15 MB / 64 MB cap if that profile
+#   is enabled) => comfortable on 1 GB RAM, happy on 2 GB. Tune via the
+#   *_MEM_LIMIT vars.
 
 name: wissensbau
 
@@ -35,8 +43,12 @@ x-hardening: &hardening
   logging: *logging
 
 services:
+  # Opt-in only (see the header comment above): `--profile caddy` starts this
+  # alongside frontend/backend and publishes 80/443 with automatic HTTPS,
+  # for deployments that aren't behind Cloudflare.
   caddy:
     <<: *hardening
+    profiles: ["caddy"]
     image: caddy:2-alpine
     container_name: wissensbau-caddy
     environment:
@@ -72,8 +84,14 @@ services:
       PUBLIC_API_URL: ""
       NODE_ENV: production
       NODE_OPTIONS: --max-old-space-size=${FRONTEND_HEAP_MB:-96}
-      # One proxy hop (Caddy) in front: trust its X-Forwarded-* for req.ip.
+      # One proxy hop in front either way -- Cloudflare's edge (Tunnel or
+      # proxied DNS) by default, or the optional `caddy` profile -- so its
+      # X-Forwarded-* headers can be trusted for req.ip (login throttle, etc).
       TRUST_PROXY: "1"
+      # Cloudflare (and the optional Caddy profile) always terminates HTTPS
+      # for the browser even though this container itself only ever speaks
+      # plain HTTP -- the Secure cookie flag is about that browser-facing
+      # leg, not this one, so this stays true in both setups.
       COOKIE_SECURE: "true"
       SHOW_DEFAULT_LOGIN_HINT: "false"
       # No sample Postgres container in production -- hide that callout.
@@ -81,8 +99,15 @@ services:
       SITE_URL: https://${DOMAIN:-wissensbau.de}
       LEGAL_IMPRINT_URL: ${LEGAL_IMPRINT_URL:-}
       LEGAL_PRIVACY_URL: ${LEGAL_PRIVACY_URL:-}
-    expose:
-      - "3000"
+    ports:
+      # Published directly (unlike backend, which stays internal-only) so
+      # Cloudflare Tunnel (cloudflared -> http://localhost:3005) or a
+      # Cloudflare-proxied DNS record pointed at this host can reach it.
+      # Bind to 127.0.0.1 instead (e.g. "127.0.0.1:${FRONTEND_PORT:-3005}:3000")
+      # if you're using Tunnel and want the port unreachable from the public
+      # internet entirely -- cloudflared runs on the same host either way, so
+      # it can still reach a loopback-only port.
+      - "${FRONTEND_PORT:-3005}:3000"
     depends_on:
       backend:
         condition: service_healthy

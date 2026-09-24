@@ -23,6 +23,23 @@ app.disable('x-powered-by');
 const trustProxyHops = Number.parseInt(process.env.TRUST_PROXY ?? '0', 10);
 app.set('trust proxy', Number.isFinite(trustProxyHops) && trustProxyHops > 0 ? trustProxyHops : 0);
 
+// A minimal set of security headers the app sets for itself, so they're
+// present whether the deployment in front is Cloudflare (the default --
+// see docker-compose.prod.yml), the optional built-in Caddy profile (which
+// already sets its own copies -- harmless to set the same value twice), or
+// nothing (local dev). HSTS is safe to always send: browsers only act on it
+// when it arrives over an HTTPS connection, which is exactly when it
+// matters -- a plain-HTTP request (e.g. curling :3005 directly) just ignores it.
+app.use((_req, res, next) => {
+  res.setHeader('X-Content-Type-Options', 'nosniff');
+  // SAMEORIGIN, not DENY: the app embeds its own PDF/file previews.
+  res.setHeader('X-Frame-Options', 'SAMEORIGIN');
+  res.setHeader('Referrer-Policy', 'strict-origin-when-cross-origin');
+  res.setHeader('Permissions-Policy', 'camera=(), microphone=(), geolocation=()');
+  res.setHeader('Strict-Transport-Security', 'max-age=31536000');
+  next();
+});
+
 app.set('view engine', 'ejs');
 app.set('views', path.join(process.cwd(), 'src', 'views'));
 
