@@ -1,6 +1,6 @@
 # LLM Wiki — Wissensbau
 
-> **Non-commercial research project.** Live prototype: **[wissensbau.de](https://wissensbau.de)** (English & German UI, Sora + Inter typography). Deployment guide: [documentation/40-production-deployment.md](./documentation/40-production-deployment.md).
+> **Non-commercial research project.** Live prototype: **[wissensbau.de](https://wissensbau.de)** (English & German UI, warm amber/stone palette, Sora + Inter typography). Deployment guide: [documentation/40-production-deployment.md](./documentation/40-production-deployment.md).
 
 Personal knowledge base built on the **[Karpathy LLM Wiki pattern](https://gist.github.com/karpathy/442a6bf555914893e9891c11519de94f)**: drop messy raw notes into `data/raw/`, run a Python compiler pipeline, and browse the result through an Express + TypeScript + Tailwind app with a single unified nav (wiki pages and dashboards in one product, not a docs site with a dashboard bolted on).
 
@@ -742,7 +742,6 @@ OPENAI_MODEL=gpt-4o-mini
 | `WIKI_WEB_SEARCH_API_KEY` | Only for `serpapi`/`bing` | API key for the chosen search provider |
 | `DOMAIN` | Production | Public domain (default `wissensbau.de`); used by Caddy, cookies and canonical URLs |
 | `ADMIN_USERNAME` / `ADMIN_PASSWORD` | Production | Bootstrap admin created on first boot (password mandatory with `docker-compose.prod.yml`) |
-| `LANDING_DESIGN` | No | Landing page design variant `a` / `b` / `c` (default `a`); preview with `/?design=b` |
 | `LEGAL_IMPRINT_URL` / `LEGAL_PRIVACY_URL` | No | Impressum / Datenschutz links in the landing footer |
 
 See [documentation/40-production-deployment.md](./documentation/40-production-deployment.md#configuration-reference) for the resource-limit variables (`BACKEND_MEM_LIMIT`, `PY_MAX_CONCURRENCY`, …).

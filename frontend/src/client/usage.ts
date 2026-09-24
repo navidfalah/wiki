@@ -133,7 +133,7 @@ function renderBarChart(containerId: string, rows: UsageBucket[], options: BarCh
   const gridlines = ticks
     .map((tick) => {
       const y = marginTop + plotHeight - (tick / maxValue) * plotHeight;
-      return `<line x1="${marginLeft}" y1="${y}" x2="${width - 12}" y2="${y}" stroke="#e5e7eb" stroke-width="1" />
+      return `<line x1="${marginLeft}" y1="${y}" x2="${width - 12}" y2="${y}" stroke="#e7e5e4" stroke-width="1" />
               <text x="${marginLeft - 8}" y="${y}" text-anchor="end" dominant-baseline="middle" class="fill-gray-400" font-size="10">${escapeHtml(options.formatAxisTick(tick))}</text>`;
     })
     .join('');
@@ -160,7 +160,7 @@ function renderBarChart(containerId: string, rows: UsageBucket[], options: BarCh
 
   container.innerHTML = `
     <svg viewBox="0 0 ${width} ${height}" class="w-full" role="img" aria-label="${th('usage.chart.aria')}">
-      <line x1="${marginLeft}" y1="${marginTop + plotHeight}" x2="${width - 12}" y2="${marginTop + plotHeight}" stroke="#d1d5db" stroke-width="1" />
+      <line x1="${marginLeft}" y1="${marginTop + plotHeight}" x2="${width - 12}" y2="${marginTop + plotHeight}" stroke="#d6d3d1" stroke-width="1" />
       ${gridlines}
       ${bars}
     </svg>`;

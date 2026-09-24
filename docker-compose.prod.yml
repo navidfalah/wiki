@@ -79,7 +79,6 @@ services:
       # No sample Postgres container in production -- hide that callout.
       SHOW_SAMPLE_DB_HINT: "false"
       SITE_URL: https://${DOMAIN:-wissensbau.de}
-      LANDING_DESIGN: ${LANDING_DESIGN:-a}
       LEGAL_IMPRINT_URL: ${LEGAL_IMPRINT_URL:-}
       LEGAL_PRIVACY_URL: ${LEGAL_PRIVACY_URL:-}
     expose:

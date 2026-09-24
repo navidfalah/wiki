@@ -1,4 +1,4 @@
-# 41 — English/German UI, Fonts and the Admin Panel
+# 41 — English/German UI, Fonts, Color Palette and the Admin Panel
 
 The whole app (sign-in, dashboard and every page) works in **English and
 German**. The landing page at [wissensbau.de](https://wissensbau.de) is German
@@ -50,6 +50,28 @@ articles, chat answers) — both **self-hosted** as variable WOFF2 files
 `dist-static/fonts` by `npm run build:fonts`. No request ever goes to Google
 Fonts, which keeps the site GDPR-friendly. Tailwind: `font-sans` = Sora,
 `font-body` = Inter.
+
+## Color palette
+
+The whole app — landing page and the logged-in dashboard/wiki/chat/etc. —
+shares one warm, editorial palette (`frontend/tailwind.config.js`):
+
+| Token | Hue | Used for |
+|---|---|---|
+| `accent` | amber (`#b45309` / `#d97706` / `#92400e`) | Brand, buttons, links, active nav, focus rings |
+| `source` | rust/orange (`#9a3412` / `#c2410c`) | "Cited from a raw source" badges |
+| `generated` | indigo (`#4338ca` / `#4f46e5`) | "LLM-generated" badges — the one deliberately cool hue |
+| `gray` | overridden to Tailwind's `stone` | Every `bg-gray-*`/`text-gray-*`/`border-gray-*` class site-wide — cards, borders, chart gridlines, the toast surface |
+
+Overriding `gray` → `stone` in the Tailwind config is what reskins the whole
+app from the old blue-gray neutrals to warm stone ones without touching each
+of the hundreds of `bg-gray-*` classes already in the views. `accent` used to
+be emerald and `source` used to be the same amber as `accent` is now — if you
+change either again, check `frontend/src/client/graph.ts` (canvas node/link
+colors are hardcoded hex, not Tailwind classes, and duplicate this palette by
+hand: `#e7e5e4` = stone-200, `#292524` = stone-800, `#1c1917` = stone-900) and
+the RAMP degree-color gradient in the same file, whose third stop is the
+`source` hex.
 
 ## Admin panel (`/users`, also `/admin`)
 

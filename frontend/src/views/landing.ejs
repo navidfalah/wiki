@@ -35,7 +35,7 @@
 <body class="bg-[#faf6ef] font-sans text-stone-700 antialiased selection:bg-amber-200">
 
   <header class="mx-auto flex max-w-6xl items-center justify-between px-5 py-6">
-    <a href="<%= lang === 'de' ? '/' : '/en' %>?design=c" class="flex items-center gap-2.5 no-underline">
+    <a href="<%= lang === 'de' ? '/' : '/en' %>" class="flex items-center gap-2.5 no-underline">
       <!-- brick mark -->
       <svg viewBox="0 0 32 32" width="28" height="28" aria-hidden="true"><g fill="#b45309"><rect x="3" y="18" width="12" height="7" rx="1"/><rect x="17" y="18" width="12" height="7" rx="1"/><rect x="10" y="8" width="12" height="8" rx="1" fill="#d97706"/></g></svg>
       <span class="<%= serif %> text-xl font-bold tracking-tight text-stone-900">Wissensbau</span>
@@ -46,7 +46,7 @@
       <a href="#betrieb" class="no-underline hover:text-stone-900"><%= t.nav.ops %></a>
     </nav>
     <div class="flex items-center gap-3">
-      <a href="/lang/<%= lang === 'de' ? 'en' : 'de' %>?next=<%= encodeURIComponent(t.nav.switchHref + '?design=c') %>" class="text-xs font-semibold text-stone-500 no-underline hover:text-stone-900"><%= t.nav.switchLabel %></a>
+      <a href="/lang/<%= lang === 'de' ? 'en' : 'de' %>?next=<%= encodeURIComponent(t.nav.switchHref) %>" class="text-xs font-semibold text-stone-500 no-underline hover:text-stone-900"><%= t.nav.switchLabel %></a>
       <a href="<%= loginHref %>" class="rounded-full border border-stone-900 px-4 py-2 text-sm font-medium text-stone-900 no-underline transition hover:bg-stone-900 hover:text-[#faf6ef]"><%= loginLabel %></a>
     </div>
   </header>

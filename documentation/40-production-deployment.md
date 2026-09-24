@@ -99,7 +99,6 @@ All values go in `.env` (see `.env.example`):
 |---|---|---|
 | `DOMAIN` | `wissensbau.de` | Site address for Caddy, cookies, canonical URLs |
 | `ADMIN_USERNAME` / `ADMIN_PASSWORD` | `admin` / *(required)* | Bootstrap admin (first boot only) |
-| `LANDING_DESIGN` | `a` | Landing-page design variant (`a`, `b`, `c`) |
 | `LEGAL_IMPRINT_URL` / `LEGAL_PRIVACY_URL` | *(empty)* | Footer links (Impressum / Datenschutz) — shown when set |
 | `BACKEND_MEM_LIMIT` | `768m` | Backend container cap |
 | `FRONTEND_MEM_LIMIT` | `160m` | Frontend container cap |

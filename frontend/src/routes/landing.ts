@@ -11,22 +11,12 @@ import { LANDING_COPY, Lang } from '../lib/landingContent';
 
 const router = Router();
 
-// Three design directions to choose between: a = light & airy, b = dark &
-// technical, c = warm & editorial. `?design=` previews one; LANDING_DESIGN
-// sets the default. Once a winner is picked, delete the other templates and
-// this selector.
-const DESIGNS = ['a', 'b', 'c'];
-const DEFAULT_DESIGN = DESIGNS.includes(process.env.LANDING_DESIGN ?? '') ? process.env.LANDING_DESIGN! : 'a';
-
 async function renderLanding(lang: Lang, req: import('express').Request, res: import('express').Response) {
-  const requested = String(req.query.design ?? '').toLowerCase();
-  const design = DESIGNS.includes(requested) ? requested : DEFAULT_DESIGN;
   // Only ask the backend who this is when there's a cookie to check; anonymous
   // visitors (the common case) cost nothing beyond rendering the template.
   const token = getToken(req);
   const user = token ? await fetchCurrentUser(token) : null;
-  res.render(`landing-${design}`, {
-    design,
+  res.render('landing', {
     t: LANDING_COPY[lang],
     lang,
     signedIn: Boolean(user),
@@ -43,8 +33,7 @@ async function renderLanding(lang: Lang, req: import('express').Request, res: im
 // language and so get German, matching the hreflang="x-default" declaration.
 router.get('/', (req, res, next) => {
   if (explicitLang(req) === 'en') {
-    const design = typeof req.query.design === 'string' ? `?design=${encodeURIComponent(req.query.design)}` : '';
-    res.redirect(`/en${design}`);
+    res.redirect('/en');
     return;
   }
   renderLanding('de', req, res).catch(next);
@@ -53,7 +42,8 @@ router.get('/en', (req, res, next) => {
   renderLanding('en', req, res).catch(next);
 });
 
-const FAVICON = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32"><rect width="32" height="32" rx="8" fill="#059669"/><g fill="#fff"><rect x="6" y="19" width="9" height="7" rx="1.5"/><rect x="17" y="19" width="9" height="7" rx="1.5"/><rect x="11.5" y="8" width="9" height="9" rx="1.5" opacity=".85"/></g></svg>`;
+// Amber background, matching the brand's brick mark and the accent color.
+const FAVICON = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32"><rect width="32" height="32" rx="8" fill="#b45309"/><g fill="#fff"><rect x="6" y="19" width="9" height="7" rx="1.5"/><rect x="17" y="19" width="9" height="7" rx="1.5"/><rect x="11.5" y="8" width="9" height="9" rx="1.5" opacity=".85"/></g></svg>`;
 
 router.get('/favicon.svg', (_req, res) => {
   res.type('image/svg+xml').set('Cache-Control', 'public, max-age=86400').send(FAVICON);

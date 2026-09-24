@@ -73,7 +73,7 @@ let maxDegree = 1;
 const RAMP: [number, number, number][] = [
   [199, 210, 254], // generated-border (few links)
   [79, 70, 229], // generated (well connected)
-  [180, 83, 9], // source (hub)
+  [154, 52, 18], // source (hub) -- matches the "source" accent, orange-800
   [220, 38, 38], // red-600 (super-hub)
 ];
 
@@ -108,12 +108,12 @@ function nodeColor(node: GraphNode): string {
   if (matchedIds.size > 0) {
     if (matchedIds.has(node.id)) return '#f97316';
     if (hoverNode && hoverNode.neighborIds.has(node.id)) return rampColor(degreeT(node));
-    return '#e5e7eb';
+    return '#e7e5e4'; // stone-200
   }
   if (hoverNode) {
     if (node.id === hoverNode.id) return '#f97316';
     if (hoverNode.neighborIds.has(node.id)) return rampColor(Math.max(0.55, degreeT(node)));
-    return '#e5e7eb';
+    return '#e7e5e4'; // stone-200
   }
   return rampColor(degreeT(node));
 }
@@ -300,13 +300,13 @@ function linkColor(link: any): string {
   if (matchedIds.size > 0) {
     const [src, tgt] = linkEndpointIds(link);
     const touches = matchedIds.has(src) || matchedIds.has(tgt);
-    if (!touches) return 'rgba(209,213,219,0.15)';
+    if (!touches) return 'rgba(214,211,209,0.15)'; // stone-300
     return isOverride ? '#f59e0b' : 'rgba(249,115,22,0.55)';
   }
   if (hoverNode) {
-    return linkTouchesHover(link) ? (isOverride ? '#f59e0b' : '#f97316') : 'rgba(209,213,219,0.1)';
+    return linkTouchesHover(link) ? (isOverride ? '#f59e0b' : '#f97316') : 'rgba(214,211,209,0.1)'; // stone-300
   }
-  return isOverride ? 'rgba(245,158,11,0.7)' : 'rgba(148,163,184,0.28)';
+  return isOverride ? 'rgba(245,158,11,0.7)' : 'rgba(168,162,158,0.28)'; // stone-400
 }
 
 function linkWidth(link: any): number {
@@ -500,12 +500,12 @@ async function load() {
         ctx.fill();
         if (hoverNode && node.id === hoverNode.id) {
           ctx.lineWidth = 1.5 / globalScale;
-          ctx.strokeStyle = '#1f2937';
+          ctx.strokeStyle = '#292524'; // stone-800
           ctx.stroke();
         }
         if (selectedIds.has(node.id)) {
           ctx.lineWidth = 2.2 / globalScale;
-          ctx.strokeStyle = '#059669';
+          ctx.strokeStyle = '#b45309'; // accent (amber-700)
           ctx.beginPath();
           ctx.arc(node.x ?? 0, node.y ?? 0, r + 2.5 / globalScale, 0, 2 * Math.PI, false);
           ctx.stroke();
@@ -520,7 +520,7 @@ async function load() {
           const y = (node.y ?? 0) + r + fontSize * 0.9;
           ctx.fillStyle = 'rgba(255,255,255,0.82)';
           ctx.fillRect(x - textWidth / 2 - pad, y - fontSize * 0.78, textWidth + pad * 2, fontSize + pad);
-          ctx.fillStyle = matchedIds.has(node.id) ? '#c2410c' : '#111827';
+          ctx.fillStyle = matchedIds.has(node.id) ? '#c2410c' : '#1c1917'; // stone-900
           ctx.textAlign = 'center';
           ctx.textBaseline = 'middle';
           ctx.fillText(label, x, y - fontSize * 0.28 + fontSize / 2);
