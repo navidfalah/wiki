@@ -35,9 +35,14 @@ def _atomic_write_json(path: Path, data: Any) -> None:
 class PipelineRun:
     """Tracks one compiler run's steps and persists after every change."""
 
-    def __init__(self, run_id: str, *, force: bool) -> None:
+    def __init__(self, run_id: str, *, force: bool, settings: dict[str, Any] | None = None) -> None:
         self.id = run_id
         self.force = force
+        # Snapshot of which LLM profile (model/base_url per purpose) this run
+        # started with -- see main.py's _pipeline_settings_snapshot(). Frozen
+        # at start time so the Pipelines page can show what a run actually
+        # used even after the Settings page changes mid-run or afterward.
+        self.settings: dict[str, Any] = settings or {}
         self.started_at = _utc_now_iso()
         self.finished_at: str | None = None
         self.status = "running"
@@ -47,9 +52,9 @@ class PipelineRun:
         self._step_index: dict[str, int] = {}
 
     @classmethod
-    def start(cls, *, force: bool) -> "PipelineRun":
+    def start(cls, *, force: bool, settings: dict[str, Any] | None = None) -> "PipelineRun":
         run_id = f"{datetime.now(timezone.utc).strftime('%Y%m%d-%H%M%S')}-{uuid.uuid4().hex[:6]}"
-        run = cls(run_id, force=force)
+        run = cls(run_id, force=force, settings=settings)
         run._save()
         run._update_index()
         return run
@@ -122,6 +127,7 @@ class PipelineRun:
         return {
             "id": self.id,
             "force": self.force,
+            "settings": self.settings,
             "started_at": self.started_at,
             "finished_at": self.finished_at,
             "status": self.status,
@@ -148,6 +154,7 @@ class PipelineRun:
                 "finished_at": self.finished_at,
                 "status": self.status,
                 "force": self.force,
+                "settings": self.settings,
             }
         )
         entries.sort(key=lambda e: e["started_at"], reverse=True)

@@ -104,4 +104,5 @@ export const dashboard: Record<keyof typeof en, string> = {
   'dashboard.upload.failedStatus': 'Upload fehlgeschlagen ({status})',
   'dashboard.folder.namePh': 'Name des neuen Ordners …',
   'dashboard.folder.create': 'Erstellen',
+  'dashboard.workingWith': 'Verwendet: {parts}.',
 };

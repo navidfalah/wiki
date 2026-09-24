@@ -47,4 +47,9 @@ export const pipelines = {
   'pipelines.finished': 'Finished.',
   'pipelines.failed': 'Failed.',
   'pipelines.lostConnection': 'Lost connection to the build stream.',
+  'pipelines.settings.title': 'Settings used',
+  'pipelines.settings.default': 'Default',
+  'pipelines.settings.thinking': 'Thinking',
+  'pipelines.settings.embedding': 'Embedding',
+  'pipelines.settings.noKey': ' (no API key configured)',
 } as const;

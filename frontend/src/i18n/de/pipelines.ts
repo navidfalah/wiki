@@ -49,4 +49,9 @@ export const pipelines: Record<keyof typeof en, string> = {
   'pipelines.finished': 'Fertig.',
   'pipelines.failed': 'Fehlgeschlagen.',
   'pipelines.lostConnection': 'Verbindung zum Build-Stream verloren.',
+  'pipelines.settings.title': 'Verwendete Einstellungen',
+  'pipelines.settings.default': 'Standard',
+  'pipelines.settings.thinking': 'Reasoning',
+  'pipelines.settings.embedding': 'Embedding',
+  'pipelines.settings.noKey': ' (kein API-Schlüssel konfiguriert)',
 };

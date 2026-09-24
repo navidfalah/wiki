@@ -102,4 +102,5 @@ export const dashboard = {
   'dashboard.upload.failedStatus': 'Upload failed ({status})',
   'dashboard.folder.namePh': 'New folder name…',
   'dashboard.folder.create': 'Create',
+  'dashboard.workingWith': 'Working with {parts}.',
 } as const;

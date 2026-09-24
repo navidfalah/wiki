@@ -246,6 +246,31 @@ function renderBuildSteps(liveSteps: LiveStep[]) {
     });
 }
 
+interface RunSettings {
+  default?: { model: string; base_url: string; available: boolean };
+  thinking?: { model: string; base_url: string; available: boolean };
+  embedding?: { model: string };
+}
+
+/** Shows which LLM profile (per purpose) the running/last build actually
+ * used -- see backend/src/lib/pipelineRuns.ts's PipelineRunSettings. Lets
+ * the "Run compiler" panel answer "which settings is this working with"
+ * without opening the Pipelines page's run detail. */
+function renderSettingsHint(settings: RunSettings | null | undefined) {
+  const hint = document.getElementById('build-settings-hint');
+  if (!hint) return;
+  if (!settings?.default) {
+    hint.textContent = '';
+    return;
+  }
+  const parts = [`${t('pipelines.settings.default')}: ${settings.default.model}`];
+  if (settings.thinking && settings.thinking.model !== settings.default.model) {
+    parts.push(`${t('pipelines.settings.thinking')}: ${settings.thinking.model}`);
+  }
+  if (settings.embedding?.model) parts.push(`${t('pipelines.settings.embedding')}: ${settings.embedding.model}`);
+  hint.textContent = t('dashboard.workingWith', { parts: parts.join(' · ') });
+}
+
 let buildPollTimer: number | undefined;
 let currentRunId: string | null = null;
 
@@ -270,6 +295,7 @@ async function pollBuildSteps() {
     if (run.status !== 'running' && onBuildFinishedWhilePolling) {
       onBuildFinishedWhilePolling(run);
     }
+    renderSettingsHint(run.settings);
   } catch {
     /* transient -- keep the last rendered state and try again next tick */
   }
@@ -463,6 +489,7 @@ function initBuild() {
 
     currentRunId = null;
     renderBuildSteps([]);
+    renderSettingsHint(null);
     // A build already running doesn't block this one -- /api/build/stream
     // queues it (one deep) and starts it automatically once the current
     // build finishes, rather than rejecting the request outright.

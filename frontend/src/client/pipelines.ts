@@ -4,12 +4,19 @@ import { buildMessage, runMessage, statusLabel, stepName } from './lib/serverTex
 import { apiBase } from './lib/api';
 import { escapeHtml } from './lib/dom';
 
+interface RunSettings {
+  default?: { model: string; base_url: string; available: boolean };
+  thinking?: { model: string; base_url: string; available: boolean };
+  embedding?: { model: string };
+}
+
 interface RunSummary {
   id: string;
   started_at: string;
   finished_at: string | null;
   status: 'running' | 'success' | 'error' | 'stopped';
   force: boolean;
+  settings?: RunSettings;
 }
 
 interface RunStep {
@@ -106,7 +113,7 @@ function renderList() {
             ${statusBadge(run.status)}
           </div>
           <div class="flex items-center justify-between gap-2 text-xs text-gray-500">
-            <span class="truncate font-mono">${escapeHtml(run.id)}</span>
+            <span class="truncate font-mono">${escapeHtml(run.id)}${run.settings?.default?.model ? ` · ${escapeHtml(run.settings.default.model)}` : ''}</span>
             <span class="shrink-0">${escapeHtml(formatDuration(run.started_at, run.finished_at))}</span>
           </div>
         </button>
@@ -287,6 +294,31 @@ function renderStepDataHtml(data: Record<string, unknown> | null | undefined, st
     </details>`;
 }
 
+/** Which LLM profile (model per purpose) a run started with -- see
+ * backend/src/lib/pipelineRuns.ts's PipelineRunSettings, frozen by
+ * compiler/main.py at run start so it reflects what the run actually used
+ * even if the Settings page changes afterward. */
+function renderSettingsHtml(settings: RunSettings | undefined): string {
+  const rows: Array<[string, string]> = [];
+  if (settings?.default) {
+    rows.push([t('pipelines.settings.default'), settings.default.model + (settings.default.available ? '' : t('pipelines.settings.noKey'))]);
+  }
+  if (settings?.thinking) {
+    rows.push([t('pipelines.settings.thinking'), settings.thinking.model + (settings.thinking.available ? '' : t('pipelines.settings.noKey'))]);
+  }
+  if (settings?.embedding) {
+    rows.push([t('pipelines.settings.embedding'), settings.embedding.model]);
+  }
+  if (!rows.length) return '';
+  return `
+    <div class="mt-3 rounded-lg border border-gray-100 bg-gray-50 px-3 py-2">
+      <p class="text-[11px] font-semibold uppercase tracking-wide text-gray-500">${th('pipelines.settings.title')}</p>
+      <ul class="mt-1 flex flex-col gap-0.5 text-xs text-gray-700">
+        ${rows.map(([label, value]) => `<li><span class="font-medium text-gray-900">${escapeHtml(label)}:</span> ${escapeHtml(value)}</li>`).join('')}
+      </ul>
+    </div>`;
+}
+
 function renderDetail(run: RunDetail) {
   const container = document.getElementById('pipeline-run-detail')!;
 
@@ -362,6 +394,7 @@ function renderDetail(run: RunDetail) {
       </div>
       ${statusBadge(run.status)}
     </div>
+    ${renderSettingsHtml(run.settings)}
     ${
       run.error
         ? `<div class="copy-wrap relative mt-3">
