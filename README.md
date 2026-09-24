@@ -779,8 +779,9 @@ Edit via the Knowledge Graph Explorer UI or PUT `/api/knowledge-graph/overrides`
 The production stack is `docker-compose.prod.yml`: **frontend** → **backend**, with hard memory limits, capped Python concurrency and non-root containers — sized for a small server (idle footprint ≈ 37 MB RAM). It publishes plain HTTP on port **3005**; the public domain and HTTPS are handled by **Cloudflare** in front (Tunnel or a proxied DNS record) rather than by this stack.
 
 ```bash
-cp .env.example .env      # set DOMAIN, ADMIN_USERNAME, ADMIN_PASSWORD, OPENAI_API_KEY
+./deploy/setup-env.sh     # creates .env: domain, random admin password, secrets; asks for the LLM key
 ./deploy/deploy.sh        # builds and starts on :3005; re-run (or --pull) to update
+# or both at once: ./deploy/setup-env.sh --deploy
 ```
 
 Then point Cloudflare Tunnel (`cloudflared`, recommended — no open port needed) or a Cloudflare-proxied DNS record at `http://<server>:3005`. Not using Cloudflare? `./deploy/deploy.sh --caddy` instead starts a built-in Caddy service that gets its own Let's Encrypt certificate on 80/443. `ADMIN_PASSWORD` is mandatory in production; users are then managed in the **Admin panel** (`/users`). Public routes: `/` (German landing page), `/en` (English); everything else requires sign-in. Full guide — Cloudflare setup, sizing, tuning knobs, security notes, backups, troubleshooting — in [documentation/40-production-deployment.md](./documentation/40-production-deployment.md).
