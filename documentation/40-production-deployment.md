@@ -76,19 +76,12 @@ adds a Python process (~100–250 MB).
 2. **Get the code and configure:**
    ```bash
    git clone <repo-url> wiki && cd wiki
-   ./deploy/setup-env.sh
-   ```
-   `setup-env.sh` creates `.env` and fills everything: domain, port, a random
-   admin password (printed once), a random `CONNECTOR_SECRET_KEY`, and the
-   small-server limits. It asks for the LLM key when run in a terminal, and
-   is safe to re-run (existing values are kept). To skip every prompt, pass
-   values as environment variables:
-   ```bash
-   OPENAI_API_KEY=... ADMIN_USERNAME=you@example.org ./deploy/setup-env.sh
+   cp .env.example .env
+   # edit .env: DOMAIN, ADMIN_USERNAME, ADMIN_PASSWORD, OPENAI_API_KEY (or local LLM)
    ```
 3. **Start:**
    ```bash
-   ./deploy/deploy.sh          # or: ./deploy/setup-env.sh --deploy  (steps 2+3 in one)
+   ./deploy/deploy.sh
    ```
    The script checks `.env`, fixes ownership of `data/` and `wiki-app/` for the
    unprivileged container user (uid 1000), builds, and starts the stack. The
