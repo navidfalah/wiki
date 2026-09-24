@@ -10,6 +10,9 @@
 #                                      for deployments NOT behind Cloudflare)
 # Flags can be combined in any order. Safe to re-run; it never touches data/.
 set -euo pipefail
+# Files created by `git pull` below must be world-readable (a restrictive shell
+# umask would otherwise make them unreadable inside the containers).
+umask 022
 
 cd "$(dirname "${BASH_SOURCE[0]}")/.."
 COMPOSE=(docker compose -f docker-compose.prod.yml)

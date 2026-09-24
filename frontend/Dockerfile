@@ -15,6 +15,10 @@ WORKDIR /app
 COPY package.json package-lock.json ./
 RUN npm ci
 COPY . .
+# The runtime user (node) must be able to read the templates no matter what
+# mode the checkout has on the build host -- e.g. a `git pull` run under
+# `umask 077` leaves files 0600, which COPY preserves and `USER node` can't open.
+RUN chmod -R a+rX src/views
 RUN npm run build && npm prune --omit=dev
 
 FROM node:22-alpine
