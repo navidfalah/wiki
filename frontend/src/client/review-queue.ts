@@ -1,3 +1,6 @@
+import { apiBase } from './lib/api';
+import { escapeHtml } from './lib/dom';
+
 declare global {
   interface Window {
     showToast?: (message: string, type?: string) => void;
@@ -6,14 +9,6 @@ declare global {
 
 import { formatDateTime, formatNumber, t, th } from './lib/i18n';
 import { attentionDetail } from './lib/serverText';
-
-const apiBase = document.querySelector('meta[name="api-base"]')?.getAttribute('content') ?? '';
-
-function escapeHtml(text: string | null | undefined): string {
-  const div = document.createElement('div');
-  div.textContent = text ?? '';
-  return div.innerHTML;
-}
 
 function statCard(value: string, label: string, warn = false): string {
   return `<div class="rounded-xl border border-gray-200 bg-white px-4 py-3 shadow-card">
@@ -120,7 +115,7 @@ function candidateRow(candidate: Candidate): string {
       </p>`
     : '';
 
-  return `<div class="review-row rounded-xl border border-gray-200 bg-white p-4 shadow-card" data-key="${escapeHtml(key)}" data-reason="${candidate.reason}" data-reviewed="${correction ? '1' : '0'}">
+  return `<div class="review-row rounded-xl border border-gray-200 bg-white p-4 shadow-card" data-key="${escapeHtml(key)}" data-reason="${escapeHtml(candidate.reason)}" data-reviewed="${correction ? '1' : '0'}">
     <div class="flex flex-wrap items-start justify-between gap-2">
       <div class="flex flex-wrap items-center gap-2">
         <span class="rounded-full border px-2 py-0.5 text-[11px] font-medium ${REASON_STYLE[candidate.reason]}">${escapeHtml(reasonLabel(candidate.reason))}</span>
@@ -285,7 +280,7 @@ function attentionDocLink(item: AttentionItem): string {
 }
 
 function attentionRow(item: AttentionItem): string {
-  return `<div class="attention-row flex flex-wrap items-start gap-3 rounded-xl border border-gray-200 bg-white p-4 shadow-card" data-kind="${item.kind}">
+  return `<div class="attention-row flex flex-wrap items-start gap-3 rounded-xl border border-gray-200 bg-white p-4 shadow-card" data-kind="${escapeHtml(item.kind)}">
     <span class="mt-0.5 shrink-0 rounded-full border px-2 py-0.5 text-[11px] font-medium ${ATTENTION_SEVERITY_STYLE[item.severity]}">${escapeHtml(t(`review-queue.severity.${item.severity}`))}</span>
     <div class="min-w-0 flex-1">
       <div class="flex flex-wrap items-center gap-2">

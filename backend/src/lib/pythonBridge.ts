@@ -30,6 +30,18 @@ function sseEvent(res: Response, type: string, payload: Record<string, unknown>)
 let buildRunning = false;
 let currentChild: ChildProcess | null = null;
 let stopRequested = false;
+// The pipeline-run id the currently running build is writing to (parsed
+// from its own @@RUN_ID@@ stdout marker), not just whether *some* build is
+// running -- isBuildRunning() alone can't tell a caller which run it is,
+// which matters when a stale run's JSON is stuck at status "running" (e.g.
+// an orphan-reconciliation write that failed) while a different, real
+// build is genuinely in progress: stopping "the" build for the stale run
+// would kill the unrelated active one instead.
+let currentRunId: string | null = null;
+
+export function getCurrentRunId(): string | null {
+  return currentRunId;
+}
 
 /** At most one build waits behind the running one -- see streamCompilerBuild's
  * queuing note. A second concurrent request while one is already queued is
@@ -144,7 +156,9 @@ function runBuildNow(res: Response, options: CompilerBuildOptions): void {
     ...(criticPass && criticSamples && criticSamples > 1 ? [`--critic-samples=${criticSamples}`] : []),
     ...(criticPass && criticRegenerate ? ['--critic-regenerate'] : []),
     ...(useCorrections ? ['--use-corrections'] : []),
-    ...(redactPii ? ['--redact-pii'] : []),
+    // main.py now defaults --redact-pii to on, so the "off" case must be
+    // passed explicitly rather than simply omitted.
+    ...(redactPii ? ['--redact-pii'] : ['--no-redact-pii']),
     ...(webSearch ? ['--web-search'] : []),
   ];
   sseEvent(res, 'start', { message: 'Starting compiler pipeline…', command: `${PYTHON_BIN} ${args.join(' ')}` });
@@ -174,6 +188,7 @@ function runBuildNow(res: Response, options: CompilerBuildOptions): void {
       const runIdMatch = cleaned.match(/^@@RUN_ID@@(.+)$/);
       if (runIdMatch) {
         runId = runIdMatch[1];
+        currentRunId = runId;
         sseEvent(res, 'run_id', { run_id: runId });
         continue;
       }
@@ -195,6 +210,7 @@ function runBuildNow(res: Response, options: CompilerBuildOptions): void {
     });
     buildRunning = false;
     currentChild = null;
+    currentRunId = null;
     stopRequested = false;
     // A killed/crashed subprocess never gets to call PipelineRun.finish()
     // itself (SIGTERM in particular: Python only runs its own except/
@@ -226,6 +242,7 @@ function runBuildNow(res: Response, options: CompilerBuildOptions): void {
     logSystemEvent('Compiler build failed to start', err.message, 'error');
     buildRunning = false;
     currentChild = null;
+    currentRunId = null;
     stopRequested = false;
     res.end();
     runQueuedBuildIfAny();

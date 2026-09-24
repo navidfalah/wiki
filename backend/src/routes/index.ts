@@ -9,7 +9,8 @@ import { LoginThrottle } from '../lib/loginThrottle';
 import { buildAnalytics, getTagDetail } from '../lib/analytics';
 import { buildAttentionReport } from '../lib/attentionEngine';
 import {
-  appendChatSessionTurn,
+  appendAssistantTurn,
+  appendUserTurn,
   createChatSession,
   deleteChatSession,
   listChatSessions,
@@ -57,7 +58,7 @@ import {
 } from '../lib/linkOverrides';
 import { deletePipelineRun, getPipelineRun, listPipelineRuns } from '../lib/pipelineRuns';
 import { computeUsageSummary } from '../lib/tokenUsage';
-import { isBuildRunning, runCli, stopBuild, streamChat, streamCompilerBuild } from '../lib/pythonBridge';
+import { getCurrentRunId, isBuildRunning, runCli, stopBuild, streamChat, streamCompilerBuild } from '../lib/pythonBridge';
 import { createFolder, deleteFile, deleteFolder, discoverRawFolders, FolderError, moveFile, uploadFiles } from '../lib/rawFolders';
 import {
   AUDIO_PREVIEW_EXTENSIONS,
@@ -135,6 +136,16 @@ export function registerRoutes(app: Express): void {
     }),
   );
 
+  // Below this line, every /api/* route requires a signed-in user. Most
+  // routes stop there deliberately -- requireAdmin only gates user
+  // management (below), not compiles/raw-files/connectors/etc. This is the
+  // "one team, with roles" model documented in users.ts: an admin decides
+  // who's on the team at all (no public signup), and everyone let in is
+  // trusted with the rest of the wiki, the same way any collaborator
+  // invited into a shared personal tool would be. Splitting that further
+  // (e.g. a role that can't touch connector credentials) is a real option
+  // if this ever needs to host less-trusted collaborators, but isn't
+  // something to add speculatively ahead of that need.
   app.use('/api', requireAuth);
 
   app.post('/api/auth/logout', (req, res) => {
@@ -790,7 +801,12 @@ export function registerRoutes(app: Express): void {
     wrap((req, res) => {
       const run = getPipelineRun(req.params.id);
       if (!run) throw new HttpError(404, `Pipeline run not found: ${req.params.id}`);
-      const wasRunning = run.status === 'running' && isBuildRunning();
+      // isBuildRunning() alone only says *some* build is active, not that
+      // it's this one -- a stale run stuck at status "running" (e.g. an
+      // orphan-reconciliation write that failed) would otherwise cause
+      // deleting it to stop a different, unrelated build that's genuinely
+      // in progress.
+      const wasRunning = run.status === 'running' && isBuildRunning() && getCurrentRunId() === req.params.id;
       if (wasRunning) {
         stopBuild();
         logEvent(req.user?.username, 'Stopped compiler run', req.params.id);
@@ -1028,6 +1044,13 @@ export function registerRoutes(app: Express): void {
     const docScope = corpusSource === 'wiki' && session.resource_scope ? resolveDocPaths(session.resource_scope) : null;
     const history = session.messages.map((m) => ({ role: m.role, content: m.content }));
 
+    // Persisted before streamChat runs, not after it succeeds: streamChat
+    // can fail partway through (a dropped connection, an LLM error), and
+    // that used to mean the user's own question was never saved at all --
+    // reopening the session made the whole exchange vanish with no trace,
+    // even though the composer had already cleared it client-side.
+    appendUserTurn(req.params.id, message);
+
     try {
       const result = await streamChat(res, {
         message,
@@ -1039,7 +1062,7 @@ export function registerRoutes(app: Express): void {
       const sourcesWithSlug = (result.sources ?? []).map((s) =>
         corpusSource === 'wiki' ? { ...s, slug: s.doc_path.replace(/\.md$/, '') } : { ...s },
       );
-      appendChatSessionTurn(req.params.id, message, result.answer, sourcesWithSlug, result.faithfulness);
+      appendAssistantTurn(req.params.id, result.answer, sourcesWithSlug, result.faithfulness);
     } catch {
       /* already reported to the client as an SSE 'error' event by streamChat */
     }
@@ -1213,6 +1236,15 @@ export function registerRoutes(app: Express): void {
     }),
   );
 
+  // --- Temporal facts (bridged to temporal_model.py) ------------------------
+
+  app.get(
+    '/api/temporal-facts',
+    wrap(async (_req, res) => {
+      res.json(await runCli('temporal-facts'));
+    }),
+  );
+
   // --- External connectors (bridged to connectors_service.py) --------------
 
   app.get(
@@ -1288,6 +1320,40 @@ export function registerRoutes(app: Express): void {
           accountLabel: accountLabel ?? null,
           action: 'connect',
           detail: `Failed to connect to ${dbname}@${host}:${port ?? 5432}`,
+          success: false,
+          durationMs: Date.now() - startedAt,
+          error: err.message,
+        });
+        throw new HttpError(400, err.message);
+      }
+    }),
+  );
+
+  app.post(
+    '/api/connectors/sqlite/connect',
+    wrap(async (req, res) => {
+      const { account_label: accountLabel, db_path: dbPath } = req.body ?? {};
+      const startedAt = Date.now();
+      try {
+        const result = await runCli('connectors-sqlite-connect', { account_label: accountLabel, db_path: dbPath });
+        logEvent(req.user?.username, 'Connected external account', `sqlite → ${accountLabel}`);
+        logConnectorEvent({
+          username: req.user?.username,
+          connectorId: 'sqlite',
+          accountLabel: accountLabel ?? null,
+          action: 'connect',
+          detail: `Connected to ${dbPath}`,
+          success: true,
+          durationMs: Date.now() - startedAt,
+        });
+        res.json(result);
+      } catch (err: any) {
+        logConnectorEvent({
+          username: req.user?.username,
+          connectorId: 'sqlite',
+          accountLabel: accountLabel ?? null,
+          action: 'connect',
+          detail: `Failed to connect to ${dbPath}`,
           success: false,
           durationMs: Date.now() - startedAt,
           error: err.message,

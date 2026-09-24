@@ -1,12 +1,6 @@
 import { th, t } from './lib/i18n';
-
-const apiBase = document.querySelector('meta[name="api-base"]')?.getAttribute('content') ?? '';
-
-function escapeHtml(text: string): string {
-  const div = document.createElement('div');
-  div.textContent = text ?? '';
-  return div.innerHTML;
-}
+import { apiFetch } from './lib/api';
+import { escapeHtml } from './lib/dom';
 
 function statCard(value: string, label: string, warn = false): string {
   return `<div class="rounded-xl border border-gray-200 bg-white px-4 py-3 shadow-card">
@@ -17,8 +11,7 @@ function statCard(value: string, label: string, warn = false): string {
 
 async function load() {
   try {
-    const res = await fetch(`${apiBase}/api/analytics`);
-    const data = await res.json();
+    const data = await apiFetch('/api/analytics');
     const m = data.metrics;
     document.getElementById('analytics-cards')!.innerHTML = [
       statCard(`${m.raw_files_processed} / ${m.raw_files_total}`, t('analytics.card.rawFiles')),
@@ -45,8 +38,15 @@ async function load() {
           .map((tag: any) => `<span class="rounded-full bg-gray-100 px-2 py-1 text-xs text-gray-700">${escapeHtml(tag.label)} (${tag.count})</span>`)
           .join('')}</div>`
       : `<p class="text-sm text-gray-400">${th('analytics.noTags')}</p>`;
-  } catch {
-    document.getElementById('analytics-cards')!.innerHTML = `<p class="col-span-full text-sm text-red-600">${th('common.cannotReachApi')}</p>`;
+  } catch (err: any) {
+    // apiFetch's thrown message is already the backend's real .detail (see
+    // client/lib/api.ts) when the request reached it, or a generic
+    // connectivity message otherwise -- shown across all three panels, not
+    // just the stat cards, so a real backend error isn't silently missed.
+    const message = escapeHtml(err?.message || t('common.cannotReachApi'));
+    document.getElementById('analytics-cards')!.innerHTML = `<p class="col-span-full text-sm text-red-600">${message}</p>`;
+    document.getElementById('dead-links-list')!.innerHTML = `<p class="text-sm text-red-600">${message}</p>`;
+    document.getElementById('tags-list')!.innerHTML = `<p class="text-sm text-red-600">${message}</p>`;
   }
 }
 

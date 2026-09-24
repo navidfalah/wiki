@@ -3,7 +3,7 @@ import urllib.error
 
 import pytest
 
-from connectors.http_transport import HttpError, urllib_get, urllib_post
+from connectors.http_transport import HttpError, urllib_get, urllib_get_raw, urllib_post
 
 
 class _FakeResponse:
@@ -45,6 +45,31 @@ def test_urllib_get_raises_http_error(monkeypatch):
     with pytest.raises(HttpError) as exc_info:
         urllib_get("https://api.example.com/missing")
     assert exc_info.value.status == 404
+
+
+def test_urllib_get_raw_returns_text_without_json_decoding(monkeypatch):
+    """Some endpoints (e.g. Google Drive's /export) return plain text, not
+    JSON -- urllib_get would raise a JSONDecodeError on that body, so
+    callers needing raw text must use urllib_get_raw instead."""
+
+    def fake_urlopen(request, timeout=30):
+        return _FakeResponse(b"plain text, not { valid json")
+
+    monkeypatch.setattr("urllib.request.urlopen", fake_urlopen)
+    result = urllib_get_raw("https://api.example.com/export")
+    assert result == "plain text, not { valid json"
+
+
+def test_urllib_get_raw_raises_http_error(monkeypatch):
+    import io
+
+    def fake_urlopen(request, timeout=30):
+        raise urllib.error.HTTPError(request.full_url, 500, "Server Error", {}, io.BytesIO(b"boom"))
+
+    monkeypatch.setattr("urllib.request.urlopen", fake_urlopen)
+    with pytest.raises(HttpError) as exc_info:
+        urllib_get_raw("https://api.example.com/export")
+    assert exc_info.value.status == 500
 
 
 def test_urllib_post_encodes_form_data(monkeypatch):

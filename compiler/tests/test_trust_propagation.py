@@ -1,5 +1,7 @@
 from dataclasses import replace
 
+import pytest
+
 import trust_propagation as tp
 from trust_eval_dataset import Claim, ClaimGroup, Relation, load_trust_eval_dataset
 
@@ -19,10 +21,25 @@ def _claim(cid: str, source_path: str = "notes/example.md", source_type: str = "
 def test_isolated_claim_with_no_relations_stays_near_prior():
     group = ClaimGroup(id="g", domain="test", subject="test", description="test", claims=[_claim("a")])
     result = tp.propagate_group_trust(group)
-    # No relational evidence -> support is 0 -> sigmoid(0) = 0.5, so the
-    # blended score sits between the prior and the neutral midpoint.
     assert 0.0 <= result["a"].score <= 1.0
     assert result["a"].prior == 0.5  # text, "notes/" doesn't match any samples/**/dummy-test/** rule
+
+
+def test_isolated_claim_keeps_its_prior_exactly_untouched():
+    """Regression: a claim with no relations at all used to still run
+    through sigmoid(0)=0.5 and blend toward that neutral midpoint (e.g. a
+    verified-source prior of 1.0 dropping to 0.6), contradicting the
+    module's own docstring ("a claim with no relations at all just keeps
+    its prior score untouched") and the prior_weight design comment above
+    PropagationConfig. Uses a prior far from 0.5 (0.5 is a degenerate case
+    where the old buggy blend happened to equal the prior by coincidence)
+    to actually exercise the invariant."""
+    group = ClaimGroup(id="g", domain="test", subject="test", description="test", claims=[_claim("a")])
+    trust_cfg = {"version": 1, "default_by_source_type": {}, "rules": [{"pattern": "*", "level": "verified"}]}
+    result = tp.propagate_group_trust(group, trust_cfg=trust_cfg)
+    assert result["a"].prior == 1.0
+    assert result["a"].score == 1.0
+    assert result["a"].delta == 0.0
 
 
 def test_corroboration_raises_score_above_prior():
@@ -153,11 +170,31 @@ def test_ablation_zeroing_corroborate_weight_removes_the_boost():
         id="g", domain="test", subject="test", description="test",
         claims=claims, relations=[Relation(from_id="b", to_id="a", type="corroborates")],
     )
-    isolated = ClaimGroup(id="g", domain="test", subject="test", description="test", claims=claims[:1])
 
     boosted = tp.propagate_group_trust(with_edge)["a"].score
     zeroed = tp.propagate_group_trust(with_edge, config=tp.DEFAULT_CONFIG.with_overrides(corroborate_weight=0.0))["a"].score
-    baseline = tp.propagate_group_trust(isolated)["a"].score
 
     assert boosted > zeroed
-    assert zeroed == baseline
+    # "a" still HAS a corroborates relation here (just weighted to zero),
+    # so it isn't the "no relations at all" case propagate_group_trust()
+    # special-cases to keep the prior untouched -- it still goes through
+    # the normal sigmoid(0)=0.5 blend, landing above its raw prior of 0.0.
+    assert zeroed == pytest.approx(0.4)
+
+
+def test_ablation_zeroing_corroborate_weight_differs_from_true_isolation():
+    """A claim with a zeroed-out weight on a real edge is not the same as
+    a claim with no relations at all: the former still blends toward the
+    neutral sigmoid midpoint (0.5), the latter keeps its prior exactly."""
+    claims = [_claim("a", source_path="samples/a.txt"), _claim("b", source_path="samples/b.txt")]
+    with_edge = ClaimGroup(
+        id="g", domain="test", subject="test", description="test",
+        claims=claims, relations=[Relation(from_id="b", to_id="a", type="corroborates")],
+    )
+    isolated = ClaimGroup(id="g", domain="test", subject="test", description="test", claims=claims[:1])
+
+    zeroed = tp.propagate_group_trust(with_edge, config=tp.DEFAULT_CONFIG.with_overrides(corroborate_weight=0.0))["a"]
+    baseline = tp.propagate_group_trust(isolated)["a"]
+
+    assert baseline.score == baseline.prior == 0.0
+    assert zeroed.score != baseline.score

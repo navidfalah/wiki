@@ -1,6 +1,7 @@
 import { t, th } from './lib/i18n';
+import { apiBase } from './lib/api';
+import { escapeHtml } from './lib/dom';
 
-const apiBase = document.querySelector('meta[name="api-base"]')?.getAttribute('content') ?? '';
 const UNCHANGED = '__unchanged__';
 
 type Provider = 'openai' | 'gemini' | 'local' | 'custom';
@@ -158,7 +159,7 @@ function renderProfiles() {
     const maxTokensInput = row.querySelector('[data-field="max_tokens"]') as HTMLInputElement;
     maxTokensInput.value = profile.max_tokens === null ? '' : String(profile.max_tokens);
     maxTokensInput.addEventListener('input', () => {
-      maxTokensInput.value === '' ? (profile.max_tokens = null) : (profile.max_tokens = Number(maxTokensInput.value));
+      profile.max_tokens = maxTokensInput.value === '' ? null : Number(maxTokensInput.value);
     });
 
     const reasoningSelect = row.querySelector('[data-field="reasoning_effort"]') as HTMLSelectElement;
@@ -219,11 +220,6 @@ function renderAssignments() {
   });
 }
 
-function escapeHtml(text: string): string {
-  const div = document.createElement('div');
-  div.textContent = text ?? '';
-  return div.innerHTML;
-}
 
 function renderLocalLlmForm() {
   const container = document.getElementById('local-llm-form')!;

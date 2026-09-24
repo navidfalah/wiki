@@ -21,7 +21,7 @@ class HttpError(RuntimeError):
         self.body = body
 
 
-def urllib_get(url: str, headers: dict | None = None, params: dict | None = None) -> dict:
+def _urllib_get_text(url: str, headers: dict | None = None, params: dict | None = None) -> str:
     if params:
         query = urllib.parse.urlencode(params)
         sep = "&" if "?" in url else "?"
@@ -29,10 +29,22 @@ def urllib_get(url: str, headers: dict | None = None, params: dict | None = None
     request = urllib.request.Request(url, headers=headers or {}, method="GET")
     try:
         with urllib.request.urlopen(request, timeout=30) as response:
-            body = response.read().decode("utf-8")
+            return response.read().decode("utf-8")
     except urllib.error.HTTPError as exc:
         raise HttpError(exc.code, exc.read().decode("utf-8", errors="replace")) from exc
+
+
+def urllib_get(url: str, headers: dict | None = None, params: dict | None = None) -> dict:
+    body = _urllib_get_text(url, headers, params)
     return json.loads(body) if body else {}
+
+
+def urllib_get_raw(url: str, headers: dict | None = None, params: dict | None = None) -> str:
+    """Like urllib_get, but returns the raw response body as text instead
+    of JSON-decoding it -- for endpoints that don't return JSON at all,
+    such as Google Drive's /files/{id}/export (returns the exported
+    document's raw content, e.g. plain text)."""
+    return _urllib_get_text(url, headers, params)
 
 
 def urllib_post(url: str, headers: dict | None = None, data: dict | None = None) -> dict:

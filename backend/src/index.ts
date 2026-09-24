@@ -5,6 +5,7 @@ import { reconcileOrphanedPipelineRuns } from './lib/pipelineRuns';
 import { runCli } from './lib/pythonBridge';
 import { logSystemEvent } from './lib/activityLog';
 import { langFromRequest, localizeMessage } from './lib/localizeMessage';
+import { HttpError } from './lib/httpError';
 
 const app = express();
 const PORT = Number(process.env.PORT ?? 8000);
@@ -42,7 +43,6 @@ app.get('/', (_req, res) => {
 
 registerRoutes(app);
 
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
 app.use((err: any, req: Request, res: Response, _next: NextFunction) => {
   const status = err.status ?? 500;
   // Only genuine server errors, not routine 4xx (bad input, not found, a
@@ -52,7 +52,12 @@ app.use((err: any, req: Request, res: Response, _next: NextFunction) => {
   if (status >= 500) {
     logSystemEvent('Unhandled request error', `${req.method} ${req.originalUrl} -- ${err.message ?? err}`, 'error');
   }
-  res.status(status).json({ detail: localizeMessage(err.message ?? 'Internal server error', langFromRequest(req)) });
+  // HttpError messages are deliberately client-facing (routes throw them on
+  // purpose). Anything else reaching here is an unexpected exception --
+  // its .message can carry internal detail (file paths, SQL errors, stack
+  // text) that shouldn't leak to the client, so it's logged above but not echoed.
+  const detail = err instanceof HttpError ? err.message : 'Internal server error';
+  res.status(status).json({ detail: localizeMessage(detail, langFromRequest(req)) });
 });
 
 const reconciled = reconcileOrphanedPipelineRuns();

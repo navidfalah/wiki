@@ -1,4 +1,4 @@
-from graph_store import Edge, GraphStore, Node, import_claim_group
+from graph_store import Edge, GraphStore, Node, _claim_node_id, import_claim_group
 from trust_eval_dataset import load_trust_eval_dataset
 
 
@@ -99,5 +99,7 @@ def test_import_claim_group_loads_the_real_pilot_dataset(tmp_path):
     assert store.edge_count() == total_relations
 
     # Spot check: nova_read_interval's supersedes edge should be queryable.
-    nri_1_incoming = store.incoming("nri-1", edge_type="supersedes")
-    assert [e.from_id for e in nri_1_incoming] == ["nri-2"]
+    # Claim node ids are namespaced by group (see graph_store._claim_node_id),
+    # since a bare claim id is only guaranteed unique within its own group.
+    nri_1_incoming = store.incoming(_claim_node_id("nova_read_interval", "nri-1"), edge_type="supersedes")
+    assert [e.from_id for e in nri_1_incoming] == [_claim_node_id("nova_read_interval", "nri-2")]

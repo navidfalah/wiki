@@ -133,7 +133,6 @@ app.use((_req, res) => {
 // makes "nothing there" impossible to diagnose from the browser alone.
 // The details go to the server log; the page itself stays generic so an
 // internal hostname or stack trace never reaches a public visitor.
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
 app.use((err: any, _req: Request, res: Response, _next: NextFunction) => {
   // eslint-disable-next-line no-console
   console.error(`[frontend] Unhandled request error (BACKEND_API_URL=${BACKEND_API_URL}):`, err);

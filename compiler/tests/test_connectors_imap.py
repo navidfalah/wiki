@@ -57,6 +57,15 @@ def test_list_items_returns_subjects_newest_first():
     assert items[0].snippet == "sender@example.com"
 
 
+def test_list_items_limit_zero_returns_no_items():
+    """Regression: message_ids[-limit:] with limit=0 evaluates to
+    message_ids[-0:] == message_ids[0:] (Python's -0 == 0), returning
+    every message instead of none."""
+    connector = ImapConnector(host="imap.example.com", credentials=_credentials(), client_factory=FakeImapClient)
+    items = connector.list_items(limit=0)
+    assert items == []
+
+
 def test_list_items_logs_out_client():
     clients = []
 

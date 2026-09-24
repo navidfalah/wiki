@@ -63,6 +63,38 @@ def test_resolve_entities_does_not_merge_different_people_sharing_a_name_token()
     assert {c.canonical_name for c in clusters} == {"Alex Kim", "Alex Rivera", "Sam Rivera"}
 
 
+def test_resolve_entities_does_not_merge_a_bare_name_with_multiple_distinct_candidates():
+    """Regression: a bare "Alex" scores 0.85 (the subset-of-tokens
+    shortcut) against BOTH "Alex Kim" and "Alex Rivera" -- two different
+    people in this hard-negative scenario. Auto-merging on whichever pair
+    the clustering loop reached first would silently fuse "Alex" into one
+    of them and, transitively, treat the other's mentions as unrelated.
+    Since "Alex Kim" and "Alex Rivera" don't score highly against each
+    other, this is genuinely ambiguous and the bare name must not be
+    merged with either at the heuristic tier alone."""
+    mentions = [
+        Mention("Alex", "chat/thread.txt"),
+        Mention("Alex Kim", "articles/teabuddy.md"),
+        Mention("Alex Rivera", "notes/other.md"),
+    ]
+    clusters = resolve_entities(mentions)
+    assert len(clusters) == 3
+    assert {c.canonical_name for c in clusters} == {"Alex", "Alex Kim", "Alex Rivera"}
+
+
+def test_resolve_entities_still_merges_a_bare_name_with_its_single_candidate():
+    """Sanity check that the ambiguity guard doesn't regress the simple,
+    unambiguous case: a bare name with exactly one full-name candidate
+    should still auto-merge as before."""
+    mentions = [
+        Mention("Mira", "transcripts/battery-debate.txt"),
+        Mention("Mira Chen", "notes/kickoff.md"),
+    ]
+    clusters = resolve_entities(mentions)
+    assert len(clusters) == 1
+    assert clusters[0].canonical_name == "Mira Chen"
+
+
 def test_resolve_entities_picks_a_human_readable_canonical_name_over_an_email():
     mentions = [
         Mention("Jonah Park", "notes/kickoff.md"),

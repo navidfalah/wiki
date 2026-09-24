@@ -173,14 +173,44 @@ def resolve_entities(
     names = sorted({m.name for m in mentions})
     uf = _UnionFind(names)
 
+    # Two passes: first collect every pair that clears the merge threshold
+    # without unioning yet, so we can see -- before committing to any of
+    # them -- whether a given name has more than one merge candidate (e.g.
+    # a bare "Alex" scoring 0.85 against both "Alex Kim" and "Alex
+    # Rivera", the hard-negative case this module's docstring calls out).
+    # Unioning on the first pair encountered in loop order would silently
+    # pick whichever full name happened to come first alphabetically.
+    merge_candidates: dict[str, list[str]] = {name: [] for name in names}
+    merge_pairs: list[tuple[str, str]] = []
     escalated: list[tuple[str, str]] = []
     for i, a in enumerate(names):
         for b in names[i + 1 :]:
             score = heuristic_similarity(a, b)
             if score >= config.heuristic_merge_threshold:
-                uf.union(a, b)
+                merge_pairs.append((a, b))
+                merge_candidates[a].append(b)
+                merge_candidates[b].append(a)
             elif score >= config.heuristic_review_threshold:
                 escalated.append((a, b))
+
+    def is_ambiguous(x: str, y: str) -> bool:
+        """True if either name has another merge candidate that isn't
+        itself a likely match for the other side -- i.e. this pair isn't
+        the only reading, so auto-merging it would be a guess rather than
+        strong evidence."""
+        for other in merge_candidates[x]:
+            if other != y and heuristic_similarity(other, y) < config.heuristic_merge_threshold:
+                return True
+        for other in merge_candidates[y]:
+            if other != x and heuristic_similarity(other, x) < config.heuristic_merge_threshold:
+                return True
+        return False
+
+    for a, b in merge_pairs:
+        if is_ambiguous(a, b):
+            escalated.append((a, b))
+        else:
+            uf.union(a, b)
 
     if embed_fn is not None and escalated:
         still_escalated: list[tuple[str, str]] = []

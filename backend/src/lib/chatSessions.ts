@@ -10,6 +10,7 @@ import crypto from 'node:crypto';
 import fs from 'node:fs';
 import path from 'node:path';
 import { CHAT_HISTORY_FILE, CHAT_SESSIONS_DIR, CHAT_SESSIONS_INDEX } from '../paths';
+import { atomicWriteJson } from './atomicWrite';
 
 export interface ChatSource {
   doc_path: string;
@@ -80,8 +81,7 @@ function loadIndex(): ChatSessionSummary[] {
 }
 
 function saveIndex(index: ChatSessionSummary[]): void {
-  fs.mkdirSync(CHAT_SESSIONS_DIR, { recursive: true });
-  fs.writeFileSync(CHAT_SESSIONS_INDEX, JSON.stringify(index, null, 2));
+  atomicWriteJson(CHAT_SESSIONS_INDEX, index);
 }
 
 function summaryOf(session: ChatSession): ChatSessionSummary {
@@ -98,8 +98,7 @@ function summaryOf(session: ChatSession): ChatSessionSummary {
 }
 
 function saveSession(session: ChatSession): void {
-  fs.mkdirSync(CHAT_SESSIONS_DIR, { recursive: true });
-  fs.writeFileSync(sessionFile(session.id), JSON.stringify(session, null, 2));
+  atomicWriteJson(sessionFile(session.id), session);
   const index = loadIndex().filter((s) => s.id !== session.id);
   index.push(summaryOf(session));
   saveIndex(index);
@@ -219,10 +218,9 @@ export function deleteChatSession(id: string): boolean {
  * "edit" and "resend" on a past user message: the client truncates to
  * just before that message, then either re-populates the composer with
  * its text (edit) or immediately re-submits it (resend), which appends a
- * fresh turn via appendChatSessionTurn() same as any other message. Not
- * exposed as raw index math on the client -- this is the one place that
- * has to agree with appendChatSessionTurn on what "before message N"
- * means.
+ * fresh turn via appendUserTurn()/appendAssistantTurn() same as any other
+ * message. Not exposed as raw index math on the client -- this is the one
+ * place that has to agree with those on what "before message N" means.
  */
 export function truncateChatSession(id: string, keep: number): ChatSession | null {
   const session = loadChatSession(id);
@@ -234,9 +232,28 @@ export function truncateChatSession(id: string, keep: number): ChatSession | nul
   return session;
 }
 
-export function appendChatSessionTurn(
+/**
+ * Persists just the user's half of a turn -- call this BEFORE starting the
+ * (possibly slow, possibly failing) assistant response, not after, so a
+ * dropped connection or an LLM error mid-stream doesn't silently lose the
+ * user's own question: appendAssistantTurn() below adds the reply once one
+ * exists, but if it never gets called the user's message still survived.
+ */
+export function appendUserTurn(id: string, userMessage: string): ChatSession | null {
+  const session = loadChatSession(id);
+  if (!session) return null;
+  const now = new Date().toISOString();
+  session.messages.push({ role: 'user', content: userMessage, at: now });
+  session.updated_at = now;
+  if (session.title === DEFAULT_TITLE) {
+    session.title = userMessage.length > 60 ? `${userMessage.slice(0, 60)}…` : userMessage;
+  }
+  saveSession(session);
+  return session;
+}
+
+export function appendAssistantTurn(
   id: string,
-  userMessage: string,
   assistantMessage: string,
   sources?: ChatSource[],
   faithfulness?: ChatFaithfulness,
@@ -244,12 +261,23 @@ export function appendChatSessionTurn(
   const session = loadChatSession(id);
   if (!session) return null;
   const now = new Date().toISOString();
-  session.messages.push({ role: 'user', content: userMessage, at: now });
   session.messages.push({ role: 'assistant', content: assistantMessage, sources, faithfulness, at: now });
   session.updated_at = now;
-  if (session.title === DEFAULT_TITLE) {
-    session.title = userMessage.length > 60 ? `${userMessage.slice(0, 60)}…` : userMessage;
-  }
   saveSession(session);
   return session;
+}
+
+/** Convenience wrapper for callers that already have both halves of a turn
+ * up front (e.g. a non-streaming round trip) -- streamChat's route uses
+ * appendUserTurn/appendAssistantTurn separately instead, precisely so a
+ * failure between the two still keeps the user's message. */
+export function appendChatSessionTurn(
+  id: string,
+  userMessage: string,
+  assistantMessage: string,
+  sources?: ChatSource[],
+  faithfulness?: ChatFaithfulness,
+): ChatSession | null {
+  appendUserTurn(id, userMessage);
+  return appendAssistantTurn(id, assistantMessage, sources, faithfulness);
 }

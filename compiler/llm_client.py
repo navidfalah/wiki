@@ -47,6 +47,27 @@ def _utc_now_iso() -> str:
     return datetime.now(timezone.utc).isoformat()
 
 
+def _retry_after_seconds(exc: Exception) -> float | None:
+    """A server-specified retry delay from a RateLimitError/APIStatusError's
+    Retry-After response header, if present and parseable as a plain
+    number of seconds. Returns None for any other exception (including a
+    plain connection/timeout error, which carries no such hint), a missing
+    header, or a value that isn't a plain number (the HTTP spec also
+    allows an HTTP-date there; rare for LLM APIs in practice and not worth
+    parsing) -- callers fall back to their own exponential backoff in
+    every one of those cases."""
+    headers = getattr(getattr(exc, "response", None), "headers", None)
+    if headers is None:
+        return None
+    value = headers.get("retry-after")
+    if value is None:
+        return None
+    try:
+        return max(0.0, float(value))
+    except (TypeError, ValueError):
+        return None
+
+
 def _env_float(name: str, default: float | None) -> float | None:
     raw = os.getenv(name)
     if raw is None or raw == "":
@@ -397,7 +418,9 @@ class LLMClient:
                 last_error = exc
                 if attempt >= self.max_retries:
                     break
-                delay = self.retry_base_delay * (2 ** (attempt - 1))
+                delay = _retry_after_seconds(exc)
+                if delay is None:
+                    delay = self.retry_base_delay * (2 ** (attempt - 1))
                 time.sleep(delay)
             except Exception as exc:
                 raise RuntimeError(
@@ -529,7 +552,10 @@ class LLMClient:
                 last_error = exc
                 if attempt >= self.max_retries:
                     break
-                time.sleep(self.retry_base_delay * (2 ** (attempt - 1)))
+                delay = _retry_after_seconds(exc)
+                if delay is None:
+                    delay = self.retry_base_delay * (2 ** (attempt - 1))
+                time.sleep(delay)
             except Exception as exc:
                 raise RuntimeError(f"LLM API call failed (non-retryable): {exc}") from exc
 
@@ -579,7 +605,10 @@ class LLMClient:
                     raise RuntimeError(
                         f"Embeddings API call failed after {self.max_retries} attempt(s): {last_error}"
                     ) from last_error
-                time.sleep(self.retry_base_delay * (2 ** (attempt - 1)))
+                delay = _retry_after_seconds(exc)
+                if delay is None:
+                    delay = self.retry_base_delay * (2 ** (attempt - 1))
+                time.sleep(delay)
             except Exception as exc:
                 raise RuntimeError(f"Embeddings API call failed (non-retryable): {exc}") from exc
 
@@ -693,7 +722,10 @@ class LLMClient:
                     raise RuntimeError(
                         f"Audio transcription failed after {self.max_retries} attempt(s): {last_error}"
                     ) from last_error
-                time.sleep(self.retry_base_delay * (2 ** (attempt - 1)))
+                delay = _retry_after_seconds(exc)
+                if delay is None:
+                    delay = self.retry_base_delay * (2 ** (attempt - 1))
+                time.sleep(delay)
             except Exception as exc:
                 raise RuntimeError(f"Audio transcription failed (non-retryable): {exc}") from exc
 

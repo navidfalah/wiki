@@ -15,7 +15,7 @@
 <section class="mt-6 rounded-xl border border-gray-200 bg-white shadow-card">
   <div class="flex items-center justify-between border-b border-gray-100 px-5 py-4">
     <h2 class="text-base font-semibold text-gray-900"><%= t('users.accounts') %></h2>
-    <button id="add-user-toggle" type="button" class="rounded-lg bg-accent px-3 py-1.5 text-sm font-medium text-white hover:bg-accent-dark"><%= t('users.add') %></button>
+    <button aria-controls="add-user-form" aria-expanded="false" aria-haspopup="true" id="add-user-toggle" type="button" class="rounded-lg bg-accent px-3 py-1.5 text-sm font-medium text-white hover:bg-accent-dark"><%= t('users.add') %></button>
   </div>
   <div id="add-user-form" class="hidden border-b border-gray-100 p-5"></div>
   <div id="users-list" class="divide-y divide-gray-100">

@@ -415,6 +415,7 @@ def link_and_export_pages(
     force: bool = False,
     on_progress: ProgressCallback | None = None,
     entity_mentions: list[Mention] | None = None,
+    resolve_entities_llm: bool = False,
 ) -> tuple[list[Path], list[str]]:
     """
     Inject links into draft pages and export to wiki-app/docs/.
@@ -429,6 +430,15 @@ def link_and_export_pages(
     page) — the LLM pass still only ever sees the real topic_index, not
     the alias-expanded one, so this only strengthens the deterministic
     floor, not what's fed to the model.
+
+    resolve_entities_llm additionally passes the LLM client already
+    required here (see `client` below) into build_alias_topic_index() as
+    both its embed_fn and llm, so entity_resolution.py's embedding and LLM
+    adjudication tiers run on whatever the heuristic tier alone couldn't
+    confidently call (e.g. "Mira" vs. "Mirabelle") instead of leaving
+    those mentions unaliased. Off by default: it adds extra LLM/embedding
+    calls to every linking run, for a strictly-additive alias expansion
+    that most compiles don't need.
     """
     root = temp_dir or TEMP_OUTPUT_DIR
     out_dir = output_dir or OUTPUT_DIR
@@ -437,7 +447,8 @@ def link_and_export_pages(
     index = topic_index or load_topic_index(root / "index.json")
     delta = index_delta or IndexDelta()
     client = require_llm(llm)
-    mechanical_index = build_alias_topic_index(index, entity_mentions or [])
+    resolution_kwargs = {"embed_fn": client.embed_text, "llm": client} if resolve_entities_llm else {}
+    mechanical_index = build_alias_topic_index(index, entity_mentions or [], **resolution_kwargs)
 
     dirty = dirty_filenames or set()
     removed = removed_filenames or set()

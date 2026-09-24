@@ -51,7 +51,15 @@ COPY backend/package.json backend/
 
 # Mutable state lives in volumes (data/, wiki-app/docs, media); create the
 # mount points owned by the unprivileged `node` user so a fresh named volume
-# inherits writable ownership.
+# inherits writable ownership. That only covers ownership *inside the image*
+# though -- these paths are bind-mounted from the host in docker-compose.yml/
+# docker-compose.prod.yml, and a bind mount keeps the HOST's ownership, not
+# the image's. deploy/deploy.sh handles this automatically (chown to uid
+# 1000 -- the `node` user's uid, and the default first non-root user on
+# virtually every Linux distro); if you're not using it, either run that
+# chown yourself once before `docker compose up`, or override the
+# container's user to match your host uid with `docker compose run --user
+# "$(id -u):$(id -g)"`.
 RUN mkdir -p data/raw wiki-app/docs wiki-app/static/media compiler/temp_output \
     && chown -R node:node data wiki-app compiler/temp_output compiler
 

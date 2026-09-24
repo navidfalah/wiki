@@ -41,7 +41,11 @@ services:
     volumes:
       # Mutable data shared with the host and (for docs/media) the
       # frontend service — not baked into the image, so a compile's output
-      # survives a rebuild and is visible outside the container.
+      # survives a rebuild and is visible outside the container. The
+      # backend container runs as a non-root uid 1000 (see
+      # backend/Dockerfile) -- on a host whose invoking user isn't uid 1000,
+      # `chown -R 1000:1000 data wiki-app/docs wiki-app/static/media
+      # compiler/temp_output` once, or add `user: "${UID}:${GID}"` here.
       - ./data:/app/data
       - ./wiki-app/docs:/app/wiki-app/docs
       - ./wiki-app/static/media:/app/wiki-app/static/media
@@ -83,7 +87,8 @@ services:
       # instead of fighting over the port.
       - "${FRONTEND_PORT:-3000}:3000"
     depends_on:
-      - backend
+      backend:
+        condition: service_healthy
     restart: unless-stopped
 
   # Optional local LLM — Gemma served in-process by llama.cpp, running

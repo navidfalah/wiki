@@ -87,6 +87,27 @@ def test_matches_simple_possessive_form():
     assert "[MeshSync's](./meshsync.md)" in result.body
 
 
+def test_links_a_title_ending_in_punctuation():
+    # \b requires a word/non-word transition on both sides -- it can never
+    # match right after a title ending in a non-word character (here "+"
+    # followed by a space, both non-word), which silently defeated linking
+    # for exactly this class of title.
+    body = "We evaluated C++ for the embedded firmware."
+    result = auto_link_exact_titles(body, {"C++": "cpp.md"}, self_title="X")
+    assert "[C++](./cpp.md)" in result.body
+    assert result.linked_titles == ["C++"]
+
+
+def test_does_not_link_a_punctuation_ending_title_as_a_substring():
+    body = "C++11 is a later standard than C++."
+    result = auto_link_exact_titles(body, {"C++": "cpp.md"}, self_title="X")
+    # The first mention is "C++11" -- not an exact title match (extra "11"
+    # right after with no boundary), so linking should skip to the second,
+    # exact "C++." mention instead of matching inside "C++11".
+    assert "[C++11]" not in result.body
+    assert "[C++](./cpp.md)" in result.body
+
+
 def test_is_idempotent():
     body = "MeshSync is the protocol."
     once = auto_link_exact_titles(body, {"MeshSync": "meshsync.md"}, self_title="X")
@@ -146,6 +167,31 @@ def test_build_alias_topic_index_unmatched_cluster_adds_nothing():
     expanded = build_alias_topic_index(topic_index, mentions)
     assert "Jonah" not in expanded
     assert "Jonah Park" not in expanded
+
+
+def test_build_alias_topic_index_defaults_to_heuristic_tier_only():
+    # "Mira" and "Mirabelle" don't hit the heuristic auto-merge threshold
+    # (no exact match, no subset-of-tokens relationship), so without an
+    # embed_fn they must stay unaliased -- confirming the default really
+    # is offline/deterministic, as documented.
+    topic_index = {"Mira": "mira.md"}
+    mentions = [Mention("Mira", "a.md"), Mention("Mirabelle", "b.md")]
+    expanded = build_alias_topic_index(topic_index, mentions)
+    assert "Mirabelle" not in expanded
+
+
+def test_build_alias_topic_index_threads_embed_fn_into_resolve_entities():
+    # With an embed_fn that considers "Mira" and "Mirabelle" close, the
+    # embedding tier should resolve what the heuristic tier alone left
+    # escalated -- proving embed_fn actually reaches resolve_entities()
+    # rather than being silently dropped.
+    vectors = {"mira": [1.0, 0.0], "mirabelle": [0.95, 0.05]}
+    embed_fn = lambda text: vectors.get(text.strip().lower(), [0.0, 1.0])  # noqa: E731
+
+    topic_index = {"Mira": "mira.md"}
+    mentions = [Mention("Mira", "a.md"), Mention("Mirabelle", "b.md")]
+    expanded = build_alias_topic_index(topic_index, mentions, embed_fn=embed_fn)
+    assert expanded["Mirabelle"] == "mira.md"
 
 
 def test_mentions_from_extractions_builds_mentions_from_entities():

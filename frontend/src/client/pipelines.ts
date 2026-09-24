@@ -1,14 +1,8 @@
 import { copyButtonHtml, initCopyButtons } from './lib/copy';
 import { formatDateTime, formatNumber, t, th } from './lib/i18n';
 import { buildMessage, runMessage, statusLabel, stepName } from './lib/serverText';
-
-const apiBase = document.querySelector('meta[name="api-base"]')?.getAttribute('content') ?? '';
-
-function escapeHtml(text: string): string {
-  const div = document.createElement('div');
-  div.textContent = text ?? '';
-  return div.innerHTML;
-}
+import { apiBase } from './lib/api';
+import { escapeHtml } from './lib/dom';
 
 interface RunSummary {
   id: string;

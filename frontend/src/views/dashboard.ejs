@@ -17,8 +17,8 @@
         <span id="build-status-badge" class="inline-flex items-center gap-1 rounded-full bg-gray-100 px-2 py-0.5 text-xs font-medium text-gray-600"><%= t('dashboard.badge.idle') %></span>
       </div>
       <div class="flex flex-wrap items-center gap-3">
-        <button id="sources-picker-toggle" type="button" class="inline-flex items-center justify-center gap-2 rounded-lg border border-gray-300 bg-white px-3 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50"><%= t('dashboard.sourcesToInclude') %> <span id="sources-picker-count" class="text-xs text-gray-400"></span></button>
-        <button id="run-options-toggle" type="button" class="inline-flex items-center justify-center gap-2 rounded-lg border border-gray-300 bg-white px-3 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50"><%= t('dashboard.runOptions') %> <span id="run-options-count" class="text-xs text-gray-400"></span></button>
+        <button aria-controls="sources-picker" aria-expanded="false" aria-haspopup="true" id="sources-picker-toggle" type="button" class="inline-flex items-center justify-center gap-2 rounded-lg border border-gray-300 bg-white px-3 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50"><%= t('dashboard.sourcesToInclude') %> <span id="sources-picker-count" class="text-xs text-gray-400"></span></button>
+        <button aria-controls="run-options" aria-expanded="false" aria-haspopup="true" id="run-options-toggle" type="button" class="inline-flex items-center justify-center gap-2 rounded-lg border border-gray-300 bg-white px-3 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50"><%= t('dashboard.runOptions') %> <span id="run-options-count" class="text-xs text-gray-400"></span></button>
         <label class="flex items-center gap-2 text-sm text-gray-600" title="<%= t('dashboard.rebuildTitle') %>">
           <input id="force-rebuild" type="checkbox" class="rounded border-gray-300 text-accent focus:ring-accent/30" />
           <%= t('dashboard.rebuildAll') %>
@@ -87,7 +87,7 @@
         <h2 class="flex items-center gap-2 text-base font-semibold text-gray-900"><%= t('dashboard.sources.title') %></h2>
         <p id="sources-subtitle" class="mt-0.5 text-xs text-gray-500"><%= t('dashboard.sources.subtitle') %></p>
       </div>
-      <button id="add-source-toggle" type="button" class="inline-flex items-center justify-center gap-2 rounded-lg border border-source-border px-4 py-2 text-sm font-medium text-source hover:bg-source-bg"><%= t('dashboard.sources.add') %></button>
+      <button aria-controls="add-source-form" aria-expanded="false" aria-haspopup="true" id="add-source-toggle" type="button" class="inline-flex items-center justify-center gap-2 rounded-lg border border-source-border px-4 py-2 text-sm font-medium text-source hover:bg-source-bg"><%= t('dashboard.sources.add') %></button>
     </div>
     <div id="add-source-form" class="hidden border-b border-gray-100 p-5"></div>
     <div id="sources-grid" class="grid gap-3 p-5 sm:grid-cols-2 lg:grid-cols-3"></div>
@@ -101,8 +101,8 @@
     <div class="flex flex-wrap items-center justify-between gap-2 border-b border-gray-100 px-5 py-2.5">
       <nav id="breadcrumbs" class="flex min-w-0 flex-wrap items-center gap-1 text-sm"></nav>
       <div class="flex items-center gap-2">
-        <input id="file-search" type="search" placeholder="<%= t('dashboard.files.searchPh') %>" class="w-40 rounded-lg border border-gray-300 px-2.5 py-1 text-sm focus:border-accent focus:outline-none focus:ring-2 focus:ring-accent/20" />
-        <button id="new-folder-toggle" type="button" class="inline-flex items-center justify-center gap-2 rounded-lg border border-gray-300 bg-white px-3 py-1 text-xs font-medium text-gray-700 hover:bg-gray-50"><%= t('dashboard.files.newFolder') %></button>
+        <input aria-label="<%= t('dashboard.files.searchPh') %>" id="file-search" type="search" placeholder="<%= t('dashboard.files.searchPh') %>" class="w-40 rounded-lg border border-gray-300 px-2.5 py-1 text-sm focus:border-accent focus:outline-none focus:ring-2 focus:ring-accent/20" />
+        <button aria-controls="new-folder-form" aria-expanded="false" aria-haspopup="true" id="new-folder-toggle" type="button" class="inline-flex items-center justify-center gap-2 rounded-lg border border-gray-300 bg-white px-3 py-1 text-xs font-medium text-gray-700 hover:bg-gray-50"><%= t('dashboard.files.newFolder') %></button>
         <button id="upload-files-toggle" type="button" title="<%= t('dashboard.files.uploadTitle') %>" class="inline-flex items-center justify-center gap-2 rounded-lg bg-accent px-3 py-1 text-xs font-medium text-white hover:bg-accent-dark"><%= t('dashboard.files.upload') %></button>
         <input id="upload-files-input" type="file" multiple class="hidden" />
       </div>

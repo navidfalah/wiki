@@ -2,34 +2,9 @@ import { saveCache, loadCache, showOfflineBanner, hideOfflineBanner, onReconnect
 import { copyButtonHtml, initCopyButtons } from './lib/copy';
 import { t, th, tn, tnh } from './lib/i18n';
 import { buildMessage, runMessage, stepName } from './lib/serverText';
-
-const apiBase = document.querySelector('meta[name="api-base"]')?.getAttribute('content') ?? '';
-
-function el(id: string): HTMLElement {
-  const found = document.getElementById(id);
-  if (!found) throw new Error(`Missing #${id}`);
-  return found;
-}
-
-async function apiFetch(path: string, opts?: RequestInit): Promise<any> {
-  const res = await fetch(`${apiBase}${path}`, opts);
-  if (!res.ok) {
-    let message = await res.text();
-    try {
-      message = JSON.parse(message).detail ?? message;
-    } catch {
-      /* plain text */
-    }
-    throw new Error(message || t('common.requestFailed', { status: res.status }));
-  }
-  return res.json();
-}
-
-function escapeHtml(text: string): string {
-  const div = document.createElement('div');
-  div.textContent = text;
-  return div.innerHTML;
-}
+import { apiBase, apiFetch } from './lib/api';
+import { el, escapeHtml } from './lib/dom';
+import { wireModalA11y } from './lib/modal';
 
 const IMAGE_EXTS = new Set(['png', 'jpg', 'jpeg', 'gif', 'webp', 'bmp']);
 const AUDIO_EXTS = new Set(['mp3', 'wav', 'm4a', 'ogg', 'flac', 'aac']);
@@ -358,7 +333,11 @@ function renderSourcesPicker() {
 function initSourcesPicker() {
   const toggle = el('sources-picker-toggle');
   const panel = el('sources-picker');
-  toggle.addEventListener('click', () => panel.classList.toggle('hidden'));
+  toggle.addEventListener('click', () => {
+    const open = panel.classList.contains('hidden');
+    panel.classList.toggle('hidden', !open);
+    toggle.setAttribute('aria-expanded', String(open));
+  });
 }
 
 // --- Run options (critic pass, corrections, PII redaction) ----------------
@@ -403,7 +382,11 @@ async function loadRunOptionModels() {
 function initRunOptions() {
   const toggle = el('run-options-toggle');
   const panel = el('run-options');
-  toggle.addEventListener('click', () => panel.classList.toggle('hidden'));
+  toggle.addEventListener('click', () => {
+    const open = panel.classList.contains('hidden');
+    panel.classList.toggle('hidden', !open);
+    toggle.setAttribute('aria-expanded', String(open));
+  });
 
   const criticPass = el('run-opt-critic-pass') as HTMLInputElement;
   const criticSamplesLabel = el('run-opt-critic-samples-label');
@@ -685,6 +668,7 @@ function initSources() {
   const form = el('add-source-form');
   toggle.addEventListener('click', () => {
     form.classList.toggle('hidden');
+    toggle.setAttribute('aria-expanded', String(!form.classList.contains('hidden')));
     if (!form.classList.contains('hidden')) {
       form.innerHTML = `
         <form id="add-source-real-form" class="rounded-xl border border-dashed border-source-border bg-source-bg/60 p-4">
@@ -835,7 +819,7 @@ function renderExplorer() {
       <div class="group relative flex flex-col items-center gap-1.5 rounded-lg p-3 text-center hover:bg-gray-50">
         <button data-preview="${escapeHtml(file.path)}" class="flex flex-col items-center gap-1.5">
           <span class="relative flex h-12 w-12 items-center justify-center rounded-xl bg-gray-100 text-gray-500 text-xl">${iconForFile(file.path)}
-            <span class="absolute -bottom-1 -right-1 h-3 w-3 rounded-full border-2 border-white ${processed ? 'bg-emerald-500' : 'bg-amber-500'}"></span>
+            <span class="absolute -bottom-1 -right-1 h-3 w-3 rounded-full border-2 border-white ${processed ? 'bg-emerald-500' : 'bg-amber-500'}" title="${processed ? 'Processed' : 'Not yet processed'}" role="img" aria-label="${processed ? 'Processed' : 'Not yet processed'}"></span>
           </span>
           <span class="line-clamp-2 w-24 text-xs font-medium text-gray-800">${escapeHtml(nameOf(file.path))}</span>
           ${ext ? `<span class="text-[10px] font-medium tracking-wide text-gray-400">${escapeHtml(ext)}</span>` : ''}
@@ -926,10 +910,11 @@ async function openPreview(filePath: string) {
         </div>
       </div>
     </div>`;
-  el('close-preview').addEventListener('click', () => {
+  const close = wireModalA11y(modal, () => {
     modal.classList.add('hidden');
     modal.innerHTML = '';
   });
+  el('close-preview').addEventListener('click', close);
 
   try {
     const detail = await apiFetch(`/api/raw-files/${filePath.split('/').map(encodeURIComponent).join('/')}`);
@@ -1043,6 +1028,7 @@ function initExplorer() {
   const form = el('new-folder-form');
   toggle.addEventListener('click', () => {
     form.classList.toggle('hidden');
+    toggle.setAttribute('aria-expanded', String(!form.classList.contains('hidden')));
     if (!form.classList.contains('hidden')) {
       form.innerHTML = `
         <form id="new-folder-real-form" class="flex flex-wrap items-center gap-2">

@@ -1,14 +1,9 @@
 import { saveCache, loadCache, showOfflineBanner, hideOfflineBanner, onReconnect } from './lib/cache';
 import { currentLang, formatNumber, t, th } from './lib/i18n';
+import { apiBase } from './lib/api';
+import { escapeHtml } from './lib/dom';
 
-const apiBase = document.querySelector('meta[name="api-base"]')?.getAttribute('content') ?? '';
 const CACHE_KEY = 'usage:summary';
-
-function escapeHtml(text: string): string {
-  const div = document.createElement('div');
-  div.textContent = text ?? '';
-  return div.innerHTML;
-}
 
 interface UsageBucket {
   key: string;

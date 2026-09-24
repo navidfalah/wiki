@@ -13,8 +13,9 @@
 import bcrypt from 'bcryptjs';
 import crypto from 'node:crypto';
 import fs from 'node:fs';
-import path from 'node:path';
 import { USERS_FILE } from '../paths';
+import { atomicWriteJson } from './atomicWrite';
+import { deleteSessionsForUser } from './sessions';
 
 export type Role = 'admin' | 'user';
 
@@ -53,8 +54,7 @@ function loadUsersFile(): UsersFile {
 }
 
 function saveUsersFile(data: UsersFile): void {
-  fs.mkdirSync(path.dirname(USERS_FILE), { recursive: true });
-  fs.writeFileSync(USERS_FILE, JSON.stringify(data, null, 2));
+  atomicWriteJson(USERS_FILE, data);
 }
 
 export function listUsers(): PublicUser[] {
@@ -105,6 +105,10 @@ export function setPassword(username: string, password: string): void {
   if (!user) throw new UserError(`User not found: ${username}`);
   user.password_hash = bcrypt.hashSync(password, 10);
   saveUsersFile(data);
+  // Any token issued under the old password (e.g. before a reset prompted
+  // by a suspected leak) must stop working immediately, not linger for up
+  // to the 30-day session TTL.
+  deleteSessionsForUser(user.id);
 }
 
 /**
@@ -123,6 +127,12 @@ export function deleteUser(id: string, requestingUserId: string): void {
   }
   data.users = data.users.filter((u) => u.id !== id);
   saveUsersFile(data);
+  // Without this, a deleted user's existing bearer token keeps
+  // authenticating with their original (possibly admin) role for up to
+  // the 30-day session TTL -- getSessionUser() trusts the cached
+  // username/role snapshot taken at login and never re-checks that the
+  // user still exists.
+  deleteSessionsForUser(id);
 }
 
 /**

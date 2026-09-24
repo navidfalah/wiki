@@ -1,14 +1,14 @@
 import ForceGraph, { NodeObject, LinkObject } from 'force-graph';
 import { forceCollide } from 'd3-force-3d';
 import { t, th, tn } from './lib/i18n';
+import { apiBase } from './lib/api';
+import { escapeHtml } from './lib/dom';
 
 declare global {
   interface Window {
     showToast?: (message: string, type?: string) => void;
   }
 }
-
-const apiBase = document.querySelector('meta[name="api-base"]')?.getAttribute('content') ?? '';
 
 interface Topic {
   id: string;
@@ -63,7 +63,7 @@ let graph: ForceGraph<GraphNode, GraphLink> | null = null;
 let allNodes: GraphNode[] = [];
 let allLinks: GraphLink[] = [];
 let matchedIds = new Set<string>();
-let selectedIds = new Set<string>();
+const selectedIds = new Set<string>();
 let hoverNode: GraphNode | null = null;
 let maxDegree = 1;
 
@@ -226,7 +226,7 @@ async function exportSelected() {
       selectionExportLabel.textContent = label;
     });
     window.showToast?.(tn('graph.exportedFiles', count), 'success');
-  } catch (err) {
+  } catch {
     window.showToast?.(t('graph.exportFailed'), 'error');
   } finally {
     selectionExportBtn.disabled = false;
@@ -243,7 +243,7 @@ async function exportAllFiles(button: HTMLButtonElement) {
       button.querySelector('.block')!.textContent = label;
     });
     window.showToast?.(t('graph.exportedAll', { count }), 'success');
-  } catch (err) {
+  } catch {
     window.showToast?.(t('graph.exportFailed'), 'error');
   } finally {
     button.disabled = false;
@@ -326,12 +326,6 @@ function shouldLabel(node: GraphNode, globalScale: number, topHubIds: Set<string
   if (selectedIds.has(node.id)) return true;
   if (topHubIds.has(node.id)) return true;
   return globalScale > 2.4;
-}
-
-function escapeHtml(text: string): string {
-  const div = document.createElement('div');
-  div.textContent = text;
-  return div.innerHTML;
 }
 
 function renderStats(nodeCount: number, linkCount: number, overrideCount: number) {
@@ -561,7 +555,7 @@ async function load() {
     const resize = () => graph?.width(container.clientWidth).height(container.clientHeight);
     new ResizeObserver(resize).observe(container);
     resize();
-  } catch (err) {
+  } catch {
     showEmpty(t('common.cannotReachApi'));
   }
 }

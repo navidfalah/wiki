@@ -1,17 +1,24 @@
 import fs from 'node:fs';
-import os from 'node:os';
-import path from 'node:path';
 import { afterAll, afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 
-const { tmpRoot, USERS_FILE } = vi.hoisted(() => {
+const { tmpRoot, USERS_FILE, SESSIONS_FILE } = vi.hoisted(() => {
   const fs: typeof import('node:fs') = require('node:fs');
   const os: typeof import('node:os') = require('node:os');
   const path: typeof import('node:path') = require('node:path');
   const tmpRoot = fs.mkdtempSync(path.join(os.tmpdir(), 'users-test-'));
-  return { tmpRoot, USERS_FILE: path.join(tmpRoot, 'data', 'users.json') };
+  return {
+    tmpRoot,
+    USERS_FILE: path.join(tmpRoot, 'data', 'users.json'),
+    SESSIONS_FILE: path.join(tmpRoot, 'data', 'sessions.json'),
+  };
 });
 
-vi.mock('../paths', () => ({ USERS_FILE }));
+// setPassword/deleteUser now also revoke the affected user's sessions
+// (sessions.ts reads SESSIONS_FILE from this same module), so the mock
+// must supply it too -- a plain factory that only returns USERS_FILE
+// would leave SESSIONS_FILE undefined and crash fs.existsSync(undefined)
+// inside sessions.ts.
+vi.mock('../paths', () => ({ USERS_FILE, SESSIONS_FILE }));
 
 import {
   createUser,
@@ -26,9 +33,11 @@ import {
   UserError,
   verifyPassword,
 } from './users';
+import { createSession, getSessionUser } from './sessions';
 
 afterEach(() => {
   if (fs.existsSync(USERS_FILE)) fs.rmSync(USERS_FILE);
+  if (fs.existsSync(SESSIONS_FILE)) fs.rmSync(SESSIONS_FILE);
   delete process.env.ADMIN_USERNAME;
   delete process.env.ADMIN_PASSWORD;
   vi.restoreAllMocks();
@@ -125,6 +134,16 @@ describe('setPassword', () => {
   it('rejects an unknown username', () => {
     expect(() => setPassword('bob', 'password123')).toThrow(UserError);
   });
+
+  it('revokes existing sessions, so a token from before the reset stops working', () => {
+    const alice = findUserByUsername('alice')!;
+    const token = createSession({ id: alice.id, username: alice.username, role: alice.role, created_at: alice.created_at });
+    expect(getSessionUser(token)).not.toBeNull();
+
+    setPassword('alice', 'new-password123');
+
+    expect(getSessionUser(token)).toBeNull();
+  });
 });
 
 describe('deleteUser', () => {
@@ -134,6 +153,17 @@ describe('deleteUser', () => {
     expect(() => deleteUser(a.id, a.id)).toThrow(UserError);
     expect(findUserById(a.id)).toBeDefined();
     expect(() => deleteUser(b.id, a.id)).not.toThrow();
+  });
+
+  it('revokes the deleted user\'s sessions, so their token stops authenticating', () => {
+    const admin = createUser('alice', 'password123', 'admin');
+    const target = createUser('bob', 'password123', 'user');
+    const token = createSession({ id: target.id, username: target.username, role: target.role, created_at: target.created_at });
+    expect(getSessionUser(token)).not.toBeNull();
+
+    deleteUser(target.id, admin.id);
+
+    expect(getSessionUser(token)).toBeNull();
   });
 
   it('refuses to delete the last remaining admin', () => {

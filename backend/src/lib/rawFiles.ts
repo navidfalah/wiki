@@ -5,7 +5,7 @@
 import crypto from 'node:crypto';
 import fs from 'node:fs';
 import path from 'node:path';
-import { STATE_FILE } from '../paths';
+import { COMPILER_DIR, STATE_FILE } from '../paths';
 import { walkEntries } from './fsWalk';
 
 export function loadState(): { files: Record<string, any> } {
@@ -17,60 +17,15 @@ export function loadState(): { files: Record<string, any> } {
   }
 }
 
-// Kept in sync with compiler/synthesizer.py's ALL_SOURCE_EXTENSIONS (text +
-// email + media_ingest.IMAGE_EXTENSIONS/AUDIO_EXTENSIONS/FILE_EXTENSIONS).
-export const ALL_SOURCE_EXTENSIONS = new Set([
-  // Plain text
-  '.txt',
-  '.md',
-  // Email
-  '.eml',
-  // Images
-  '.png',
-  '.jpg',
-  '.jpeg',
-  '.gif',
-  '.webp',
-  '.bmp',
-  // Audio (transcribed by the compiler when an LLM is configured)
-  '.mp3',
-  '.wav',
-  '.m4a',
-  '.ogg',
-  '.flac',
-  '.aac',
-  // Files with text extraction
-  '.pdf',
-  '.csv',
-  '.tsv',
-  '.json',
-  '.xml',
-  '.html',
-  '.htm',
-  '.yaml',
-  '.yml',
-  '.log',
-  // Files registered as an opaque downloadable attachment
-  '.docx',
-  '.xlsx',
-  '.pptx',
-  '.zip',
-  '.rtf',
-  '.odt',
-  '.ods',
-  '.odp',
-  '.rar',
-  '.7z',
-  '.tar',
-  '.gz',
-  '.tgz',
-  '.epub',
-  '.mp4',
-  '.mov',
-  '.avi',
-  '.mkv',
-  '.m4v',
-]);
+// Read directly from compiler/all_source_extensions.json -- generated from
+// synthesizer.py's ALL_SOURCE_EXTENSIONS (text + email +
+// media_ingest.IMAGE_EXTENSIONS/AUDIO_EXTENSIONS/FILE_EXTENSIONS) and
+// guarded by test_all_source_extensions_manifest.py -- rather than a
+// hand-copied literal here that could silently drift from the Python list.
+const ALL_SOURCE_EXTENSIONS_MANIFEST = path.join(COMPILER_DIR, 'all_source_extensions.json');
+export const ALL_SOURCE_EXTENSIONS = new Set<string>(
+  JSON.parse(fs.readFileSync(ALL_SOURCE_EXTENSIONS_MANIFEST, 'utf-8')),
+);
 
 export function discoverRawSourceFiles(rawDir: string): string[] {
   const files: string[] = [];

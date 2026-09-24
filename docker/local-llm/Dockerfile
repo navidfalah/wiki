@@ -28,5 +28,18 @@ WORKDIR /models
 COPY docker/local-llm/entrypoint.sh /entrypoint.sh
 RUN chmod +x /entrypoint.sh
 
+# Unlike backend/Dockerfile's bind mounts, docker-compose.yml mounts /models
+# as a NAMED volume (local-llm-models) -- Docker initializes an empty named
+# volume from the image's own directory content/ownership on first use, so
+# chown-ing it here (before it's ever mounted) propagates correctly instead
+# of being shadowed by pre-existing host ownership the way a bind mount
+# would be.
+RUN useradd -r -m -d /home/llm llm && chown -R llm:llm /models
+USER llm
+
 EXPOSE 8080
+
+HEALTHCHECK --interval=30s --timeout=5s --start-period=60s --retries=5 \
+    CMD curl -sf http://localhost:8080/v1/models || exit 1
+
 ENTRYPOINT ["/entrypoint.sh"]

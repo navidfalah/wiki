@@ -215,3 +215,86 @@ def test_link_and_export_pages_uses_entity_mentions_for_alias_linking(tmp_path: 
     meshsync_page = next(p for p in written if p.name == "meshsync.md")
     exported = meshsync_page.read_text(encoding="utf-8")
     assert "[Mira](./mira-chen.md)" in exported
+
+
+class _RecordingLinkerLLMWithEmbeddings(_RecordingLinkerLLM):
+    """Same page-echoing LLM as _RecordingLinkerLLM, plus embed_text() so
+    it can also serve as entity_resolution.py's embedding tier."""
+
+    def __init__(self, vectors: dict[str, list[float]]):
+        super().__init__()
+        self.vectors = vectors
+        self.embed_calls: list[str] = []
+
+    def embed_text(self, text: str) -> list[float]:
+        self.embed_calls.append(text)
+        return self.vectors.get(text.strip().lower(), [0.0, 1.0])
+
+
+def test_link_and_export_pages_resolve_entities_llm_escalates_past_the_heuristic_tier(tmp_path: Path):
+    """"Mira" and "Mirabelle" don't hit the heuristic auto-merge threshold
+    (no exact match, no subset-of-tokens relationship), so with
+    resolve_entities_llm left off (the default) they must stay unaliased.
+    Passing resolve_entities_llm=True should thread the already-required
+    LLM client into build_alias_topic_index() as its embed_fn, letting the
+    embedding tier resolve what the heuristic tier alone left escalated."""
+    temp_dir = tmp_path / "temp_output"
+    docs_dir = tmp_path / "docs"
+    temp_dir.mkdir()
+    docs_dir.mkdir()
+
+    (temp_dir / "mira.md").write_text("# Mira\n\nFounder.\n", encoding="utf-8")
+    (temp_dir / "meshsync.md").write_text(
+        "# MeshSync\n\nMirabelle reported the read interval is 15 minutes.\n", encoding="utf-8"
+    )
+    topic_index, _ = build_topic_index(temp_dir, temp_dir / "index.json")
+    mentions = [Mention("Mira", "notes/a.md"), Mention("Mirabelle", "notes/b.md")]
+
+    llm = _RecordingLinkerLLMWithEmbeddings({"mira": [1.0, 0.0], "mirabelle": [0.95, 0.05]})
+    written, _skipped = link_and_export_pages(
+        topic_index,
+        temp_dir=temp_dir,
+        output_dir=docs_dir,
+        llm=llm,
+        dirty_filenames={"mira.md", "meshsync.md"},
+        removed_filenames=set(),
+        force=True,
+        entity_mentions=mentions,
+        resolve_entities_llm=True,
+    )
+
+    meshsync_page = next(p for p in written if p.name == "meshsync.md")
+    exported = meshsync_page.read_text(encoding="utf-8")
+    assert "[Mirabelle](./mira.md)" in exported
+    assert llm.embed_calls  # confirms embed_fn actually reached resolve_entities()
+
+
+def test_link_and_export_pages_without_resolve_entities_llm_leaves_ambiguous_mentions_unaliased(tmp_path: Path):
+    temp_dir = tmp_path / "temp_output"
+    docs_dir = tmp_path / "docs"
+    temp_dir.mkdir()
+    docs_dir.mkdir()
+
+    (temp_dir / "mira.md").write_text("# Mira\n\nFounder.\n", encoding="utf-8")
+    (temp_dir / "meshsync.md").write_text(
+        "# MeshSync\n\nMirabelle reported the read interval is 15 minutes.\n", encoding="utf-8"
+    )
+    topic_index, _ = build_topic_index(temp_dir, temp_dir / "index.json")
+    mentions = [Mention("Mira", "notes/a.md"), Mention("Mirabelle", "notes/b.md")]
+
+    llm = _RecordingLinkerLLMWithEmbeddings({"mira": [1.0, 0.0], "mirabelle": [0.95, 0.05]})
+    written, _skipped = link_and_export_pages(
+        topic_index,
+        temp_dir=temp_dir,
+        output_dir=docs_dir,
+        llm=llm,
+        dirty_filenames={"mira.md", "meshsync.md"},
+        removed_filenames=set(),
+        force=True,
+        entity_mentions=mentions,
+    )
+
+    meshsync_page = next(p for p in written if p.name == "meshsync.md")
+    exported = meshsync_page.read_text(encoding="utf-8")
+    assert "[Mirabelle](./mira.md)" not in exported
+    assert llm.embed_calls == []

@@ -10,7 +10,7 @@ from __future__ import annotations
 from collections.abc import Callable
 
 from connectors.base import ConnectorItem
-from connectors.http_transport import urllib_get
+from connectors.http_transport import urllib_get, urllib_get_raw
 from connectors.oauth2 import OAuth2Config, OAuth2Connector
 
 AUTH_URL = "https://accounts.google.com/o/oauth2/v2/auth"
@@ -19,6 +19,7 @@ API_BASE = "https://www.googleapis.com/drive/v3"
 SCOPES = ["https://www.googleapis.com/auth/drive.readonly"]
 
 HttpGet = Callable[[str, dict, dict], dict]
+HttpGetRaw = Callable[[str, dict, dict], str]
 
 
 def build_config(client_id: str, client_secret: str, redirect_uri: str) -> OAuth2Config:
@@ -35,10 +36,18 @@ def build_config(client_id: str, client_secret: str, redirect_uri: str) -> OAuth
 class DriveConnector(OAuth2Connector):
     connector_id = "google_drive"
 
-    def __init__(self, config: OAuth2Config, access_token: str, http_get: HttpGet = urllib_get, **kwargs):
+    def __init__(
+        self,
+        config: OAuth2Config,
+        access_token: str,
+        http_get: HttpGet = urllib_get,
+        http_get_text: HttpGetRaw = urllib_get_raw,
+        **kwargs,
+    ):
         super().__init__(config, **kwargs)
         self._access_token = access_token
         self._http_get = http_get
+        self._http_get_text = http_get_text
 
     def _headers(self) -> dict:
         return {"Authorization": f"Bearer {self._access_token}"}
@@ -64,9 +73,10 @@ class DriveConnector(OAuth2Connector):
         ]
 
     def fetch_item(self, item_id: str) -> str:
-        response = self._http_get(
+        # The /export endpoint returns the exported document's raw content
+        # (plain text here, since we always ask for mimeType=text/plain) --
+        # not JSON -- so this must not go through the JSON-decoding
+        # http_get used by list_items.
+        return self._http_get_text(
             f"{API_BASE}/files/{item_id}/export", self._headers(), {"mimeType": "text/plain"}
         )
-        if isinstance(response, dict):
-            return response.get("text", "")
-        return str(response)

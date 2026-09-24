@@ -1,24 +1,7 @@
 import { formatDateTime, t, th, tn, tnh } from './lib/i18n';
-
-const apiBase = document.querySelector('meta[name="api-base"]')?.getAttribute('content') ?? '';
-
-function escapeHtml(text: string | null | undefined): string {
-  const div = document.createElement('div');
-  div.textContent = text ?? '';
-  return div.innerHTML;
-}
-
-/** Shared JSON fetch helper -- used by the Database and Connectors tabs
- * (both originally had their own identical copy of this). */
-async function api<T = any>(path: string, options: RequestInit = {}): Promise<T> {
-  const res = await fetch(`${apiBase}${path}`, {
-    ...options,
-    headers: { 'Content-Type': 'application/json', ...(options.headers ?? {}) },
-  });
-  const body = await res.json().catch(() => ({}));
-  if (!res.ok) throw new Error(body.error || t('common.requestFailed', { status: res.status }));
-  return body;
-}
+import { apiBase, apiFetch } from './lib/api';
+import { el, escapeHtml } from './lib/dom';
+import { wireModalA11y } from './lib/modal';
 
 // --- Tabs -------------------------------------------------------------
 
@@ -62,26 +45,6 @@ if (requestedTab && document.getElementById(`tab-panel-${requestedTab}`)) {
 // tell an in-app drag apart from a drag-in from the user's OS/file
 // manager without inspecting file contents.
 const INTERNAL_DRAG_TYPE = 'application/x-wiki-raw-file-path';
-
-function el(id: string): HTMLElement {
-  const found = document.getElementById(id);
-  if (!found) throw new Error(`Missing #${id}`);
-  return found;
-}
-
-async function apiFetch(path: string, opts?: RequestInit): Promise<any> {
-  const res = await fetch(`${apiBase}${path}`, opts);
-  if (!res.ok) {
-    let message = await res.text();
-    try {
-      message = JSON.parse(message).detail ?? message;
-    } catch {
-      /* plain text */
-    }
-    throw new Error(message || t('common.requestFailed', { status: res.status }));
-  }
-  return res.json();
-}
 
 const IMAGE_EXTS = new Set(['png', 'jpg', 'jpeg', 'gif', 'webp', 'bmp']);
 const AUDIO_EXTS = new Set(['mp3', 'wav', 'm4a', 'ogg', 'flac', 'aac']);
@@ -271,7 +234,7 @@ function renderExplorer() {
       <div class="group relative flex flex-col items-center gap-1.5 rounded-lg p-3 text-center hover:bg-gray-50" data-file-tile="${escapeHtml(file.path)}" draggable="true">
         <button data-preview="${escapeHtml(file.path)}" class="flex flex-col items-center gap-1.5">
           <span class="relative flex h-12 w-12 items-center justify-center rounded-xl bg-gray-100 text-gray-500 text-xl">${iconForFile(file.path)}
-            <span class="absolute -bottom-1 -right-1 h-3 w-3 rounded-full border-2 border-white ${processed ? 'bg-emerald-500' : 'bg-amber-500'}"></span>
+            <span class="absolute -bottom-1 -right-1 h-3 w-3 rounded-full border-2 border-white ${processed ? 'bg-emerald-500' : 'bg-amber-500'}" title="${processed ? 'Processed' : 'Not yet processed'}" role="img" aria-label="${processed ? 'Processed' : 'Not yet processed'}"></span>
           </span>
           <span class="line-clamp-2 w-24 text-xs font-medium text-gray-800">${escapeHtml(nameOf(file.path))}</span>
           ${ext ? `<span class="text-[10px] font-medium tracking-wide text-gray-400">${escapeHtml(ext)}</span>` : ''}
@@ -509,6 +472,7 @@ function initExplorer() {
   const form = el('new-folder-form');
   toggle.addEventListener('click', () => {
     form.classList.toggle('hidden');
+    toggle.setAttribute('aria-expanded', String(!form.classList.contains('hidden')));
     if (!form.classList.contains('hidden')) {
       form.innerHTML = `
         <form id="new-folder-real-form" class="flex flex-wrap items-center gap-2">
@@ -605,7 +569,7 @@ document.getElementById('connect-form')?.addEventListener('submit', async (event
   const submitBtn = form.querySelector('button[type="submit"]') as HTMLButtonElement;
   submitBtn.disabled = true;
   try {
-    await api('/api/connectors/postgres/connect', {
+    await apiFetch('/api/connectors/postgres/connect', {
       method: 'POST',
       body: JSON.stringify({
         account_label: (form.elements.namedItem('account_label') as HTMLInputElement).value.trim(),
@@ -638,7 +602,7 @@ document.getElementById('connect-sqlite-form')?.addEventListener('submit', async
   const submitBtn = form.querySelector('button[type="submit"]') as HTMLButtonElement;
   submitBtn.disabled = true;
   try {
-    await api('/api/connectors/sqlite/connect', {
+    await apiFetch('/api/connectors/sqlite/connect', {
       method: 'POST',
       body: JSON.stringify({
         account_label: (form.elements.namedItem('account_label') as HTMLInputElement).value.trim(),
@@ -695,7 +659,7 @@ function dbAccountCard(connectorId: DbConnectorId, accountLabel: string): string
 async function loadDbAccounts() {
   const list = document.getElementById('accounts-list')!;
   try {
-    const data = await api<{ connectors: DbConnectorEntry[] }>('/api/connectors');
+    const data = await apiFetch<{ connectors: DbConnectorEntry[] }>('/api/connectors');
     const cards = DB_CONNECTOR_IDS.flatMap((id) => {
       const entry = data.connectors.find((c) => c.id === id);
       return (entry?.connected_accounts ?? []).map((label) => dbAccountCard(id, label));
@@ -713,7 +677,7 @@ async function loadDbActivity() {
   const body = document.getElementById('activity-body')!;
   try {
     const results = await Promise.all(
-      DB_CONNECTOR_IDS.map((id) => api<{ events: ConnectorActivityEvent[] }>(`/api/connectors/${id}/activity`)),
+      DB_CONNECTOR_IDS.map((id) => apiFetch<{ events: ConnectorActivityEvent[] }>(`/api/connectors/${id}/activity`)),
     );
     const events = results.flatMap((r) => r.events ?? []).sort((a, b) => (a.at < b.at ? 1 : -1));
     status.textContent = tn('resources.activity.count', events.length);
@@ -750,7 +714,7 @@ document.getElementById('accounts-list')?.addEventListener('click', async (event
     const accountLabel = card.dataset.accountLabel!;
     disconnectBtn.disabled = true;
     try {
-      await api(`/api/connectors/${connectorId}/accounts/${encodeURIComponent(accountLabel)}`, { method: 'DELETE' });
+      await apiFetch(`/api/connectors/${connectorId}/accounts/${encodeURIComponent(accountLabel)}`, { method: 'DELETE' });
       (window as any).showToast?.(t('resources.db.disconnected', { name: accountLabel }), 'success');
       loadDbAccounts();
       loadDbActivity();
@@ -775,7 +739,7 @@ document.getElementById('accounts-list')?.addEventListener('click', async (event
     panel.classList.remove('hidden');
     panel.innerHTML = `<p class="text-xs text-gray-400">${th('resources.db.loadingTables')}</p>`;
     try {
-      const data = await api<{ items: TableItem[] }>(`/api/connectors/${connectorId}/items`, {
+      const data = await apiFetch<{ items: TableItem[] }>(`/api/connectors/${connectorId}/items`, {
         method: 'POST',
         body: JSON.stringify({ account_label: accountLabel, limit: 50 }),
       });
@@ -813,7 +777,7 @@ document.getElementById('accounts-list')?.addEventListener('click', async (event
       const row = selected[i];
       statusEl.textContent = t('resources.db.importing', { current: i + 1, total: selected.length });
       try {
-        const result = await api<{ raw_path: string }>(`/api/connectors/${connectorId}/items/import`, {
+        const result = await apiFetch<{ raw_path: string }>(`/api/connectors/${connectorId}/items/import`, {
           method: 'POST',
           body: JSON.stringify({
             account_label: accountLabel,
@@ -907,7 +871,7 @@ function connectorCard(entry: OAuthConnectorEntry): string {
 async function loadConnectors() {
   const list = document.getElementById('connectors-list')!;
   try {
-    const data = await api<{ connectors: OAuthConnectorEntry[] }>('/api/connectors');
+    const data = await apiFetch<{ connectors: OAuthConnectorEntry[] }>('/api/connectors');
     // Postgres/SQLite live on the Database tab's own guided UI -- this
     // tab covers everything else (Gmail/Drive OAuth, IMAP).
     const entries = data.connectors.filter((c) => !DB_CONNECTOR_IDS.includes(c.id as DbConnectorId));
@@ -938,7 +902,7 @@ document.getElementById('connectors-list')?.addEventListener('click', async (eve
   if (oauthBtn) {
     oauthBtn.disabled = true;
     try {
-      const result = await api<{ authorization_url: string }>(`/api/connectors/${oauthBtn.dataset.connectorId}/oauth/start`, { method: 'POST' });
+      const result = await apiFetch<{ authorization_url: string }>(`/api/connectors/${oauthBtn.dataset.connectorId}/oauth/start`, { method: 'POST' });
       window.open(result.authorization_url, '_blank', 'noopener');
       (window as any).showToast?.(t('resources.connectors.oauthHint'), 'success');
     } catch (err: any) {
@@ -955,7 +919,7 @@ document.getElementById('connectors-list')?.addEventListener('click', async (eve
     const { connectorId, accountLabel } = row.dataset as { connectorId: string; accountLabel: string };
     disconnectBtn.disabled = true;
     try {
-      await api(`/api/connectors/${connectorId}/accounts/${encodeURIComponent(accountLabel)}`, { method: 'DELETE' });
+      await apiFetch(`/api/connectors/${connectorId}/accounts/${encodeURIComponent(accountLabel)}`, { method: 'DELETE' });
       (window as any).showToast?.(t('resources.db.disconnected', { name: accountLabel }), 'success');
       loadConnectors();
     } catch (err: any) {
@@ -987,7 +951,7 @@ document.getElementById('connectors-list')?.addEventListener('click', async (eve
       const results = panel.querySelector('.items-results') as HTMLElement;
       results.innerHTML = `<p class="text-xs text-gray-400">${th('common.loading')}</p>`;
       try {
-        const data = await api<{ items: ConnectorItem[] }>(`/api/connectors/${connectorId}/items`, {
+        const data = await apiFetch<{ items: ConnectorItem[] }>(`/api/connectors/${connectorId}/items`, {
           method: 'POST',
           body: JSON.stringify({ account_label: accountLabel, query, limit: 20 }),
         });
@@ -1012,7 +976,7 @@ document.getElementById('connectors-list')?.addEventListener('click', async (eve
     importBtn.disabled = true;
     importBtn.textContent = t('resources.connectors.importing');
     try {
-      const result = await api<{ raw_path: string }>(`/api/connectors/${connectorId}/items/import`, {
+      const result = await apiFetch<{ raw_path: string }>(`/api/connectors/${connectorId}/items/import`, {
         method: 'POST',
         body: JSON.stringify({ account_label: accountLabel, item_id: itemId, item_title: itemTitle }),
       });
@@ -1034,7 +998,7 @@ document.getElementById('connectors-list')?.addEventListener('submit', async (ev
   const submitBtn = form.querySelector('button[type="submit"]') as HTMLButtonElement;
   submitBtn.disabled = true;
   try {
-    await api('/api/connectors/imap/connect', {
+    await apiFetch('/api/connectors/imap/connect', {
       method: 'POST',
       body: JSON.stringify({
         account_label: (form.elements.namedItem('account_label') as HTMLInputElement).value.trim(),
@@ -1113,10 +1077,10 @@ async function openEmail(path: string) {
         <div class="flex-1 overflow-auto p-5 text-sm" id="email-body">${th('common.loading')}</div>
       </div>
     </div>`;
-  const close = () => {
+  const close = wireModalA11y(modal, () => {
     modal.classList.add('hidden');
     modal.innerHTML = '';
-  };
+  });
   document.getElementById('close-email')!.addEventListener('click', close);
   document.getElementById('delete-email')!.addEventListener('click', async () => {
     if (!confirm(t('resources.emails.confirmDelete', { path }))) return;
@@ -1192,10 +1156,10 @@ function openEmailForm(existing?: any) {
       </div>
     </div>`;
 
-  const close = () => {
+  const close = wireModalA11y(modal, () => {
     modal.classList.add('hidden');
     modal.innerHTML = '';
-  };
+  });
   document.getElementById('close-form')!.addEventListener('click', close);
   document.getElementById('cancel-form')!.addEventListener('click', close);
 

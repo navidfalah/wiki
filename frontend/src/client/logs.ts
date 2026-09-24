@@ -1,14 +1,8 @@
 import { copyButtonHtml, initCopyButtons } from './lib/copy';
 import { formatDateTime, t, th, tn } from './lib/i18n';
 import { categoryLabel, levelLabel } from './lib/serverText';
-
-const apiBase = document.querySelector('meta[name="api-base"]')?.getAttribute('content') ?? '';
-
-function escapeHtml(text: string): string {
-  const div = document.createElement('div');
-  div.textContent = text ?? '';
-  return div.innerHTML;
-}
+import { apiBase } from './lib/api';
+import { escapeHtml } from './lib/dom';
 
 interface ActivityEvent {
   id: string;

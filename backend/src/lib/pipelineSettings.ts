@@ -14,6 +14,7 @@
 import fs from 'node:fs';
 import path from 'node:path';
 import { PROJECT_ROOT } from '../paths';
+import { atomicWriteJson } from './atomicWrite';
 
 export const PIPELINE_SETTINGS_FILE = path.join(PROJECT_ROOT, 'data', 'pipeline_settings.json');
 
@@ -32,7 +33,7 @@ const DEFAULT_SETTINGS: PipelineSettings = {
   critic_samples: 1,
   critic_regenerate: false,
   use_corrections: false,
-  redact_pii: false,
+  redact_pii: true,
   web_search: false,
   excluded_folders: [],
 };
@@ -88,7 +89,6 @@ export function savePipelineSettings(input: any): PipelineSettings {
       ? input.excluded_folders.filter((f: unknown) => typeof f === 'string' && f.trim()).map((f: string) => f.trim())
       : [],
   };
-  fs.mkdirSync(path.dirname(PIPELINE_SETTINGS_FILE), { recursive: true });
-  fs.writeFileSync(PIPELINE_SETTINGS_FILE, JSON.stringify(settings, null, 2));
+  atomicWriteJson(PIPELINE_SETTINGS_FILE, settings);
   return settings;
 }

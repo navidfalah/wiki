@@ -9,6 +9,7 @@
 import fs from 'node:fs';
 import path from 'node:path';
 import { PROJECT_ROOT } from '../paths';
+import { atomicWriteJson } from './atomicWrite';
 
 export const COMPANY_SETTINGS_FILE = path.join(PROJECT_ROOT, 'data', 'company_settings.json');
 
@@ -69,7 +70,6 @@ export function saveCompanySettings(input: any): CompanySettings {
     }
     settings[key] = String(value ?? '').trim();
   }
-  fs.mkdirSync(path.dirname(COMPANY_SETTINGS_FILE), { recursive: true });
-  fs.writeFileSync(COMPANY_SETTINGS_FILE, JSON.stringify(settings, null, 2));
+  atomicWriteJson(COMPANY_SETTINGS_FILE, settings);
   return settings;
 }

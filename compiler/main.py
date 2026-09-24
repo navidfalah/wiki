@@ -415,6 +415,7 @@ def step_link(
     extractions: dict | None = None,
     run: "PipelineRun | None" = None,
     step_name: str = "",
+    resolve_entities_llm: bool = False,
 ) -> list[Path]:
     """Step 5: Incrementally inject links and export affected pages.
 
@@ -422,6 +423,9 @@ def step_link(
     deterministic pre-pass — every entity name extraction found across the
     corpus becomes a candidate alias for the mechanical linker's floor
     pass (see link_and_export_pages()'s entity_mentions docstring).
+
+    resolve_entities_llm is passed straight through to
+    link_and_export_pages() — see its docstring.
     """
     entity_mentions = mentions_from_extractions(extractions) if extractions else None
     mode = "LLM"
@@ -459,6 +463,7 @@ def step_link(
             force=force,
             on_progress=on_progress,
             entity_mentions=entity_mentions,
+            resolve_entities_llm=resolve_entities_llm,
         )
 
     console.print(
@@ -482,6 +487,7 @@ def run_pipeline(
     web_search_max_topics: int = web_search.DEFAULT_MAX_TOPICS,
     web_search_provider: str | None = None,
     web_search_api_key: str | None = None,
+    resolve_entities_llm: bool = False,
 ) -> int:
     """Run the full compiler pipeline sequentially.
 
@@ -495,6 +501,12 @@ def run_pipeline(
     enrichment (web_search.py) for this run only -- off by default, so a
     compile stays fully offline/deterministic unless explicitly asked for
     (--web-search / WIKI_WEB_SEARCH_ENABLED). See step_synthesize().
+
+    ``resolve_entities_llm`` turns on step 5's embedding/LLM entity
+    resolution tiers for alias expansion -- off by default, since it's an
+    additive quality improvement (more aliases mechanically linked) at
+    the cost of extra LLM/embedding calls during linking, not something
+    every compile needs. See link_and_export_pages()'s docstring.
     """
     start = time.perf_counter()
     try:
@@ -677,6 +689,7 @@ def run_pipeline(
             extractions=extractions,
             run=run,
             step_name=current_step_name,
+            resolve_entities_llm=resolve_entities_llm,
         )
         run.finish_step(
             current_step_name,
@@ -811,13 +824,15 @@ def main() -> None:
     )
     parser.add_argument(
         "--redact-pii",
-        action="store_true",
-        default=os.getenv("WIKI_REDACT_PII", "").lower() in {"1", "true", "yes"},
+        action=argparse.BooleanOptionalAction,
+        default=os.getenv("WIKI_REDACT_PII", "true").lower() not in {"0", "false", "no"},
         help=(
             "Redact SSNs, credit cards, API keys, phone numbers, and IPv4 addresses "
             "(pii_redaction.py's default policy — NOT email addresses or names, see "
             "its module docstring) from chunk text before it's sent to the LLM for "
-            "extraction. Also enabled by setting WIKI_REDACT_PII=true."
+            "extraction. On by default (these categories are unambiguously safe to "
+            "strip and never conflict with entity resolution); use --no-redact-pii or "
+            "WIKI_REDACT_PII=false to send chunk text unredacted."
         ),
     )
     parser.add_argument(
@@ -871,6 +886,19 @@ def main() -> None:
             "latency when many topics are dirty at once (default 8)."
         ),
     )
+    parser.add_argument(
+        "--resolve-entities-llm",
+        action="store_true",
+        default=os.getenv("WIKI_RESOLVE_ENTITIES_LLM", "").lower() in {"1", "true", "yes"},
+        help=(
+            "During step 5's alias-aware mechanical linking, escalate entity mentions "
+            "the heuristic tier alone couldn't confidently cluster (e.g. \"Mira\" vs. "
+            "\"Mirabelle\") to entity_resolution.py's embedding and LLM adjudication "
+            "tiers, instead of leaving them unaliased. Off by default -- adds extra "
+            "LLM/embedding calls to every linking run. Also settable via "
+            "WIKI_RESOLVE_ENTITIES_LLM=true."
+        ),
+    )
     args = parser.parse_args()
     exclude_prefixes = frozenset(f.strip() for f in args.exclude_folders.split(",") if f.strip())
     raise SystemExit(
@@ -886,6 +914,7 @@ def main() -> None:
             web_search_max_results=args.web_search_max_results,
             web_search_max_topics=args.web_search_max_topics,
             web_search_provider=args.web_search_provider,
+            resolve_entities_llm=args.resolve_entities_llm,
         )
     )
 

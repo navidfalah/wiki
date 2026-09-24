@@ -23,7 +23,7 @@
       <nav id="breadcrumbs" class="flex min-w-0 flex-wrap items-center gap-1 text-sm"></nav>
       <div class="flex items-center gap-2">
         <input id="resource-search" type="search" placeholder="<%= t('resources.files.searchPh') %>" class="w-44 rounded-lg border border-gray-300 px-2.5 py-1 text-sm focus:border-accent focus:outline-none focus:ring-2 focus:ring-accent/20" />
-        <button id="new-folder-toggle" type="button" class="inline-flex items-center justify-center gap-2 rounded-lg border border-gray-300 bg-white px-3 py-1 text-xs font-medium text-gray-700 hover:bg-gray-50"><%= t('resources.files.newFolder') %></button>
+        <button aria-controls="new-folder-form" aria-expanded="false" aria-haspopup="true" id="new-folder-toggle" type="button" class="inline-flex items-center justify-center gap-2 rounded-lg border border-gray-300 bg-white px-3 py-1 text-xs font-medium text-gray-700 hover:bg-gray-50"><%= t('resources.files.newFolder') %></button>
         <button id="upload-files-toggle" type="button" title="<%= t('resources.files.uploadTitle') %>" class="inline-flex items-center justify-center gap-2 rounded-lg bg-accent px-3 py-1 text-xs font-medium text-white hover:bg-accent-dark"><%= t('resources.files.upload') %></button>
         <input id="upload-files-input" type="file" multiple class="hidden" />
       </div>

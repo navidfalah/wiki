@@ -47,7 +47,25 @@ def parse_frontmatter(content: str) -> dict[str, Any]:
         if match:
             key = match.group(1)
             value = match.group(2).strip()
-            if key == "tags" and value in ("[]", ""):
+            if key == "tags":
+                if value in ("[]", ""):
+                    in_tags = True
+                    continue
+                if value.startswith("[") and value.endswith("]"):
+                    # Flow-style YAML array (`tags: [power, hardware]`) --
+                    # equally valid YAML as the block-style dash list this
+                    # parser otherwise expects, but previously fell through
+                    # to the generic key/value branch below, storing the
+                    # literal string "[power, hardware]" under meta["tags"]
+                    # and never populating tags_list at all -- every caller
+                    # reading tags_list (this parser's whole point) then
+                    # silently treated a clearly-tagged page as untagged.
+                    inner = value[1:-1].strip()
+                    if inner:
+                        tags.extend(
+                            item.strip().strip('"').strip("'") for item in inner.split(",") if item.strip()
+                        )
+                    continue
                 in_tags = True
                 continue
             if (value.startswith('"') and value.endswith('"')) or (
@@ -55,8 +73,6 @@ def parse_frontmatter(content: str) -> dict[str, Any]:
             ):
                 value = value[1:-1]
             meta[key] = value
-            if key == "tags":
-                in_tags = True
     if tags:
         meta["tags_list"] = tags
     return meta

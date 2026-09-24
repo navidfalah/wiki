@@ -1,5 +1,4 @@
 import fs from 'node:fs';
-import os from 'node:os';
 import path from 'node:path';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 
@@ -129,6 +128,21 @@ describe('markRunAbandoned', () => {
 
   it('returns false for an unknown run id', () => {
     expect(markRunAbandoned('20260910-180000-dddddd', 'reason')).toBe(false);
+  });
+
+  it('stamps the same finished_at on the index row as on the detail file', () => {
+    // Previously the index row computed its own separate `new Date()`
+    // a few statements after the detail file's finished_at was set --
+    // two calls close together can still land in different milliseconds,
+    // leaving the two files disagreeing about when the same run finished.
+    writeRun('20260910-190000-eeeeee');
+    writeIndex([{ id: '20260910-190000-eeeeee', started_at: 't', finished_at: null, status: 'running', force: false }]);
+
+    markRunAbandoned('20260910-190000-eeeeee', 'Interrupted: stopped by user.');
+
+    const detail = getPipelineRun('20260910-190000-eeeeee');
+    const index = JSON.parse(fs.readFileSync(PIPELINE_RUNS_INDEX, 'utf-8'));
+    expect(index[0].finished_at).toBe(detail?.finished_at);
   });
 
   it('rejects a malformed id rather than touching an arbitrary path', () => {

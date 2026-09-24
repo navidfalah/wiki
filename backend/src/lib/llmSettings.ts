@@ -20,6 +20,7 @@ import crypto from 'node:crypto';
 import fs from 'node:fs';
 import path from 'node:path';
 import { PROJECT_ROOT } from '../paths';
+import { atomicWriteJson } from './atomicWrite';
 
 export const LLM_SETTINGS_FILE = path.join(PROJECT_ROOT, 'data', 'llm_settings.json');
 const ENV_FILE = path.join(PROJECT_ROOT, '.env');
@@ -300,8 +301,7 @@ export function saveLlmSettings(input: any): LlmSettings {
   };
 
   const settings: LlmSettings = { profiles, assignments, local_llm };
-  fs.mkdirSync(path.dirname(LLM_SETTINGS_FILE), { recursive: true });
-  fs.writeFileSync(LLM_SETTINGS_FILE, JSON.stringify(settings, null, 2));
+  atomicWriteJson(LLM_SETTINGS_FILE, settings);
 
   // Mirror local-llm model config into .env -- this is what docker-compose
   // and docker/local-llm/entrypoint.sh actually read; the JSON file above

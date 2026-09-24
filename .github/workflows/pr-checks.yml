@@ -56,11 +56,18 @@ jobs:
           cache: npm
           cache-dependency-path: backend/package-lock.json
 
-      - run: npm ci
+      - name: Install Node dependencies
+        run: npm ci
+
+      - name: Lint (eslint)
+        run: npm run lint
+
       - name: Typecheck
         run: npm run typecheck
+
       - name: Test (vitest)
         run: npm test
+
       - name: Build
         run: npm run build
 
@@ -81,9 +88,17 @@ jobs:
           cache: npm
           cache-dependency-path: frontend/package-lock.json
 
-      - run: npm ci
+      - name: Install Node dependencies
+        run: npm ci
+
+      - name: Lint (eslint)
+        run: npm run lint
+
       - name: Typecheck
+        # Also covers the client bundle typecheck and the i18n key check --
+        # see frontend/package.json's "typecheck" script.
         run: npm run typecheck
+
       - name: Build (fonts + Tailwind + client bundles + server)
         run: npm run build
 
@@ -98,6 +113,11 @@ jobs:
         env:
           ADMIN_PASSWORD: ci-placeholder
         run: docker compose -f docker-compose.prod.yml config -q
+
+      - name: Validate production compose file with the --caddy profile
+        env:
+          ADMIN_PASSWORD: ci-placeholder
+        run: docker compose -f docker-compose.prod.yml --profile caddy config -q
 
       - name: Validate Caddyfile
         run: docker run --rm -v "$PWD/deploy/Caddyfile:/etc/caddy/Caddyfile:ro" caddy:2-alpine caddy validate --config /etc/caddy/Caddyfile

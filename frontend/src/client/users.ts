@@ -1,32 +1,6 @@
 import { formatDateTime, t, th, tnh } from './lib/i18n';
-
-const apiBase = document.querySelector('meta[name="api-base"]')?.getAttribute('content') ?? '';
-
-function el(id: string): HTMLElement {
-  const found = document.getElementById(id);
-  if (!found) throw new Error(`Missing #${id}`);
-  return found;
-}
-
-async function apiFetch(path: string, opts?: RequestInit): Promise<any> {
-  const res = await fetch(`${apiBase}${path}`, opts);
-  if (!res.ok) {
-    let message = await res.text();
-    try {
-      message = JSON.parse(message).detail ?? message;
-    } catch {
-      /* plain text */
-    }
-    throw new Error(message || t('common.requestFailed', { status: res.status }));
-  }
-  return res.json();
-}
-
-function escapeHtml(text: string): string {
-  const div = document.createElement('div');
-  div.textContent = text ?? '';
-  return div.innerHTML;
-}
+import { apiFetch } from './lib/api';
+import { el, escapeHtml } from './lib/dom';
 
 interface PublicUser {
   id: string;
@@ -191,6 +165,7 @@ function initAddUserForm() {
   const form = el('add-user-form');
   toggle.addEventListener('click', () => {
     form.classList.toggle('hidden');
+    toggle.setAttribute('aria-expanded', String(!form.classList.contains('hidden')));
     if (!form.classList.contains('hidden')) {
       form.innerHTML = `
         <form id="add-user-real-form" class="rounded-xl border border-dashed border-gray-300 bg-gray-50 p-4">

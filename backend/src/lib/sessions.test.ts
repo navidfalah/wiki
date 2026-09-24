@@ -1,5 +1,4 @@
 import fs from 'node:fs';
-import os from 'node:os';
 import path from 'node:path';
 import { afterAll, afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 
@@ -13,7 +12,7 @@ const { tmpRoot, SESSIONS_FILE } = vi.hoisted(() => {
 
 vi.mock('../paths', () => ({ SESSIONS_FILE }));
 
-import { createSession, deleteSession, getSessionUser } from './sessions';
+import { createSession, deleteSession, deleteSessionsForUser, getSessionUser } from './sessions';
 
 const USER = { id: 'u1', username: 'alice', role: 'admin' as const };
 
@@ -185,5 +184,27 @@ describe('deleteSession', () => {
     const token = createSession(USER as any);
     expect(() => deleteSession('no-such-token')).not.toThrow();
     expect(getSessionUser(token)?.username).toBe('alice');
+  });
+});
+
+describe('deleteSessionsForUser', () => {
+  it('revokes every session belonging to that user', () => {
+    const a = createSession(USER as any);
+    const b = createSession(USER as any);
+    deleteSessionsForUser(USER.id);
+    expect(getSessionUser(a)).toBeNull();
+    expect(getSessionUser(b)).toBeNull();
+  });
+
+  it('leaves other users\' sessions untouched', () => {
+    const mine = createSession(USER as any);
+    const someoneElse = createSession({ ...USER, id: 'u2', username: 'bob' } as any);
+    deleteSessionsForUser(USER.id);
+    expect(getSessionUser(mine)).toBeNull();
+    expect(getSessionUser(someoneElse)?.username).toBe('bob');
+  });
+
+  it('is a no-op for a user with no sessions', () => {
+    expect(() => deleteSessionsForUser('no-such-user')).not.toThrow();
   });
 });

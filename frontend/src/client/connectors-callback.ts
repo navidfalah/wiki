@@ -1,6 +1,6 @@
 import { t } from './lib/i18n';
+import { apiBase } from './lib/api';
 
-const apiBase = document.querySelector('meta[name="api-base"]')?.getAttribute('content') ?? '';
 const connectorId = (window as any).__connectorId as string;
 
 const params = new URLSearchParams(window.location.search);
@@ -32,8 +32,10 @@ document.getElementById('callback-form')?.addEventListener('submit', async (even
       body: JSON.stringify({ code, state, account_label: accountLabel }),
     });
     if (!res.ok) {
+      // .detail, not .error -- that's what the backend actually sends on a
+      // failed request (see backend/src/lib/httpError.ts).
       const err = await res.json().catch(() => ({}));
-      throw new Error(err.error || t('common.requestFailed', { status: res.status }));
+      throw new Error(err.detail || t('common.requestFailed', { status: res.status }));
     }
     (window as any).queueToast?.(t('connectors-callback.connected', { label: accountLabel }), 'success');
     window.location.href = '/resources?tab=connectors';

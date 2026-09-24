@@ -42,7 +42,7 @@ from __future__ import annotations
 import re
 from dataclasses import dataclass, field
 
-from entity_resolution import Mention, resolve_entities
+from entity_resolution import EmbedFn, Mention, resolve_entities
 
 _MARKDOWN_LINK_RE = re.compile(r"\[[^\]]*\]\([^)]*\)")
 _CODE_FENCE_RE = re.compile(r"```.*?```", re.DOTALL)
@@ -85,7 +85,16 @@ def auto_link_exact_titles(
 
     linked_titles: list[str] = []
     for title, filename in candidates:
-        pattern = re.compile(rf"\b{re.escape(title)}\b(?:'s)?", re.IGNORECASE)
+        # Not \b on both sides: \b only matches at a word/non-word
+        # transition, so it can never match immediately after a title that
+        # itself ends in a non-word character (e.g. "C++" followed by a
+        # space -- both sides non-word, no boundary there at all), silently
+        # defeating the "guaranteed floor" this module promises for exactly
+        # that class of title. (?<!\w)/(?!\w) behave identically to \b for
+        # an ordinary word-ending title but also correctly match a
+        # punctuation-ending one, since they only check the side outside
+        # the title, not both sides of the transition.
+        pattern = re.compile(rf"(?<!\w){re.escape(title)}(?!\w)(?:'s)?", re.IGNORECASE)
 
         # Two different kinds of "don't touch here": code fences, inline
         # code, and headings aren't real prose at all, so a match inside
@@ -114,7 +123,13 @@ def auto_link_exact_titles(
     return MechanicalLinkResult(body=body, linked_titles=linked_titles)
 
 
-def build_alias_topic_index(topic_index: dict[str, str], mentions: list[Mention]) -> dict[str, str]:
+def build_alias_topic_index(
+    topic_index: dict[str, str],
+    mentions: list[Mention],
+    *,
+    embed_fn: EmbedFn | None = None,
+    llm=None,
+) -> dict[str, str]:
     """Expand topic_index (exact page titles only) with every alias
     entity_resolution.py's heuristic tier considers the same real-world
     entity as an existing topic title — e.g. a chunk mentioning bare
@@ -125,12 +140,15 @@ def build_alias_topic_index(topic_index: dict[str, str], mentions: list[Mention]
     title, never the shorter/alternate names people actually write in
     prose.
 
-    Heuristic tier only (no embed_fn/llm passed to resolve_entities()) —
-    offline and deterministic, the same "mechanical, no live model needed"
+    Heuristic tier only by default (embed_fn/llm left as None) — offline
+    and deterministic, the same "mechanical, no live model needed"
     property as the rest of this module. A mention that would need the
     embedding or LLM tier to resolve is left alone rather than guessed at;
     entity_resolution.py's own hard-negative design (Alex Kim vs. Alex
-    Rivera) already keeps the heuristic tier itself conservative.
+    Rivera) already keeps the heuristic tier itself conservative. Passing
+    embed_fn/llm (see link_and_export_pages()'s resolve_entities_llm) opts
+    into resolving the heuristic tier's escalated pairs too, at the cost
+    of extra LLM/embedding calls during linking.
 
     Only ever ADDS entries — an alias never overrides or removes an
     existing exact topic_index mapping, so a real topic title always wins
@@ -140,7 +158,7 @@ def build_alias_topic_index(topic_index: dict[str, str], mentions: list[Mention]
         return dict(topic_index)
 
     title_by_lower = {title.lower(): filename for title, filename in topic_index.items()}
-    clusters = resolve_entities(mentions)
+    clusters = resolve_entities(mentions, embed_fn=embed_fn, llm=llm)
 
     expanded = dict(topic_index)
     for cluster in clusters:

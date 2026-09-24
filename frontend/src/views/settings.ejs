@@ -56,7 +56,7 @@
 <template id="profile-row-template">
   <div class="profile-row px-5 py-4" data-id="">
     <div class="flex flex-wrap items-center gap-2">
-      <input type="text" data-field="label" placeholder="<%= t('settings.provider.label') %>" class="min-w-0 flex-1 rounded-lg border border-gray-300 px-2.5 py-1.5 text-sm focus:border-accent focus:outline-none focus:ring-2 focus:ring-accent/20" />
+      <input aria-label="<%= t('settings.provider.label') %>" type="text" data-field="label" placeholder="<%= t('settings.provider.label') %>" class="min-w-0 flex-1 rounded-lg border border-gray-300 px-2.5 py-1.5 text-sm focus:border-accent focus:outline-none focus:ring-2 focus:ring-accent/20" />
       <select data-field="provider" class="rounded-lg border border-gray-300 px-2 py-1.5 text-sm focus:border-accent focus:outline-none focus:ring-2 focus:ring-accent/20">
         <option value="openai"><%= t('settings.provider.openai') %></option>
         <option value="gemini"><%= t('settings.provider.gemini') %></option>
@@ -66,10 +66,10 @@
       <button type="button" data-action="remove" class="rounded-lg px-2 py-1.5 text-xs font-medium text-red-600 hover:bg-red-50"><%= t('settings.remove') %></button>
     </div>
     <div class="mt-2 grid gap-2 sm:grid-cols-2">
-      <input type="text" data-field="base_url" placeholder="<%= t('settings.baseUrl') %>" class="rounded-lg border border-gray-300 px-2.5 py-1.5 text-sm focus:border-accent focus:outline-none focus:ring-2 focus:ring-accent/20" />
-      <input type="text" data-field="model" placeholder="<%= t('settings.model') %>" autocomplete="off" class="rounded-lg border border-gray-300 px-2.5 py-1.5 text-sm focus:border-accent focus:outline-none focus:ring-2 focus:ring-accent/20" />
+      <input aria-label="<%= t('settings.baseUrl') %>" type="text" data-field="base_url" placeholder="<%= t('settings.baseUrl') %>" class="rounded-lg border border-gray-300 px-2.5 py-1.5 text-sm focus:border-accent focus:outline-none focus:ring-2 focus:ring-accent/20" />
+      <input aria-label="<%= t('settings.model') %>" type="text" data-field="model" placeholder="<%= t('settings.model') %>" autocomplete="off" class="rounded-lg border border-gray-300 px-2.5 py-1.5 text-sm focus:border-accent focus:outline-none focus:ring-2 focus:ring-accent/20" />
     </div>
-    <input type="password" data-field="api_key" placeholder="<%= t('settings.apiKey') %>" autocomplete="off" class="mt-2 w-full rounded-lg border border-gray-300 px-2.5 py-1.5 text-sm focus:border-accent focus:outline-none focus:ring-2 focus:ring-accent/20" />
+    <input aria-label="<%= t('settings.apiKey') %>" type="password" data-field="api_key" placeholder="<%= t('settings.apiKey') %>" autocomplete="off" class="mt-2 w-full rounded-lg border border-gray-300 px-2.5 py-1.5 text-sm focus:border-accent focus:outline-none focus:ring-2 focus:ring-accent/20" />
     <p data-field="key-hint" class="mt-1 text-xs text-gray-400"></p>
 
     <details class="mt-2 rounded-lg border border-gray-100 bg-gray-50 px-3 py-2">

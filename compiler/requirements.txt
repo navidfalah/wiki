@@ -1,10 +1,27 @@
-openai>=1.30.0
-python-dotenv>=1.0.0
-pyyaml>=6.0.0
-rich>=13.7.0
-pypdf>=5.0.0
-cryptography>=42.0.0
-python-docx>=1.1.0
-openpyxl>=3.1.0
-python-pptx>=1.0.0
-psycopg2-binary>=2.9.0
+# Lower bounds are the original documented intent; upper bounds cap each
+# dependency at the next release line likely to break something (next
+# major for a >=1.0 package, next minor for a pre-1.0 package, since
+# semver treats 0.x minor bumps as allowed to break). This is deliberately
+# not a full pip-compile lockfile -- just a guard against a future
+# breaking release silently flowing into a fresh install. Worth noting:
+# the unbounded openai>=1.30.0 already drifted to openai 3.x in practice
+# (a fresh `pip install` resolves the latest release satisfying the
+# range) -- compiler/tests/ fakes the LLM client everywhere, so nothing
+# in the test suite actually exercises the real openai SDK surface and
+# would have caught that jump either way.
+#
+# fastapi/uvicorn are NOT here -- only the legacy standalone FastAPI server
+# (compiler/server.py, run_server.sh, compiler/Dockerfile) needs them; see
+# requirements-server.txt. The Express backend spawns main.py/cli.py
+# directly and never imports them, so production images skip them (saves
+# ~40 MB and idle RAM).
+openai>=1.30.0,<4.0.0
+python-dotenv>=1.0.0,<2.0.0
+pyyaml>=6.0.0,<7.0.0
+rich>=13.7.0,<16.0.0
+pypdf>=5.0.0,<7.0.0
+cryptography>=42.0.0,<51.0.0
+python-docx>=1.1.0,<2.0.0
+openpyxl>=3.1.0,<4.0.0
+python-pptx>=1.0.0,<2.0.0
+psycopg2-binary>=2.9.0,<3.0.0

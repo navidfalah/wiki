@@ -1,6 +1,5 @@
 import { t } from './lib/i18n';
-
-const apiBase = document.querySelector('meta[name="api-base"]')?.getAttribute('content') ?? '';
+import { apiFetch } from './lib/api';
 
 interface CompanySettings {
   company_name: string;
@@ -36,9 +35,7 @@ function readForm(): CompanySettings {
 
 async function load() {
   try {
-    const res = await fetch(`${apiBase}/api/settings/company`);
-    if (!res.ok) throw new Error(t('common.requestFailed', { status: res.status }));
-    fillForm(await res.json());
+    fillForm(await apiFetch('/api/settings/company'));
   } catch {
     (window as any).showToast?.(t('common.cannotReachApi'), 'error');
   }
@@ -50,16 +47,7 @@ async function save() {
   btn.disabled = true;
   btn.textContent = t('company.saving');
   try {
-    const res = await fetch(`${apiBase}/api/settings/company`, {
-      method: 'PUT',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(readForm()),
-    });
-    if (!res.ok) {
-      const err = await res.json().catch(() => ({}));
-      throw new Error(err.error || t('common.requestFailed', { status: res.status }));
-    }
-    fillForm(await res.json());
+    fillForm(await apiFetch('/api/settings/company', { method: 'PUT', body: JSON.stringify(readForm()) }));
     hint.textContent = t('company.savedAt', { time: new Date().toLocaleTimeString(document.documentElement.lang === 'de' ? 'de-DE' : 'en-GB') });
     (window as any).showToast?.(t('company.saved'));
   } catch (err: any) {

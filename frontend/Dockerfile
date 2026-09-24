@@ -7,6 +7,8 @@
 # Two stages: the build stage has esbuild + Tailwind + tsc (devDependencies);
 # the runtime stage gets only the compiled server, the built CSS/JS/fonts, the
 # EJS templates, and production node_modules (express, ejs, proxy, cookies).
+# No data/compiler bind mounts here, so no host-uid caveat -- everything
+# this image writes stays inside the container.
 
 FROM node:22-alpine AS build
 WORKDIR /app
