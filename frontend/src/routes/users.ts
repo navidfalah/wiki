@@ -9,15 +9,15 @@ import { PUBLIC_API_URL } from '../config';
 
 const router = Router();
 
-router.get('/users', (_req, res) => {
+router.get(['/users', '/admin'], (_req, res) => {
   if (res.locals.currentUser?.role !== 'admin') {
-    res.status(403).send('Admin access required.');
+    res.status(403).send(res.locals.t('users.forbidden'));
     return;
   }
   res.render('users', {
     apiBase: PUBLIC_API_URL,
-    title: 'Users',
-    active: 'Users',
+    title: res.locals.t('users.title'),
+    active: 'Admin panel',
     clientScript: 'users',
   });
 });

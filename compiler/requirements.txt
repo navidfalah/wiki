@@ -9,12 +9,16 @@
 # range) -- compiler/tests/ fakes the LLM client everywhere, so nothing
 # in the test suite actually exercises the real openai SDK surface and
 # would have caught that jump either way.
+#
+# fastapi/uvicorn are NOT here -- only the legacy standalone FastAPI server
+# (compiler/server.py, run_server.sh, compiler/Dockerfile) needs them; see
+# requirements-server.txt. The Express backend spawns main.py/cli.py
+# directly and never imports them, so production images skip them (saves
+# ~40 MB and idle RAM).
 openai>=1.30.0,<4.0.0
 python-dotenv>=1.0.0,<2.0.0
 pyyaml>=6.0.0,<7.0.0
 rich>=13.7.0,<16.0.0
-fastapi>=0.115.0,<0.142.0
-uvicorn[standard]>=0.32.0,<0.54.0
 pypdf>=5.0.0,<7.0.0
 cryptography>=42.0.0,<51.0.0
 python-docx>=1.1.0,<2.0.0

@@ -1,12 +1,22 @@
 [
   {
+    "id": "0289b243-6315-4087-86aa-9317edc482a0",
+    "title": "New chat",
+    "created_at": "2026-09-10T16:31:27.037Z",
+    "updated_at": "2026-09-10T16:31:27.037Z",
+    "resource_scope": null,
+    "corpus_source": "wiki",
+    "llm_profile_id": null,
+    "message_count": 0
+  },
+  {
     "id": "e1027a44-96ce-4990-a30c-7979e7bf92c0",
     "title": "hey tell me some email hardware",
     "created_at": "2026-09-01T21:15:07.221Z",
-    "updated_at": "2026-09-10T16:22:02.108Z",
+    "updated_at": "2026-09-10T16:48:55.548Z",
     "resource_scope": null,
     "corpus_source": "wiki",
     "llm_profile_id": "gemini-thinking",
-    "message_count": 18
+    "message_count": 0
   }
 ]

@@ -136,6 +136,35 @@ export function deleteUser(id: string, requestingUserId: string): void {
 }
 
 /**
+ * Changes a user's role. Refuses to demote the last remaining admin (and,
+ * since that is the only way to lock yourself out, that also covers demoting
+ * yourself when you're the only admin).
+ */
+export function setRole(id: string, role: Role): PublicUser {
+  const data = loadUsersFile();
+  const target = data.users.find((u) => u.id === id);
+  if (!target) throw new UserError('User not found');
+  if (target.role === 'admin' && role !== 'admin') {
+    const otherAdmins = data.users.filter((u) => u.role === 'admin' && u.id !== id);
+    if (otherAdmins.length === 0) throw new UserError('Cannot demote the last admin account');
+  }
+  target.role = role;
+  saveUsersFile(data);
+  return toPublic(target);
+}
+
+/** Admin-initiated password reset by user id (setPassword above is keyed by username). */
+export function resetPasswordById(id: string, password: string): PublicUser {
+  if (!password || password.length < 8) throw new UserError('Password must be at least 8 characters');
+  const data = loadUsersFile();
+  const target = data.users.find((u) => u.id === id);
+  if (!target) throw new UserError('User not found');
+  target.password_hash = bcrypt.hashSync(password, 10);
+  saveUsersFile(data);
+  return toPublic(target);
+}
+
+/**
  * Creates the very first admin account (username/password from
  * ADMIN_USERNAME/ADMIN_PASSWORD, or a generated password printed to the
  * console once) so there's a way to log in before any invite exists.

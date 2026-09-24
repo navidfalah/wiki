@@ -1,0 +1,27 @@
+import type { pipelineArchitecture as en } from '../en/pipeline-architecture';
+
+export const pipelineArchitecture: Record<keyof typeof en, string> = {
+  'pipeline-architecture.title': 'Pipeline-Architektur',
+  'pipeline-architecture.introHtml': 'Legen Sie fest, wie der Compiler Rohquellen zu Wiki-Seiten verarbeitet. Dies sind gespeicherte Standardwerte – jeder künftige Lauf auf der Seite <a href="/pipelines" class="text-generated underline">Pipelines</a> verwendet sie automatisch.',
+  'pipeline-architecture.stages': 'Pipeline-Stufen',
+  'pipeline-architecture.stagesHint': '1. Einlesen → 2. Extrahieren → 3. Synthetisieren → 4. Indexieren → 5. Verlinken. Diese Schalter ändern das Verhalten von Stufe 2 (Extraktion) und Stufe 3 (Synthese).',
+  'pipeline-architecture.critic': 'Kritik-Durchlauf',
+  'pipeline-architecture.criticHint': 'Führt nach der Synthese einen zweiten LLM-Durchlauf aus, der Sätze entfernt, die sich nicht in den Quellabschnitten belegen lassen. Verdoppelt die Kosten pro Seite ungefähr.',
+  'pipeline-architecture.criticSamples': 'Kritik-Stichproben (Selbstkonsistenz)',
+  'pipeline-architecture.criticSamplesHint': 'So oft wird die Kritik pro Seite ausgeführt; nur Sätze, die eine Mehrheit markiert hat, werden entfernt. 1 = ein einzelner deterministischer Durchlauf.',
+  'pipeline-architecture.regenerate': 'Stark gekürzte Seiten neu erzeugen',
+  'pipeline-architecture.regenerateHint': 'Entfernt die Kritik mehr als 20 % einer Seite, wird sie einmal neu erzeugt, wobei die Befunde der Kritik in den Prompt zurückfließen.',
+  'pipeline-architecture.corrections': 'Active-Learning-Korrekturen verwenden',
+  'pipeline-architecture.correctionsHint': 'Frühere menschliche Korrekturen werden als Few-Shot-Beispiele in den Extraktions-Prompt eingespeist.',
+  'pipeline-architecture.pii': 'Personenbezogene Daten vor der Extraktion schwärzen',
+  'pipeline-architecture.piiHint': 'Entfernt Sozialversicherungsnummern, Kreditkarten, API-Schlüssel, Telefonnummern und IPv4-Adressen aus dem Text, bevor er an das LLM gesendet wird. E-Mail-Adressen und Namen werden nicht geschwärzt.',
+  'pipeline-architecture.web': 'Anreicherung per Websuche',
+  'pipeline-architecture.webHintHtml': 'Während der Synthese wird für jedes (neu) erzeugte Thema im Internet gesucht; die Ergebnisse kommen als zusätzliche Quellen neben <code class="rounded bg-white px-1 py-0.5">data/raw/</code> hinzu, sind mit <code class="rounded bg-white px-1 py-0.5">source_type: web</code> markiert und standardmäßig mit „Niedrig“ vertrauenswürdig. Erfordert Netzwerkzugriff des Compiler-Prozesses.',
+  'pipeline-architecture.sources': 'Aktive Datenquellen',
+  'pipeline-architecture.sourcesHintHtml': 'Deaktivieren Sie einen Ordner der obersten Ebene unter <code>data/raw/</code>, um ihn aus jedem Build auszuschließen. Ausgeschlossene Dateien werden übersprungen, nicht gelöscht – ihre Themen kehren nach dem Wiedereinschalten automatisch zurück, ein Neuaufbau ist nicht nötig.',
+  'pipeline-architecture.noFolders': 'Unter data/raw/ wurden noch keine Ordner gefunden.',
+  'pipeline-architecture.saving': 'Wird gespeichert …',
+  'pipeline-architecture.savedAt': 'Gespeichert um {time}',
+  'pipeline-architecture.saved': 'Pipeline-Architektur gespeichert.',
+  'pipeline-architecture.saveFailed': 'Pipeline-Architektur konnte nicht gespeichert werden.',
+};

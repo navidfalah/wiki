@@ -1,5 +1,7 @@
 import { saveCache, loadCache, showOfflineBanner, hideOfflineBanner, onReconnect } from './lib/cache';
 import { copyButtonHtml, initCopyButtons } from './lib/copy';
+import { t, th, tn, tnh } from './lib/i18n';
+import { buildMessage, runMessage, stepName } from './lib/serverText';
 import { apiBase, apiFetch } from './lib/api';
 import { el, escapeHtml } from './lib/dom';
 import { wireModalA11y } from './lib/modal';
@@ -46,10 +48,10 @@ const STAT_CACHE_KEY = 'dashboard:analytics';
 function renderStatCards(data: any) {
   const m = data.metrics;
   el('stat-cards').innerHTML = `
-    ${statCard('source', `${m.raw_files_processed} / ${m.raw_files_total}`, 'Raw files processed')}
-    ${statCard('generated', String(m.wiki_pages_created), 'Wiki pages created')}
-    ${statCard('neutral', String(m.cross_links_established), 'Cross-links')}
-    ${statCard(m.dead_links ? 'warn' : 'neutral', String(m.dead_links), 'Dead links')}
+    ${statCard('source', `${m.raw_files_processed} / ${m.raw_files_total}`, t('dashboard.stat.rawFiles'))}
+    ${statCard('generated', String(m.wiki_pages_created), t('dashboard.stat.wikiPages'))}
+    ${statCard('neutral', String(m.cross_links_established), t('dashboard.stat.crossLinks'))}
+    ${statCard(m.dead_links ? 'warn' : 'neutral', String(m.dead_links), t('dashboard.stat.deadLinks'))}
   `;
 }
 
@@ -89,11 +91,11 @@ function statCard(tone: string, value: string, label: string): string {
 
 function setBadge(status: 'idle' | 'running' | 'success' | 'error' | 'stopped') {
   const labels: Record<string, string> = {
-    idle: 'Ready',
-    running: 'Running…',
-    success: 'Done',
-    error: 'Failed',
-    stopped: 'Stopped',
+    idle: t('dashboard.badge.idle'),
+    running: t('dashboard.badge.running'),
+    success: t('dashboard.badge.success'),
+    error: t('dashboard.badge.error'),
+    stopped: t('dashboard.badge.stopped'),
   };
   const tones: Record<string, string> = {
     idle: 'bg-gray-100 text-gray-600',
@@ -119,7 +121,7 @@ const BUILD_STEP_NAMES = ['1. Data Reading', '2. Extraction', '3. Synthesis', '4
 
 interface LiveStep {
   name: string;
-  status: 'running' | 'success' | 'error';
+  status: 'running' | 'success' | 'error' | 'stopped';
   started_at: string;
   detail: string | null;
   error: string | null;
@@ -136,17 +138,18 @@ function estimateRemaining(startedAt: string, current: number, total: number): s
   const elapsedMs = Date.now() - new Date(startedAt).getTime();
   if (elapsedMs <= 0) return null;
   const remainingMs = (elapsedMs / current) * (total - current);
-  if (remainingMs < 5000) return '<1m left';
+  if (remainingMs < 5000) return t('dashboard.eta.lessThanMin');
   const minutes = Math.round(remainingMs / 60000);
-  if (minutes < 1) return '<1m left';
-  if (minutes < 60) return `~${minutes}m left`;
+  if (minutes < 1) return t('dashboard.eta.lessThanMin');
+  if (minutes < 60) return t('dashboard.eta.minutes', { n: minutes });
   const hours = Math.round(minutes / 60);
-  return `~${hours}h left`;
+  return t('dashboard.eta.hours', { n: hours });
 }
 
 function stepIcon(status: string): string {
   if (status === 'success') return '✓';
   if (status === 'error') return '✕';
+  if (status === 'stopped') return '⏸';
   if (status === 'running') return '●';
   return '';
 }
@@ -154,6 +157,9 @@ function stepIcon(status: string): string {
 function stepTone(status: string): string {
   if (status === 'success') return 'border-emerald-200 bg-emerald-50 text-emerald-700';
   if (status === 'error') return 'border-red-200 bg-red-50 text-red-700';
+  // Deliberately the same neutral as "pending" -- a user-requested stop
+  // isn't a failure, just an incomplete step.
+  if (status === 'stopped') return 'border-gray-200 bg-gray-100 text-gray-600';
   if (status === 'running') return 'border-amber-200 bg-amber-50 text-amber-700 animate-pulse';
   return 'border-gray-200 bg-gray-50 text-gray-300';
 }
@@ -191,19 +197,19 @@ function renderBuildSteps(liveSteps: LiveStep[]) {
           class="flex w-full items-center gap-2.5 px-3 py-1.5 text-left ${canToggle ? 'cursor-pointer' : 'cursor-default'}"
           ${canToggle ? '' : 'disabled'}>
           <span class="flex h-4 w-4 shrink-0 items-center justify-center text-[10px] font-bold">${stepIcon(status)}</span>
-          <span class="min-w-0 flex-1 truncate text-xs font-medium">${escapeHtml(name.replace(/^\d+\.\s*/, ''))}</span>
+          <span class="min-w-0 flex-1 truncate text-xs font-medium">${escapeHtml(stepName(name).replace(/^\d+\.\s*/, ''))}</span>
           ${progressCounter ? `<span class="shrink-0 text-[11px] tabular-nums opacity-80">${escapeHtml(progressCounter)}</span>` : ''}
           ${eta ? `<span class="hidden shrink-0 text-[11px] opacity-70 sm:inline">${escapeHtml(eta)}</span>` : ''}
           ${step?.detail ? `<span class="hidden truncate text-[11px] opacity-80 lg:inline">${escapeHtml(step.detail)}</span>` : ''}
           ${step?.error ? `<span class="truncate text-[11px]">${escapeHtml(errorFirstLine)}</span>` : ''}
-          ${hasError ? `<span class="shrink-0 text-[10px] underline opacity-80">${expanded ? 'hide log' : 'view log'}</span>` : ''}
-          ${!hasError && hasProgress ? `<span class="shrink-0 text-[10px] underline opacity-80">${expanded ? 'hide activity' : 'view activity'}</span>` : ''}
+          ${hasError ? `<span class="shrink-0 text-[10px] underline opacity-80">${expanded ? th('dashboard.step.hideLog') : th('dashboard.step.viewLog')}</span>` : ''}
+          ${!hasError && hasProgress ? `<span class="shrink-0 text-[10px] underline opacity-80">${expanded ? th('dashboard.step.hideActivity') : th('dashboard.step.viewActivity')}</span>` : ''}
         </button>
         ${
           expanded && hasError
-            ? `<div class="copy-wrap relative border-t border-red-200">
-                 <pre class="copy-source max-h-64 overflow-auto whitespace-pre-wrap break-words bg-red-50/70 px-3 py-2 pr-8 font-mono text-[11px] text-red-800">${escapeHtml(step!.error!)}</pre>
-                 ${copyButtonHtml('absolute right-1.5 top-1.5 bg-red-50 text-red-800')}
+            ? `<div class="copy-wrap relative border-t ${status === 'stopped' ? 'border-gray-200' : 'border-red-200'}">
+                 <pre class="copy-source max-h-64 overflow-auto whitespace-pre-wrap break-words ${status === 'stopped' ? 'bg-gray-100/70 text-gray-700' : 'bg-red-50/70 text-red-800'} px-3 py-2 pr-8 font-mono text-[11px]">${escapeHtml(step!.error!)}</pre>
+                 ${copyButtonHtml(`absolute right-1.5 top-1.5 ${status === 'stopped' ? 'bg-gray-100 text-gray-700' : 'bg-red-50 text-red-800'}`)}
                </div>`
             : ''
         }
@@ -261,7 +267,6 @@ async function pollBuildSteps() {
   try {
     const run = await apiFetch(`/api/pipelines/${encodeURIComponent(currentRunId)}`);
     renderBuildSteps(run.steps ?? []);
-    renderSettingsHint(run.settings);
     if (run.status !== 'running' && onBuildFinishedWhilePolling) {
       onBuildFinishedWhilePolling(run);
     }
@@ -294,7 +299,7 @@ function renderSourcesPicker() {
 
   const list = el('sources-picker-list');
   if (!tops.length) {
-    list.innerHTML = '<p class="text-xs text-gray-400">No folders under data/raw/ yet.</p>';
+    list.innerHTML = `<p class="text-xs text-gray-400">${th('dashboard.picker.none')}</p>`;
   } else {
     list.innerHTML = tops
       .map((t) => {
@@ -306,7 +311,7 @@ function renderSourcesPicker() {
         }">
           <input type="checkbox" data-top-folder="${escapeHtml(t)}" ${checked ? 'checked' : ''} class="rounded border-gray-300 text-accent focus:ring-accent/30" />
           <span class="font-mono text-xs text-gray-700">${escapeHtml(t)}</span>
-          ${managed ? '<span class="text-[10px] text-source">source</span>' : ''}
+          ${managed ? `<span class="text-[10px] text-source">${th('dashboard.picker.source')}</span>` : ''}
         </label>`;
       })
       .join('');
@@ -365,7 +370,7 @@ async function loadRunOptionModels() {
     const settings = await apiFetch('/api/settings/llm');
     const profiles: LlmProfile[] = settings.profiles ?? [];
     const optionsHtml =
-      `<option value="">Default (from Settings)</option>` +
+      `<option value="">${th('dashboard.opt.defaultOption')}</option>` +
       profiles.map((p) => `<option value="${escapeHtml(p.id)}">${escapeHtml(p.label)} — ${escapeHtml(p.model)}</option>`).join('');
     defaultSelect.innerHTML = optionsHtml;
     thinkingSelect.innerHTML = optionsHtml;
@@ -440,9 +445,9 @@ function initBuild() {
     try {
       const res = await fetch(`${apiBase}/api/build/stop`, { method: 'POST' });
       const data = await res.json();
-      if (!data.stopped) setMessage('Nothing to stop — no build is running.');
+      if (!data.stopped) setMessage(t('dashboard.nothingToStop'));
     } catch {
-      setMessage('Could not reach the API to stop the build.');
+      setMessage(t('dashboard.stopFailed'));
     }
   });
 
@@ -452,7 +457,7 @@ function initBuild() {
       const status = await apiFetch('/api/build/status');
       alreadyRunning = Boolean(status.running);
     } catch {
-      setMessage(`Cannot reach API at ${apiBase}.`);
+      setMessage(t('common.cannotReachApi'));
       return;
     }
 
@@ -461,7 +466,7 @@ function initBuild() {
     // A build already running doesn't block this one -- /api/build/stream
     // queues it (one deep) and starts it automatically once the current
     // build finishes, rather than rejecting the request outright.
-    setMessage(alreadyRunning ? 'A build is already running — queuing this one…' : 'Starting compiler pipeline…');
+    setMessage(alreadyRunning ? t('dashboard.queuing') : t('common.build.starting'));
     setBadge('running');
     runButton.disabled = true;
     stopButton.classList.remove('hidden');
@@ -484,13 +489,13 @@ function initBuild() {
         currentRunId = payload.run_id;
         startBuildPolling();
       } else if (payload.type === 'queued') {
-        setMessage(payload.message);
+        setMessage(buildMessage(payload.message));
       } else if (payload.type === 'error') {
-        setMessage(`Error: ${payload.message}`);
+        setMessage(t('dashboard.errorPrefix', { message: buildMessage(payload.message) }));
       } else if (payload.type === 'done') {
         stopBuildPolling();
         pollBuildSteps(); // one last fetch -- the process has exited, so this is guaranteed to see the final step state
-        setMessage(payload.message ?? (payload.success ? 'Finished.' : 'Failed.'));
+        setMessage(payload.message ? buildMessage(payload.message) : payload.success ? t('dashboard.finished') : t('dashboard.failed'));
         setBadge(payload.stopped ? 'stopped' : payload.success ? 'success' : 'error');
         runButton.disabled = false;
         stopButton.classList.add('hidden');
@@ -504,7 +509,7 @@ function initBuild() {
     source.onerror = () => {
       if (source.readyState === EventSource.CLOSED) return;
       stopBuildPolling();
-      setMessage('Lost connection to the build stream.');
+      setMessage(t('dashboard.lostConnection'));
       setBadge('error');
       runButton.disabled = false;
       stopButton.classList.add('hidden');
@@ -536,7 +541,7 @@ async function attachToRunningBuildIfAny(runButton: HTMLButtonElement, stopButto
     if (!liveRun) return;
 
     currentRunId = liveRun.id;
-    setMessage('Reattached to a build already in progress…');
+    setMessage(t('dashboard.reattached'));
     setBadge('running');
     runButton.disabled = true;
     stopButton.classList.remove('hidden');
@@ -544,8 +549,14 @@ async function attachToRunningBuildIfAny(runButton: HTMLButtonElement, stopButto
     onBuildFinishedWhilePolling = (run) => {
       stopBuildPolling();
       onBuildFinishedWhilePolling = null;
-      setMessage(run.status === 'error' ? `Build failed: ${run.error ?? 'unknown error'}` : 'Finished.');
-      setBadge(run.status === 'success' ? 'success' : 'error');
+      if (run.status === 'stopped') {
+        setMessage(t('common.build.stopped'));
+      } else if (run.status === 'error') {
+        setMessage(t('dashboard.buildFailed', { error: runMessage(run.error) || t('dashboard.unknownError') }));
+      } else {
+        setMessage(t('dashboard.finished'));
+      }
+      setBadge(run.status === 'success' ? 'success' : run.status === 'stopped' ? 'stopped' : 'error');
       runButton.disabled = false;
       stopButton.classList.add('hidden');
       if (run.status === 'success') {
@@ -568,9 +579,7 @@ const SOURCES_CACHE_KEY = 'dashboard:sources';
 
 function applySourcesData(data: any) {
   sourcesCache = data.sources;
-  el('sources-subtitle').innerHTML = `Always includes <code class="rounded bg-gray-100 px-1 py-0.5">${escapeHtml(
-    data.raw_dir,
-  )}</code>${sourcesCache.length ? ' — plus the folders below' : ''}`;
+  el('sources-subtitle').innerHTML = th('dashboard.sources.alwaysHtml', { dir: data.raw_dir }) + (sourcesCache.length ? th('dashboard.sources.plus') : '');
   renderSourcesGrid();
 }
 
@@ -585,14 +594,14 @@ async function loadSources() {
     applySourcesData(data);
   } catch {
     if (cached) markOffline(cached.savedAt);
-    else el('sources-grid').innerHTML = '<p class="col-span-full text-sm text-red-600">Cannot reach the API.</p>';
+    else el('sources-grid').innerHTML = `<p class="col-span-full text-sm text-red-600">${th('common.cannotReachApi')}</p>`;
   }
 }
 
 function renderSourcesGrid() {
   if (sourcesCache.length === 0) {
     el('sources-grid').innerHTML =
-      '<p class="col-span-full rounded-lg border border-dashed border-gray-200 px-4 py-6 text-center text-sm text-gray-400">No extra folders registered yet.</p>';
+      `<p class="col-span-full rounded-lg border border-dashed border-gray-200 px-4 py-6 text-center text-sm text-gray-400">${th('dashboard.sources.none')}</p>`;
     return;
   }
   el('sources-grid').innerHTML = sourcesCache
@@ -615,7 +624,7 @@ function renderSourcesGrid() {
       </div>
       <div class="flex items-center justify-between pt-1">
         <span class="text-xs text-gray-500">${
-          s.exists ? `${s.file_count} file${s.file_count === 1 ? '' : 's'}` : '<span class="text-red-500">folder not found</span>'
+          s.exists ? tnh('dashboard.sources.files', s.file_count) : `<span class="text-red-500">${th('dashboard.sources.notFound')}</span>`
         }</span>
         <button data-toggle="${s.id}" data-enabled="${s.enabled}" class="relative inline-flex h-5 w-9 shrink-0 items-center rounded-full transition-colors ${
           s.enabled ? 'bg-accent' : 'bg-gray-300'
@@ -664,16 +673,16 @@ function initSources() {
       form.innerHTML = `
         <form id="add-source-real-form" class="rounded-xl border border-dashed border-source-border bg-source-bg/60 p-4">
           <div class="grid gap-3 sm:grid-cols-2">
-            <label class="text-xs font-medium text-gray-600">Folder path on disk
+            <label class="text-xs font-medium text-gray-600">${th('dashboard.sources.formPath')}
               <input name="path" type="text" placeholder="/home/user/Documents/exports" class="mt-1 w-full rounded-lg border border-gray-300 bg-white px-3 py-2 text-sm" />
             </label>
-            <label class="text-xs font-medium text-gray-600">Display name (optional)
-              <input name="label" type="text" placeholder="Work emails" class="mt-1 w-full rounded-lg border border-gray-300 bg-white px-3 py-2 text-sm" />
+            <label class="text-xs font-medium text-gray-600">${th('dashboard.sources.formLabel')}
+              <input name="label" type="text" placeholder="${th('dashboard.sources.formLabelPh')}" class="mt-1 w-full rounded-lg border border-gray-300 bg-white px-3 py-2 text-sm" />
             </label>
           </div>
           <p id="add-source-error" class="mt-2 text-xs text-red-600"></p>
           <div class="mt-3 flex gap-2">
-            <button type="submit" class="inline-flex items-center justify-center gap-2 rounded-lg bg-source px-4 py-2 text-sm font-medium text-white hover:bg-source-light">Add folder</button>
+            <button type="submit" class="inline-flex items-center justify-center gap-2 rounded-lg bg-source px-4 py-2 text-sm font-medium text-white hover:bg-source-light">${th('dashboard.sources.formSubmit')}</button>
           </div>
         </form>`;
       form.querySelector('form')!.addEventListener('submit', async (event) => {
@@ -739,7 +748,7 @@ async function loadFiles() {
     applyFilesData(data);
   } catch {
     if (cached) markOffline(cached.savedAt);
-    else el('file-grid').innerHTML = '<p class="col-span-full py-8 text-center text-sm text-red-600">Cannot reach the API.</p>';
+    else el('file-grid').innerHTML = `<p class="col-span-full py-8 text-center text-sm text-red-600">${th('common.cannotReachApi')}</p>`;
   }
 }
 
@@ -767,7 +776,7 @@ function navigateTo(path: string) {
 }
 
 function folderOptionsHtml(excludePath: string): string {
-  const options = [{ path: '', label: 'Data root' }, ...foldersCache.filter((f) => !isManaged(f)).map((f) => ({ path: f, label: f }))];
+  const options = [{ path: '', label: t('dashboard.files.dataRoot') }, ...foldersCache.filter((f) => !isManaged(f)).map((f) => ({ path: f, label: f }))];
   return options
     .map((o) => `<option value="${escapeHtml(o.path)}" ${o.path === excludePath ? 'disabled' : ''}>${escapeHtml(o.label)}</option>`)
     .join('');
@@ -790,7 +799,7 @@ function renderExplorer() {
         <button data-open="${escapeHtml(path)}" class="flex flex-col items-center gap-1.5">
           <span class="flex h-12 w-12 items-center justify-center rounded-xl ${managed ? 'bg-source-bg text-source' : 'bg-amber-50 text-amber-600'} text-xl">📁</span>
           <span class="line-clamp-2 w-24 text-xs font-medium text-gray-800">${escapeHtml(nameOf(path))}</span>
-          <span class="text-[11px] text-gray-400">${itemCount} item${itemCount === 1 ? '' : 's'}</span>
+          <span class="text-[11px] text-gray-400">${tnh('dashboard.files.items', itemCount)}</span>
         </button>
         ${
           managed
@@ -820,18 +829,18 @@ function renderExplorer() {
           managed
             ? ''
             : `<div class="absolute right-0 top-0 flex items-center gap-0.5 opacity-0 group-hover:opacity-100">
-                <select data-move="${escapeHtml(file.path)}" class="w-6" title="Move to…">
+                <select data-move="${escapeHtml(file.path)}" class="w-6" title="${th('dashboard.files.moveTo')}">
                   <option value="">⋯</option>
                   ${folderOptionsHtml(parentOf(file.path))}
                 </select>
-                <button data-delete-file="${escapeHtml(file.path)}" class="h-6 w-6 rounded-lg text-gray-400 hover:bg-red-50 hover:text-red-600" title="Delete file">🗑</button>
+                <button data-delete-file="${escapeHtml(file.path)}" class="h-6 w-6 rounded-lg text-gray-400 hover:bg-red-50 hover:text-red-600" title="${th('dashboard.files.deleteFile')}">🗑</button>
               </div>`
         }
       </div>`;
     })
     .join('');
 
-  el('file-grid').innerHTML = folderTiles + fileTiles || '<p class="col-span-full py-10 text-center text-sm text-gray-400">This folder is empty.</p>';
+  el('file-grid').innerHTML = folderTiles + fileTiles || `<p class="col-span-full py-10 text-center text-sm text-gray-400">${th('dashboard.files.empty')}</p>`;
 
   el('file-grid')
     .querySelectorAll<HTMLButtonElement>('[data-open]')
@@ -858,7 +867,7 @@ function renderExplorer() {
       btn.addEventListener('click', async (event) => {
         event.stopPropagation();
         const filePath = btn.dataset.deleteFile ?? '';
-        if (!confirm(`Delete "${nameOf(filePath)}"? This cannot be undone.`)) return;
+        if (!confirm(t('dashboard.files.confirmDelete', { name: nameOf(filePath) }))) return;
         try {
           await apiFetch(`/api/raw-files/${filePath.split('/').map(encodeURIComponent).join('/')}`, { method: 'DELETE' });
           await loadFiles();
@@ -897,7 +906,7 @@ async function openPreview(filePath: string) {
           <button id="close-preview" class="rounded-lg p-1.5 text-gray-500 hover:bg-gray-100">✕</button>
         </div>
         <div class="flex-1 overflow-auto p-5" id="preview-body">
-          <p class="py-10 text-center text-sm text-gray-500">Loading…</p>
+          <p class="py-10 text-center text-sm text-gray-500">${th('common.loading')}</p>
         </div>
       </div>
     </div>`;
@@ -928,24 +937,24 @@ async function openPreview(filePath: string) {
     } else {
       sourcePanel = `
         <div class="flex h-40 flex-col items-center justify-center gap-2 p-4 text-center">
-          <p class="text-sm text-gray-500">No inline preview for this file type (${escapeHtml(detail.mime ?? 'unknown')}).</p>
-          <a href="${escapeHtml(rawUrl)}" target="_blank" rel="noopener" class="rounded-lg bg-accent px-3 py-1.5 text-sm font-medium text-white hover:bg-accent-dark">Open / download</a>
+          <p class="text-sm text-gray-500">${th('dashboard.preview.noInline', { mime: detail.mime ?? t('dashboard.preview.unknown') })}</p>
+          <a href="${escapeHtml(rawUrl)}" target="_blank" rel="noopener" class="rounded-lg bg-accent px-3 py-1.5 text-sm font-medium text-white hover:bg-accent-dark">${th('dashboard.preview.open')}</a>
         </div>`;
     }
 
     document.getElementById('preview-body')!.innerHTML = `
-      <p class="mb-4 text-sm text-gray-500">${escapeHtml(detail.status)} · ${detail.synthesized_pages.length} wiki page(s)</p>
+      <p class="mb-4 text-sm text-gray-500">${escapeHtml(t(`dashboard.preview.status.${detail.status}`) === `dashboard.preview.status.${detail.status}` ? detail.status : t(`dashboard.preview.status.${detail.status}`))} · ${tnh('dashboard.preview.wikiPages', detail.synthesized_pages.length)}</p>
       <div class="grid gap-4 lg:grid-cols-2">
         <div class="overflow-hidden rounded-xl border border-source-border">
           <div class="flex items-center justify-between border-b border-source-border bg-source-bg px-3 py-2 text-sm font-medium text-source">
-            <span>Source (raw, unedited)</span>
-            <a href="${escapeHtml(rawUrl)}" target="_blank" rel="noopener" class="text-xs font-normal text-source hover:underline">Open in new tab ↗</a>
+            <span>${th('dashboard.preview.source')}</span>
+            <a href="${escapeHtml(rawUrl)}" target="_blank" rel="noopener" class="text-xs font-normal text-source hover:underline">${th('dashboard.preview.newTab')}</a>
           </div>
           ${sourcePanel}
         </div>
         <div class="overflow-hidden rounded-xl border border-generated-border">
-          <div class="border-b border-generated-border bg-generated-bg px-3 py-2 text-sm font-medium text-generated">${page ? escapeHtml(page.title) : 'Generated wiki page'}</div>
-          ${page ? `<pre class="max-h-[65vh] overflow-auto p-3 text-xs text-gray-800 whitespace-pre-wrap">${escapeHtml(page.body)}</pre>` : '<p class="p-4 text-sm text-gray-500">No wiki page yet. Run the compiler.</p>'}
+          <div class="border-b border-generated-border bg-generated-bg px-3 py-2 text-sm font-medium text-generated">${page ? escapeHtml(page.title) : th('dashboard.preview.generated')}</div>
+          ${page ? `<pre class="max-h-[65vh] overflow-auto p-3 text-xs text-gray-800 whitespace-pre-wrap">${escapeHtml(page.body)}</pre>` : `<p class="p-4 text-sm text-gray-500">${th('dashboard.preview.noPage')}</p>`}
         </div>
       </div>`;
   } catch (err: any) {
@@ -958,7 +967,7 @@ async function uploadFilesToCurrentFolder(fileList: FileList | File[]) {
   if (!files.length) return;
   const status = el('upload-status');
   status.classList.remove('hidden');
-  status.textContent = `Uploading ${files.length} file${files.length === 1 ? '' : 's'}…`;
+  status.textContent = tn('dashboard.upload.uploading', files.length);
   const form = new FormData();
   form.set('parent', currentPath);
   files.forEach((f) => form.append('files', f));
@@ -971,13 +980,13 @@ async function uploadFilesToCurrentFolder(fileList: FileList | File[]) {
       } catch {
         /* plain text */
       }
-      throw new Error(message || `Upload failed (${res.status})`);
+      throw new Error(message || t('dashboard.upload.failedStatus', { status: res.status }));
     }
-    status.textContent = `Uploaded ${files.length} file${files.length === 1 ? '' : 's'}.`;
+    status.textContent = tn('dashboard.upload.done', files.length);
     await loadFiles();
     setTimeout(() => status.classList.add('hidden'), 2500);
   } catch (err: any) {
-    status.textContent = `Upload failed: ${err.message}`;
+    status.textContent = t('dashboard.upload.failed', { error: err.message });
   }
 }
 
@@ -1023,9 +1032,9 @@ function initExplorer() {
     if (!form.classList.contains('hidden')) {
       form.innerHTML = `
         <form id="new-folder-real-form" class="flex flex-wrap items-center gap-2">
-          <input name="name" type="text" placeholder="New folder name…" class="min-w-0 flex-1 rounded-md border border-gray-300 bg-white px-2 py-1 text-sm" />
+          <input name="name" type="text" placeholder="${th('dashboard.folder.namePh')}" class="min-w-0 flex-1 rounded-md border border-gray-300 bg-white px-2 py-1 text-sm" />
           <span id="new-folder-error" class="text-xs text-red-600"></span>
-          <button type="submit" class="rounded-lg bg-accent px-3 py-1 text-xs font-medium text-white hover:bg-accent-dark">Create</button>
+          <button type="submit" class="rounded-lg bg-accent px-3 py-1 text-xs font-medium text-white hover:bg-accent-dark">${th('dashboard.folder.create')}</button>
         </form>`;
       form.querySelector('form')!.addEventListener('submit', async (event) => {
         event.preventDefault();

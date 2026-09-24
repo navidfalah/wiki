@@ -9,6 +9,8 @@
  * "Request failed (nnn)" instead.
  */
 
+import { t } from './i18n';
+
 export const apiBase = document.querySelector('meta[name="api-base"]')?.getAttribute('content') ?? '';
 
 /** Always sends `Content-Type: application/json` unless the caller
@@ -27,7 +29,7 @@ export async function apiFetch<T = any>(path: string, options: RequestInit = {})
     } catch {
       /* plain text body, use as-is */
     }
-    throw new Error(message || `Request failed (${res.status})`);
+    throw new Error(message || t('common.requestFailed', { status: res.status }));
   }
   return res.status === 204 ? (null as T) : res.json();
 }

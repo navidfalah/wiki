@@ -17,3 +17,28 @@
 export const BACKEND_API_URL = process.env.BACKEND_API_URL ?? 'http://localhost:8000';
 export const PUBLIC_API_URL = process.env.PUBLIC_API_URL ?? '';
 export const PORT = Number(process.env.PORT ?? 3000);
+
+/**
+ * Public-deployment settings (see docker-compose.prod.yml / README).
+ * SITE_URL is the canonical origin used in the landing page's <link
+ * rel="canonical">, Open Graph tags, robots.txt and sitemap.xml.
+ * COOKIE_SECURE=true marks the session cookie Secure -- required once the
+ * site is served over HTTPS (Caddy in docker-compose.prod.yml), but left
+ * off by default so plain-http local dev keeps working.
+ * SHOW_DEFAULT_LOGIN_HINT=false hides the "admin / aurora_admin" box on the
+ * sign-in page; production must not advertise a default password.
+ * LEGAL_IMPRINT_URL / LEGAL_PRIVACY_URL add Impressum / Datenschutz links to
+ * the landing footer (legally required for German sites) when set.
+ */
+export const SITE_URL = (process.env.SITE_URL ?? 'https://wissensbau.de').replace(/\/+$/, '');
+export const COOKIE_SECURE = process.env.COOKIE_SECURE === 'true';
+export const SHOW_DEFAULT_LOGIN_HINT = process.env.SHOW_DEFAULT_LOGIN_HINT !== 'false';
+export const LEGAL_IMPRINT_URL = process.env.LEGAL_IMPRINT_URL ?? '';
+export const LEGAL_PRIVACY_URL = process.env.LEGAL_PRIVACY_URL ?? '';
+
+/**
+ * SHOW_SAMPLE_DB_HINT=false hides the "sample Postgres container" callout on
+ * the Resources > Database tab (production has no sample container; see
+ * docker-compose.prod.yml).
+ */
+export const SHOW_SAMPLE_DB_HINT = process.env.SHOW_SAMPLE_DB_HINT !== 'false';

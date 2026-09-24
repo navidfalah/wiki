@@ -1,3 +1,4 @@
+import { formatDateTime, t, th, tn, tnh } from './lib/i18n';
 import { apiBase, apiFetch } from './lib/api';
 import { el, escapeHtml } from './lib/dom';
 import { wireModalA11y } from './lib/modal';
@@ -108,7 +109,7 @@ async function loadFiles() {
     resourceBySource = new Map(resourcesData.resources.map((r: ResourceEntry) => [r.source, r]));
     renderExplorer();
   } catch {
-    el('resource-grid').innerHTML = `<p class="col-span-full py-8 text-center text-sm text-red-600">Cannot reach API at ${escapeHtml(apiBase)}.</p>`;
+    el('resource-grid').innerHTML = `<p class="col-span-full py-8 text-center text-sm text-red-600">${th('common.cannotReachApi')}</p>`;
   }
 }
 
@@ -139,7 +140,7 @@ function navigateTo(path: string) {
 }
 
 function folderOptionsHtml(excludePath: string): string {
-  const options = [{ path: '', label: 'Data root' }, ...foldersCache.filter((f) => !isManaged(f)).map((f) => ({ path: f, label: f }))];
+  const options = [{ path: '', label: t('resources.files.dataRoot') }, ...foldersCache.filter((f) => !isManaged(f)).map((f) => ({ path: f, label: f }))];
   return options
     .map((o) => `<option value="${escapeHtml(o.path)}" ${o.path === excludePath ? 'disabled' : ''}>${escapeHtml(o.label)}</option>`)
     .join('');
@@ -152,10 +153,10 @@ async function moveFileTo(sourcePath: string, destination: string) {
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ path: sourcePath, destination }),
     });
-    (window as any).showToast?.(`Moved ${nameOf(sourcePath)}.`);
+    (window as any).showToast?.(t('resources.files.moved', { name: nameOf(sourcePath) }));
     await loadFiles();
   } catch (err: any) {
-    (window as any).showToast?.(err.message || 'Could not move file.', 'error');
+    (window as any).showToast?.(err.message || t('resources.files.moveFailed'), 'error');
   }
 }
 
@@ -212,7 +213,7 @@ function renderExplorer() {
         <button data-open="${escapeHtml(path)}" class="flex flex-col items-center gap-1.5">
           <span class="flex h-12 w-12 items-center justify-center rounded-xl ${managed ? 'bg-source-bg text-source' : 'bg-amber-50 text-amber-600'} text-xl">📁</span>
           <span class="line-clamp-2 w-24 text-xs font-medium text-gray-800">${escapeHtml(nameOf(path))}</span>
-          <span class="text-[11px] text-gray-400">${itemCount} item${itemCount === 1 ? '' : 's'}</span>
+          <span class="text-[11px] text-gray-400">${tnh('resources.files.items', itemCount)}</span>
         </button>
         ${
           managed
@@ -239,7 +240,7 @@ function renderExplorer() {
           ${ext ? `<span class="text-[10px] font-medium tracking-wide text-gray-400">${escapeHtml(ext)}</span>` : ''}
           ${
             resource
-              ? `<span class="inline-flex items-center rounded-full border border-generated-border bg-generated-bg px-1.5 py-0 text-[10px] font-medium text-generated" title="Cited by ${resource.citation_count} page(s): ${escapeHtml(resource.citing_pages.map((p) => p.title).join(', '))}">${escapeHtml(resource.trust)} · ${resource.citation_count} cite${resource.citation_count === 1 ? '' : 's'}</span>`
+              ? `<span class="inline-flex items-center rounded-full border border-generated-border bg-generated-bg px-1.5 py-0 text-[10px] font-medium text-generated" title="${th('resources.files.citedTitle', { count: resource.citation_count, pages: resource.citing_pages.map((p) => p.title).join(', ') })}">${escapeHtml(resource.trust)} · ${tnh('resources.files.cites', resource.citation_count)}</span>`
               : ''
           }
           ${file.source ? `<span class="inline-flex items-center rounded-full border border-source-border bg-source-bg px-1.5 py-0 text-[10px] font-medium text-source">${escapeHtml(file.source)}</span>` : ''}
@@ -248,11 +249,11 @@ function renderExplorer() {
           managed
             ? ''
             : `<div class="absolute right-0 top-0 flex items-center gap-0.5 opacity-0 group-hover:opacity-100">
-                <select data-move="${escapeHtml(file.path)}" class="w-6" title="Move to…">
+                <select data-move="${escapeHtml(file.path)}" class="w-6" title="${th('resources.files.moveTo')}">
                   <option value="">⋯</option>
                   ${folderOptionsHtml(parentOf(file.path))}
                 </select>
-                <button data-delete-file="${escapeHtml(file.path)}" class="h-6 w-6 rounded-lg text-gray-400 hover:bg-red-50 hover:text-red-600" title="Delete file">🗑</button>
+                <button data-delete-file="${escapeHtml(file.path)}" class="h-6 w-6 rounded-lg text-gray-400 hover:bg-red-50 hover:text-red-600" title="${th('resources.files.deleteFile')}">🗑</button>
               </div>`
         }
       </div>`;
@@ -260,7 +261,7 @@ function renderExplorer() {
     .join('');
 
   el('resource-grid').innerHTML =
-    folderTiles + fileTiles || '<p class="col-span-full py-10 text-center text-sm text-gray-400">This folder is empty. Drag files in to upload.</p>';
+    folderTiles + fileTiles || `<p class="col-span-full py-10 text-center text-sm text-gray-400">${th('resources.files.empty')}</p>`;
 
   el('resource-grid')
     .querySelectorAll<HTMLButtonElement>('[data-open]')
@@ -304,7 +305,7 @@ function renderExplorer() {
       btn.addEventListener('click', async (event) => {
         event.stopPropagation();
         const filePath = btn.dataset.deleteFile ?? '';
-        if (!confirm(`Delete "${nameOf(filePath)}"? This cannot be undone.`)) return;
+        if (!confirm(t('resources.files.confirmDelete', { name: nameOf(filePath) }))) return;
         try {
           await apiFetch(`/api/raw-files/${filePath.split('/').map(encodeURIComponent).join('/')}`, { method: 'DELETE' });
           await loadFiles();
@@ -334,7 +335,7 @@ async function openPreview(filePath: string) {
           <button id="close-preview" class="rounded-lg p-1.5 text-gray-500 hover:bg-gray-100">✕</button>
         </div>
         <div class="flex-1 overflow-auto p-5" id="preview-body">
-          <p class="py-10 text-center text-sm text-gray-500">Loading…</p>
+          <p class="py-10 text-center text-sm text-gray-500">${th('common.loading')}</p>
         </div>
       </div>
     </div>`;
@@ -365,32 +366,31 @@ async function openPreview(filePath: string) {
     } else {
       sourcePanel = `
         <div class="flex h-40 flex-col items-center justify-center gap-2 p-4 text-center">
-          <p class="text-sm text-gray-500">No inline preview for this file type (${escapeHtml(detail.mime ?? 'unknown')}).</p>
-          <a href="${escapeHtml(rawUrl)}" target="_blank" rel="noopener" class="rounded-lg bg-accent px-3 py-1.5 text-sm font-medium text-white hover:bg-accent-dark">Open / download</a>
+          <p class="text-sm text-gray-500">${th('resources.preview.noInline', { mime: detail.mime ?? t('resources.preview.unknown') })}</p>
+          <a href="${escapeHtml(rawUrl)}" target="_blank" rel="noopener" class="rounded-lg bg-accent px-3 py-1.5 text-sm font-medium text-white hover:bg-accent-dark">${th('resources.preview.open')}</a>
         </div>`;
     }
 
     const citedHtml = resource
       ? `<p class="mb-3 rounded-lg border border-generated-border bg-generated-bg px-3 py-2 text-xs text-generated">
-          Cited as <strong>${escapeHtml(resource.source_type)}</strong> · trust <strong>${escapeHtml(resource.trust)}</strong> ·
-          by ${resource.citing_pages.map((p) => escapeHtml(p.title)).join(', ')}
+          ${th('resources.preview.citedAs', { type: resource.source_type, trust: resource.trust, pages: resource.citing_pages.map((p) => p.title).join(', ') })}
         </p>`
       : '';
 
     document.getElementById('preview-body')!.innerHTML = `
-      <p class="mb-2 text-sm text-gray-500">${escapeHtml(detail.status)} · ${detail.synthesized_pages.length} wiki page(s)</p>
+      <p class="mb-2 text-sm text-gray-500">${escapeHtml(statusText(detail.status, 'resources.preview.status'))} · ${tnh('resources.preview.wikiPages', detail.synthesized_pages.length)}</p>
       ${citedHtml}
       <div class="grid gap-4 lg:grid-cols-2">
         <div class="overflow-hidden rounded-xl border border-source-border">
           <div class="flex items-center justify-between border-b border-source-border bg-source-bg px-3 py-2 text-sm font-medium text-source">
-            <span>Source (raw, unedited)</span>
-            <a href="${escapeHtml(rawUrl)}" target="_blank" rel="noopener" class="text-xs font-normal text-source hover:underline">Open in new tab ↗</a>
+            <span>${th('resources.preview.source')}</span>
+            <a href="${escapeHtml(rawUrl)}" target="_blank" rel="noopener" class="text-xs font-normal text-source hover:underline">${th('resources.preview.newTab')}</a>
           </div>
           ${sourcePanel}
         </div>
         <div class="overflow-hidden rounded-xl border border-generated-border">
-          <div class="border-b border-generated-border bg-generated-bg px-3 py-2 text-sm font-medium text-generated">${page ? escapeHtml(page.title) : 'Generated wiki page'}</div>
-          ${page ? `<pre class="max-h-[65vh] overflow-auto p-3 text-xs text-gray-800 whitespace-pre-wrap">${escapeHtml(page.body)}</pre>` : '<p class="p-4 text-sm text-gray-500">No wiki page yet. Run the compiler.</p>'}
+          <div class="border-b border-generated-border bg-generated-bg px-3 py-2 text-sm font-medium text-generated">${page ? escapeHtml(page.title) : th('resources.preview.generated')}</div>
+          ${page ? `<pre class="max-h-[65vh] overflow-auto p-3 text-xs text-gray-800 whitespace-pre-wrap">${escapeHtml(page.body)}</pre>` : `<p class="p-4 text-sm text-gray-500">${th('resources.preview.noPage')}</p>`}
         </div>
       </div>`;
   } catch (err: any) {
@@ -403,7 +403,7 @@ async function uploadFilesToFolder(folder: string, fileList: FileList | File[]) 
   if (!files.length) return;
   const status = el('upload-status');
   status.classList.remove('hidden');
-  status.textContent = `Uploading ${files.length} file${files.length === 1 ? '' : 's'}…`;
+  status.textContent = tn('resources.upload.uploading', files.length);
   const form = new FormData();
   form.set('parent', folder);
   files.forEach((f) => form.append('files', f));
@@ -416,13 +416,13 @@ async function uploadFilesToFolder(folder: string, fileList: FileList | File[]) 
       } catch {
         /* plain text */
       }
-      throw new Error(message || `Upload failed (${res.status})`);
+      throw new Error(message || t('resources.upload.failedStatus', { status: res.status }));
     }
-    status.textContent = `Uploaded ${files.length} file${files.length === 1 ? '' : 's'}.`;
+    status.textContent = tn('resources.upload.done', files.length);
     await loadFiles();
     setTimeout(() => status.classList.add('hidden'), 2500);
   } catch (err: any) {
-    status.textContent = `Upload failed: ${err.message}`;
+    status.textContent = t('resources.upload.failed', { error: err.message });
   }
 }
 
@@ -476,9 +476,9 @@ function initExplorer() {
     if (!form.classList.contains('hidden')) {
       form.innerHTML = `
         <form id="new-folder-real-form" class="flex flex-wrap items-center gap-2">
-          <input name="name" type="text" placeholder="New folder name…" class="min-w-0 flex-1 rounded-md border border-gray-300 bg-white px-2 py-1 text-sm" />
+          <input name="name" type="text" placeholder="${th('resources.folder.namePh')}" class="min-w-0 flex-1 rounded-md border border-gray-300 bg-white px-2 py-1 text-sm" />
           <span id="new-folder-error" class="text-xs text-red-600"></span>
-          <button type="submit" class="rounded-lg bg-accent px-3 py-1 text-xs font-medium text-white hover:bg-accent-dark">Create</button>
+          <button type="submit" class="rounded-lg bg-accent px-3 py-1 text-xs font-medium text-white hover:bg-accent-dark">${th('resources.folder.create')}</button>
         </form>`;
       form.querySelector('form')!.addEventListener('submit', async (event) => {
         event.preventDefault();
@@ -519,12 +519,13 @@ const SAMPLE_POSTGRES_VALUES = {
   password: 'aurora_sample_pw',
 };
 
-function formatTime(iso: string): string {
-  try {
-    return new Date(iso).toLocaleString();
-  } catch {
-    return iso;
-  }
+const formatTime = formatDateTime;
+
+/** Translates a backend status word ("Processed"/"Unprocessed") via `<prefix>.<word>`; unknown values pass through. */
+function statusText(status: string, prefix: string): string {
+  const key = `${prefix}.${status}`;
+  const label = t(key);
+  return label === key ? status : label;
 }
 
 interface DbConnectorEntry {
@@ -557,7 +558,7 @@ document.getElementById('use-sample-values-btn')?.addEventListener('click', () =
     const field = form.elements.namedItem(name) as HTMLInputElement | null;
     if (field) field.value = value;
   }
-  (window as any).showToast?.('Filled in the sample database\'s connection details.', 'success');
+  (window as any).showToast?.(t('resources.db.sampleFilled'), 'success');
 });
 
 document.getElementById('connect-form')?.addEventListener('submit', async (event) => {
@@ -580,12 +581,12 @@ document.getElementById('connect-form')?.addEventListener('submit', async (event
         password: (form.elements.namedItem('password') as HTMLInputElement).value,
       }),
     });
-    (window as any).showToast?.('Connected. Browse its tables below.', 'success');
+    (window as any).showToast?.(t('resources.db.connectedBrowse'), 'success');
     (form.elements.namedItem('password') as HTMLInputElement).value = '';
     loadDbAccounts();
     loadDbActivity();
   } catch (err: any) {
-    errorEl.textContent = err.message || 'Failed to connect.';
+    errorEl.textContent = err.message || t('resources.db.connectFailed');
     errorEl.classList.remove('hidden');
     loadDbActivity();
   } finally {
@@ -608,12 +609,12 @@ document.getElementById('connect-sqlite-form')?.addEventListener('submit', async
         db_path: (form.elements.namedItem('db_path') as HTMLInputElement).value.trim(),
       }),
     });
-    (window as any).showToast?.('Connected. Browse its tables below.', 'success');
+    (window as any).showToast?.(t('resources.db.connectedBrowse'), 'success');
     form.reset();
     loadDbAccounts();
     loadDbActivity();
   } catch (err: any) {
-    errorEl.textContent = err.message || 'Failed to connect.';
+    errorEl.textContent = err.message || t('resources.db.connectFailed');
     errorEl.classList.remove('hidden');
     loadDbActivity();
   } finally {
@@ -631,6 +632,12 @@ function dbTableRow(item: TableItem): string {
   </label>`;
 }
 
+function activityAction(action: string): string {
+  const key = `resources.activity.action.${action}`;
+  const label = t(key);
+  return label === key ? action : label;
+}
+
 const DB_CONNECTOR_LABELS: Record<DbConnectorId, string> = { postgres: 'PostgreSQL', sqlite: 'SQLite' };
 
 function dbAccountCard(connectorId: DbConnectorId, accountLabel: string): string {
@@ -641,8 +648,8 @@ function dbAccountCard(connectorId: DbConnectorId, accountLabel: string): string
         <span class="ml-1.5 rounded-full bg-gray-100 px-2 py-0.5 text-[10px] font-medium text-gray-500">${DB_CONNECTOR_LABELS[connectorId]}</span>
       </h3>
       <div class="flex items-center gap-2">
-        <button type="button" class="browse-tables-btn rounded-lg border border-gray-300 bg-white px-2.5 py-1 text-xs font-medium text-gray-700 hover:bg-gray-50">Browse tables</button>
-        <button type="button" class="disconnect-btn rounded-lg border border-red-200 bg-white px-2.5 py-1 text-xs font-medium text-red-600 hover:bg-red-50">Disconnect</button>
+        <button type="button" class="browse-tables-btn rounded-lg border border-gray-300 bg-white px-2.5 py-1 text-xs font-medium text-gray-700 hover:bg-gray-50">${th('resources.db.browseTables')}</button>
+        <button type="button" class="disconnect-btn rounded-lg border border-red-200 bg-white px-2.5 py-1 text-xs font-medium text-red-600 hover:bg-red-50">${th('resources.db.disconnect')}</button>
       </div>
     </div>
     <div class="tables-panel mt-3 hidden"></div>
@@ -659,9 +666,9 @@ async function loadDbAccounts() {
     });
     list.innerHTML = cards.length
       ? cards.join('')
-      : '<p class="text-sm text-gray-400">No databases connected yet -- fill in a form above to connect one.</p>';
+      : `<p class="text-sm text-gray-400">${th('resources.accounts.none')}</p>`;
   } catch (err: any) {
-    list.innerHTML = `<p class="text-sm text-red-600">Cannot reach API at ${escapeHtml(apiBase)}: ${escapeHtml(err.message || '')}</p>`;
+    list.innerHTML = `<p class="text-sm text-red-600">${th('common.cannotReachApi')} ${escapeHtml(err.message || '')}</p>`;
   }
 }
 
@@ -673,7 +680,7 @@ async function loadDbActivity() {
       DB_CONNECTOR_IDS.map((id) => apiFetch<{ events: ConnectorActivityEvent[] }>(`/api/connectors/${id}/activity`)),
     );
     const events = results.flatMap((r) => r.events ?? []).sort((a, b) => (a.at < b.at ? 1 : -1));
-    status.textContent = `${events.length} event${events.length === 1 ? '' : 's'}`;
+    status.textContent = tn('resources.activity.count', events.length);
     body.innerHTML = events.length
       ? events
           .map(
@@ -682,15 +689,15 @@ async function loadDbActivity() {
           <td class="whitespace-nowrap px-4 py-2 text-xs text-gray-500">${escapeHtml(formatTime(e.at))}</td>
           <td class="whitespace-nowrap px-4 py-2 text-sm font-medium text-gray-900">${escapeHtml(e.username)}</td>
           <td class="whitespace-nowrap px-4 py-2 text-sm text-gray-800">${escapeHtml(e.account_label ?? '—')}</td>
-          <td class="whitespace-nowrap px-4 py-2 text-sm text-gray-800">${e.success ? escapeHtml(e.action) : `<span class="font-medium text-red-600">${escapeHtml(e.action)} failed</span>`}</td>
+          <td class="whitespace-nowrap px-4 py-2 text-sm text-gray-800">${e.success ? escapeHtml(activityAction(e.action)) : `<span class="font-medium text-red-600">${th('resources.activity.failed', { action: activityAction(e.action) })}</span>`}</td>
           <td class="px-4 py-2 text-sm text-gray-500">${escapeHtml(e.success ? e.detail : e.error || e.detail)}</td>
           <td class="whitespace-nowrap px-4 py-2 text-xs text-gray-400">${e.duration_ms != null ? `${e.duration_ms}ms` : '—'}</td>
         </tr>`,
           )
           .join('')
-      : '<tr><td colspan="6" class="px-4 py-8 text-center text-sm text-gray-400">No interactions recorded yet -- connect a database above to get started.</td></tr>';
+      : `<tr><td colspan="6" class="px-4 py-8 text-center text-sm text-gray-400">${th('resources.activity.empty')}</td></tr>`;
   } catch (err: any) {
-    status.textContent = `Cannot reach API at ${apiBase}.`;
+    status.textContent = t('common.cannotReachApi');
     body.innerHTML = `<tr><td colspan="6" class="px-4 py-8 text-center text-sm text-red-600">${escapeHtml(err.message || '')}</td></tr>`;
   }
 }
@@ -708,11 +715,11 @@ document.getElementById('accounts-list')?.addEventListener('click', async (event
     disconnectBtn.disabled = true;
     try {
       await apiFetch(`/api/connectors/${connectorId}/accounts/${encodeURIComponent(accountLabel)}`, { method: 'DELETE' });
-      (window as any).showToast?.(`Disconnected ${accountLabel}.`, 'success');
+      (window as any).showToast?.(t('resources.db.disconnected', { name: accountLabel }), 'success');
       loadDbAccounts();
       loadDbActivity();
     } catch (err: any) {
-      (window as any).showToast?.(err.message || 'Failed to disconnect.', 'error');
+      (window as any).showToast?.(err.message || t('resources.db.disconnectFailed'), 'error');
       disconnectBtn.disabled = false;
     }
     return;
@@ -730,7 +737,7 @@ document.getElementById('accounts-list')?.addEventListener('click', async (event
       return;
     }
     panel.classList.remove('hidden');
-    panel.innerHTML = '<p class="text-xs text-gray-400">Loading tables…</p>';
+    panel.innerHTML = `<p class="text-xs text-gray-400">${th('resources.db.loadingTables')}</p>`;
     try {
       const data = await apiFetch<{ items: TableItem[] }>(`/api/connectors/${connectorId}/items`, {
         method: 'POST',
@@ -739,13 +746,13 @@ document.getElementById('accounts-list')?.addEventListener('click', async (event
       panel.innerHTML = data.items.length
         ? `<div class="tables-results flex flex-col gap-1.5">${data.items.map((i) => dbTableRow(i)).join('')}</div>
            <div class="mt-3 flex items-center gap-2">
-             <button type="button" class="import-selected-btn rounded-lg bg-gray-900 px-3 py-1.5 text-xs font-medium text-white hover:bg-gray-800">Import selected into knowledge base</button>
+             <button type="button" class="import-selected-btn rounded-lg bg-gray-900 px-3 py-1.5 text-xs font-medium text-white hover:bg-gray-800">${th('resources.db.importSelected')}</button>
              <span class="import-status text-xs text-gray-500"></span>
            </div>`
-        : '<p class="text-xs text-gray-400">No tables found.</p>';
+        : `<p class="text-xs text-gray-400">${th('resources.db.noTables')}</p>`;
       loadDbActivity();
     } catch (err: any) {
-      panel.innerHTML = `<p class="text-xs text-red-600">${escapeHtml(err.message || 'Failed to list tables.')}</p>`;
+      panel.innerHTML = `<p class="text-xs text-red-600">${escapeHtml(err.message || t('resources.db.listTablesFailed'))}</p>`;
       loadDbActivity();
     }
     return;
@@ -761,14 +768,14 @@ document.getElementById('accounts-list')?.addEventListener('click', async (event
     const rows = Array.from(panel.querySelectorAll('[data-table-row]')) as HTMLElement[];
     const selected = rows.filter((row) => (row.querySelector('.table-checkbox') as HTMLInputElement).checked);
     if (!selected.length) {
-      (window as any).showToast?.('Select at least one table to import.', 'error');
+      (window as any).showToast?.(t('resources.db.selectOne'), 'error');
       return;
     }
     importBtn.disabled = true;
     const importedPaths: string[] = [];
     for (let i = 0; i < selected.length; i++) {
       const row = selected[i];
-      statusEl.textContent = `Importing ${i + 1} of ${selected.length}…`;
+      statusEl.textContent = t('resources.db.importing', { current: i + 1, total: selected.length });
       try {
         const result = await apiFetch<{ raw_path: string }>(`/api/connectors/${connectorId}/items/import`, {
           method: 'POST',
@@ -780,14 +787,14 @@ document.getElementById('accounts-list')?.addEventListener('click', async (event
         });
         importedPaths.push(result.raw_path);
       } catch (err: any) {
-        (window as any).showToast?.(`Failed to import ${row.dataset.itemTitle}: ${err.message || ''}`, 'error');
+        (window as any).showToast?.(t('resources.db.importFailed', { name: row.dataset.itemTitle ?? '', error: err.message || '' }), 'error');
       }
     }
     importBtn.disabled = false;
     statusEl.textContent = importedPaths.length
-      ? `Imported ${importedPaths.length} table(s). Run a compile from Pipelines/Dashboard to turn them into wiki pages.`
-      : 'Nothing was imported.';
-    if (importedPaths.length) (window as any).showToast?.(`Imported ${importedPaths.length} table(s) into the knowledge base.`, 'success');
+      ? tn('resources.db.importedStatus', importedPaths.length)
+      : t('resources.db.nothingImported');
+    if (importedPaths.length) (window as any).showToast?.(tn('resources.db.importedToast', importedPaths.length), 'success');
     loadDbActivity();
   }
 });
@@ -815,12 +822,12 @@ interface ConnectorItem {
 
 function imapConnectForm(connectorId: string): string {
   return `<form class="imap-connect-form mt-3 flex flex-wrap items-end gap-2 rounded-lg border border-gray-100 bg-gray-50 p-3" data-connector-id="${connectorId}">
-    <label class="flex flex-col gap-1 text-xs font-medium text-gray-600">Account (email) <input name="account_label" type="text" required placeholder="me@example.com" class="rounded-lg border border-gray-300 px-2 py-1.5 text-sm" /></label>
-    <label class="flex flex-col gap-1 text-xs font-medium text-gray-600">IMAP host <input name="host" type="text" required placeholder="imap.example.com" class="rounded-lg border border-gray-300 px-2 py-1.5 text-sm" /></label>
-    <label class="flex w-20 flex-col gap-1 text-xs font-medium text-gray-600">Port <input name="port" type="number" value="993" class="rounded-lg border border-gray-300 px-2 py-1.5 text-sm" /></label>
-    <label class="flex flex-col gap-1 text-xs font-medium text-gray-600">Mailbox <input name="mailbox" type="text" value="INBOX" class="rounded-lg border border-gray-300 px-2 py-1.5 text-sm" /></label>
-    <label class="flex flex-col gap-1 text-xs font-medium text-gray-600">App password <input name="password" type="password" required class="rounded-lg border border-gray-300 px-2 py-1.5 text-sm" /></label>
-    <button type="submit" class="rounded-lg bg-gray-900 px-3 py-1.5 text-xs font-medium text-white hover:bg-gray-800">Connect</button>
+    <label class="flex flex-col gap-1 text-xs font-medium text-gray-600">${th('resources.connectors.imapAccount')} <input name="account_label" type="text" required placeholder="me@example.com" class="rounded-lg border border-gray-300 px-2 py-1.5 text-sm" /></label>
+    <label class="flex flex-col gap-1 text-xs font-medium text-gray-600">${th('resources.connectors.imapHost')} <input name="host" type="text" required placeholder="imap.example.com" class="rounded-lg border border-gray-300 px-2 py-1.5 text-sm" /></label>
+    <label class="flex w-20 flex-col gap-1 text-xs font-medium text-gray-600">${th('resources.connectors.imapPort')} <input name="port" type="number" value="993" class="rounded-lg border border-gray-300 px-2 py-1.5 text-sm" /></label>
+    <label class="flex flex-col gap-1 text-xs font-medium text-gray-600">${th('resources.connectors.imapMailbox')} <input name="mailbox" type="text" value="INBOX" class="rounded-lg border border-gray-300 px-2 py-1.5 text-sm" /></label>
+    <label class="flex flex-col gap-1 text-xs font-medium text-gray-600">${th('resources.connectors.imapPassword')} <input name="password" type="password" required class="rounded-lg border border-gray-300 px-2 py-1.5 text-sm" /></label>
+    <button type="submit" class="rounded-lg bg-gray-900 px-3 py-1.5 text-xs font-medium text-white hover:bg-gray-800">${th('resources.db.connect')}</button>
   </form>`;
 }
 
@@ -829,8 +836,8 @@ function connectorAccountRow(connectorId: string, accountLabel: string): string 
     <div class="flex flex-wrap items-center justify-between gap-2">
       <span class="text-sm font-medium text-gray-900">${escapeHtml(accountLabel)}</span>
       <div class="flex items-center gap-2">
-        <button type="button" class="browse-items-btn rounded-lg border border-gray-300 bg-white px-2.5 py-1 text-xs font-medium text-gray-700 hover:bg-gray-50">Browse items</button>
-        <button type="button" class="disconnect-btn rounded-lg border border-red-200 bg-white px-2.5 py-1 text-xs font-medium text-red-600 hover:bg-red-50">Disconnect</button>
+        <button type="button" class="browse-items-btn rounded-lg border border-gray-300 bg-white px-2.5 py-1 text-xs font-medium text-gray-700 hover:bg-gray-50">${th('resources.connectors.browseItems')}</button>
+        <button type="button" class="disconnect-btn rounded-lg border border-red-200 bg-white px-2.5 py-1 text-xs font-medium text-red-600 hover:bg-red-50">${th('resources.db.disconnect')}</button>
       </div>
     </div>
     <div class="items-panel mt-3 hidden"></div>
@@ -839,24 +846,24 @@ function connectorAccountRow(connectorId: string, accountLabel: string): string 
 
 function connectorCard(entry: OAuthConnectorEntry): string {
   const hint = entry.requires_oauth && !entry.configured
-    ? `<p class="mt-2 text-xs text-amber-700">Not configured -- set the ${entry.id === 'gmail' ? 'GMAIL_CLIENT_ID/GMAIL_CLIENT_SECRET/GMAIL_REDIRECT_URI' : 'GDRIVE_CLIENT_ID/GDRIVE_CLIENT_SECRET/GDRIVE_REDIRECT_URI'} env vars first.</p>`
+    ? `<p class="mt-2 text-xs text-amber-700">${th('resources.connectors.notConfigured', { vars: entry.id === 'gmail' ? 'GMAIL_CLIENT_ID/GMAIL_CLIENT_SECRET/GMAIL_REDIRECT_URI' : 'GDRIVE_CLIENT_ID/GDRIVE_CLIENT_SECRET/GDRIVE_REDIRECT_URI' })}</p>`
     : '';
   const connectAction = entry.requires_oauth
-    ? `<button type="button" class="oauth-connect-btn rounded-lg bg-gray-900 px-3 py-1.5 text-xs font-medium text-white hover:bg-gray-800 disabled:cursor-not-allowed disabled:opacity-40" data-connector-id="${entry.id}" ${entry.configured && entry.secret_key_set ? '' : 'disabled'}>Connect new account</button>`
+    ? `<button type="button" class="oauth-connect-btn rounded-lg bg-gray-900 px-3 py-1.5 text-xs font-medium text-white hover:bg-gray-800 disabled:cursor-not-allowed disabled:opacity-40" data-connector-id="${entry.id}" ${entry.configured && entry.secret_key_set ? '' : 'disabled'}>${th('resources.connectors.connectNew')}</button>`
     : '';
 
   return `<div class="connector-card rounded-xl border border-gray-200 bg-white p-4 shadow-card" data-connector-id="${entry.id}">
     <div class="flex flex-wrap items-center justify-between gap-2">
       <div>
         <h2 class="text-sm font-semibold text-gray-900">${escapeHtml(entry.display_name)}</h2>
-        <p class="text-xs text-gray-500">${entry.requires_oauth ? 'OAuth2, read-only' : 'IMAP, app password'}</p>
+        <p class="text-xs text-gray-500">${entry.requires_oauth ? th('resources.connectors.kindOauth') : th('resources.connectors.kindImap')}</p>
       </div>
       ${connectAction}
     </div>
     ${hint}
     ${!entry.requires_oauth ? imapConnectForm(entry.id) : ''}
     <div class="accounts-list mt-3 flex flex-col gap-2">
-      ${entry.connected_accounts.length ? entry.connected_accounts.map((a) => connectorAccountRow(entry.id, a)).join('') : '<p class="text-xs text-gray-400">No accounts connected yet.</p>'}
+      ${entry.connected_accounts.length ? entry.connected_accounts.map((a) => connectorAccountRow(entry.id, a)).join('') : `<p class="text-xs text-gray-400">${th('resources.connectors.noAccounts')}</p>`}
     </div>
   </div>`;
 }
@@ -871,24 +878,20 @@ async function loadConnectors() {
     const secretKeySet = entries[0]?.secret_key_set ?? true;
     const warning = secretKeySet
       ? ''
-      : `<div class="rounded-xl border border-amber-200 bg-amber-50 p-4 text-sm text-amber-800">
-          <code class="rounded bg-white px-1 py-0.5">CONNECTOR_SECRET_KEY</code> is not set on the server, so credentials can't be
-          stored yet. Generate one with <code class="rounded bg-white px-1 py-0.5">python -c "from connectors.credential_store import generate_secret_key; print(generate_secret_key())"</code>
-          and set it in <code class="rounded bg-white px-1 py-0.5">.env</code>.
-        </div>`;
+      : `<div class="rounded-xl border border-amber-200 bg-amber-50 p-4 text-sm text-amber-800">${t('resources.connectors.secretKeyWarnHtml')}</div>`;
     list.innerHTML = warning + entries.map(connectorCard).join('');
   } catch (err: any) {
-    list.innerHTML = `<p class="text-sm text-red-600">Cannot reach API at ${escapeHtml(apiBase)}: ${escapeHtml(err.message || '')}</p>`;
+    list.innerHTML = `<p class="text-sm text-red-600">${th('common.cannotReachApi')} ${escapeHtml(err.message || '')}</p>`;
   }
 }
 
 function connectorItemRow(item: ConnectorItem): string {
   return `<div class="connector-item flex items-start justify-between gap-3 rounded-lg border border-gray-100 p-2" data-item-id="${escapeHtml(item.id)}" data-item-title="${escapeHtml(item.title)}">
     <div class="min-w-0">
-      <p class="truncate text-xs font-medium text-gray-900">${escapeHtml(item.title || '(untitled)')}</p>
+      <p class="truncate text-xs font-medium text-gray-900">${escapeHtml(item.title || t('resources.connectors.untitled'))}</p>
       <p class="truncate text-xs text-gray-500">${escapeHtml(item.snippet || '')}</p>
     </div>
-    <button type="button" class="import-item-btn shrink-0 rounded-lg border border-gray-300 bg-white px-2 py-1 text-xs font-medium text-gray-700 hover:bg-gray-50">Import</button>
+    <button type="button" class="import-item-btn shrink-0 rounded-lg border border-gray-300 bg-white px-2 py-1 text-xs font-medium text-gray-700 hover:bg-gray-50">${th('resources.connectors.import')}</button>
   </div>`;
 }
 
@@ -901,9 +904,9 @@ document.getElementById('connectors-list')?.addEventListener('click', async (eve
     try {
       const result = await apiFetch<{ authorization_url: string }>(`/api/connectors/${oauthBtn.dataset.connectorId}/oauth/start`, { method: 'POST' });
       window.open(result.authorization_url, '_blank', 'noopener');
-      (window as any).showToast?.('Complete the sign-in in the new tab, then come back and refresh.', 'success');
+      (window as any).showToast?.(t('resources.connectors.oauthHint'), 'success');
     } catch (err: any) {
-      (window as any).showToast?.(err.message || 'Failed to start connection.', 'error');
+      (window as any).showToast?.(err.message || t('resources.connectors.startFailed'), 'error');
     } finally {
       oauthBtn.disabled = false;
     }
@@ -917,10 +920,10 @@ document.getElementById('connectors-list')?.addEventListener('click', async (eve
     disconnectBtn.disabled = true;
     try {
       await apiFetch(`/api/connectors/${connectorId}/accounts/${encodeURIComponent(accountLabel)}`, { method: 'DELETE' });
-      (window as any).showToast?.(`Disconnected ${accountLabel}.`, 'success');
+      (window as any).showToast?.(t('resources.db.disconnected', { name: accountLabel }), 'success');
       loadConnectors();
     } catch (err: any) {
-      (window as any).showToast?.(err.message || 'Failed to disconnect.', 'error');
+      (window as any).showToast?.(err.message || t('resources.db.disconnectFailed'), 'error');
       disconnectBtn.disabled = false;
     }
     return;
@@ -938,15 +941,15 @@ document.getElementById('connectors-list')?.addEventListener('click', async (eve
     }
     panel.classList.remove('hidden');
     panel.innerHTML = `<div class="flex items-center gap-2">
-      <input type="text" class="items-query flex-1 rounded-lg border border-gray-300 px-2 py-1.5 text-xs" placeholder="Search (optional)" />
-      <button type="button" class="items-search-btn rounded-lg bg-gray-900 px-2.5 py-1.5 text-xs font-medium text-white hover:bg-gray-800">Search</button>
+      <input type="text" class="items-query flex-1 rounded-lg border border-gray-300 px-2 py-1.5 text-xs" placeholder="${th('resources.connectors.searchPh')}" />
+      <button type="button" class="items-search-btn rounded-lg bg-gray-900 px-2.5 py-1.5 text-xs font-medium text-white hover:bg-gray-800">${th('common.search')}</button>
     </div>
     <div class="items-results mt-2 flex flex-col gap-1.5"></div>`;
 
     const runSearch = async () => {
       const query = (panel.querySelector('.items-query') as HTMLInputElement).value;
       const results = panel.querySelector('.items-results') as HTMLElement;
-      results.innerHTML = '<p class="text-xs text-gray-400">Loading…</p>';
+      results.innerHTML = `<p class="text-xs text-gray-400">${th('common.loading')}</p>`;
       try {
         const data = await apiFetch<{ items: ConnectorItem[] }>(`/api/connectors/${connectorId}/items`, {
           method: 'POST',
@@ -954,9 +957,9 @@ document.getElementById('connectors-list')?.addEventListener('click', async (eve
         });
         results.innerHTML = data.items.length
           ? data.items.map((i) => connectorItemRow(i)).join('')
-          : '<p class="text-xs text-gray-400">No items found.</p>';
+          : `<p class="text-xs text-gray-400">${th('resources.connectors.noItems')}</p>`;
       } catch (err: any) {
-        results.innerHTML = `<p class="text-xs text-red-600">${escapeHtml(err.message || 'Failed to list items.')}</p>`;
+        results.innerHTML = `<p class="text-xs text-red-600">${escapeHtml(err.message || t('resources.connectors.listItemsFailed'))}</p>`;
       }
     };
     panel.querySelector('.items-search-btn')?.addEventListener('click', runSearch);
@@ -971,18 +974,18 @@ document.getElementById('connectors-list')?.addEventListener('click', async (eve
     const { connectorId, accountLabel } = accountEl.dataset as { connectorId: string; accountLabel: string };
     const { itemId, itemTitle } = itemEl.dataset as { itemId: string; itemTitle: string };
     importBtn.disabled = true;
-    importBtn.textContent = 'Importing…';
+    importBtn.textContent = t('resources.connectors.importing');
     try {
       const result = await apiFetch<{ raw_path: string }>(`/api/connectors/${connectorId}/items/import`, {
         method: 'POST',
         body: JSON.stringify({ account_label: accountLabel, item_id: itemId, item_title: itemTitle }),
       });
-      (window as any).showToast?.(`Imported to ${result.raw_path}.`, 'success');
-      importBtn.textContent = 'Imported ✓';
+      (window as any).showToast?.(t('resources.connectors.importedTo', { path: result.raw_path }), 'success');
+      importBtn.textContent = t('resources.connectors.imported');
     } catch (err: any) {
-      (window as any).showToast?.(err.message || 'Failed to import.', 'error');
+      (window as any).showToast?.(err.message || t('resources.connectors.importFailed'), 'error');
       importBtn.disabled = false;
-      importBtn.textContent = 'Import';
+      importBtn.textContent = t('resources.connectors.import');
     }
   }
 });
@@ -1005,10 +1008,10 @@ document.getElementById('connectors-list')?.addEventListener('submit', async (ev
         password: (form.elements.namedItem('password') as HTMLInputElement).value,
       }),
     });
-    (window as any).showToast?.('Connected.', 'success');
+    (window as any).showToast?.(t('resources.connectors.connected'), 'success');
     loadConnectors();
   } catch (err: any) {
-    (window as any).showToast?.(err.message || 'Failed to connect.', 'error');
+    (window as any).showToast?.(err.message || t('resources.db.connectFailed'), 'error');
     submitBtn.disabled = false;
   }
 });
@@ -1030,7 +1033,7 @@ async function loadEmails() {
     const res = await fetch(`${apiBase}/api/emails`);
     const data = await res.json();
     if (!data.emails.length) {
-      container.innerHTML = '<p class="text-sm text-gray-400">No .eml sources found under data/raw/.</p>';
+      container.innerHTML = `<p class="text-sm text-gray-400">${th('resources.emails.none')}</p>`;
       return;
     }
     container.innerHTML = data.emails
@@ -1041,9 +1044,9 @@ async function loadEmails() {
           <p class="truncate text-sm font-medium text-gray-900">${escapeHtml(email.subject)}</p>
           <span class="shrink-0 rounded-full px-2 py-0.5 text-xs font-medium ${
             email.status === 'Processed' ? 'bg-emerald-50 text-emerald-700' : 'bg-amber-50 text-amber-700'
-          }">${escapeHtml(email.status)}</span>
+          }">${escapeHtml(statusText(email.status, 'resources.emails.status'))}</span>
         </div>
-        <p class="mt-1 text-xs text-gray-500">From ${escapeHtml(email.from ?? '')} · ${escapeHtml(email.date ?? '')}</p>
+        <p class="mt-1 text-xs text-gray-500">${th('resources.emails.fromLine', { from: email.from ?? '', date: email.date ?? '' })}</p>
         <p class="mt-2 text-sm text-gray-600">${escapeHtml(email.body_preview ?? '')}</p>
       </button>`,
       )
@@ -1053,7 +1056,7 @@ async function loadEmails() {
       btn.addEventListener('click', () => openEmail(btn.dataset.path ?? ''));
     });
   } catch {
-    container.innerHTML = `<p class="text-sm text-red-600">Cannot reach API at ${escapeHtml(apiBase)}.</p>`;
+    container.innerHTML = `<p class="text-sm text-red-600">${th('common.cannotReachApi')}</p>`;
   }
 }
 
@@ -1066,12 +1069,12 @@ async function openEmail(path: string) {
         <div class="flex items-center justify-between border-b border-gray-100 px-5 py-3">
           <h2 class="truncate text-sm font-medium text-gray-900">${escapeHtml(path)}</h2>
           <div class="flex shrink-0 items-center gap-1">
-            <button id="edit-email" class="rounded-lg px-2 py-1.5 text-xs font-medium text-gray-600 hover:bg-gray-100">Edit</button>
-            <button id="delete-email" class="rounded-lg px-2 py-1.5 text-xs font-medium text-red-600 hover:bg-red-50">Delete</button>
+            <button id="edit-email" class="rounded-lg px-2 py-1.5 text-xs font-medium text-gray-600 hover:bg-gray-100">${th('common.edit')}</button>
+            <button id="delete-email" class="rounded-lg px-2 py-1.5 text-xs font-medium text-red-600 hover:bg-red-50">${th('common.delete')}</button>
             <button id="close-email" class="rounded-lg p-1.5 text-gray-500 hover:bg-gray-100">✕</button>
           </div>
         </div>
-        <div class="flex-1 overflow-auto p-5 text-sm" id="email-body">Loading…</div>
+        <div class="flex-1 overflow-auto p-5 text-sm" id="email-body">${th('common.loading')}</div>
       </div>
     </div>`;
   const close = wireModalA11y(modal, () => {
@@ -1080,16 +1083,16 @@ async function openEmail(path: string) {
   });
   document.getElementById('close-email')!.addEventListener('click', close);
   document.getElementById('delete-email')!.addEventListener('click', async () => {
-    if (!confirm(`Delete this email (${path})? This cannot be undone.`)) return;
+    if (!confirm(t('resources.emails.confirmDelete', { path }))) return;
     try {
       const res = await fetch(`${apiBase}/api/emails/${path.split('/').map(encodeURIComponent).join('/')}`, {
         method: 'DELETE',
       });
-      if (!res.ok) throw new Error((await res.json().catch(() => null))?.detail || 'Delete failed');
+      if (!res.ok) throw new Error((await res.json().catch(() => null))?.detail || t('resources.emails.deleteFailed'));
       close();
       loadEmails();
     } catch (err: any) {
-      alert(`Error: ${err.message}`);
+      alert(t('resources.emails.error', { message: err.message }));
     }
   });
 
@@ -1097,14 +1100,14 @@ async function openEmail(path: string) {
     const res = await fetch(`${apiBase}/api/emails/${path.split('/').map(encodeURIComponent).join('/')}`);
     const data = await res.json();
     document.getElementById('email-body')!.innerHTML = `
-      <p class="mb-1"><strong>From:</strong> ${escapeHtml(data.from ?? '')}</p>
-      <p class="mb-1"><strong>To:</strong> ${escapeHtml((data.to ?? []).join(', '))}</p>
-      ${data.cc?.length ? `<p class="mb-1"><strong>Cc:</strong> ${escapeHtml(data.cc.join(', '))}</p>` : ''}
-      <p class="mb-3"><strong>Date:</strong> ${escapeHtml(data.date ?? '')}</p>
+      <p class="mb-1"><strong>${th('resources.emails.label.from')}</strong> ${escapeHtml(data.from ?? '')}</p>
+      <p class="mb-1"><strong>${th('resources.emails.label.to')}</strong> ${escapeHtml((data.to ?? []).join(', '))}</p>
+      ${data.cc?.length ? `<p class="mb-1"><strong>${th('resources.emails.label.cc')}</strong> ${escapeHtml(data.cc.join(', '))}</p>` : ''}
+      <p class="mb-3"><strong>${th('resources.emails.label.date')}</strong> ${escapeHtml(data.date ?? '')}</p>
       <pre class="whitespace-pre-wrap rounded-lg bg-gray-50 p-3 text-xs">${escapeHtml(data.body ?? '')}</pre>`;
     document.getElementById('edit-email')!.addEventListener('click', () => openEmailForm(data));
   } catch (err: any) {
-    document.getElementById('email-body')!.textContent = `Error: ${err.message}`;
+    document.getElementById('email-body')!.textContent = t('resources.emails.error', { message: err.message });
   }
 }
 
@@ -1116,38 +1119,38 @@ function openEmailForm(existing?: any) {
     <div class="fixed inset-0 z-50 flex items-center justify-center bg-gray-900/40 p-4">
       <div class="flex max-h-[85vh] w-full max-w-2xl flex-col overflow-hidden rounded-xl bg-white shadow-panel">
         <div class="flex items-center justify-between border-b border-gray-100 px-5 py-3">
-          <h2 class="text-sm font-medium text-gray-900">${isEdit ? 'Edit email' : 'Add email'}</h2>
+          <h2 class="text-sm font-medium text-gray-900">${isEdit ? th('resources.emails.form.edit') : th('resources.emails.form.add')}</h2>
           <button id="close-form" class="rounded-lg p-1.5 text-gray-500 hover:bg-gray-100">✕</button>
         </div>
         <form id="email-form" class="flex-1 space-y-3 overflow-auto p-5 text-sm">
           <div>
-            <label class="mb-1 block text-xs font-medium text-gray-600">Subject</label>
+            <label class="mb-1 block text-xs font-medium text-gray-600">${th('resources.emails.form.subject')}</label>
             <input name="subject" required class="w-full rounded-lg border border-gray-200 px-3 py-2 text-sm" value="${escapeHtml(existing?.subject ?? '')}" />
           </div>
           <div>
-            <label class="mb-1 block text-xs font-medium text-gray-600">From</label>
+            <label class="mb-1 block text-xs font-medium text-gray-600">${th('resources.emails.form.from')}</label>
             <input name="from" required class="w-full rounded-lg border border-gray-200 px-3 py-2 text-sm" value="${escapeHtml(existing?.from ?? '')}" />
           </div>
           <div>
-            <label class="mb-1 block text-xs font-medium text-gray-600">To <span class="font-normal text-gray-400">(comma-separated)</span></label>
+            <label class="mb-1 block text-xs font-medium text-gray-600">${th('resources.emails.form.to')} <span class="font-normal text-gray-400">${th('resources.emails.form.commaSep')}</span></label>
             <input name="to" class="w-full rounded-lg border border-gray-200 px-3 py-2 text-sm" value="${escapeHtml((existing?.to ?? []).join(', '))}" />
           </div>
           <div>
-            <label class="mb-1 block text-xs font-medium text-gray-600">Cc <span class="font-normal text-gray-400">(comma-separated)</span></label>
+            <label class="mb-1 block text-xs font-medium text-gray-600">${th('resources.emails.form.cc')} <span class="font-normal text-gray-400">${th('resources.emails.form.commaSep')}</span></label>
             <input name="cc" class="w-full rounded-lg border border-gray-200 px-3 py-2 text-sm" value="${escapeHtml((existing?.cc ?? []).join(', '))}" />
           </div>
           <div>
-            <label class="mb-1 block text-xs font-medium text-gray-600">Date <span class="font-normal text-gray-400">(optional — RFC 2822, e.g. Tue, 02 Jun 2026 09:14:00 -0700)</span></label>
+            <label class="mb-1 block text-xs font-medium text-gray-600">${th('resources.emails.form.date')} <span class="font-normal text-gray-400">${th('resources.emails.form.dateHint')}</span></label>
             <input name="date" class="w-full rounded-lg border border-gray-200 px-3 py-2 text-sm" value="${escapeHtml(existing?.date ?? '')}" />
           </div>
           <div>
-            <label class="mb-1 block text-xs font-medium text-gray-600">Body</label>
+            <label class="mb-1 block text-xs font-medium text-gray-600">${th('resources.emails.form.body')}</label>
             <textarea name="body" rows="8" class="w-full rounded-lg border border-gray-200 px-3 py-2 text-sm">${escapeHtml(existing?.body ?? '')}</textarea>
           </div>
           <p id="form-error" class="hidden text-sm text-red-600"></p>
           <div class="flex justify-end gap-2 pt-2">
-            <button type="button" id="cancel-form" class="rounded-lg px-3 py-2 text-sm font-medium text-gray-600 hover:bg-gray-100">Cancel</button>
-            <button type="submit" class="rounded-lg bg-accent px-4 py-2 text-sm font-medium text-white hover:bg-accent-dark">Save</button>
+            <button type="button" id="cancel-form" class="rounded-lg px-3 py-2 text-sm font-medium text-gray-600 hover:bg-gray-100">${th('common.cancel')}</button>
+            <button type="submit" class="rounded-lg bg-accent px-4 py-2 text-sm font-medium text-white hover:bg-accent-dark">${th('common.save')}</button>
           </div>
         </form>
       </div>
@@ -1185,12 +1188,12 @@ function openEmailForm(existing?: any) {
       });
       if (!res.ok) {
         const detail = await res.json().catch(() => null);
-        throw new Error(detail?.detail || `Save failed (${res.status})`);
+        throw new Error(detail?.detail || t('resources.emails.saveFailedStatus', { status: res.status }));
       }
       close();
       loadEmails();
     } catch (err: any) {
-      errorEl.textContent = `Error: ${err.message}`;
+      errorEl.textContent = t('resources.emails.error', { message: err.message });
       errorEl.classList.remove('hidden');
     }
   });

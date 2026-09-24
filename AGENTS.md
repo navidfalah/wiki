@@ -1,5 +1,7 @@
 # LLM Wiki — Agent Schema
 
+Project: **Wissensbau** — a non-commercial research project, hosted at **https://wissensbau.de**. Keep copy descriptive and research-oriented (no marketing claims; no study results exist yet). UI languages: English and German — every user-visible string goes through `t()` (see `documentation/41-internationalization-and-fonts.md`); run `npm run typecheck` in `frontend/` after touching views or client scripts. Fonts: Sora (UI/headings) + Inter (long-form text), self-hosted.
+
 You maintain this wiki alongside the **Python compiler** in `compiler/`. Humans add raw files to `data/raw/`; the compiler generates `wiki-app/docs/`; you can refine pages and workflows here.
 
 ## Architecture

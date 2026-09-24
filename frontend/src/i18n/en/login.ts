@@ -1,0 +1,15 @@
+export const login = {
+  'login.title': 'Sign in',
+  'login.subtitle': 'Sign in to continue.',
+  'login.username': 'Username or email',
+  'login.password': 'Password',
+  'login.submit': 'Sign in',
+  'login.back': '← Back to wissensbau.de',
+  'login.errorInvalid': 'Invalid username or password.',
+  'login.errorUnreachable': 'Cannot reach the API right now. Please try again in a moment.',
+  'login.errorThrottled_one': 'Too many failed sign-in attempts. Try again in {count} minute.',
+  'login.errorThrottled_other': 'Too many failed sign-in attempts. Try again in {count} minutes.',
+  'login.defaultHint.intro': 'Default login:',
+  'login.defaultHint.setEnvHtml': 'set <code class="rounded bg-white px-1 py-0.5">ADMIN_USERNAME</code>/<code class="rounded bg-white px-1 py-0.5">ADMIN_PASSWORD</code> before first boot to pick your own, or change it under the Admin panel once signed in.',
+  'login.defaultHint.fill': 'Fill in default login',
+} as const;

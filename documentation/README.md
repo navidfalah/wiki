@@ -18,6 +18,8 @@ Detailed project documentation, split by topic. Start with [01-overview.md](./01
 | [08-llm-and-heuristics.md](./08-llm-and-heuristics.md) | API client, cache, retries, LLM-only requirement |
 | [09-test-data-generation.md](./09-test-data-generation.md) | All four generator scripts, markers, CLI flags |
 | [10-data-layout-and-state.md](./10-data-layout-and-state.md) | `data/raw/`, state.json, link_overrides, temp_output |
+| [41-internationalization-and-fonts.md](./41-internationalization-and-fonts.md) | English/German UI, how to add translations, self-hosted Sora/Inter fonts, the admin panel |
+| [40-production-deployment.md](./40-production-deployment.md) | Hosting at wissensbau.de: Caddy + Docker Compose, sizing, resource limits, security, backups |
 | [11-wiki-app-and-dashboards.md](./11-wiki-app-and-dashboards.md) | Docusaurus, React pages, components, routes |
 | [12-api-server.md](./12-api-server.md) | FastAPI endpoints, SSE builds, CORS |
 | [13-configuration.md](./13-configuration.md) | `.env`, Docusaurus config, GitHub Pages env vars |

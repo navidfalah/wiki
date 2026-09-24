@@ -85,9 +85,19 @@ export function deleteSession(token: string | undefined): void {
  * deleted user's token keeps authenticating (getSessionUser trusts the
  * cached username/role snapshot from login, it never re-checks the user
  * still exists) and a password reset doesn't invalidate whatever tokens
- * were already issued under the old password. */
-export function deleteSessionsForUser(userId: string): void {
+ * were already issued under the old password. Returns how many sessions
+ * were removed, for the admin panel's confirmation toast. */
+export function deleteSessionsForUser(userId: string): number {
   const data = load();
+  const before = data.sessions.length;
   data.sessions = data.sessions.filter((s) => s.user_id !== userId);
-  save(data);
+  if (data.sessions.length !== before) save(data);
+  return before - data.sessions.length;
+}
+
+/** Active (unexpired) session count per user id, for the admin panel. Never exposes tokens. */
+export function countActiveSessionsByUser(): Record<string, number> {
+  const counts: Record<string, number> = {};
+  for (const s of pruneExpired(load()).sessions) counts[s.user_id] = (counts[s.user_id] ?? 0) + 1;
+  return counts;
 }

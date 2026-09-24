@@ -4,7 +4,7 @@ import { PUBLIC_API_URL } from '../config';
 const router = Router();
 
 router.get('/', (_req, res) => {
-  res.render('dashboard', { apiBase: PUBLIC_API_URL });
+  res.render('dashboard', { apiBase: PUBLIC_API_URL, title: res.locals.t('nav.dashboard'), active: 'Dashboard' });
 });
 
 export default router;

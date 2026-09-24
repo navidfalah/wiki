@@ -1,56 +1,54 @@
 <%- include('partials/head', { title, apiBase, active }) %>
 
-<h1 class="text-2xl font-semibold tracking-tight text-gray-900">Settings</h1>
+<h1 class="text-2xl font-semibold tracking-tight text-gray-900"><%= t('settings.title') %></h1>
 <p class="mt-1 max-w-2xl text-sm text-gray-600">
-  Configure LLM providers, API keys, model choice, sampling (temperature, top-p, max tokens, reasoning effort), and the local Gemma model used by the compiler pipeline.
+  <%= t('settings.intro') %>
 </p>
 
 <div class="mt-6 grid gap-6 lg:grid-cols-[minmax(0,1.3fr)_minmax(0,1fr)]">
   <section class="rounded-xl border border-gray-200 bg-white shadow-card">
     <div class="flex items-center justify-between border-b border-gray-100 px-5 py-4">
       <div>
-        <h2 class="text-base font-semibold text-gray-900">API providers</h2>
-        <p class="mt-0.5 text-xs text-gray-500">Add as many keys as you use -- OpenAI, Gemini, local Gemma, or any OpenAI-compatible endpoint.</p>
+        <h2 class="text-base font-semibold text-gray-900"><%= t('settings.providers') %></h2>
+        <p class="mt-0.5 text-xs text-gray-500"><%= t('settings.providersHint') %></p>
       </div>
       <button id="add-profile-btn" type="button" class="shrink-0 rounded-lg bg-gray-900 px-3 py-1.5 text-xs font-medium text-white hover:bg-gray-700">
-        + Add provider
+        <%= t('settings.addProvider') %>
       </button>
     </div>
     <div id="profiles-list" class="divide-y divide-gray-100">
-      <p class="p-5 text-sm text-gray-500">Loading…</p>
+      <p class="p-5 text-sm text-gray-500"><%= t('common.loading') %></p>
     </div>
   </section>
 
   <div class="flex flex-col gap-6">
     <section class="rounded-xl border border-gray-200 bg-white shadow-card">
       <div class="border-b border-gray-100 px-5 py-4">
-        <h2 class="text-base font-semibold text-gray-900">Assignments</h2>
-        <p class="mt-0.5 text-xs text-gray-500">Which provider handles each part of the pipeline.</p>
+        <h2 class="text-base font-semibold text-gray-900"><%= t('settings.assignments') %></h2>
+        <p class="mt-0.5 text-xs text-gray-500"><%= t('settings.assignmentsHint') %></p>
       </div>
       <div id="assignments-form" class="flex flex-col gap-3 p-5">
-        <p class="text-sm text-gray-500">Loading…</p>
+        <p class="text-sm text-gray-500"><%= t('common.loading') %></p>
       </div>
     </section>
 
     <section class="rounded-xl border border-gray-200 bg-white shadow-card">
       <div class="flex items-center justify-between border-b border-gray-100 px-5 py-4">
         <div>
-          <h2 class="text-base font-semibold text-gray-900">Local Gemma (Docker)</h2>
+          <h2 class="text-base font-semibold text-gray-900"><%= t('settings.localGemma') %></h2>
           <p class="mt-0.5 text-xs text-gray-500">
-            Settings for the <code class="rounded bg-gray-100 px-1 py-0.5">local-llm</code> container --
-            <code class="rounded bg-gray-100 px-1 py-0.5">docker compose --profile local-llm up -d --build</code>
-            to apply changes.
+            <%- t('settings.localHintHtml') %>
           </p>
         </div>
-        <span id="local-llm-status" class="shrink-0 rounded-full bg-gray-100 px-2 py-0.5 text-xs font-medium text-gray-500">Checking…</span>
+        <span id="local-llm-status" class="shrink-0 rounded-full bg-gray-100 px-2 py-0.5 text-xs font-medium text-gray-500"><%= t('settings.checking') %></span>
       </div>
       <div id="local-llm-form" class="flex flex-col gap-3 p-5">
-        <p class="text-sm text-gray-500">Loading…</p>
+        <p class="text-sm text-gray-500"><%= t('common.loading') %></p>
       </div>
     </section>
 
     <button id="save-settings-btn" type="button" class="rounded-lg bg-accent px-4 py-2 text-sm font-medium text-white hover:bg-accent-dark">
-      Save settings
+      <%= t('settings.saveAll') %>
     </button>
   </div>
 </div>
@@ -58,43 +56,43 @@
 <template id="profile-row-template">
   <div class="profile-row px-5 py-4" data-id="">
     <div class="flex flex-wrap items-center gap-2">
-      <input type="text" data-field="label" placeholder="Label (e.g. Gemini prod)" aria-label="Profile label" class="min-w-0 flex-1 rounded-lg border border-gray-300 px-2.5 py-1.5 text-sm focus:border-accent focus:outline-none focus:ring-2 focus:ring-accent/20" />
-      <select data-field="provider" aria-label="Provider" class="rounded-lg border border-gray-300 px-2 py-1.5 text-sm focus:border-accent focus:outline-none focus:ring-2 focus:ring-accent/20">
-        <option value="openai">OpenAI</option>
-        <option value="gemini">Gemini</option>
-        <option value="local">Local Gemma</option>
-        <option value="custom">Custom</option>
+      <input aria-label="<%= t('settings.provider.label') %>" type="text" data-field="label" placeholder="<%= t('settings.provider.label') %>" class="min-w-0 flex-1 rounded-lg border border-gray-300 px-2.5 py-1.5 text-sm focus:border-accent focus:outline-none focus:ring-2 focus:ring-accent/20" />
+      <select data-field="provider" class="rounded-lg border border-gray-300 px-2 py-1.5 text-sm focus:border-accent focus:outline-none focus:ring-2 focus:ring-accent/20">
+        <option value="openai"><%= t('settings.provider.openai') %></option>
+        <option value="gemini"><%= t('settings.provider.gemini') %></option>
+        <option value="local"><%= t('settings.provider.local') %></option>
+        <option value="custom"><%= t('settings.provider.custom') %></option>
       </select>
-      <button type="button" data-action="remove" class="rounded-lg px-2 py-1.5 text-xs font-medium text-red-600 hover:bg-red-50">Remove</button>
+      <button type="button" data-action="remove" class="rounded-lg px-2 py-1.5 text-xs font-medium text-red-600 hover:bg-red-50"><%= t('settings.remove') %></button>
     </div>
     <div class="mt-2 grid gap-2 sm:grid-cols-2">
-      <input type="text" data-field="base_url" placeholder="Base URL" aria-label="Base URL" class="rounded-lg border border-gray-300 px-2.5 py-1.5 text-sm focus:border-accent focus:outline-none focus:ring-2 focus:ring-accent/20" />
-      <input type="text" data-field="model" placeholder="Model" autocomplete="off" aria-label="Model" class="rounded-lg border border-gray-300 px-2.5 py-1.5 text-sm focus:border-accent focus:outline-none focus:ring-2 focus:ring-accent/20" />
+      <input aria-label="<%= t('settings.baseUrl') %>" type="text" data-field="base_url" placeholder="<%= t('settings.baseUrl') %>" class="rounded-lg border border-gray-300 px-2.5 py-1.5 text-sm focus:border-accent focus:outline-none focus:ring-2 focus:ring-accent/20" />
+      <input aria-label="<%= t('settings.model') %>" type="text" data-field="model" placeholder="<%= t('settings.model') %>" autocomplete="off" class="rounded-lg border border-gray-300 px-2.5 py-1.5 text-sm focus:border-accent focus:outline-none focus:ring-2 focus:ring-accent/20" />
     </div>
-    <input type="password" data-field="api_key" placeholder="API key" autocomplete="off" aria-label="API key" class="mt-2 w-full rounded-lg border border-gray-300 px-2.5 py-1.5 text-sm focus:border-accent focus:outline-none focus:ring-2 focus:ring-accent/20" />
+    <input aria-label="<%= t('settings.apiKey') %>" type="password" data-field="api_key" placeholder="<%= t('settings.apiKey') %>" autocomplete="off" class="mt-2 w-full rounded-lg border border-gray-300 px-2.5 py-1.5 text-sm focus:border-accent focus:outline-none focus:ring-2 focus:ring-accent/20" />
     <p data-field="key-hint" class="mt-1 text-xs text-gray-400"></p>
 
     <details class="mt-2 rounded-lg border border-gray-100 bg-gray-50 px-3 py-2">
-      <summary class="cursor-pointer select-none text-xs font-medium text-gray-600">Advanced generation settings</summary>
+      <summary class="cursor-pointer select-none text-xs font-medium text-gray-600"><%= t('settings.advanced') %></summary>
       <div class="mt-2 grid gap-2 sm:grid-cols-2">
         <label class="flex flex-col gap-1">
-          <span class="text-xs font-medium text-gray-600">Temperature (0-2)</span>
+          <span class="text-xs font-medium text-gray-600"><%= t('settings.temperature') %></span>
           <input type="number" data-field="temperature" min="0" max="2" step="0.1" class="rounded-lg border border-gray-300 px-2.5 py-1.5 text-sm focus:border-accent focus:outline-none focus:ring-2 focus:ring-accent/20" />
         </label>
         <label class="flex flex-col gap-1">
-          <span class="text-xs font-medium text-gray-600">Top-p (0-1, optional)</span>
-          <input type="number" data-field="top_p" min="0" max="1" step="0.05" placeholder="Provider default" class="rounded-lg border border-gray-300 px-2.5 py-1.5 text-sm focus:border-accent focus:outline-none focus:ring-2 focus:ring-accent/20" />
+          <span class="text-xs font-medium text-gray-600"><%= t('settings.topP') %></span>
+          <input type="number" data-field="top_p" min="0" max="1" step="0.05" placeholder="<%= t('settings.providerDefault') %>" class="rounded-lg border border-gray-300 px-2.5 py-1.5 text-sm focus:border-accent focus:outline-none focus:ring-2 focus:ring-accent/20" />
         </label>
         <label class="flex flex-col gap-1">
-          <span class="text-xs font-medium text-gray-600">Max output tokens (optional)</span>
-          <input type="number" data-field="max_tokens" min="1" step="1" placeholder="Provider default" class="rounded-lg border border-gray-300 px-2.5 py-1.5 text-sm focus:border-accent focus:outline-none focus:ring-2 focus:ring-accent/20" />
+          <span class="text-xs font-medium text-gray-600"><%= t('settings.maxTokens') %></span>
+          <input type="number" data-field="max_tokens" min="1" step="1" placeholder="<%= t('settings.providerDefault') %>" class="rounded-lg border border-gray-300 px-2.5 py-1.5 text-sm focus:border-accent focus:outline-none focus:ring-2 focus:ring-accent/20" />
         </label>
         <label class="flex flex-col gap-1">
-          <span class="text-xs font-medium text-gray-600">Reasoning effort</span>
+          <span class="text-xs font-medium text-gray-600"><%= t('settings.reasoning') %></span>
           <select data-field="reasoning_effort" class="rounded-lg border border-gray-300 px-2.5 py-1.5 text-sm focus:border-accent focus:outline-none focus:ring-2 focus:ring-accent/20"></select>
         </label>
       </div>
-      <p class="mt-1.5 text-xs text-gray-400">Reasoning effort only applies to reasoning models (e.g. OpenAI's o-series / gpt-5-thinking) -- leave it off for everything else.</p>
+      <p class="mt-1.5 text-xs text-gray-400"><%= t('settings.reasoningHint') %></p>
     </details>
   </div>
 </template>

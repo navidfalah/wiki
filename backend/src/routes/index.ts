@@ -5,6 +5,7 @@ import multer from 'multer';
 
 import { INDEX_JSON, OUTPUT_DIR, RAW_DIR, REVIEW_REPORT_PATH, STATE_FILE, STATIC_MEDIA_DIR, TEMP_OUTPUT_DIR } from '../paths';
 import { HttpError, wrap } from '../lib/httpError';
+import { LoginThrottle } from '../lib/loginThrottle';
 import { buildAnalytics, getTagDetail } from '../lib/analytics';
 import { buildAttentionReport } from '../lib/attentionEngine';
 import {
@@ -18,13 +19,23 @@ import {
   setChatSessionCorpusSource,
   setChatSessionLlmProfile,
   setChatSessionResourceScope,
+  truncateChatSession,
 } from '../lib/chatSessions';
 import { listEvents, logEvent } from '../lib/activityLog';
 import { listConnectorEvents, logConnectorEvent } from '../lib/connectorActivity';
 import { describeLlmBackend } from '../lib/llmBackend';
 import { requireAdmin, requireAuth } from '../lib/authMiddleware';
-import { createSession, deleteSession } from '../lib/sessions';
-import { createUser, deleteUser, ensureBootstrapAdmin, listUsers, UserError, verifyPassword } from '../lib/users';
+import { countActiveSessionsByUser, createSession, deleteSession, deleteSessionsForUser } from '../lib/sessions';
+import {
+  createUser,
+  deleteUser,
+  ensureBootstrapAdmin,
+  listUsers,
+  resetPasswordById,
+  setRole,
+  UserError,
+  verifyPassword,
+} from '../lib/users';
 import { loadLlmSettings, LlmSettingsError, saveLlmSettings, toPublicSettings } from '../lib/llmSettings';
 import { CompanySettingsError, loadCompanySettings, saveCompanySettings } from '../lib/companySettings';
 import { loadPipelineSettings, PipelineSettingsError, savePipelineSettings } from '../lib/pipelineSettings';
@@ -81,6 +92,8 @@ function managedNames(): Set<string> {
 
 const upload = multer({ storage: multer.memoryStorage(), limits: { fileSize: 25 * 1024 * 1024, files: 20 } });
 
+const loginThrottle = new LoginThrottle();
+
 export function registerRoutes(app: Express): void {
   syncSymlinks();
   ensureBootstrapAdmin();
@@ -97,14 +110,25 @@ export function registerRoutes(app: Express): void {
       const username = String(req.body?.username ?? '').trim();
       const password = String(req.body?.password ?? '');
       if (!username || !password) throw new HttpError(400, 'Username and password are required');
+      // The frontend proxy stamps the real client address into X-Client-IP
+      // (overwriting whatever the browser sent); direct calls fall back to
+      // the socket address.
+      const clientIp = String(req.headers['x-client-ip'] ?? req.socket.remoteAddress ?? 'unknown');
+      const retryAfter = loginThrottle.retryAfterSeconds(clientIp, username);
+      if (retryAfter > 0) {
+        res.setHeader('Retry-After', String(retryAfter));
+        throw new HttpError(429, `Too many failed sign-in attempts. Try again in ${Math.ceil(retryAfter / 60)} min.`);
+      }
       const user = verifyPassword(username, password);
       if (!user) {
+        loginThrottle.recordFailure(clientIp, username);
         logEvent(username || '(blank)', 'Failed login attempt', `Unknown username or wrong password`, {
           level: 'warn',
           category: 'auth',
         });
         throw new HttpError(401, 'Invalid username or password');
       }
+      loginThrottle.recordSuccess(clientIp);
       const publicUser = { id: user.id, username: user.username, role: user.role, created_at: user.created_at };
       const token = createSession(publicUser);
       logEvent(publicUser.username, 'Logged in');
@@ -150,7 +174,21 @@ export function registerRoutes(app: Express): void {
     '/api/users',
     requireAdmin,
     wrap((_req, res) => {
-      res.json({ users: listUsers() });
+      const sessionCounts = countActiveSessionsByUser();
+      res.json({ users: listUsers().map((u) => ({ ...u, active_sessions: sessionCounts[u.id] ?? 0 })) });
+    }),
+  );
+
+  // Recent sign-in / account-management events for the admin panel -- a
+  // filtered view of the same activity log the Logs page shows.
+  app.get(
+    '/api/admin/auth-events',
+    requireAdmin,
+    wrap((_req, res) => {
+      const events = listEvents(1000)
+        .filter((e) => e.category === 'auth' || /login|logged|user|password|session/i.test(e.action))
+        .slice(0, 30);
+      res.json({ events });
     }),
   );
 
@@ -172,12 +210,53 @@ export function registerRoutes(app: Express): void {
     }),
   );
 
+  // Partial update: { role?, password? }. Either change signs the user out
+  // everywhere -- a demoted admin must not keep an admin session (roles are
+  // snapshotted into the session at login), and a reset password should
+  // invalidate whoever might have known the old one.
+  app.put(
+    '/api/users/:id',
+    requireAdmin,
+    wrap((req, res) => {
+      const { role, password } = req.body ?? {};
+      if (role === undefined && password === undefined) throw new HttpError(400, "Provide 'role' and/or 'password'");
+      if (role !== undefined && role !== 'admin' && role !== 'user') throw new HttpError(400, "'role' must be 'admin' or 'user'");
+      try {
+        let user;
+        if (role !== undefined) {
+          user = setRole(req.params.id, role);
+          logEvent(req.user?.username, `Changed role of user ${user.username} to ${role}`);
+        }
+        if (password !== undefined) {
+          user = resetPasswordById(req.params.id, String(password));
+          logEvent(req.user?.username, `Reset password of user ${user.username}`);
+        }
+        const revoked = deleteSessionsForUser(req.params.id);
+        res.json({ user, sessions_revoked: revoked });
+      } catch (err) {
+        if (err instanceof UserError) throw new HttpError(400, err.message);
+        throw err;
+      }
+    }),
+  );
+
+  app.delete(
+    '/api/users/:id/sessions',
+    requireAdmin,
+    wrap((req, res) => {
+      const revoked = deleteSessionsForUser(req.params.id);
+      logEvent(req.user?.username, `Signed user ${req.params.id} out of ${revoked} session(s)`);
+      res.json({ sessions_revoked: revoked });
+    }),
+  );
+
   app.delete(
     '/api/users/:id',
     requireAdmin,
     wrap((req, res) => {
       try {
         deleteUser(req.params.id, req.user!.id);
+        deleteSessionsForUser(req.params.id);
         logEvent(req.user?.username, `Deleted user ${req.params.id}`);
         res.json({ removed: true, id: req.params.id });
       } catch (err) {
@@ -925,6 +1004,21 @@ export function registerRoutes(app: Express): void {
       if (!deleteChatSession(req.params.id)) throw new HttpError(404, `Chat session not found: ${req.params.id}`);
       logEvent(req.user?.username, 'Deleted chat session', req.params.id);
       res.json({ removed: true, id: req.params.id });
+    }),
+  );
+
+  // Backs "edit" and "resend" on a past user message -- the client drops
+  // that message and everything after it (its own reply included), then
+  // either re-populates the composer (edit) or immediately resubmits the
+  // same text (resend) through the normal /stream endpoint.
+  app.post(
+    '/api/chat/sessions/:id/truncate',
+    wrap((req, res) => {
+      const keep = Number(req.body?.keep);
+      if (!Number.isInteger(keep) || keep < 0) throw new HttpError(400, "'keep' must be a non-negative integer");
+      const session = truncateChatSession(req.params.id, keep);
+      if (!session) throw new HttpError(404, `Chat session not found or 'keep' out of range: ${req.params.id}`);
+      res.json(session);
     }),
   );
 

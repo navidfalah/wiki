@@ -43,7 +43,7 @@ router.get('/', async (req, res, next) => {
   try {
     const pages = await loadPageList(getToken(req));
     const folders = groupByCategory(pages);
-    res.render('wiki', { apiBase: PUBLIC_API_URL, title: 'Wiki', active: 'Wiki', pages, folders });
+    res.render('wiki', { apiBase: PUBLIC_API_URL, title: res.locals.t('wiki.title'), active: 'Wiki', pages, folders });
   } catch (err) {
     next(err);
   }
@@ -59,7 +59,7 @@ router.get('/:slug(*)/download', async (req, res, next) => {
     res.send(doc.body);
   } catch (err: any) {
     if (isNotFound(err)) {
-      res.status(404).send('Not found');
+      res.status(404).send(res.locals.t('common.notFound'));
       return;
     }
     next(err);
@@ -72,14 +72,14 @@ router.get('/:slug(*)/edit', async (req, res, next) => {
     const doc = await apiGet<{ title: string; body: string; tags: string[] }>(`/api/docs/${slug}.md`, getToken(req));
     res.render('wiki-edit', {
       apiBase: PUBLIC_API_URL,
-      title: `Edit · ${doc.title}`,
+      title: res.locals.t('wiki.editTitle', { title: doc.title }),
       active: 'Wiki',
       slug,
       doc,
     });
   } catch (err: any) {
     if (isNotFound(err)) {
-      res.status(404).send('Not found');
+      res.status(404).send(res.locals.t('common.notFound'));
       return;
     }
     next(err);
@@ -102,7 +102,7 @@ router.get('/:slug(*)', async (req, res, next) => {
     });
   } catch (err: any) {
     if (isNotFound(err)) {
-      res.status(404).send('Not found');
+      res.status(404).send(res.locals.t('common.notFound'));
       return;
     }
     next(err);

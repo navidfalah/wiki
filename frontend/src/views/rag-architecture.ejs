@@ -1,25 +1,24 @@
 <%- include('partials/head', { title, apiBase, active }) %>
 
-<h1 class="text-2xl font-semibold tracking-tight text-gray-900">RAG Architecture</h1>
+<h1 class="text-2xl font-semibold tracking-tight text-gray-900"><%= t('rag-architecture.title') %></h1>
 <p class="mt-1 max-w-2xl text-sm text-gray-600">
-  Choose how <a href="/chat" class="text-generated underline">Chat</a> retrieves and answers from the compiled wiki.
-  Changes apply to the next question asked -- no rebuild required.
+  <%- t('rag-architecture.introHtml') %>
 </p>
 
 <section class="mt-6 rounded-xl border border-gray-200 bg-white shadow-card">
   <div class="border-b border-gray-100 px-5 py-4">
-    <h2 class="text-base font-semibold text-gray-900">Presets</h2>
-    <p class="mt-0.5 text-xs text-gray-500">Save the configuration below under a name, then switch between saved architectures without re-entering every field.</p>
+    <h2 class="text-base font-semibold text-gray-900"><%= t('rag-architecture.presets') %></h2>
+    <p class="mt-0.5 text-xs text-gray-500"><%= t('rag-architecture.presetsHint') %></p>
   </div>
   <div class="flex flex-wrap items-center gap-2 p-5">
     <select id="rag-preset-select" class="min-w-[10rem] flex-1 rounded-lg border border-gray-300 px-2.5 py-1.5 text-sm focus:border-accent focus:outline-none focus:ring-2 focus:ring-accent/20">
-      <option value="">No presets saved yet</option>
+      <option value=""><%= t('rag-architecture.presetNone') %></option>
     </select>
-    <button id="rag-preset-load-btn" type="button" class="rounded-lg border border-gray-300 bg-white px-3 py-1.5 text-sm font-medium text-gray-700 hover:bg-gray-50" disabled>Load</button>
-    <button id="rag-preset-delete-btn" type="button" class="rounded-lg border border-red-300 bg-white px-3 py-1.5 text-sm font-medium text-red-600 hover:bg-red-50" disabled>Delete</button>
+    <button id="rag-preset-load-btn" type="button" class="rounded-lg border border-gray-300 bg-white px-3 py-1.5 text-sm font-medium text-gray-700 hover:bg-gray-50" disabled><%= t('rag-architecture.load') %></button>
+    <button id="rag-preset-delete-btn" type="button" class="rounded-lg border border-red-300 bg-white px-3 py-1.5 text-sm font-medium text-red-600 hover:bg-red-50" disabled><%= t('rag-architecture.delete') %></button>
     <span class="mx-1 h-6 w-px bg-gray-200"></span>
-    <input id="rag-preset-name-input" type="text" placeholder="New preset name" class="min-w-[10rem] flex-1 rounded-lg border border-gray-300 px-2.5 py-1.5 text-sm focus:border-accent focus:outline-none focus:ring-2 focus:ring-accent/20" />
-    <button id="rag-preset-save-btn" type="button" class="rounded-lg bg-accent px-3 py-1.5 text-sm font-medium text-white hover:bg-accent-dark">Save as preset</button>
+    <input id="rag-preset-name-input" type="text" placeholder="<%= t('rag-architecture.presetNamePh') %>" class="min-w-[10rem] flex-1 rounded-lg border border-gray-300 px-2.5 py-1.5 text-sm focus:border-accent focus:outline-none focus:ring-2 focus:ring-accent/20" />
+    <button id="rag-preset-save-btn" type="button" class="rounded-lg bg-accent px-3 py-1.5 text-sm font-medium text-white hover:bg-accent-dark"><%= t('rag-architecture.saveAsPreset') %></button>
   </div>
   <p id="rag-preset-hint" class="px-5 pb-4 text-xs text-gray-400"></p>
 </section>
@@ -27,51 +26,51 @@
 <div class="mt-6 grid gap-6 lg:grid-cols-[minmax(0,1.3fr)_minmax(0,1fr)]">
   <section class="rounded-xl border border-gray-200 bg-white shadow-card">
     <div class="border-b border-gray-100 px-5 py-4">
-      <h2 class="text-base font-semibold text-gray-900">Architecture</h2>
-      <p class="mt-0.5 text-xs text-gray-500">Which retrieval architecture Chat uses. "Retrieval strategy" below only applies to Hybrid.</p>
+      <h2 class="text-base font-semibold text-gray-900"><%= t('rag-architecture.architecture') %></h2>
+      <p class="mt-0.5 text-xs text-gray-500"><%= t('rag-architecture.architectureHint') %></p>
     </div>
 
     <div id="architecture-options" class="flex flex-col divide-y divide-gray-100">
       <label class="flex items-start gap-3 px-5 py-4">
         <input type="radio" name="architecture" value="hybrid" class="mt-1 text-accent focus:ring-accent/30" />
         <span>
-          <span class="block text-sm font-medium text-gray-900">Hybrid retrieve-and-rerank</span>
-          <span class="block text-xs text-gray-500">BM25, optionally fused with embeddings and reranked by the chat model. Tuned by "Retrieval strategy" below.</span>
+          <span class="block text-sm font-medium text-gray-900"><%= t('rag-architecture.arch.hybrid') %></span>
+          <span class="block text-xs text-gray-500"><%= t('rag-architecture.arch.hybridHint') %></span>
         </span>
       </label>
       <label class="flex items-start gap-3 px-5 py-4">
         <input type="radio" name="architecture" value="naive" class="mt-1 text-accent focus:ring-accent/30" />
         <span>
-          <span class="block text-sm font-medium text-gray-900">Naive RAG</span>
-          <span class="block text-xs text-gray-500">The original retrieve-then-read pipeline (Lewis et al., 2020): a single BM25 pass, no rewriting or reranking. The baseline every other architecture is measured against.</span>
+          <span class="block text-sm font-medium text-gray-900"><%= t('rag-architecture.arch.naive') %></span>
+          <span class="block text-xs text-gray-500"><%= t('rag-architecture.arch.naiveHint') %></span>
         </span>
       </label>
       <label class="flex items-start gap-3 px-5 py-4">
         <input type="radio" name="architecture" value="hyde" class="mt-1 text-accent focus:ring-accent/30" />
         <span>
-          <span class="block text-sm font-medium text-gray-900">HyDE (hypothetical documents)</span>
-          <span class="block text-xs text-gray-500">Gao et al., 2022. The chat model first writes a hypothetical answer, then that passage -- not the raw question -- is embedded and matched against the wiki. Needs an LLM; falls back to BM25 otherwise.</span>
+          <span class="block text-sm font-medium text-gray-900"><%= t('rag-architecture.arch.hyde') %></span>
+          <span class="block text-xs text-gray-500"><%= t('rag-architecture.arch.hydeHint') %></span>
         </span>
       </label>
       <label class="flex items-start gap-3 px-5 py-4">
         <input type="radio" name="architecture" value="fusion" class="mt-1 text-accent focus:ring-accent/30" />
         <span>
-          <span class="block text-sm font-medium text-gray-900">RAG-Fusion</span>
-          <span class="block text-xs text-gray-500">Rackauckas, 2024. The chat model generates a few alternative phrasings of the question; each is searched independently and the rankings are merged. Needs an LLM; falls back to BM25 otherwise.</span>
+          <span class="block text-sm font-medium text-gray-900"><%= t('rag-architecture.arch.fusion') %></span>
+          <span class="block text-xs text-gray-500"><%= t('rag-architecture.arch.fusionHint') %></span>
         </span>
       </label>
       <label class="flex items-start gap-3 px-5 py-4">
         <input type="radio" name="architecture" value="graph" class="mt-1 text-accent focus:ring-accent/30" />
         <span>
-          <span class="block text-sm font-medium text-gray-900">GraphRAG-lite (link expansion)</span>
-          <span class="block text-xs text-gray-500">Follows this wiki's own cross-links outward from the best-matching pages to pull in linked passages a flat keyword search would miss. No API key needed.</span>
+          <span class="block text-sm font-medium text-gray-900"><%= t('rag-architecture.arch.graph') %></span>
+          <span class="block text-xs text-gray-500"><%= t('rag-architecture.arch.graphHint') %></span>
         </span>
       </label>
       <label class="flex items-start gap-3 px-5 py-4">
         <input type="radio" name="architecture" value="corrective" class="mt-1 text-accent focus:ring-accent/30" />
         <span>
-          <span class="block text-sm font-medium text-gray-900">Corrective RAG (CRAG-lite)</span>
-          <span class="block text-xs text-gray-500">Yan et al., 2024. Grades the first search's relevance, then rewrites the question and searches again when the results aren't confidently relevant. Grading uses the chat model when configured, a keyword-coverage heuristic otherwise.</span>
+          <span class="block text-sm font-medium text-gray-900"><%= t('rag-architecture.arch.corrective') %></span>
+          <span class="block text-xs text-gray-500"><%= t('rag-architecture.arch.correctiveHint') %></span>
         </span>
       </label>
     </div>
@@ -79,49 +78,49 @@
 
   <section id="retrieval-mode-section" class="rounded-xl border border-gray-200 bg-white shadow-card transition-opacity">
     <div class="border-b border-gray-100 px-5 py-4">
-      <h2 class="text-base font-semibold text-gray-900">Retrieval strategy</h2>
-      <p class="mt-0.5 text-xs text-gray-500">Each tier below is optional and layers on top of the one before it. Only used by the Hybrid architecture above.</p>
+      <h2 class="text-base font-semibold text-gray-900"><%= t('rag-architecture.strategy') %></h2>
+      <p class="mt-0.5 text-xs text-gray-500"><%= t('rag-architecture.strategyHint') %></p>
     </div>
 
     <div id="retrieval-mode-options" class="flex flex-col divide-y divide-gray-100">
       <label class="flex items-start gap-3 px-5 py-4">
         <input type="radio" name="retrieval_mode" value="bm25" class="mt-1 text-accent focus:ring-accent/30" />
         <span>
-          <span class="block text-sm font-medium text-gray-900">BM25 only</span>
-          <span class="block text-xs text-gray-500">Keyword ranking (Okapi BM25), stdlib only -- no API key needed. Fastest, works with zero setup.</span>
+          <span class="block text-sm font-medium text-gray-900"><%= t('rag-architecture.mode.bm25') %></span>
+          <span class="block text-xs text-gray-500"><%= t('rag-architecture.mode.bm25Hint') %></span>
         </span>
       </label>
       <label class="flex items-start gap-3 px-5 py-4">
         <input type="radio" name="retrieval_mode" value="hybrid" class="mt-1 text-accent focus:ring-accent/30" />
         <span>
-          <span class="block text-sm font-medium text-gray-900">Hybrid (BM25 + embeddings)</span>
-          <span class="block text-xs text-gray-500">Fuses BM25 with embedding similarity via reciprocal rank fusion. Needs an embedding-capable LLM profile.</span>
+          <span class="block text-sm font-medium text-gray-900"><%= t('rag-architecture.mode.hybrid') %></span>
+          <span class="block text-xs text-gray-500"><%= t('rag-architecture.mode.hybridHint') %></span>
         </span>
       </label>
       <label class="flex items-start gap-3 px-5 py-4">
         <input type="radio" name="retrieval_mode" value="hybrid_rerank" class="mt-1 text-accent focus:ring-accent/30" />
         <span>
-          <span class="block text-sm font-medium text-gray-900">Hybrid + LLM rerank</span>
-          <span class="block text-xs text-gray-500">Hybrid retrieval, then a chat-model call reorders the shortlist by relevance. Most accurate, most expensive.</span>
+          <span class="block text-sm font-medium text-gray-900"><%= t('rag-architecture.mode.rerank') %></span>
+          <span class="block text-xs text-gray-500"><%= t('rag-architecture.mode.rerankHint') %></span>
         </span>
       </label>
     </div>
 
     <div class="border-t border-gray-100 px-5 py-4">
-      <h3 class="text-sm font-semibold text-gray-900">Answer mode</h3>
+      <h3 class="text-sm font-semibold text-gray-900"><%= t('rag-architecture.answerMode') %></h3>
       <div class="mt-3 flex flex-col gap-3">
         <label class="flex items-start gap-3">
           <input type="radio" name="answer_mode" value="auto" class="mt-1 text-accent focus:ring-accent/30" />
           <span>
-            <span class="block text-sm font-medium text-gray-900">Auto</span>
-            <span class="block text-xs text-gray-500">The chat model writes a grounded answer when one is configured; falls back to quoting the retrieved passages otherwise.</span>
+            <span class="block text-sm font-medium text-gray-900"><%= t('rag-architecture.answer.auto') %></span>
+            <span class="block text-xs text-gray-500"><%= t('rag-architecture.answer.autoHint') %></span>
           </span>
         </label>
         <label class="flex items-start gap-3">
           <input type="radio" name="answer_mode" value="extractive" class="mt-1 text-accent focus:ring-accent/30" />
           <span>
-            <span class="block text-sm font-medium text-gray-900">Extractive only</span>
-            <span class="block text-xs text-gray-500">Always return the retrieved passages directly, even if a chat model is configured. No generation, no hallucination risk.</span>
+            <span class="block text-sm font-medium text-gray-900"><%= t('rag-architecture.answer.extractive') %></span>
+            <span class="block text-xs text-gray-500"><%= t('rag-architecture.answer.extractiveHint') %></span>
           </span>
         </label>
       </div>
@@ -130,20 +129,20 @@
     <div class="flex items-center justify-between border-t border-gray-100 px-5 py-4">
       <p id="rag-arch-saved-hint" class="text-xs text-gray-400"></p>
       <button id="save-rag-arch-btn" type="button" class="rounded-lg bg-accent px-4 py-2 text-sm font-medium text-white hover:bg-accent-dark">
-        Save
+        <%= t('common.save') %>
       </button>
     </div>
   </section>
 
   <section class="rounded-xl border border-gray-200 bg-white shadow-card">
     <div class="border-b border-gray-100 px-5 py-4">
-      <h2 class="text-base font-semibold text-gray-900">Tuning</h2>
-      <p class="mt-0.5 text-xs text-gray-500">Advanced parameters -- the defaults work well for most corpora.</p>
+      <h2 class="text-base font-semibold text-gray-900"><%= t('rag-architecture.tuning') %></h2>
+      <p class="mt-0.5 text-xs text-gray-500"><%= t('rag-architecture.tuningHint') %></p>
     </div>
 
     <div class="flex flex-col gap-4 p-5">
       <label class="flex flex-col gap-1 max-w-xs">
-        <span class="text-xs font-medium text-gray-600">Results per question (top_k)</span>
+        <span class="text-xs font-medium text-gray-600"><%= t('rag-architecture.topK') %></span>
         <input data-field="top_k" type="number" min="1" step="1" class="rounded-lg border border-gray-300 px-2.5 py-1.5 text-sm focus:border-accent focus:outline-none focus:ring-2 focus:ring-accent/20" />
       </label>
 
@@ -161,11 +160,11 @@
       <label class="flex items-start gap-3 border-t border-gray-100 pt-4">
         <input data-field="use_vector_store" type="checkbox" class="mt-0.5 rounded border-gray-300 text-accent focus:ring-accent/30" />
         <span>
-          <span class="block text-sm font-medium text-gray-900">Persistent vector store</span>
-          <span class="block text-xs text-gray-500">Cache embeddings in SQLite across questions instead of re-embedding the whole wiki every time. Only matters for the hybrid modes.</span>
+          <span class="block text-sm font-medium text-gray-900"><%= t('rag-architecture.vectorStore') %></span>
+          <span class="block text-xs text-gray-500"><%= t('rag-architecture.vectorStoreHint') %></span>
         </span>
       </label>
-      <p id="vector-store-hint" class="hidden text-xs text-amber-600">This setting only applies to the Hybrid architecture -- it has no effect while another architecture is selected above.</p>
+      <p id="vector-store-hint" class="hidden text-xs text-amber-600"><%= t('rag-architecture.vectorStoreWarn') %></p>
     </div>
   </section>
 </div>

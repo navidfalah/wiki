@@ -1,11 +1,14 @@
 <!doctype html>
-<html lang="en">
+<html lang="<%= lang %>">
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title><%= title %> · Aurora Labs Wiki</title>
+  <title><%= title %> · <%= t('common.brand') %></title>
   <meta name="api-base" content="<%= apiBase %>" />
-  <link rel="stylesheet" href="/css/app.css" />
+  <meta name="robots" content="noindex" />
+  <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+  <%- include('fonts') %>
+  <link rel="stylesheet" href="/css/app.css?v=<%= assetV %>" />
 </head>
 <body class="app-shell min-h-screen text-gray-900">
   <div class="flex min-h-screen flex-col md:flex-row">
@@ -39,45 +42,47 @@
       // (Knowledge base / Pipeline / Chat / Insights / Data sources / Admin)
       // instead of a wall of icons with no hierarchy.
       const navGroups = [
-        { items: [{href: '/dashboard', label: 'Dashboard', icon: icons.dashboard}] },
-        { section: 'Knowledge base', items: [
-          {href: '/wiki', label: 'Wiki', icon: icons.wiki},
-          {href: '/resources', label: 'Resources', icon: icons.link},
-          {href: '/graph', label: 'Graph', icon: icons.graph},
-          {href: '/entities', label: 'Entities', icon: icons.entities},
+        { items: [{href: '/dashboard', id: 'Dashboard', label: t('nav.dashboard'), icon: icons.dashboard}] },
+        { section: t('nav.section.knowledge'), items: [
+          {href: '/wiki', id: 'Wiki', label: t('nav.wiki'), icon: icons.wiki},
+          {href: '/resources', id: 'Resources', label: t('nav.resources'), icon: icons.link},
+          {href: '/graph', id: 'Graph', label: t('nav.graph'), icon: icons.graph},
+          {href: '/entities', id: 'Entities', label: t('nav.entities'), icon: icons.entities},
         ]},
-        { section: 'Pipeline', items: [
-          {href: '/pipelines', label: 'Pipelines', icon: icons.pipelines},
-          {href: '/pipeline-architecture', label: 'Pipeline Architecture', icon: icons.architecture},
+        { section: t('nav.section.pipeline'), items: [
+          {href: '/pipelines', id: 'Pipelines', label: t('nav.pipelines'), icon: icons.pipelines},
+          {href: '/pipeline-architecture', id: 'Pipeline Architecture', label: t('nav.pipelineArchitecture'), icon: icons.architecture},
         ]},
-        { section: 'Chat', items: [
-          {href: '/chat', label: 'Chat', icon: icons.chat},
-          {href: '/rag-architecture', label: 'RAG Architecture', icon: icons.rag},
+        { section: t('nav.section.chat'), items: [
+          {href: '/chat', id: 'Chat', label: t('nav.chat'), icon: icons.chat},
+          {href: '/rag-architecture', id: 'RAG Architecture', label: t('nav.ragArchitecture'), icon: icons.rag},
         ]},
-        { section: 'Insights', items: [
-          {href: '/analytics', label: 'Analytics', icon: icons.analytics},
-          {href: '/usage', label: 'Usage', icon: icons.usage},
-          {href: '/review-queue', label: 'Review & Attention', icon: icons.review},
+        { section: t('nav.section.insights'), items: [
+          {href: '/analytics', id: 'Analytics', label: t('nav.analytics'), icon: icons.analytics},
+          {href: '/usage', id: 'Usage', label: t('nav.usage'), icon: icons.usage},
+          {href: '/review-queue', id: 'Review Queue', label: t('nav.review'), icon: icons.review},
         ]},
-        { section: 'Admin', items: [
-          {href: '/logs', label: 'Logs', icon: icons.logs},
-          {href: '/company', label: 'Company', icon: icons.company},
-          {href: '/settings', label: 'Settings', icon: icons.settings},
-          ...(isAdmin ? [{href: '/users', label: 'Users', icon: icons.users}] : []),
+        { section: t('nav.section.admin'), items: [
+          {href: '/logs', id: 'Logs', label: t('nav.logs'), icon: icons.logs},
+          {href: '/company', id: 'Company', label: t('nav.company'), icon: icons.company},
+          {href: '/settings', id: 'Settings', label: t('nav.settings'), icon: icons.settings},
+          ...(isAdmin ? [{href: '/users', id: 'Admin panel', label: t('nav.adminPanel'), icon: icons.users}] : []),
         ]},
       ];
     %>
 
     <aside class="shrink-0 border-b border-gray-200 bg-white md:sticky md:top-0 md:flex md:h-screen md:w-60 md:flex-col md:border-b-0 md:border-r">
       <div class="flex shrink-0 items-center gap-2 border-b border-gray-100 px-4 py-4">
-        <span class="flex h-7 w-7 shrink-0 items-center justify-center rounded-lg bg-accent text-sm font-semibold text-white">A</span>
+        <span class="flex h-7 w-7 shrink-0 items-center justify-center rounded-lg bg-accent">
+          <svg viewBox="0 0 32 32" width="18" height="18" aria-hidden="true"><g fill="#fff"><rect x="6" y="19" width="9" height="7" rx="1.5"/><rect x="17" y="19" width="9" height="7" rx="1.5"/><rect x="11.5" y="8" width="9" height="9" rx="1.5" opacity=".85"/></g></svg>
+        </span>
         <a href="/dashboard" class="truncate text-base font-semibold tracking-tight text-gray-900 no-underline">
-          Aurora Labs Wiki
+          <%= t('common.brand') %>
         </a>
       </div>
       <nav
         class="flex gap-1 overflow-x-auto px-2 py-2 text-sm md:min-h-0 md:flex-1 md:flex-col md:gap-4 md:overflow-y-auto md:px-3 md:py-4"
-        aria-label="Main">
+        aria-label="<%= t('common.skip') %>">
         <% navGroups.forEach(function(group) { %>
           <div class="flex shrink-0 gap-1 md:flex-col md:gap-0.5">
             <% if (group.section) { %>
@@ -85,7 +90,7 @@
             <% } %>
             <% group.items.forEach(function(link) { %>
               <a href="<%= link.href %>"
-                 class="flex shrink-0 items-center gap-2 whitespace-nowrap rounded-lg px-3 py-2 font-medium no-underline transition-colors <%= active === link.label ? 'bg-accent/10 text-accent' : 'text-gray-600 hover:bg-gray-100' %>">
+                 class="flex shrink-0 items-center gap-2 whitespace-nowrap rounded-lg px-3 py-2 font-medium no-underline transition-colors <%= active === link.id ? 'bg-accent/10 text-accent' : 'text-gray-600 hover:bg-gray-100' %>">
                 <span aria-hidden="true" class="flex h-[18px] w-[18px] shrink-0 items-center justify-center"><%- link.icon %></span>
                 <span><%= link.label %></span>
               </a>
@@ -97,10 +102,11 @@
         <div class="flex shrink-0 items-center justify-between gap-2 border-t border-gray-100 px-4 py-3 text-xs text-gray-500">
           <span class="truncate" title="<%= currentUser.username %> (<%= currentUser.role %>)"><%= currentUser.username %></span>
           <form method="POST" action="/logout">
-            <button type="submit" class="font-medium text-gray-500 hover:text-gray-900">Log out</button>
+            <button type="submit" class="font-medium text-gray-500 hover:text-gray-900"><%= t('common.logout') %></button>
           </form>
         </div>
       <% } %>
+      <%- include('lang-switch', { variant: 'sidebar' }) %>
     </aside>
 
     <div class="min-w-0 flex-1">

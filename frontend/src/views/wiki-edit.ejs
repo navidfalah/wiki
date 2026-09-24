@@ -1,26 +1,26 @@
 <%- include('partials/head', { title, apiBase, active }) %>
 
 <nav class="text-sm text-gray-500">
-  <a href="/wiki" class="text-gray-500 no-underline hover:text-accent">Wiki</a>
+  <a href="/wiki" class="text-gray-500 no-underline hover:text-accent"><%= t('wiki.title') %></a>
   <span class="mx-1">/</span>
   <a href="/wiki/<%= slug %>" class="text-gray-500 no-underline hover:text-accent"><%= doc.title %></a>
   <span class="mx-1">/</span>
-  <span class="text-gray-700">Edit</span>
+  <span class="text-gray-700"><%= t('wiki.edit') %></span>
 </nav>
 
 <div class="mt-2 flex flex-wrap items-center justify-between gap-3">
-  <h1 class="text-2xl font-semibold tracking-tight text-gray-900">Edit · <%= doc.title %></h1>
+  <h1 class="text-2xl font-semibold tracking-tight text-gray-900"><%= t('wiki.editTitle',{ title: doc.title }) %></h1>
   <div class="flex shrink-0 items-center gap-2">
     <span id="wiki-edit-status" class="text-xs text-gray-400"></span>
     <a href="/wiki/<%= slug %>"
        class="rounded-lg border border-gray-300 bg-white px-3 py-1.5 text-sm font-medium text-gray-700 no-underline hover:bg-gray-50">
-      Cancel
+      <%= t('common.cancel') %>
     </a>
     <button
       type="button"
       id="wiki-save-btn"
       class="rounded-lg bg-accent px-3 py-1.5 text-sm font-medium text-white hover:opacity-90">
-      Save
+      <%= t('common.save') %>
     </button>
   </div>
 </div>
@@ -41,19 +41,20 @@
 
     saveBtn.addEventListener('click', async function () {
       saveBtn.disabled = true;
-      status.textContent = 'Saving…';
+      status.textContent = <%- JSON.stringify(t('wiki.saving')) %>;
       try {
         var res = await fetch(apiBase + '/api/docs/' + slug + '.md', {
           method: 'PUT',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({ body: textarea.value }),
         });
-        if (!res.ok) throw new Error('Save failed (' + res.status + ')');
-        window.queueToast('Saved changes', 'success');
+        if (!res.ok) throw new Error(<%- JSON.stringify(t('wiki.saveFailedStatus',{ status: '{status}' })) %>.replace('{status}', res.status));
+        window.queueToast(<%- JSON.stringify(t('wiki.saved')) %>, 'success');
         window.location.href = '/wiki/' + slug;
       } catch (err) {
-        status.textContent = err.message || 'Failed to save.';
-        window.showToast(err.message || 'Failed to save.', 'error');
+        var failMsg = err.message || <%- JSON.stringify(t('wiki.saveFailed')) %>;
+        status.textContent = failMsg;
+        window.showToast(failMsg, 'error');
         saveBtn.disabled = false;
       }
     });

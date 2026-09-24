@@ -1,8 +1,8 @@
-<%- include('partials/head', { title: 'Dashboard', apiBase, active: 'Dashboard' }) %>
+<%- include('partials/head', { title, apiBase, active }) %>
 
-<h1 class="text-2xl font-semibold tracking-tight text-gray-900">Dashboard</h1>
+<h1 class="text-2xl font-semibold tracking-tight text-gray-900"><%= t('dashboard.title') %></h1>
 <p class="mt-1 max-w-2xl text-sm text-gray-600">
-  Point the compiler at your source folders, run it, and browse what came out.
+  <%= t('dashboard.intro') %>
 </p>
 
 <div id="offline-banner" class="hidden mt-4 rounded-lg border border-amber-200 bg-amber-50 px-3 py-2 text-xs text-amber-700"></div>
@@ -13,81 +13,81 @@
   <section class="rounded-xl border border-gray-200 bg-white shadow-card">
     <div class="flex flex-wrap items-center justify-between gap-3 border-b border-gray-100 px-5 py-4">
       <div class="flex items-center gap-3">
-        <h2 class="text-base font-semibold text-gray-900">Run compiler</h2>
-        <span id="build-status-badge" class="inline-flex items-center gap-1 rounded-full bg-gray-100 px-2 py-0.5 text-xs font-medium text-gray-600">Ready</span>
+        <h2 class="text-base font-semibold text-gray-900"><%= t('dashboard.run.title') %></h2>
+        <span id="build-status-badge" class="inline-flex items-center gap-1 rounded-full bg-gray-100 px-2 py-0.5 text-xs font-medium text-gray-600"><%= t('dashboard.badge.idle') %></span>
       </div>
       <div class="flex flex-wrap items-center gap-3">
-        <button id="sources-picker-toggle" type="button" aria-haspopup="true" aria-expanded="false" aria-controls="sources-picker" class="inline-flex items-center justify-center gap-2 rounded-lg border border-gray-300 bg-white px-3 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50">Sources to include <span id="sources-picker-count" class="text-xs text-gray-400"></span></button>
-        <button id="run-options-toggle" type="button" aria-haspopup="true" aria-expanded="false" aria-controls="run-options" class="inline-flex items-center justify-center gap-2 rounded-lg border border-gray-300 bg-white px-3 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50">Run options <span id="run-options-count" class="text-xs text-gray-400"></span></button>
-        <label class="flex items-center gap-2 text-sm text-gray-600" title="Off: only new/changed files are (re)processed, resuming where the last run left off. On: every file is reprocessed from scratch.">
+        <button aria-controls="sources-picker" aria-expanded="false" aria-haspopup="true" id="sources-picker-toggle" type="button" class="inline-flex items-center justify-center gap-2 rounded-lg border border-gray-300 bg-white px-3 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50"><%= t('dashboard.sourcesToInclude') %> <span id="sources-picker-count" class="text-xs text-gray-400"></span></button>
+        <button aria-controls="run-options" aria-expanded="false" aria-haspopup="true" id="run-options-toggle" type="button" class="inline-flex items-center justify-center gap-2 rounded-lg border border-gray-300 bg-white px-3 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50"><%= t('dashboard.runOptions') %> <span id="run-options-count" class="text-xs text-gray-400"></span></button>
+        <label class="flex items-center gap-2 text-sm text-gray-600" title="<%= t('dashboard.rebuildTitle') %>">
           <input id="force-rebuild" type="checkbox" class="rounded border-gray-300 text-accent focus:ring-accent/30" />
-          Rebuild all files
+          <%= t('dashboard.rebuildAll') %>
         </label>
-        <button id="stop-build" type="button" class="hidden inline-flex items-center justify-center gap-2 rounded-lg border border-red-300 bg-white px-4 py-2 text-sm font-medium text-red-600 hover:bg-red-50">Stop</button>
-        <button id="run-build" type="button" class="inline-flex items-center justify-center gap-2 rounded-lg bg-accent px-4 py-2 text-sm font-medium text-white hover:bg-accent-dark">Run compiler</button>
+        <button id="stop-build" type="button" class="hidden inline-flex items-center justify-center gap-2 rounded-lg border border-red-300 bg-white px-4 py-2 text-sm font-medium text-red-600 hover:bg-red-50"><%= t('dashboard.stop') %></button>
+        <button id="run-build" type="button" class="inline-flex items-center justify-center gap-2 rounded-lg bg-accent px-4 py-2 text-sm font-medium text-white hover:bg-accent-dark"><%= t('dashboard.run') %></button>
       </div>
     </div>
     <div id="sources-picker" class="hidden border-b border-gray-100 bg-gray-50 px-5 py-3">
-      <p class="mb-2 text-xs text-gray-500">Only checked top-level folders under <code class="rounded bg-white px-1 py-0.5">data/raw/</code> are read into this run. Unchecked folders are left as-is — nothing is deleted, and re-checking them later picks their topics back up without needing a forced rebuild.</p>
+      <p class="mb-2 text-xs text-gray-500"><%- t('dashboard.pickerHintHtml') %></p>
       <div id="sources-picker-list" class="flex flex-wrap gap-3 text-sm"></div>
     </div>
     <div id="run-options" class="hidden border-b border-gray-100 bg-gray-50 px-5 py-3">
-      <p class="mb-2 text-xs text-gray-500">Extra compiler passes. These roughly increase LLM cost per run — see the <code class="rounded bg-white px-1 py-0.5">--critic-pass</code>, <code class="rounded bg-white px-1 py-0.5">--use-corrections</code>, and <code class="rounded bg-white px-1 py-0.5">--redact-pii</code> flags in <code class="rounded bg-white px-1 py-0.5">compiler/main.py</code>.</p>
+      <p class="mb-2 text-xs text-gray-500"><%- t('dashboard.optionsHintHtml') %></p>
       <div class="flex flex-wrap items-start gap-4 text-sm">
-        <label class="flex items-center gap-2 text-gray-600" title="Run a second LLM pass over each synthesized page, stripping sentences it can't ground in the source chunks. Roughly doubles per-page LLM cost.">
+        <label class="flex items-center gap-2 text-gray-600" title="<%= t('dashboard.opt.criticTitle') %>">
           <input id="run-opt-critic-pass" type="checkbox" class="rounded border-gray-300 text-accent focus:ring-accent/30" />
-          Critic pass
+          <%= t('dashboard.opt.critic') %>
         </label>
-        <label id="run-opt-critic-samples-label" class="hidden flex items-center gap-2 text-gray-600" title="Run the critic pass this many times per page and only strip a sentence a majority flagged (reduces judge flakiness).">
-          Samples
+        <label id="run-opt-critic-samples-label" class="hidden flex items-center gap-2 text-gray-600" title="<%= t('dashboard.opt.samplesTitle') %>">
+          <%= t('dashboard.opt.samples') %>
           <input id="run-opt-critic-samples" type="number" min="1" max="9" value="1" class="w-14 rounded-md border border-gray-300 px-1.5 py-0.5 text-sm" />
         </label>
-        <label id="run-opt-critic-regenerate-label" class="hidden flex items-center gap-2 text-gray-600" title="When the critic strips more than 20% of a page, regenerate it once with the critic's findings fed back into the prompt, instead of shipping a heavily-stripped draft.">
+        <label id="run-opt-critic-regenerate-label" class="hidden flex items-center gap-2 text-gray-600" title="<%= t('dashboard.opt.regenerateTitle') %>">
           <input id="run-opt-critic-regenerate" type="checkbox" class="rounded border-gray-300 text-accent focus:ring-accent/30" />
-          Regenerate stripped pages
+          <%= t('dashboard.opt.regenerate') %>
         </label>
-        <label class="flex items-center gap-2 text-gray-600" title="Feed human review corrections (data/review_corrections.json) into the extraction prompt as few-shot examples.">
+        <label class="flex items-center gap-2 text-gray-600" title="<%= t('dashboard.opt.correctionsTitle') %>">
           <input id="run-opt-use-corrections" type="checkbox" class="rounded border-gray-300 text-accent focus:ring-accent/30" />
-          Use review corrections
+          <%= t('dashboard.opt.corrections') %>
         </label>
-        <label class="flex items-center gap-2 text-gray-600" title="Redact SSNs, credit cards, API keys, phone numbers, and IPv4 addresses from chunk text before it's sent to the LLM for extraction. Does not redact email addresses or names.">
+        <label class="flex items-center gap-2 text-gray-600" title="<%= t('dashboard.opt.piiTitle') %>">
           <input id="run-opt-redact-pii" type="checkbox" class="rounded border-gray-300 text-accent focus:ring-accent/30" />
-          Redact PII before extraction
+          <%= t('dashboard.opt.pii') %>
         </label>
-        <label class="flex items-center gap-2 text-gray-600" title="During synthesis, search the internet for each topic being (re)generated and add the results as extra sources alongside data/raw/, tagged source_type=web and trusted &quot;Low&quot; by default. Requires network access from the compiler process.">
+        <label class="flex items-center gap-2 text-gray-600" title="<%= t('dashboard.opt.webTitle') %>">
           <input id="run-opt-web-search" type="checkbox" class="rounded border-gray-300 text-accent focus:ring-accent/30" />
-          Web search enrichment
+          <%= t('dashboard.opt.web') %>
         </label>
       </div>
       <div class="mt-3 flex flex-wrap items-center gap-4 border-t border-gray-200 pt-3 text-sm">
-        <label class="flex items-center gap-2 text-gray-600" title="Overrides the Settings page's &quot;Default&quot; assignment for extraction, indexing, and cross-linking in this run only.">
-          Extraction/linking model
+        <label class="flex items-center gap-2 text-gray-600" title="<%= t('dashboard.opt.defaultModelTitle') %>">
+          <%= t('dashboard.opt.defaultModel') %>
           <select id="run-opt-default-model" class="rounded-md border border-gray-300 px-1.5 py-1 text-sm focus:border-accent focus:outline-none focus:ring-2 focus:ring-accent/20">
-            <option value="">Default (from Settings)</option>
+            <option value=""><%= t('dashboard.opt.defaultOption') %></option>
           </select>
         </label>
-        <label class="flex items-center gap-2 text-gray-600" title="Overrides the Settings page's &quot;Thinking&quot; assignment for synthesis in this run only.">
-          Synthesis model
+        <label class="flex items-center gap-2 text-gray-600" title="<%= t('dashboard.opt.thinkingModelTitle') %>">
+          <%= t('dashboard.opt.thinkingModel') %>
           <select id="run-opt-thinking-model" class="rounded-md border border-gray-300 px-1.5 py-1 text-sm focus:border-accent focus:outline-none focus:ring-2 focus:ring-accent/20">
-            <option value="">Default (from Settings)</option>
+            <option value=""><%= t('dashboard.opt.defaultOption') %></option>
           </select>
         </label>
       </div>
     </div>
     <div class="p-4">
       <div id="build-steps" class="flex flex-col gap-1.5 md:flex-row md:items-stretch md:gap-2"></div>
-      <p id="build-message" class="mt-2 text-xs text-gray-500">Click &quot;Run compiler&quot; to start.</p>
-      <p class="mt-1 text-xs text-gray-400">Stopping (or a crash) is safe to resume from — the next non-forced run only reprocesses what didn't finish, it doesn't start over.</p>
+      <p id="build-message" class="mt-2 text-xs text-gray-500"><%= t('dashboard.message.initial') %></p>
+      <p class="mt-1 text-xs text-gray-400"><%= t('dashboard.resumeNote') %></p>
     </div>
   </section>
 
   <section class="rounded-xl border border-gray-200 bg-white shadow-card">
     <div class="flex flex-wrap items-center justify-between gap-3 border-b border-gray-100 px-5 py-4">
       <div>
-        <h2 class="flex items-center gap-2 text-base font-semibold text-gray-900">Source folders</h2>
-        <p id="sources-subtitle" class="mt-0.5 text-xs text-gray-500">Folders the compiler reads raw notes, emails, and files from.</p>
+        <h2 class="flex items-center gap-2 text-base font-semibold text-gray-900"><%= t('dashboard.sources.title') %></h2>
+        <p id="sources-subtitle" class="mt-0.5 text-xs text-gray-500"><%= t('dashboard.sources.subtitle') %></p>
       </div>
-      <button id="add-source-toggle" type="button" aria-haspopup="true" aria-expanded="false" aria-controls="add-source-form" class="inline-flex items-center justify-center gap-2 rounded-lg border border-source-border px-4 py-2 text-sm font-medium text-source hover:bg-source-bg">+ Add folder</button>
+      <button aria-controls="add-source-form" aria-expanded="false" aria-haspopup="true" id="add-source-toggle" type="button" class="inline-flex items-center justify-center gap-2 rounded-lg border border-source-border px-4 py-2 text-sm font-medium text-source hover:bg-source-bg"><%= t('dashboard.sources.add') %></button>
     </div>
     <div id="add-source-form" class="hidden border-b border-gray-100 p-5"></div>
     <div id="sources-grid" class="grid gap-3 p-5 sm:grid-cols-2 lg:grid-cols-3"></div>
@@ -95,15 +95,15 @@
 
   <section class="rounded-xl border border-gray-200 bg-white shadow-card">
     <div class="border-b border-gray-100 px-5 py-4">
-      <h2 class="text-base font-semibold text-gray-900">Files</h2>
-      <p class="mt-0.5 text-sm text-gray-500">Browse data/raw/ like a file manager. Click Preview to see a file's content.</p>
+      <h2 class="text-base font-semibold text-gray-900"><%= t('dashboard.files.title') %></h2>
+      <p class="mt-0.5 text-sm text-gray-500"><%= t('dashboard.files.intro') %></p>
     </div>
     <div class="flex flex-wrap items-center justify-between gap-2 border-b border-gray-100 px-5 py-2.5">
       <nav id="breadcrumbs" class="flex min-w-0 flex-wrap items-center gap-1 text-sm"></nav>
       <div class="flex items-center gap-2">
-        <input id="file-search" type="search" placeholder="Search this folder…" aria-label="Search this folder" class="w-40 rounded-lg border border-gray-300 px-2.5 py-1 text-sm focus:border-accent focus:outline-none focus:ring-2 focus:ring-accent/20" />
-        <button id="new-folder-toggle" type="button" aria-haspopup="true" aria-expanded="false" aria-controls="new-folder-form" class="inline-flex items-center justify-center gap-2 rounded-lg border border-gray-300 bg-white px-3 py-1 text-xs font-medium text-gray-700 hover:bg-gray-50">+ New folder</button>
-        <button id="upload-files-toggle" type="button" title="Supports text, markdown, email (.eml), images, audio, PDF, CSV/TSV, JSON, XML, HTML, YAML, and dozens more formats — office docs, archives, and video are accepted as downloadable attachments." class="inline-flex items-center justify-center gap-2 rounded-lg bg-accent px-3 py-1 text-xs font-medium text-white hover:bg-accent-dark">⬆ Upload files</button>
+        <input aria-label="<%= t('dashboard.files.searchPh') %>" id="file-search" type="search" placeholder="<%= t('dashboard.files.searchPh') %>" class="w-40 rounded-lg border border-gray-300 px-2.5 py-1 text-sm focus:border-accent focus:outline-none focus:ring-2 focus:ring-accent/20" />
+        <button aria-controls="new-folder-form" aria-expanded="false" aria-haspopup="true" id="new-folder-toggle" type="button" class="inline-flex items-center justify-center gap-2 rounded-lg border border-gray-300 bg-white px-3 py-1 text-xs font-medium text-gray-700 hover:bg-gray-50"><%= t('dashboard.files.newFolder') %></button>
+        <button id="upload-files-toggle" type="button" title="<%= t('dashboard.files.uploadTitle') %>" class="inline-flex items-center justify-center gap-2 rounded-lg bg-accent px-3 py-1 text-xs font-medium text-white hover:bg-accent-dark"><%= t('dashboard.files.upload') %></button>
         <input id="upload-files-input" type="file" multiple class="hidden" />
       </div>
     </div>

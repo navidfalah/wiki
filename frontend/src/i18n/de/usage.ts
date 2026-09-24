@@ -1,0 +1,28 @@
+import type { usage as en } from '../en/usage';
+
+export const usage: Record<keyof typeof en, string> = {
+  'usage.title': 'Token-Verbrauch & Kosten',
+  'usage.intro': 'Tokens und geschätzte Kosten über alle erfassten Pipeline-Läufe, aufgeschlüsselt nach Prozess, Modell und Tag.',
+  'usage.chart.dailyCost': 'Geschätzte Kosten pro Tag',
+  'usage.chart.dailyTokens': 'Verbrauchte Tokens pro Tag',
+  'usage.chart.aria': 'Tagesdiagramm',
+  'usage.chart.tokens': '{tokens} Tokens',
+  'usage.byProcess': 'Nach Prozess',
+  'usage.byModel': 'Nach Modell',
+  'usage.th.process': 'Prozess',
+  'usage.th.model': 'Modell',
+  'usage.th.calls': 'Aufrufe',
+  'usage.th.cacheHits': 'Cache-Treffer',
+  'usage.th.totalTokens': 'Tokens gesamt',
+  'usage.th.estCost': 'Gesch. Kosten',
+  'usage.card.spend': 'Geschätzte Gesamtkosten',
+  'usage.card.tokens': 'Tokens gesamt',
+  'usage.card.calls': 'LLM-Aufrufe',
+  'usage.card.cacheHits': 'Cache-Treffer',
+  'usage.noUsage': 'Noch kein Token-Verbrauch erfasst.',
+  'usage.unknownDate': 'Unbekanntes Datum',
+  'usage.note.noRunsHtml': 'Noch keine Pipeline-Läufe mit erfasstem Token-Verbrauch. Starten Sie den Compiler auf der Seite <a href="/pipelines" class="font-medium text-accent hover:underline">Pipelines</a>, um hier Werte zu sehen.',
+  'usage.note.local': 'Derzeit läuft ein lokales Modell ({model}) – es meldet keine Token-Zahlen, daher stammen die Werte unten aus früheren Cloud-Läufen.',
+  'usage.note.unpriced': 'Die Kosten werden aus veröffentlichten Listenpreisen geschätzt. Für {models} liegt kein Preis vor – mit „+“ markierte Summen enthalten deren Verbrauch nicht.',
+  'usage.note.estimated': 'Die Kosten werden aus veröffentlichten Listenpreisen geschätzt, nicht aus Ihrer tatsächlichen Rechnung.',
+};

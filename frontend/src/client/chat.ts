@@ -1,3 +1,4 @@
+import { currentLang, t, th } from './lib/i18n';
 import { apiBase, apiFetch } from './lib/api';
 import { el, escapeHtml } from './lib/dom';
 
@@ -47,7 +48,7 @@ function renderMarkdownLite(text: string): string {
 function formatClockTime(iso: string): string {
   const d = new Date(iso);
   if (Number.isNaN(d.getTime())) return '';
-  return d.toLocaleTimeString(undefined, { hour: 'numeric', minute: '2-digit' });
+  return d.toLocaleTimeString(currentLang === 'de' ? 'de-DE' : 'en-GB', { hour: 'numeric', minute: '2-digit' });
 }
 
 function formatRelativeTime(iso: string): string {
@@ -55,13 +56,13 @@ function formatRelativeTime(iso: string): string {
   if (Number.isNaN(d.getTime())) return '';
   const diffMs = Date.now() - d.getTime();
   const mins = Math.round(diffMs / 60000);
-  if (mins < 1) return 'just now';
-  if (mins < 60) return `${mins}m ago`;
+  if (mins < 1) return t('chat.rel.justNow');
+  if (mins < 60) return t('chat.rel.minutes', { n: mins });
   const hours = Math.round(mins / 60);
-  if (hours < 24) return `${hours}h ago`;
+  if (hours < 24) return t('chat.rel.hours', { n: hours });
   const days = Math.round(hours / 24);
-  if (days < 7) return `${days}d ago`;
-  return d.toLocaleDateString(undefined, { month: 'short', day: 'numeric' });
+  if (days < 7) return t('chat.rel.days', { n: days });
+  return d.toLocaleDateString(currentLang === 'de' ? 'de-DE' : 'en-GB', { month: 'short', day: 'numeric' });
 }
 
 interface ChatSource {
@@ -135,18 +136,18 @@ interface RagSettings {
 }
 
 const RETRIEVAL_MODE_LABELS: Record<RetrievalMode, string> = {
-  bm25: 'BM25 only',
-  hybrid: 'Hybrid',
-  hybrid_rerank: 'Hybrid + rerank',
+  bm25: t('chat.mode.bm25'),
+  hybrid: t('chat.mode.hybrid'),
+  hybrid_rerank: t('chat.mode.rerankShort'),
 };
 
 const ARCHITECTURE_LABELS: Record<Architecture, string> = {
-  hybrid: 'Hybrid',
-  naive: 'Naive RAG',
-  hyde: 'HyDE',
-  fusion: 'RAG-Fusion',
-  graph: 'GraphRAG-lite',
-  corrective: 'Corrective RAG',
+  hybrid: t('chat.arch.hybrid'),
+  naive: t('chat.arch.naive'),
+  hyde: t('chat.arch.hyde'),
+  fusion: t('chat.arch.fusion'),
+  graph: t('chat.arch.graph'),
+  corrective: t('chat.arch.corrective'),
 };
 
 let sessions: ChatSessionSummary[] = [];
@@ -158,9 +159,9 @@ let streamingSource: EventSource | null = null;
 let sessionSearch = '';
 let finalizeStreamingBubble: (() => void) | null = null;
 
-const SUGGESTIONS = ['What topics does the wiki cover?', 'Summarize a page for me', 'Where do I find setup instructions?'];
+const SUGGESTIONS = [1, 2, 3, 4, 5, 6].map((n) => t(`chat.suggestion.${n}`));
 
-const USER_AVATAR = `<div class="flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-accent text-[11px] font-semibold text-white">You</div>`;
+const USER_AVATAR = `<div class="flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-accent text-[11px] font-semibold text-white">${th('chat.you')}</div>`;
 const ASSISTANT_AVATAR = `<div class="flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-generated-bg text-generated">
   <svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2a5 5 0 0 0-5 5v2a5 5 0 0 0 10 0V7a5 5 0 0 0-5-5z"></path><path d="M8 14v1a4 4 0 0 0 8 0v-1"></path><line x1="12" y1="19" x2="12" y2="22"></line></svg>
 </div>`;
@@ -187,7 +188,7 @@ function sourcesChipHtml(sources: ChatSource[] | undefined): string {
         </span>`,
     )
     .join('');
-  return `<div class="mt-2 flex flex-wrap items-center gap-1"><span class="mr-0.5 text-[10px] font-medium text-gray-400">Sources</span>${chips}</div>`;
+  return `<div class="mt-2 flex flex-wrap items-center gap-1"><span class="mr-0.5 text-[10px] font-medium text-gray-400">${th('chat.sources')}</span>${chips}</div>`;
 }
 
 // Small groundedness badge (documentation/28-faithfulness-evaluation.md):
@@ -198,12 +199,12 @@ function sourcesChipHtml(sources: ChatSource[] | undefined): string {
 function faithfulnessBadgeHtml(f: ChatFaithfulness | undefined): string {
   if (!f) return '';
   if (f.basis === 'extractive') {
-    return `<span class="inline-flex items-center rounded-full bg-emerald-50 px-2 py-0.5 text-[10px] font-medium text-emerald-700" title="Quoted directly from the wiki -- every word is grounded.">Grounded · verbatim</span>`;
+    return `<span class="inline-flex items-center rounded-full bg-emerald-50 px-2 py-0.5 text-[10px] font-medium text-emerald-700" title="${th('chat.faith.verbatimTitle')}">${th('chat.faith.verbatim')}</span>`;
   }
   const supportedPct = Math.round((1 - f.unsupported_rate) * 100);
   const flagged = f.unsupported_rate > 0.5;
   const colorClasses = flagged ? 'bg-amber-50 text-amber-700' : 'bg-emerald-50 text-emerald-700';
-  return `<span class="inline-flex items-center rounded-full ${colorClasses} px-2 py-0.5 text-[10px] font-medium" title="Offline lexical-overlap estimate across ${f.checkable_count} checkable sentence(s) vs. the retrieved wiki excerpts -- a heuristic proxy, not an LLM judge.">~${supportedPct}% grounded · estimate</span>`;
+  return `<span class="inline-flex items-center rounded-full ${colorClasses} px-2 py-0.5 text-[10px] font-medium" title="${th('chat.faith.estimateTitle', { count: f.checkable_count })}">${th('chat.faith.estimate', { pct: supportedPct })}</span>`;
 }
 
 function typingDotsHtml(): string {
@@ -214,10 +215,14 @@ function typingDotsHtml(): string {
   </div>`;
 }
 
+const SUGGESTION_ICON = `<svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z"></path></svg>`;
+const EDIT_ICON = `<svg viewBox="0 0 24 24" width="12" height="12" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 3a2.85 2.83 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5Z"></path></svg>`;
+const RESEND_ICON = `<svg viewBox="0 0 24 24" width="12" height="12" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="1 4 1 10 7 10"></polyline><path d="M3.51 15a9 9 0 1 0 .49-9.36L1 10"></path></svg>`;
+
 function bubbleInnerHtml(
   role: 'user' | 'assistant',
   bodyHtml: string,
-  opts: { sourcesHtml?: string; faithfulnessHtml?: string; at?: string; streaming?: boolean } = {},
+  opts: { sourcesHtml?: string; faithfulnessHtml?: string; at?: string; streaming?: boolean; messageIndex?: number } = {},
 ): string {
   const isUser = role === 'user';
   const avatar = isUser ? USER_AVATAR : ASSISTANT_AVATAR;
@@ -226,11 +231,22 @@ function bubbleInnerHtml(
     !isUser && !opts.streaming
       ? `<button type="button" class="chat-copy-btn absolute -top-2.5 right-2 hidden items-center gap-1 rounded-full border border-gray-200 bg-white px-1.5 py-0.5 text-[10px] text-gray-500 shadow-sm hover:text-accent group-hover:flex">${COPY_ICON}</button>`
       : '';
+  // Resend re-submits this exact message as-is (regenerate); edit hands
+  // the text back to the composer first. Both drop this message and
+  // everything after it -- see the delegated click handler below.
+  const userActionBtns =
+    isUser && opts.messageIndex !== undefined
+      ? `<div class="absolute -top-2.5 left-2 hidden items-center gap-1 group-hover:flex">
+          <button type="button" data-message-index="${opts.messageIndex}" title="${th('chat.editResend')}" class="chat-edit-btn flex items-center rounded-full border border-gray-200 bg-white px-1.5 py-0.5 text-gray-500 shadow-sm hover:text-accent">${EDIT_ICON}</button>
+          <button type="button" data-message-index="${opts.messageIndex}" title="${th('chat.resend')}" class="chat-resend-btn flex items-center rounded-full border border-gray-200 bg-white px-1.5 py-0.5 text-gray-500 shadow-sm hover:text-accent">${RESEND_ICON}</button>
+        </div>`
+      : '';
   const bubble = `
     <div class="group relative max-w-[80%] rounded-2xl px-3.5 py-2.5 text-sm leading-relaxed shadow-sm ${
       isUser ? 'rounded-tr-sm bg-accent text-white' : 'rounded-tl-sm border border-gray-200 bg-white text-gray-800'
     }">
       ${copyBtn}
+      ${userActionBtns}
       <div class="chat-bubble-body ${isUser ? 'whitespace-pre-wrap' : ''}">${bodyHtml}</div>
       ${opts.faithfulnessHtml ? `<div class="mt-2">${opts.faithfulnessHtml}</div>` : ''}
       ${opts.sourcesHtml ?? ''}
@@ -244,7 +260,7 @@ function bubbleInnerHtml(
 function bubbleHtml(
   role: 'user' | 'assistant',
   bodyHtml: string,
-  opts: { sourcesHtml?: string; faithfulnessHtml?: string; at?: string; streaming?: boolean } = {},
+  opts: { sourcesHtml?: string; faithfulnessHtml?: string; at?: string; streaming?: boolean; messageIndex?: number } = {},
 ): string {
   const isUser = role === 'user';
   return `
@@ -257,19 +273,27 @@ function isNearBottom(container: HTMLElement): boolean {
   return container.scrollHeight - container.scrollTop - container.clientHeight < 80;
 }
 
+// Leads with the sample prompts themselves rather than an instructional
+// blurb -- each one is a real, clickable question, not a placeholder.
 function emptyStateHtml(): string {
-  const chips = SUGGESTIONS.map(
-    (s) => `<button type="button" class="chat-suggestion rounded-full border border-gray-200 bg-white px-3 py-1.5 text-xs text-gray-600 hover:border-accent/40 hover:text-accent">${escapeHtml(s)}</button>`,
+  const cards = SUGGESTIONS.map(
+    (s) =>
+      `<button type="button" class="chat-suggestion flex items-start gap-2 rounded-xl border border-gray-200 bg-white px-3.5 py-2.5 text-left text-xs text-gray-700 shadow-sm hover:border-accent/40 hover:text-accent hover:shadow-md" data-suggestion="${escapeHtml(s)}">
+        <span class="mt-0.5 shrink-0 text-gray-300">${SUGGESTION_ICON}</span>
+        <span>${escapeHtml(s)}</span>
+      </button>`,
   ).join('');
   return `
-    <div class="flex h-full flex-col items-center justify-center gap-3 text-center">
-      <div class="flex h-11 w-11 items-center justify-center rounded-full bg-generated-bg text-generated">
-        <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z"></path></svg>
-      </div>
-      <p class="text-sm font-medium text-gray-700">Ask something to get started</p>
-      <p class="max-w-xs text-xs text-gray-400">Answers are grounded in, and cited to, the compiled wiki pages they came from.</p>
-      <div class="mt-1 flex flex-wrap justify-center gap-1.5">${chips}</div>
+    <div class="flex h-full flex-col items-center justify-center gap-4 px-4 text-center">
+      <p class="text-sm font-medium text-gray-500">${th('chat.empty.try')}</p>
+      <div class="grid w-full max-w-lg grid-cols-1 gap-2 sm:grid-cols-2">${cards}</div>
+      <p class="max-w-xs text-[11px] text-gray-400">${th('chat.empty.note')}</p>
     </div>`;
+}
+
+// The backend names fresh chats "New chat"; show that in the UI language.
+function sessionTitle(title: string): string {
+  return title === 'New chat' ? t('chat.newChat') : title;
 }
 
 function renderMessages() {
@@ -277,11 +301,12 @@ function renderMessages() {
   const messages = activeSession?.messages ?? [];
   container.innerHTML = messages.length
     ? messages
-        .map((m) =>
+        .map((m, index) =>
           bubbleHtml(m.role, m.role === 'user' ? escapeHtml(m.content) : renderMarkdownLite(m.content), {
             sourcesHtml: m.role === 'assistant' ? sourcesChipHtml(m.sources) : '',
             faithfulnessHtml: m.role === 'assistant' ? faithfulnessBadgeHtml(m.faithfulness) : '',
             at: m.at,
+            messageIndex: index,
           }),
         )
         .join('')
@@ -290,7 +315,7 @@ function renderMessages() {
   container.querySelectorAll<HTMLButtonElement>('.chat-suggestion').forEach((btn) => {
     btn.addEventListener('click', () => {
       const input = el('chat-input') as HTMLTextAreaElement;
-      input.value = btn.textContent ?? '';
+      input.value = btn.dataset.suggestion ?? '';
       input.focus();
       autosizeInput();
     });
@@ -312,16 +337,16 @@ function renderSessionList() {
       }">
         <svg class="shrink-0 opacity-60" viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z"></path></svg>
         <span class="min-w-0 flex-1 truncate">
-          <span class="block truncate">${escapeHtml(s.title)}</span>
-          <span class="block truncate text-[11px] opacity-60">${formatRelativeTime(s.updated_at)}${s.message_count ? ` · ${s.message_count} msg` : ''}</span>
+          <span class="block truncate">${escapeHtml(sessionTitle(s.title))}</span>
+          <span class="block truncate text-[11px] opacity-60">${formatRelativeTime(s.updated_at)}${s.message_count ? ` · ${escapeHtml(t('chat.session.messages', { count: s.message_count }))}` : ''}</span>
         </span>
-        <span data-session-delete="${escapeHtml(s.id)}" title="Delete chat" class="session-delete-btn hidden shrink-0 rounded-md p-1 text-gray-400 hover:bg-red-50 hover:text-red-600 group-hover:block">
+        <span data-session-delete="${escapeHtml(s.id)}" title="${th('chat.session.delete')}" class="session-delete-btn hidden shrink-0 rounded-md p-1 text-gray-400 hover:bg-red-50 hover:text-red-600 group-hover:block">
           <svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"></path></svg>
         </span>
       </button>`,
         )
         .join('')
-    : `<p class="px-2 py-3 text-center text-xs text-gray-400">${query ? 'No chats match your search.' : 'No chats yet.'}</p>`;
+    : `<p class="px-2 py-3 text-center text-xs text-gray-400">${query ? th('chat.session.noMatch') : th('chat.session.none')}</p>`;
 
   container.querySelectorAll<HTMLButtonElement>('.session-row').forEach((btn) => {
     btn.addEventListener('click', () => {
@@ -355,10 +380,7 @@ function renderScopeToggle() {
   resourcesToggle.classList.toggle('cursor-not-allowed', scope === 'raw');
 
   const input = el('chat-input') as HTMLTextAreaElement;
-  input.placeholder =
-    scope === 'raw'
-      ? 'Ask a question about your raw notes, emails, and documents… (Shift+Enter for a new line)'
-      : 'Ask a question about the wiki… (Shift+Enter for a new line)';
+  input.placeholder = scope === 'raw' ? t('chat.input.raw') : t('chat.input.wiki');
 }
 
 async function updateCorpusSource(source: ChatCorpusSource) {
@@ -376,7 +398,7 @@ async function updateCorpusSource(source: ChatCorpusSource) {
 function renderResourcesPanel() {
   const scope = activeSession?.resource_scope ?? null;
   const toggle = el('chat-resources-toggle').querySelector('span')!;
-  toggle.textContent = scope ? `Resources: ${scope.length} selected` : 'Resources: All';
+  toggle.textContent = scope ? t('chat.resources.selected', { count: scope.length }) : t('chat.resources.all');
 
   const panel = el('chat-resources-panel');
   const allChecked = !scope;
@@ -394,10 +416,10 @@ function renderResourcesPanel() {
   panel.innerHTML = `
     <label class="flex items-center gap-2 rounded px-2 py-1 text-sm font-medium text-gray-900 hover:bg-gray-50">
       <input type="checkbox" id="chat-resources-all" ${allChecked ? 'checked' : ''} class="rounded border-gray-300 text-accent focus:ring-accent/30" />
-      <span>All resources</span>
+      <span>${th('chat.resources.allLabel')}</span>
     </label>
     <div class="my-1 border-t border-gray-100"></div>
-    ${rows || '<p class="px-2 py-1 text-xs text-gray-400">No cited resources yet.</p>'}
+    ${rows || `<p class="px-2 py-1 text-xs text-gray-400">${th('chat.resources.none')}</p>`}
   `;
 
   el('chat-resources-all').addEventListener('change', async (event) => {
@@ -418,9 +440,9 @@ function renderResourcesPanel() {
 function renderModePanel() {
   const label = el('chat-mode-label');
   const isHybrid = !ragSettings || ragSettings.architecture === 'hybrid';
-  label.textContent = `Mode: ${
-    ragSettings ? (isHybrid ? RETRIEVAL_MODE_LABELS[ragSettings.retrieval_mode] : ARCHITECTURE_LABELS[ragSettings.architecture]) : '…'
-  }`;
+  label.textContent = t('chat.mode.label', {
+    name: ragSettings ? (isHybrid ? RETRIEVAL_MODE_LABELS[ragSettings.retrieval_mode] : ARCHITECTURE_LABELS[ragSettings.architecture]) : '…',
+  });
 
   el('chat-mode-retrieval-options')
     .querySelectorAll<HTMLInputElement>('input[name="chat-retrieval-mode"]')
@@ -457,7 +479,7 @@ async function saveRagMode(patch: Partial<Pick<RagSettings, 'retrieval_mode' | '
     });
   } catch (err: any) {
     ragSettings = previous;
-    window.showToast?.(err.message || 'Could not update chat mode.', 'error');
+    window.showToast?.(err.message || t('chat.modeUpdateFailed'), 'error');
   }
   renderModePanel();
 }
@@ -470,9 +492,9 @@ function renderModelPanel() {
   const chatDefaultProfile = profiles.find((p) => p.id === chatDefaultId);
 
   const selectedProfile = selectedId ? profiles.find((p) => p.id === selectedId) : null;
-  label.textContent = `Model: ${
-    selectedProfile ? selectedProfile.label : chatDefaultProfile ? `Default (${chatDefaultProfile.label})` : 'Default'
-  }`;
+  label.textContent = t('chat.model.label', {
+    name: selectedProfile ? selectedProfile.label : chatDefaultProfile ? t('chat.model.defaultWith', { name: chatDefaultProfile.label }) : t('chat.model.default'),
+  });
 
   const optionRow = (id: string | null, title: string, subtitle: string) => `
     <label class="flex items-start gap-2 rounded px-1.5 py-1 hover:bg-gray-50">
@@ -487,11 +509,11 @@ function renderModelPanel() {
 
   const container = el('chat-model-options');
   if (!profiles.length) {
-    container.innerHTML = `<p class="px-1.5 py-1 text-xs text-gray-400">No providers configured yet.</p>`;
+    container.innerHTML = `<p class="px-1.5 py-1 text-xs text-gray-400">${th('chat.model.none')}</p>`;
     return;
   }
   container.innerHTML = [
-    optionRow(null, 'Default', chatDefaultProfile ? `Whatever "Chat" is set to in Settings (${chatDefaultProfile.label})` : 'Whatever "Chat" is set to in Settings'),
+    optionRow(null, t('chat.model.default'), chatDefaultProfile ? t('chat.model.defaultHintWith', { name: chatDefaultProfile.label }) : t('chat.model.defaultHint')),
     ...profiles.map((p) => optionRow(p.id, p.label, p.model)),
   ].join('');
 
@@ -563,7 +585,7 @@ async function selectSession(id: string) {
   } catch {
     /* best-effort */
   }
-  (el('chat-title-input') as HTMLInputElement).value = activeSession!.title;
+  (el('chat-title-input') as HTMLInputElement).value = sessionTitle(activeSession!.title);
   renderSessionList();
   renderMessages();
   renderResourcesPanel();
@@ -579,7 +601,7 @@ async function createSession() {
 
 async function deleteSession(id: string) {
   const target = sessions.find((s) => s.id === id);
-  if (!confirm(`Delete "${target?.title ?? 'this chat'}"? This can't be undone.`)) return;
+  if (!confirm(t('chat.session.confirmDelete', { title: target ? sessionTitle(target.title) : t('chat.session.thisChat') }))) return;
   // Unlike selectSession() (which always stops streaming since it's about
   // to switch sessions), only stop it here if we're deleting the session
   // that's actually streaming -- otherwise deleting an unrelated chat
@@ -702,7 +724,7 @@ document.addEventListener('click', (event) => {
       }, 1200);
     })
     .catch(() => {
-      window.showToast?.('Could not copy to clipboard.', 'error');
+      window.showToast?.(t('common.copyFailed'), 'error');
     });
 });
 
@@ -712,11 +734,11 @@ async function loadStatus() {
     const res = await fetch(`${apiBase}/api/chat/status`);
     const data = await res.json();
     const dotColor = data.llm_available ? 'bg-accent' : 'bg-amber-400';
-    status.innerHTML = `<span class="h-1.5 w-1.5 rounded-full ${dotColor}"></span> ${data.corpus_pages} wiki pages · ${data.raw_source_files} raw files indexed · ${
-      data.llm_available ? 'LLM-generated answers' : 'No LLM configured — showing closest matches'
+    status.innerHTML = `<span class="h-1.5 w-1.5 rounded-full ${dotColor}"></span> ${th('chat.status.counts', { pages: data.corpus_pages, raw: data.raw_source_files })} · ${
+      data.llm_available ? th('chat.status.llm') : th('chat.status.noLlm')
     }`;
   } catch {
-    status.innerHTML = `<span class="h-1.5 w-1.5 rounded-full bg-red-400"></span> Cannot reach API at ${apiBase}.`;
+    status.innerHTML = `<span class="h-1.5 w-1.5 rounded-full bg-red-400"></span> ${th('common.cannotReachApi')}`;
   }
 }
 
@@ -759,7 +781,7 @@ function setComposerBusy(busy: boolean) {
   const btn = el('chat-send-btn') as HTMLButtonElement;
   const input = el('chat-input') as HTMLTextAreaElement;
   btn.innerHTML = busy ? STOP_ICON : SEND_ICON;
-  btn.title = busy ? 'Stop generating' : 'Send';
+  btn.title = busy ? t('chat.stop') : t('chat.send');
   btn.classList.toggle('bg-gray-700', busy);
   btn.classList.toggle('hover:bg-gray-800', busy);
   btn.classList.toggle('bg-accent', !busy);
@@ -767,20 +789,11 @@ function setComposerBusy(busy: boolean) {
   input.disabled = busy;
 }
 
-el('chat-form').addEventListener('submit', (event) => {
-  event.preventDefault();
-
-  if (streamingSource) {
-    stopStreaming();
-    return;
-  }
-
-  if (!activeSession) return;
-  const input = el('chat-input') as HTMLTextAreaElement;
-  const message = input.value.trim();
-  if (!message) return;
-  input.value = '';
-  autosizeInput();
+// Shared by the composer's own submit and "resend" on a past message --
+// both end up appending one fresh user/assistant turn the same way, the
+// only difference is where `message` came from.
+function submitMessage(message: string) {
+  if (!activeSession || streamingSource) return;
 
   activeSession.messages.push({ role: 'user', content: message, at: new Date().toISOString() });
   renderMessages();
@@ -846,7 +859,7 @@ el('chat-form').addEventListener('submit', (event) => {
         /* keep the streamed content on screen even if the reload fails */
       });
     } else if (payload.type === 'error') {
-      assistantText = `Error: ${payload.message ?? 'Chat stream failed.'}`;
+      assistantText = t('chat.streamError', { message: payload.message ?? t('chat.streamFailedDefault') });
       renderStreaming(true);
       source.close();
       streamingSource = null;
@@ -857,7 +870,7 @@ el('chat-form').addEventListener('submit', (event) => {
   source.onerror = () => {
     if (source.readyState === EventSource.CLOSED) return;
     if (!assistantText) {
-      assistantText = 'Error: lost connection to the chat stream.';
+      assistantText = t('chat.streamLost');
       renderStreaming(true);
     }
     source.close();
@@ -865,6 +878,73 @@ el('chat-form').addEventListener('submit', (event) => {
     finalizeStreamingBubble = null;
     setComposerBusy(false);
   };
+}
+
+el('chat-form').addEventListener('submit', (event) => {
+  event.preventDefault();
+
+  if (streamingSource) {
+    stopStreaming();
+    return;
+  }
+
+  const input = el('chat-input') as HTMLTextAreaElement;
+  const message = input.value.trim();
+  if (!message) return;
+  input.value = '';
+  autosizeInput();
+  submitMessage(message);
+});
+
+// --- Resend / edit a past user message ------------------------------------
+// Both drop that message and everything after it (its own reply included)
+// via the same truncate endpoint; resend immediately resubmits the same
+// text, edit hands it back to the composer for changes first.
+
+async function truncateSessionTo(index: number): Promise<boolean> {
+  if (!activeSession) return false;
+  try {
+    activeSession = await apiFetch(`/api/chat/sessions/${activeSession.id}/truncate`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ keep: index }),
+    });
+    return true;
+  } catch (err: any) {
+    window.showToast?.(err.message || t('chat.updateFailed'), 'error');
+    return false;
+  }
+}
+
+document.getElementById('chat-messages')?.addEventListener('click', async (event) => {
+  const target = event.target as HTMLElement;
+
+  const resendBtn = target.closest<HTMLElement>('.chat-resend-btn');
+  if (resendBtn) {
+    if (streamingSource) return;
+    const index = Number(resendBtn.dataset.messageIndex);
+    const text = activeSession?.messages[index]?.content;
+    if (text === undefined) return;
+    if (!(await truncateSessionTo(index))) return;
+    renderMessages();
+    submitMessage(text);
+    return;
+  }
+
+  const editBtn = target.closest<HTMLElement>('.chat-edit-btn');
+  if (editBtn) {
+    if (streamingSource) return;
+    const index = Number(editBtn.dataset.messageIndex);
+    const text = activeSession?.messages[index]?.content;
+    if (text === undefined) return;
+    if (!(await truncateSessionTo(index))) return;
+    renderMessages();
+    const input = el('chat-input') as HTMLTextAreaElement;
+    input.value = text;
+    input.focus();
+    input.setSelectionRange(text.length, text.length);
+    autosizeInput();
+  }
 });
 
 async function init() {

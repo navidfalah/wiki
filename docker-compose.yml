@@ -15,6 +15,10 @@ services:
       context: .
       dockerfile: backend/Dockerfile
     container_name: llm-wiki-backend
+    # The images run as the unprivileged `node` user (production). In dev the
+    # bind-mounted ./data etc. are owned by whoever runs compose, so keep the
+    # previous behavior (root) here to avoid permission errors on Linux hosts.
+    user: "0:0"
     env_file:
       - path: .env
         required: false
@@ -63,6 +67,7 @@ services:
       context: ./frontend
       dockerfile: Dockerfile
     container_name: llm-wiki-frontend
+    user: "0:0"
     environment:
       # BACKEND_API_URL is this container's own server-side fetches (SSR
       # wiki-page/dashboard rendering) — must be the Docker service
@@ -118,7 +123,7 @@ services:
       # with host=localhost from outside Docker (e.g. testing the connector
       # against this container without going through the frontend proxy).
       # Same override pattern as BACKEND_PORT/FRONTEND_PORT above.
-      - "${POSTGRES_PORT:-5432}:5432"
+      - "127.0.0.1:${POSTGRES_PORT:-5432}:5432"
     healthcheck:
       test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-wiki_reader} -d ${POSTGRES_DB:-aurora_kb}"]
       interval: 5s

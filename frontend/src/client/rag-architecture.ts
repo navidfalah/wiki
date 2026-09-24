@@ -1,3 +1,4 @@
+import { t, th } from './lib/i18n';
 import { apiBase } from './lib/api';
 import { escapeHtml } from './lib/dom';
 
@@ -77,7 +78,7 @@ function renderPresetSelect() {
   const deleteBtn = document.getElementById('rag-preset-delete-btn') as HTMLButtonElement;
   const previousValue = select.value;
   if (!presets.length) {
-    select.innerHTML = '<option value="">No presets saved yet</option>';
+    select.innerHTML = `<option value="">${th('rag-architecture.presetNone')}</option>`;
     loadBtn.disabled = true;
     deleteBtn.disabled = true;
     return;
@@ -93,7 +94,7 @@ function renderPresetSelect() {
 async function loadPresets() {
   try {
     const res = await fetch(`${apiBase}/api/settings/rag/presets`);
-    if (!res.ok) throw new Error(`Request failed (${res.status})`);
+    if (!res.ok) throw new Error(t('common.requestFailed', { status: res.status }));
     const data = await res.json();
     presets = data.presets ?? [];
   } catch {
@@ -107,7 +108,7 @@ async function saveAsPreset() {
   const hint = document.getElementById('rag-preset-hint') as HTMLElement;
   const name = nameInput.value.trim();
   if (!name) {
-    (window as any).showToast?.('Give the preset a name first.', 'error');
+    (window as any).showToast?.(t('rag-architecture.giveName'), 'error');
     return;
   }
   try {
@@ -118,16 +119,16 @@ async function saveAsPreset() {
     });
     if (!res.ok) {
       const err = await res.json().catch(() => ({}));
-      throw new Error(err.error || `Request failed (${res.status})`);
+      throw new Error(err.error || t('common.requestFailed', { status: res.status }));
     }
     const saved: RagPreset = await res.json();
     nameInput.value = '';
     await loadPresets();
     (document.getElementById('rag-preset-select') as HTMLSelectElement).value = saved.id;
-    hint.textContent = `Saved preset "${saved.name}".`;
-    (window as any).showToast?.('RAG preset saved.');
+    hint.textContent = t('rag-architecture.presetSavedHint', { name: saved.name });
+    (window as any).showToast?.(t('rag-architecture.presetSaved'));
   } catch (err: any) {
-    (window as any).showToast?.(err.message || 'Could not save preset.', 'error');
+    (window as any).showToast?.(err.message || t('rag-architecture.presetSaveFailed'), 'error');
   }
 }
 
@@ -141,14 +142,14 @@ async function loadSelectedPreset() {
     });
     if (!res.ok) {
       const err = await res.json().catch(() => ({}));
-      throw new Error(err.error || `Request failed (${res.status})`);
+      throw new Error(err.error || t('common.requestFailed', { status: res.status }));
     }
     fillForm(await res.json());
     const preset = presets.find((p) => p.id === select.value);
-    hint.textContent = preset ? `Loaded "${preset.name}" -- now the active architecture.` : 'Loaded preset.';
-    (window as any).showToast?.('RAG preset applied.');
+    hint.textContent = preset ? t('rag-architecture.presetLoadedHint', { name: preset.name }) : t('rag-architecture.presetLoaded');
+    (window as any).showToast?.(t('rag-architecture.presetApplied'));
   } catch (err: any) {
-    (window as any).showToast?.(err.message || 'Could not load preset.', 'error');
+    (window as any).showToast?.(err.message || t('rag-architecture.presetLoadFailed'), 'error');
   }
 }
 
@@ -157,29 +158,29 @@ async function deleteSelectedPreset() {
   const hint = document.getElementById('rag-preset-hint') as HTMLElement;
   if (!select.value) return;
   const preset = presets.find((p) => p.id === select.value);
-  if (!window.confirm(`Delete preset "${preset?.name ?? select.value}"?`)) return;
+  if (!window.confirm(t('rag-architecture.confirmDelete', { name: preset?.name ?? select.value }))) return;
   try {
     const res = await fetch(`${apiBase}/api/settings/rag/presets/${encodeURIComponent(select.value)}`, {
       method: 'DELETE',
     });
     if (!res.ok) {
       const err = await res.json().catch(() => ({}));
-      throw new Error(err.error || `Request failed (${res.status})`);
+      throw new Error(err.error || t('common.requestFailed', { status: res.status }));
     }
     await loadPresets();
-    hint.textContent = 'Preset deleted.';
+    hint.textContent = t('rag-architecture.presetDeleted');
   } catch (err: any) {
-    (window as any).showToast?.(err.message || 'Could not delete preset.', 'error');
+    (window as any).showToast?.(err.message || t('rag-architecture.presetDeleteFailed'), 'error');
   }
 }
 
 async function load() {
   try {
     const res = await fetch(`${apiBase}/api/settings/rag`);
-    if (!res.ok) throw new Error(`Request failed (${res.status})`);
+    if (!res.ok) throw new Error(t('common.requestFailed', { status: res.status }));
     fillForm(await res.json());
   } catch {
-    (window as any).showToast?.(`Cannot reach API at ${apiBase}.`, 'error');
+    (window as any).showToast?.(t('common.cannotReachApi'), 'error');
   }
 }
 
@@ -187,7 +188,7 @@ async function save() {
   const btn = document.getElementById('save-rag-arch-btn') as HTMLButtonElement;
   const hint = document.getElementById('rag-arch-saved-hint') as HTMLElement;
   btn.disabled = true;
-  btn.textContent = 'Saving…';
+  btn.textContent = t('rag-architecture.saving');
   try {
     const res = await fetch(`${apiBase}/api/settings/rag`, {
       method: 'PUT',
@@ -196,16 +197,16 @@ async function save() {
     });
     if (!res.ok) {
       const err = await res.json().catch(() => ({}));
-      throw new Error(err.error || `Request failed (${res.status})`);
+      throw new Error(err.error || t('common.requestFailed', { status: res.status }));
     }
     fillForm(await res.json());
-    hint.textContent = `Saved at ${new Date().toLocaleTimeString()}`;
-    (window as any).showToast?.('RAG architecture saved.');
+    hint.textContent = t('rag-architecture.savedAt', { time: new Date().toLocaleTimeString(document.documentElement.lang === 'de' ? 'de-DE' : 'en-GB') });
+    (window as any).showToast?.(t('rag-architecture.saved'));
   } catch (err: any) {
-    (window as any).showToast?.(err.message || 'Could not save RAG architecture.', 'error');
+    (window as any).showToast?.(err.message || t('rag-architecture.saveFailed'), 'error');
   } finally {
     btn.disabled = false;
-    btn.textContent = 'Save';
+    btn.textContent = t('common.save');
   }
 }
 

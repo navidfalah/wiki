@@ -1,4 +1,6 @@
 import { copyButtonHtml, initCopyButtons } from './lib/copy';
+import { formatDateTime, formatNumber, t, th } from './lib/i18n';
+import { buildMessage, runMessage, statusLabel, stepName } from './lib/serverText';
 import { apiBase } from './lib/api';
 import { escapeHtml } from './lib/dom';
 
@@ -6,13 +8,13 @@ interface RunSummary {
   id: string;
   started_at: string;
   finished_at: string | null;
-  status: 'running' | 'success' | 'error';
+  status: 'running' | 'success' | 'error' | 'stopped';
   force: boolean;
 }
 
 interface RunStep {
   name: string;
-  status: 'running' | 'success' | 'error';
+  status: 'running' | 'success' | 'error' | 'stopped';
   started_at: string;
   finished_at: string | null;
   detail: string | null;
@@ -55,11 +57,13 @@ const STATUS_TONES: Record<string, string> = {
   running: 'bg-amber-50 text-amber-700',
   success: 'bg-emerald-50 text-emerald-700',
   error: 'bg-red-50 text-red-700',
+  // Deliberately neutral, not red -- a user-requested stop isn't a failure.
+  stopped: 'bg-gray-100 text-gray-600',
 };
 
 function statusBadge(status: string): string {
   const tone = STATUS_TONES[status] ?? 'bg-gray-100 text-gray-600';
-  return `<span class="inline-flex items-center gap-1 rounded-full px-2 py-0.5 text-xs font-medium ${tone}">${escapeHtml(status)}</span>`;
+  return `<span class="inline-flex items-center gap-1 rounded-full px-2 py-0.5 text-xs font-medium ${tone}">${escapeHtml(statusLabel(status))}</span>`;
 }
 
 // Scales through s -> m -> h -> d instead of collapsing everything into
@@ -71,27 +75,21 @@ function formatDuration(startedAt: string, finishedAt: string | null): string {
   const start = new Date(startedAt).getTime();
   const end = finishedAt ? new Date(finishedAt).getTime() : Date.now();
   const seconds = Math.max(0, (end - start) / 1000);
-  if (seconds < 60) return `${seconds.toFixed(1)}s`;
+  if (seconds < 60) return t('common.dur.s', { n: formatNumber(seconds, { minimumFractionDigits: 1, maximumFractionDigits: 1 }) });
   const minutes = Math.floor(seconds / 60);
-  if (minutes < 60) return `${minutes}m ${Math.round(seconds % 60)}s`;
+  if (minutes < 60) return t('common.dur.ms', { m: minutes, s: Math.round(seconds % 60) });
   const hours = Math.floor(minutes / 60);
-  if (hours < 24) return `${hours}h ${minutes % 60}m`;
+  if (hours < 24) return t('common.dur.hm', { h: hours, m: minutes % 60 });
   const days = Math.floor(hours / 24);
-  return `${days}d ${hours % 24}h`;
+  return t('common.dur.dh', { d: days, h: hours % 24 });
 }
 
-function formatTime(iso: string): string {
-  try {
-    return new Date(iso).toLocaleString();
-  } catch {
-    return iso;
-  }
-}
+const formatTime = formatDateTime;
 
 function renderList() {
   const container = document.getElementById('pipeline-runs-list')!;
   if (!runs.length) {
-    container.innerHTML = '<p class="p-5 text-sm text-gray-500">No pipeline runs yet. Click "Run compiler" above to start one.</p>';
+    container.innerHTML = `<p class="p-5 text-sm text-gray-500">${th('pipelines.noRuns')}</p>`;
     return;
   }
   container.innerHTML = runs
@@ -104,7 +102,7 @@ function renderList() {
           data-run-id="${escapeHtml(run.id)}"
           class="flex min-w-0 flex-1 flex-col gap-1 text-left">
           <div class="flex items-center justify-between gap-2">
-            <span class="truncate text-sm font-medium text-gray-900">${escapeHtml(formatTime(run.started_at))}${run.force ? ' · forced' : ''}</span>
+            <span class="truncate text-sm font-medium text-gray-900">${escapeHtml(formatTime(run.started_at))}${run.force ? th('pipelines.forced') : ''}</span>
             ${statusBadge(run.status)}
           </div>
           <div class="flex items-center justify-between gap-2 text-xs text-gray-500">
@@ -115,7 +113,7 @@ function renderList() {
         <button
           type="button"
           data-delete-run-id="${escapeHtml(run.id)}"
-          title="${run.status === 'running' && buildIsRunning ? 'Stop and delete this run' : 'Delete this run'}"
+          title="${run.status === 'running' && buildIsRunning ? th('pipelines.deleteStop') : th('pipelines.deleteRun')}"
           class="mt-0.5 shrink-0 rounded-md p-1 text-gray-300 opacity-0 hover:bg-red-50 hover:text-red-600 group-hover:opacity-100 disabled:cursor-not-allowed disabled:opacity-0">
           ✕
         </button>
@@ -140,26 +138,26 @@ function renderList() {
       const run = runs.find((r) => r.id === id);
       const confirmMessage =
         run?.status === 'running' && buildIsRunning
-          ? `Run ${id} is still in progress. Deleting it will stop the build. Continue?`
-          : `Delete run ${id}? This cannot be undone.`;
+          ? t('pipelines.confirmDeleteRunning', { id })
+          : t('pipelines.confirmDelete', { id });
       if (!window.confirm(confirmMessage)) return;
       btn.disabled = true;
       try {
         const res = await fetch(`${apiBase}/api/pipelines/${encodeURIComponent(id)}`, { method: 'DELETE' });
         if (!res.ok) {
           const data = await res.json().catch(() => ({}));
-          throw new Error(data.detail ?? `Request failed (${res.status})`);
+          throw new Error(data.detail ?? t('common.requestFailed', { status: res.status }));
         }
         runs = runs.filter((r) => r.id !== id);
         if (selectedId === id) {
           selectedId = runs.length ? runs[0].id : null;
           document.getElementById('pipeline-run-detail')!.innerHTML =
-            '<p class="text-sm text-gray-500">Select a run to see its steps.</p>';
+            `<p class="text-sm text-gray-500">${th('pipelines.selectRun')}</p>`;
         }
         renderList();
         if (selectedId) loadDetail();
       } catch (err: any) {
-        window.alert(err.message ?? 'Could not delete this run.');
+        window.alert(err.message ?? t('pipelines.deleteFailed'));
         btn.disabled = false;
       }
     });
@@ -169,29 +167,30 @@ function renderList() {
 function stepIcon(status: string): string {
   if (status === 'success') return '✓';
   if (status === 'error') return '✕';
+  if (status === 'stopped') return '⏸';
   return '…';
 }
 
 function emptyUsageMessage(backend: LlmBackendInfo | undefined, status: string): string {
-  if (status === 'running') return 'Still running — token usage totals are recorded once the run finishes.';
-  if (!backend) return 'No token usage recorded for this run.';
+  if (status === 'running') return t('pipelines.usage.running');
+  if (!backend) return t('pipelines.usage.none');
   if (backend.mode === 'local') {
-    return `Running a local model (${backend.model} via ${backend.base_url}) — this backend doesn't report token counts.`;
+    return t('pipelines.usage.local', { model: backend.model, url: backend.base_url });
   }
   if (backend.mode === 'none') {
-    return 'No OPENAI_API_KEY configured — this run used the no-LLM/extractive path, so there are no tokens to report.';
+    return t('pipelines.usage.noKey');
   }
-  return 'No LLM calls were needed for this run (nothing new to extract or synthesize).';
+  return t('pipelines.usage.noCalls');
 }
 
 function renderValueHtml(value: unknown): string {
   if (Array.isArray(value)) {
-    if (!value.length) return '<span class="text-gray-400">(none)</span>';
+    if (!value.length) return `<span class="text-gray-400">${th('pipelines.none')}</span>`;
     const shown = value.slice(0, 20);
     const extra = value.length - shown.length;
     return `<ul class="mt-0.5 list-disc space-y-0.5 pl-4">${shown
       .map((v) => `<li class="break-all">${escapeHtml(String(v))}</li>`)
-      .join('')}</ul>${extra > 0 ? `<p class="mt-0.5 text-gray-400">+ ${extra} more</p>` : ''}`;
+      .join('')}</ul>${extra > 0 ? `<p class="mt-0.5 text-gray-400">${th('pipelines.more', { count: extra })}</p>` : ''}`;
   }
   if (value && typeof value === 'object') {
     return `<ul class="mt-0.5 space-y-0.5">${Object.entries(value as Record<string, unknown>)
@@ -217,12 +216,12 @@ function estimateRemaining(startedAt: string, current: number, total: number): s
   const elapsedMs = Date.now() - new Date(startedAt).getTime();
   if (elapsedMs <= 0) return null;
   const remainingMs = (elapsedMs / current) * (total - current);
-  if (remainingMs < 5000) return '<1m left';
+  if (remainingMs < 5000) return t('pipelines.eta.lessThanMin');
   const minutes = Math.round(remainingMs / 60000);
-  if (minutes < 1) return '<1m left';
-  if (minutes < 60) return `~${minutes}m left`;
+  if (minutes < 1) return t('pipelines.eta.lessThanMin');
+  if (minutes < 60) return t('pipelines.eta.minutes', { n: minutes });
   const hours = Math.round(minutes / 60);
-  return `~${hours}h left`;
+  return t('pipelines.eta.hours', { n: hours });
 }
 
 function renderStepProgressHtml(startedAt: string, progress: RunStep['progress']): string {
@@ -235,30 +234,35 @@ function renderStepProgressHtml(startedAt: string, progress: RunStep['progress']
   const eta = estimateRemaining(startedAt, progress.current, progress.total);
   return `
     <div class="mt-1.5">
-      <p class="text-[11px] font-medium text-amber-700">${progress.current}/${progress.total} processed${eta ? ` · ${escapeHtml(eta)}` : ''}</p>
+      <p class="text-[11px] font-medium text-amber-700">${th('pipelines.processed', { current: progress.current, total: progress.total })}${eta ? ` · ${escapeHtml(eta)}` : ''}</p>
       <ul class="mt-1 max-h-40 space-y-0.5 overflow-auto rounded-lg border border-amber-100 bg-amber-50/70 px-2.5 py-1.5 font-mono text-[11px] leading-snug text-amber-900">${items}</ul>
     </div>`;
 }
 
-function renderStepErrorHtml(error: string, stepIndex: number): string {
+function renderStepErrorHtml(error: string, stepIndex: number, neutral = false): string {
   // error is often a full Python traceback (see main.py's exception handler
   // in run_compiler()), not a one-line message -- render it as a scrollable
   // monospace log rather than squashing newlines into an unreadable <p>.
+  // `neutral` is set for a deliberately-stopped step: it's still shown
+  // (the message says what happened), just not in alarming red -- a
+  // user-requested stop isn't a failure.
+  const textTone = neutral ? 'text-gray-600' : 'text-red-600';
+  const boxTone = neutral ? 'border-gray-200 bg-gray-50 text-gray-700' : 'border-red-100 bg-red-50 text-red-800';
   const firstLine = error.split('\n')[0];
   const isMultiline = error.includes('\n');
   if (!isMultiline) {
     return `<div class="copy-wrap mt-0.5 flex items-start gap-1">
-      <p class="copy-source text-xs text-red-600">${escapeHtml(error)}</p>
-      ${copyButtonHtml('text-red-600')}
+      <p class="copy-source text-xs ${textTone}">${escapeHtml(error)}</p>
+      ${copyButtonHtml(textTone)}
     </div>`;
   }
   const isOpen = openStepErrors.has(stepIndex);
   return `
     <details class="mt-1.5" data-step-error-index="${stepIndex}"${isOpen ? ' open' : ''}>
-      <summary class="cursor-pointer text-xs text-red-600 hover:underline">${escapeHtml(firstLine)}</summary>
+      <summary class="cursor-pointer text-xs ${textTone} hover:underline">${escapeHtml(firstLine)}</summary>
       <div class="copy-wrap relative mt-1.5">
-        <pre class="copy-source max-h-72 overflow-auto whitespace-pre-wrap break-words rounded-lg border border-red-100 bg-red-50 p-2.5 pr-8 font-mono text-[11px] leading-snug text-red-800">${escapeHtml(error)}</pre>
-        ${copyButtonHtml('absolute right-1.5 top-1.5 bg-red-50 text-red-600')}
+        <pre class="copy-source max-h-72 overflow-auto whitespace-pre-wrap break-words rounded-lg border ${boxTone} p-2.5 pr-8 font-mono text-[11px] leading-snug">${escapeHtml(error)}</pre>
+        ${copyButtonHtml(`absolute right-1.5 top-1.5 ${neutral ? 'bg-gray-50 text-gray-600' : 'bg-red-50 text-red-600'}`)}
       </div>
     </details>`;
 }
@@ -268,7 +272,7 @@ function renderStepDataHtml(data: Record<string, unknown> | null | undefined, st
   const sections = ['input', 'output']
     .filter((key) => data[key] !== undefined)
     .map((key) => {
-      const heading = key === 'input' ? 'Input' : 'Output';
+      const heading = key === 'input' ? t('pipelines.input') : t('pipelines.output');
       const tone = key === 'input' ? 'text-source' : 'text-generated';
       return `<div><p class="text-[11px] font-semibold ${tone}">${heading}</p><div class="mt-1 text-xs text-gray-700">${renderValueHtml(
         data[key],
@@ -278,7 +282,7 @@ function renderStepDataHtml(data: Record<string, unknown> | null | undefined, st
   const isOpen = openStepDetails.has(stepIndex);
   return `
     <details class="mt-1.5" data-step-index="${stepIndex}"${isOpen ? ' open' : ''}>
-      <summary class="cursor-pointer text-xs font-medium text-accent hover:underline">Show input / output</summary>
+      <summary class="cursor-pointer text-xs font-medium text-accent hover:underline">${th('pipelines.showIO')}</summary>
       <div class="mt-2 grid gap-3 rounded-lg border border-gray-100 bg-gray-50 p-3 sm:grid-cols-2">${sections.join('')}</div>
     </details>`;
 }
@@ -293,18 +297,20 @@ function renderDetail(run: RunDetail) {
           ? 'border-emerald-200 bg-emerald-50 text-emerald-700'
           : step.status === 'error'
             ? 'border-red-200 bg-red-50 text-red-700'
-            : 'border-amber-200 bg-amber-50 text-amber-700';
+            : step.status === 'stopped'
+              ? 'border-gray-200 bg-gray-100 text-gray-600'
+              : 'border-amber-200 bg-amber-50 text-amber-700';
       return `
       <div class="flex gap-3 rounded-lg border border-gray-200 px-4 py-3">
         <span class="flex h-6 w-6 shrink-0 items-center justify-center rounded-full border text-xs font-semibold ${tone}">${stepIcon(step.status)}</span>
         <div class="min-w-0 flex-1">
           <div class="flex flex-wrap items-center justify-between gap-2">
-            <span class="text-sm font-medium text-gray-900">${escapeHtml(step.name)}</span>
+            <span class="text-sm font-medium text-gray-900">${escapeHtml(stepName(step.name))}</span>
             <span class="text-xs text-gray-500">${escapeHtml(formatDuration(step.started_at, step.finished_at))}</span>
           </div>
           ${step.detail ? `<p class="mt-0.5 text-xs text-gray-600">${escapeHtml(step.detail)}</p>` : ''}
           ${step.status === 'running' ? renderStepProgressHtml(step.started_at, step.progress) : ''}
-          ${step.error ? renderStepErrorHtml(step.error, stepIndex) : ''}
+          ${step.error ? renderStepErrorHtml(step.error, stepIndex, step.status === 'stopped') : ''}
           ${renderStepDataHtml(step.data, stepIndex)}
         </div>
       </div>`;
@@ -318,11 +324,11 @@ function renderDetail(run: RunDetail) {
       <table class="mt-2 w-full text-left text-xs">
         <thead>
           <tr class="text-gray-500">
-            <th class="py-1 pr-2 font-medium">Step</th>
-            <th class="py-1 pr-2 font-medium">Model</th>
-            <th class="py-1 pr-2 text-right font-medium">Calls</th>
-            <th class="py-1 pr-2 text-right font-medium">Cache hits</th>
-            <th class="py-1 text-right font-medium">Total tokens</th>
+            <th class="py-1 pr-2 font-medium">${th('pipelines.th.step')}</th>
+            <th class="py-1 pr-2 font-medium">${th('pipelines.th.model')}</th>
+            <th class="py-1 pr-2 text-right font-medium">${th('pipelines.th.calls')}</th>
+            <th class="py-1 pr-2 text-right font-medium">${th('pipelines.th.cacheHits')}</th>
+            <th class="py-1 text-right font-medium">${th('pipelines.th.totalTokens')}</th>
           </tr>
         </thead>
         <tbody>
@@ -330,19 +336,19 @@ function renderDetail(run: RunDetail) {
             .map(
               (row) => `
             <tr class="border-t border-gray-100">
-              <td class="py-1 pr-2 text-gray-700">${escapeHtml(row.step)}</td>
+              <td class="py-1 pr-2 text-gray-700">${escapeHtml(stepName(row.step))}</td>
               <td class="py-1 pr-2 text-gray-700">${escapeHtml(row.model)}</td>
               <td class="py-1 pr-2 text-right text-gray-700">${row.calls}</td>
               <td class="py-1 pr-2 text-right text-gray-700">${row.cache_hits}</td>
-              <td class="py-1 text-right font-medium text-gray-900">${row.total_tokens.toLocaleString()}</td>
+              <td class="py-1 text-right font-medium text-gray-900">${formatNumber(row.total_tokens)}</td>
             </tr>`,
             )
             .join('')}
         </tbody>
         <tfoot>
           <tr class="border-t border-gray-200">
-            <td colspan="4" class="py-1 pr-2 text-right text-xs font-medium text-gray-600">Grand total</td>
-            <td class="py-1 text-right text-xs font-semibold text-gray-900">${grandTotal.toLocaleString()}</td>
+            <td colspan="4" class="py-1 pr-2 text-right text-xs font-medium text-gray-600">${th('pipelines.grandTotal')}</td>
+            <td class="py-1 text-right text-xs font-semibold text-gray-900">${formatNumber(grandTotal)}</td>
           </tr>
         </tfoot>
       </table>`
@@ -352,20 +358,20 @@ function renderDetail(run: RunDetail) {
     <div class="flex flex-wrap items-center justify-between gap-2">
       <div>
         <p class="text-sm font-semibold text-gray-900">${escapeHtml(run.id)}</p>
-        <p class="text-xs text-gray-500">${escapeHtml(formatTime(run.started_at))}${run.force ? ' · forced rebuild' : ''}</p>
+        <p class="text-xs text-gray-500">${escapeHtml(formatTime(run.started_at))}${run.force ? th('pipelines.forcedRebuild') : ''}</p>
       </div>
       ${statusBadge(run.status)}
     </div>
     ${
       run.error
         ? `<div class="copy-wrap relative mt-3">
-             <pre class="copy-source max-h-72 overflow-auto whitespace-pre-wrap break-words rounded-lg bg-red-50 px-3 py-2 pr-8 font-mono text-[11px] leading-snug text-red-700">${escapeHtml(run.error)}</pre>
-             ${copyButtonHtml('absolute right-1.5 top-1.5 bg-red-50 text-red-700')}
+             <pre class="copy-source max-h-72 overflow-auto whitespace-pre-wrap break-words rounded-lg ${run.status === 'stopped' ? 'bg-gray-50 text-gray-700' : 'bg-red-50 text-red-700'} px-3 py-2 pr-8 font-mono text-[11px] leading-snug">${escapeHtml(runMessage(run.error))}</pre>
+             ${copyButtonHtml(`absolute right-1.5 top-1.5 ${run.status === 'stopped' ? 'bg-gray-50 text-gray-700' : 'bg-red-50 text-red-700'}`)}
            </div>`
         : ''
     }
     <div class="mt-4 flex flex-col gap-2">${stepsHtml}</div>
-    <h3 class="mt-5 text-sm font-semibold text-gray-900">Token usage</h3>
+    <h3 class="mt-5 text-sm font-semibold text-gray-900">${th('pipelines.tokenUsage')}</h3>
     ${usageHtml}
   `;
 
@@ -389,14 +395,14 @@ function renderDetail(run: RunDetail) {
 async function loadList() {
   try {
     const res = await fetch(`${apiBase}/api/pipelines`);
-    if (!res.ok) throw new Error(`Request failed (${res.status})`);
+    if (!res.ok) throw new Error(t('common.requestFailed', { status: res.status }));
     const data = await res.json();
     runs = data.runs ?? [];
     if (!selectedId && runs.length) selectedId = runs[0].id;
     renderList();
   } catch {
     document.getElementById('pipeline-runs-list')!.innerHTML =
-      `<p class="p-5 text-sm text-red-600">Cannot reach API at ${escapeHtml(apiBase)}.</p>`;
+      `<p class="p-5 text-sm text-red-600">${th('common.cannotReachApi')}</p>`;
   }
 }
 
@@ -405,11 +411,11 @@ async function loadDetail() {
   const container = document.getElementById('pipeline-run-detail')!;
   try {
     const res = await fetch(`${apiBase}/api/pipelines/${encodeURIComponent(selectedId)}`);
-    if (!res.ok) throw new Error(`Request failed (${res.status})`);
+    if (!res.ok) throw new Error(t('common.requestFailed', { status: res.status }));
     const run: RunDetail = await res.json();
     renderDetail(run);
   } catch {
-    container.innerHTML = '<p class="text-sm text-red-600">Could not load this run.</p>';
+    container.innerHTML = `<p class="text-sm text-red-600">${th('pipelines.couldNotLoad')}</p>`;
   }
 }
 
@@ -458,9 +464,9 @@ function initBuildControls() {
     try {
       const res = await fetch(`${apiBase}/api/build/stop`, { method: 'POST' });
       const data = await res.json();
-      if (!data.stopped) setBuildMessage('Nothing to stop — no build is running.');
+      if (!data.stopped) setBuildMessage(t('pipelines.nothingToStop'));
     } catch {
-      setBuildMessage('ERROR: Could not reach the API to stop the build.');
+      setBuildMessage(t('pipelines.stopFailed'));
     }
   });
 
@@ -471,14 +477,14 @@ function initBuildControls() {
       const status = await res.json();
       alreadyRunning = Boolean(status.running);
     } catch {
-      setBuildMessage(`Cannot reach API at ${apiBase}.`);
+      setBuildMessage(t('common.cannotReachApi'));
       return;
     }
 
     // A build already running doesn't block this one -- /api/build/stream
     // queues it (one deep) and starts it automatically once the current
     // build finishes, rather than rejecting the request outright.
-    setBuildMessage(alreadyRunning ? 'A build is already running — queuing this one…' : 'Starting…');
+    setBuildMessage(alreadyRunning ? t('pipelines.queuing') : t('pipelines.starting'));
     setBuildButtonsRunning(true);
 
     const params = new URLSearchParams();
@@ -494,11 +500,11 @@ function initBuildControls() {
         return;
       }
       if (payload.type === 'start' || payload.type === 'log' || payload.type === 'queued') {
-        setBuildMessage(payload.message);
+        setBuildMessage(buildMessage(payload.message));
       } else if (payload.type === 'error') {
-        setBuildMessage(`Error: ${payload.message}`);
+        setBuildMessage(t('pipelines.errorPrefix', { message: buildMessage(payload.message) }));
       } else if (payload.type === 'done') {
-        setBuildMessage(payload.message ?? (payload.success ? 'Finished.' : 'Failed.'));
+        setBuildMessage(payload.message ? buildMessage(payload.message) : payload.success ? t('pipelines.finished') : t('pipelines.failed'));
         setBuildButtonsRunning(false);
         source.close();
         buildEventSource = null;
@@ -507,7 +513,7 @@ function initBuildControls() {
     };
     source.onerror = () => {
       if (source.readyState === EventSource.CLOSED) return;
-      setBuildMessage('Lost connection to the build stream.');
+      setBuildMessage(t('pipelines.lostConnection'));
       setBuildButtonsRunning(false);
       source.close();
       buildEventSource = null;

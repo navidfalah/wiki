@@ -1,3 +1,4 @@
+import { formatNumber, t, th, tnh } from './lib/i18n';
 import { apiBase } from './lib/api';
 import { escapeHtml } from './lib/dom';
 
@@ -32,11 +33,11 @@ function entityRow(entity: EntityCluster): string {
     <div class="flex flex-wrap items-center justify-between gap-2">
       <div class="min-w-0">
         <p class="text-sm font-semibold text-gray-900">${escapeHtml(entity.canonical_name)}</p>
-        ${otherAliases.length ? `<p class="mt-0.5 truncate text-xs text-gray-500">also: ${otherAliases.map(escapeHtml).join(', ')}</p>` : ''}
+        ${otherAliases.length ? `<p class="mt-0.5 truncate text-xs text-gray-500">${th('entities.also', { names: otherAliases.join(', ') })}</p>` : ''}
       </div>
       <div class="flex shrink-0 items-center gap-2 text-xs text-gray-500">
-        <span class="rounded-full border border-gray-200 bg-gray-50 px-2 py-0.5">${entity.sources.length} source${entity.sources.length === 1 ? '' : 's'}</span>
-        <span class="rounded-full border border-gray-200 bg-gray-50 px-2 py-0.5">${entity.mention_count} mention${entity.mention_count === 1 ? '' : 's'}</span>
+        <span class="rounded-full border border-gray-200 bg-gray-50 px-2 py-0.5">${tnh('entities.sources', entity.sources.length)}</span>
+        <span class="rounded-full border border-gray-200 bg-gray-50 px-2 py-0.5">${tnh('entities.mentions', entity.mention_count)}</span>
       </div>
     </div>
     <p class="mt-2 truncate text-xs text-gray-400">${entity.sources.map(escapeHtml).join(' · ')}</p>
@@ -54,7 +55,7 @@ function render() {
   if (!filtered.length) {
     list.innerHTML = '';
     empty.classList.remove('hidden');
-    empty.textContent = currentEntities.length ? 'No entities match that filter.' : 'No entities resolved yet -- run the compiler pipeline first.';
+    empty.textContent = currentEntities.length ? t('entities.noMatch') : t('entities.none');
     return;
   }
   empty.classList.add('hidden');
@@ -64,20 +65,20 @@ function render() {
 async function load() {
   try {
     const res = await fetch(`${apiBase}/api/entity-graph`);
-    if (!res.ok) throw new Error(`Request failed (${res.status})`);
+    if (!res.ok) throw new Error(t('common.requestFailed', { status: res.status }));
     const data: EntityGraphPayload = await res.json();
     currentEntities = data.entities;
 
     document.getElementById('entities-cards')!.innerHTML = [
-      statCard(String(data.counts.total_entities), 'Resolved entities'),
-      statCard(String(data.counts.total_mentions), 'Total mentions'),
-      statCard(String(data.counts.multi_source_entities), 'Cited across sources'),
-      statCard(String(data.counts.multi_alias_entities), 'Merged name variants'),
+      statCard(formatNumber(data.counts.total_entities), t('entities.card.entities')),
+      statCard(formatNumber(data.counts.total_mentions), t('entities.card.mentions')),
+      statCard(formatNumber(data.counts.multi_source_entities), t('entities.card.multiSource')),
+      statCard(formatNumber(data.counts.multi_alias_entities), t('entities.card.merged')),
     ].join('');
 
     render();
   } catch (err: any) {
-    document.getElementById('entities-cards')!.innerHTML = `<p class="col-span-full text-sm text-red-600">Cannot reach API at ${escapeHtml(apiBase)}: ${escapeHtml(err.message || '')}</p>`;
+    document.getElementById('entities-cards')!.innerHTML = `<p class="col-span-full text-sm text-red-600">${th('common.cannotReachApi')} ${escapeHtml(err.message || '')}</p>`;
   }
 }
 

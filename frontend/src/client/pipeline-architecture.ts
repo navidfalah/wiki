@@ -1,3 +1,4 @@
+import { t, th } from './lib/i18n';
 import { apiBase } from './lib/api';
 import { escapeHtml } from './lib/dom';
 
@@ -43,7 +44,7 @@ function renderFolders(excludedFolders: string[]) {
   const container = document.getElementById('pipeline-arch-folders');
   if (!container) return;
   if (!topLevelFolders.length) {
-    container.innerHTML = '<p class="p-5 text-sm text-gray-500">No folders found under data/raw/ yet.</p>';
+    container.innerHTML = `<p class="p-5 text-sm text-gray-500">${th('pipeline-architecture.noFolders')}</p>`;
     return;
   }
   const excluded = new Set(excludedFolders);
@@ -94,10 +95,10 @@ async function load() {
   try {
     await loadFolders();
     const res = await fetch(`${apiBase}/api/settings/pipeline`);
-    if (!res.ok) throw new Error(`Request failed (${res.status})`);
+    if (!res.ok) throw new Error(t('common.requestFailed', { status: res.status }));
     fillForm(await res.json());
   } catch {
-    (window as any).showToast?.(`Cannot reach API at ${apiBase}.`, 'error');
+    (window as any).showToast?.(t('common.cannotReachApi'), 'error');
   }
 }
 
@@ -105,7 +106,7 @@ async function save() {
   const btn = document.getElementById('save-pipeline-arch-btn') as HTMLButtonElement;
   const hint = document.getElementById('pipeline-arch-saved-hint') as HTMLElement;
   btn.disabled = true;
-  btn.textContent = 'Saving…';
+  btn.textContent = t('pipeline-architecture.saving');
   try {
     const res = await fetch(`${apiBase}/api/settings/pipeline`, {
       method: 'PUT',
@@ -114,16 +115,16 @@ async function save() {
     });
     if (!res.ok) {
       const err = await res.json().catch(() => ({}));
-      throw new Error(err.error || `Request failed (${res.status})`);
+      throw new Error(err.error || t('common.requestFailed', { status: res.status }));
     }
     fillForm(await res.json());
-    hint.textContent = `Saved at ${new Date().toLocaleTimeString()}`;
-    (window as any).showToast?.('Pipeline architecture saved.');
+    hint.textContent = t('pipeline-architecture.savedAt', { time: new Date().toLocaleTimeString(document.documentElement.lang === 'de' ? 'de-DE' : 'en-GB') });
+    (window as any).showToast?.(t('pipeline-architecture.saved'));
   } catch (err: any) {
-    (window as any).showToast?.(err.message || 'Could not save pipeline architecture.', 'error');
+    (window as any).showToast?.(err.message || t('pipeline-architecture.saveFailed'), 'error');
   } finally {
     btn.disabled = false;
-    btn.textContent = 'Save';
+    btn.textContent = t('common.save');
   }
 }
 

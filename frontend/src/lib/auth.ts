@@ -6,7 +6,7 @@
  * fetch, and asks the backend "who is this" via GET /api/auth/me.
  */
 import type { Request, Response } from 'express';
-import { BACKEND_API_URL } from '../config';
+import { BACKEND_API_URL, COOKIE_SECURE } from '../config';
 
 export const SESSION_COOKIE = 'session_token';
 
@@ -24,7 +24,7 @@ export function setSessionCookie(res: Response, token: string): void {
   res.cookie(SESSION_COOKIE, token, {
     httpOnly: true,
     sameSite: 'lax',
-    secure: false, // set true behind HTTPS; see README for reverse-proxy deployment notes
+    secure: COOKIE_SECURE, // COOKIE_SECURE=true behind HTTPS (docker-compose.prod.yml sets it)
     maxAge: 30 * 24 * 60 * 60 * 1000,
     path: '/',
   });

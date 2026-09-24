@@ -1,4 +1,6 @@
 import { copyButtonHtml, initCopyButtons } from './lib/copy';
+import { formatDateTime, t, th, tn } from './lib/i18n';
+import { categoryLabel, levelLabel } from './lib/serverText';
 import { apiBase } from './lib/api';
 import { escapeHtml } from './lib/dom';
 
@@ -12,14 +14,6 @@ interface ActivityEvent {
   category: string;
 }
 
-function formatTime(iso: string): string {
-  try {
-    return new Date(iso).toLocaleString();
-  } catch {
-    return iso;
-  }
-}
-
 const LEVEL_TONES: Record<string, string> = {
   error: 'bg-red-50 text-red-700',
   warn: 'bg-amber-50 text-amber-700',
@@ -28,7 +22,7 @@ const LEVEL_TONES: Record<string, string> = {
 
 function levelBadge(level: string): string {
   const tone = LEVEL_TONES[level] ?? LEVEL_TONES.info;
-  return `<span class="inline-flex items-center rounded-full px-2 py-0.5 text-xs font-medium ${tone}">${escapeHtml(level)}</span>`;
+  return `<span class="inline-flex items-center rounded-full px-2 py-0.5 text-xs font-medium ${tone}">${escapeHtml(levelLabel(level))}</span>`;
 }
 
 function rowTone(level: string): string {
@@ -45,8 +39,8 @@ function populateCategoryFilter(events: ActivityEvent[]) {
   const current = select.value;
   const categories = [...new Set(events.map((e) => e.category))].sort();
   select.innerHTML =
-    '<option value="">All categories</option>' +
-    categories.map((c) => `<option value="${escapeHtml(c)}">${escapeHtml(c)}</option>`).join('');
+    `<option value="">${th('logs.categoryAll')}</option>` +
+    categories.map((c) => `<option value="${escapeHtml(c)}">${escapeHtml(categoryLabel(c))}</option>`).join('');
   select.value = categories.includes(current) ? current : '';
 }
 
@@ -69,18 +63,18 @@ function applyFiltersAndRender() {
   const body = document.getElementById('logs-body')!;
   status.textContent =
     filtered.length === allEvents.length
-      ? `${allEvents.length} event${allEvents.length === 1 ? '' : 's'}`
-      : `${filtered.length} of ${allEvents.length} event${allEvents.length === 1 ? '' : 's'}`;
+      ? tn('logs.count', allEvents.length)
+      : tn('logs.countOf', allEvents.length, { shown: filtered.length });
 
   body.innerHTML = filtered.length
     ? filtered
         .map((e) => {
-          const line = `[${formatTime(e.at)}] ${e.level.toUpperCase()} ${e.category} ${e.username} -- ${e.action}${e.detail ? `: ${e.detail}` : ''}`;
+          const line = `[${formatDateTime(e.at)}] ${e.level.toUpperCase()} ${e.category} ${e.username} -- ${e.action}${e.detail ? `: ${e.detail}` : ''}`;
           return `
       <tr class="copy-wrap ${rowTone(e.level)}">
-        <td class="whitespace-nowrap px-4 py-2 text-xs text-gray-500">${escapeHtml(formatTime(e.at))}</td>
+        <td class="whitespace-nowrap px-4 py-2 text-xs text-gray-500">${escapeHtml(formatDateTime(e.at))}</td>
         <td class="whitespace-nowrap px-4 py-2">${levelBadge(e.level)}</td>
-        <td class="whitespace-nowrap px-4 py-2 text-xs text-gray-500">${escapeHtml(e.category)}</td>
+        <td class="whitespace-nowrap px-4 py-2 text-xs text-gray-500">${escapeHtml(categoryLabel(e.category))}</td>
         <td class="whitespace-nowrap px-4 py-2 text-sm font-medium text-gray-900">${escapeHtml(e.username)}</td>
         <td class="whitespace-nowrap px-4 py-2 text-sm text-gray-800">${escapeHtml(e.action)}</td>
         <td class="px-4 py-2 text-sm text-gray-500">${escapeHtml(e.detail)}</td>
@@ -91,20 +85,20 @@ function applyFiltersAndRender() {
       </tr>`;
         })
         .join('')
-    : `<tr><td colspan="7" class="px-4 py-8 text-center text-sm text-gray-400">${allEvents.length ? 'No events match these filters.' : 'No activity recorded yet.'}</td></tr>`;
+    : `<tr><td colspan="7" class="px-4 py-8 text-center text-sm text-gray-400">${allEvents.length ? th('logs.noMatch') : th('logs.empty')}</td></tr>`;
 }
 
 async function load() {
   const status = document.getElementById('logs-status')!;
   try {
     const res = await fetch(`${apiBase}/api/activity?limit=1000`);
-    if (!res.ok) throw new Error(`Request failed (${res.status})`);
+    if (!res.ok) throw new Error(t('common.requestFailed', { status: res.status }));
     const data = await res.json();
     allEvents = data.events ?? [];
     populateCategoryFilter(allEvents);
     applyFiltersAndRender();
   } catch (err: any) {
-    status.textContent = `Cannot reach API at ${apiBase}.`;
+    status.textContent = t('common.cannotReachApi');
     document.getElementById('logs-body')!.innerHTML =
       `<tr><td colspan="7" class="px-4 py-8 text-center text-sm text-red-600">${escapeHtml(err.message)}</td></tr>`;
   }

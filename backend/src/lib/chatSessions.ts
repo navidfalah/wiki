@@ -214,6 +214,25 @@ export function deleteChatSession(id: string): boolean {
 }
 
 /**
+ * Drops every message from `keep` onward -- the primitive behind both
+ * "edit" and "resend" on a past user message: the client truncates to
+ * just before that message, then either re-populates the composer with
+ * its text (edit) or immediately re-submits it (resend), which appends a
+ * fresh turn via appendUserTurn()/appendAssistantTurn() same as any other
+ * message. Not exposed as raw index math on the client -- this is the one
+ * place that has to agree with those on what "before message N" means.
+ */
+export function truncateChatSession(id: string, keep: number): ChatSession | null {
+  const session = loadChatSession(id);
+  if (!session) return null;
+  if (keep < 0 || keep > session.messages.length) return null;
+  session.messages = session.messages.slice(0, keep);
+  session.updated_at = new Date().toISOString();
+  saveSession(session);
+  return session;
+}
+
+/**
  * Persists just the user's half of a turn -- call this BEFORE starting the
  * (possibly slow, possibly failing) assistant response, not after, so a
  * dropped connection or an LLM error mid-stream doesn't silently lose the

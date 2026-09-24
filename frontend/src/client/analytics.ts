@@ -1,4 +1,5 @@
-import { apiBase, apiFetch } from './lib/api';
+import { th, t } from './lib/i18n';
+import { apiFetch } from './lib/api';
 import { escapeHtml } from './lib/dom';
 
 function statCard(value: string, label: string, warn = false): string {
@@ -13,11 +14,11 @@ async function load() {
     const data = await apiFetch('/api/analytics');
     const m = data.metrics;
     document.getElementById('analytics-cards')!.innerHTML = [
-      statCard(`${m.raw_files_processed} / ${m.raw_files_total}`, 'Raw files'),
-      statCard(String(m.wiki_pages_created), 'Wiki pages'),
-      statCard(String(m.cross_links_established), 'Cross-links'),
-      statCard(String(m.dead_links), 'Dead links', m.dead_links > 0),
-      statCard(String(data.tags.length), 'Tags'),
+      statCard(`${m.raw_files_processed} / ${m.raw_files_total}`, t('analytics.card.rawFiles')),
+      statCard(String(m.wiki_pages_created), t('analytics.card.wikiPages')),
+      statCard(String(m.cross_links_established), t('analytics.card.crossLinks')),
+      statCard(String(m.dead_links), t('analytics.card.deadLinks'), m.dead_links > 0),
+      statCard(String(data.tags.length), t('analytics.card.tags')),
     ].join('');
 
     document.getElementById('dead-links-list')!.innerHTML = data.dead_links.length
@@ -29,16 +30,20 @@ async function load() {
       </div>`,
           )
           .join('')
-      : '<p class="text-sm text-emerald-600">No broken links.</p>';
+      : `<p class="text-sm text-emerald-600">${th('analytics.noBroken')}</p>`;
 
     document.getElementById('tags-list')!.innerHTML = data.tags.length
       ? `<div class="flex flex-wrap gap-2">${data.tags
           .slice(0, 60)
-          .map((t: any) => `<span class="rounded-full bg-gray-100 px-2 py-1 text-xs text-gray-700">${escapeHtml(t.label)} (${t.count})</span>`)
+          .map((tag: any) => `<span class="rounded-full bg-gray-100 px-2 py-1 text-xs text-gray-700">${escapeHtml(tag.label)} (${tag.count})</span>`)
           .join('')}</div>`
-      : '<p class="text-sm text-gray-400">No tags yet.</p>';
+      : `<p class="text-sm text-gray-400">${th('analytics.noTags')}</p>`;
   } catch (err: any) {
-    const message = escapeHtml(err?.message || `Cannot reach API at ${apiBase}.`);
+    // apiFetch's thrown message is already the backend's real .detail (see
+    // client/lib/api.ts) when the request reached it, or a generic
+    // connectivity message otherwise -- shown across all three panels, not
+    // just the stat cards, so a real backend error isn't silently missed.
+    const message = escapeHtml(err?.message || t('common.cannotReachApi'));
     document.getElementById('analytics-cards')!.innerHTML = `<p class="col-span-full text-sm text-red-600">${message}</p>`;
     document.getElementById('dead-links-list')!.innerHTML = `<p class="text-sm text-red-600">${message}</p>`;
     document.getElementById('tags-list')!.innerHTML = `<p class="text-sm text-red-600">${message}</p>`;

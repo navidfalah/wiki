@@ -17,13 +17,16 @@
  *   </div>
  */
 
+import { t, th } from './i18n';
+
 const COPY_ICON =
   '<svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg>';
 const CHECK_ICON =
   '<svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg>';
 
 export function copyButtonHtml(extraClass = ''): string {
-  return `<button type="button" class="copy-btn inline-flex shrink-0 items-center justify-center rounded p-1 text-current opacity-60 hover:opacity-100 ${extraClass}" title="Copy to clipboard" aria-label="Copy to clipboard">${COPY_ICON}</button>`;
+  const label = th('common.copy');
+  return `<button type="button" class="copy-btn inline-flex shrink-0 items-center justify-center rounded p-1 text-current opacity-60 hover:opacity-100 ${extraClass}" title="${label}" aria-label="${label}">${COPY_ICON}</button>`;
 }
 
 let wired = false;
@@ -50,7 +53,7 @@ export function initCopyButtons(): void {
         }, 1200);
       })
       .catch(() => {
-        (window as any).showToast?.('Could not copy to clipboard.', 'error');
+        (window as any).showToast?.(t('common.copyFailed'), 'error');
       });
   });
 }

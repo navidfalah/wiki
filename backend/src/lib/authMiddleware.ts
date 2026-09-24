@@ -1,5 +1,6 @@
 import type { NextFunction, Request, Response } from 'express';
 import { getSessionUser } from './sessions';
+import { langFromRequest, localizeMessage } from './localizeMessage';
 import type { Role } from './users';
 
 declare global {
@@ -20,7 +21,7 @@ function bearerToken(req: Request): string | undefined {
 export function requireAuth(req: Request, res: Response, next: NextFunction): void {
   const user = getSessionUser(bearerToken(req));
   if (!user) {
-    res.status(401).json({ detail: 'Not authenticated' });
+    res.status(401).json({ detail: localizeMessage('Not authenticated', langFromRequest(req)) });
     return;
   }
   req.user = user;
@@ -30,7 +31,7 @@ export function requireAuth(req: Request, res: Response, next: NextFunction): vo
 /** Mount after requireAuth -- gates a route to the 'admin' role (e.g. user management). */
 export function requireAdmin(req: Request, res: Response, next: NextFunction): void {
   if (req.user?.role !== 'admin') {
-    res.status(403).json({ detail: 'Admin access required' });
+    res.status(403).json({ detail: localizeMessage('Admin access required', langFromRequest(req)) });
     return;
   }
   next();

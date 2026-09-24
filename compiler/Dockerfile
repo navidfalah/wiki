@@ -10,8 +10,8 @@ FROM python:3.12-slim
 
 WORKDIR /app
 
-COPY compiler/requirements.txt compiler/requirements.txt
-RUN pip install --no-cache-dir -r compiler/requirements.txt
+COPY compiler/requirements.txt compiler/requirements-server.txt compiler/
+RUN pip install --no-cache-dir -r compiler/requirements-server.txt
 
 COPY compiler/ compiler/
 
