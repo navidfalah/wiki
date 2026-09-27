@@ -4,6 +4,12 @@ on:
   pull_request:
     branches:
       - main
+  # Also on direct pushes: main went red once from commits that never
+  # passed through a PR (a raw-data reorg that broke eval dataset paths).
+  push:
+    branches:
+      - main
+  workflow_dispatch:
 
 permissions:
   contents: read

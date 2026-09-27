@@ -1,3 +1,5 @@
 -r requirements.txt
-ruff>=0.6.0,<0.17.0
+# Pinned exactly: a range let a newer ruff with stricter rules turn main's
+# lint red without any code change.
+ruff==0.15.8
 pytest>=8.0.0,<10.0.0
