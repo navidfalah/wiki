@@ -57,6 +57,7 @@ cd ../wiki-app && npm install && npm start
 | Production deployment | [40-production-deployment.md](./documentation/40-production-deployment.md) |
 | Internationalization & fonts | [41-internationalization-and-fonts.md](./documentation/41-internationalization-and-fonts.md) |
 | Cross-corpus search | [42-cross-corpus-search.md](./documentation/42-cross-corpus-search.md) |
+| Project assessment, R&D priorities & task backlog | [43-project-assessment-and-roadmap.md](./documentation/43-project-assessment-and-roadmap.md) |
 
 ## Also see
 

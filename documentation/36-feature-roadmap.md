@@ -167,3 +167,4 @@ candidates for a future pass, not committed to.
 - [26-entity-resolution.md](./26-entity-resolution.md) — gap #4, closed (see above)
 - [27-temporal-modeling.md](./27-temporal-modeling.md) — gap #5, closed (see above; doc 27's own Limitations section still names the larger "real compiled claims" adapter as open)
 - [42-cross-corpus-search.md](./42-cross-corpus-search.md) — "search across the whole app" newer idea, closed
+- [43-project-assessment-and-roadmap.md](./43-project-assessment-and-roadmap.md) — scored assessment and the current ranked R&D list / task backlog (supersedes the ranking above)
