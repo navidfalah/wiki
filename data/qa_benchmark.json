@@ -1,0 +1,1144 @@
+{
+  "description": "Gold Q&A benchmark over the fictional sample corpus in data/raw/. Every answer fact appears verbatim (after normalization) in at least one listed source -- enforced by compiler/tests/test_qa_benchmark.py. `facts` is a list of required facts; each fact is a list of acceptable phrasings (lowercase substrings). `keywords` is a short keyword query for the substring search API, which does not handle natural-language questions.",
+  "version": 1,
+  "questions": [
+    {
+      "id": "q01",
+      "category": "fact",
+      "question": "What battery cell does the Nova Widget use?",
+      "answer": "A single CR2032 coin cell.",
+      "facts": [
+        [
+          "cr2032"
+        ]
+      ],
+      "sources": [
+        "articles/2026-05-15-product-spec-draft.md",
+        "samples/specs/[SAMPLE]-2026-07-03-nova-widget-hardware-rev-C.md",
+        "dummy-test/2026-07-08-customer-onboarding-faq.md"
+      ],
+      "keywords": "nova battery cr2032"
+    },
+    {
+      "id": "q02",
+      "category": "fact",
+      "question": "Which microcontroller is the Nova Widget built on?",
+      "answer": "The Nordic nRF52840.",
+      "facts": [
+        [
+          "nrf52840"
+        ]
+      ],
+      "sources": [
+        "articles/2026-05-15-product-spec-draft.md",
+        "notes/2026-05-01-kickoff-notes.md",
+        "samples/specs/[SAMPLE]-2026-07-03-nova-widget-hardware-rev-C.md"
+      ],
+      "keywords": "nova mcu nrf52840"
+    },
+    {
+      "id": "q03",
+      "category": "fact",
+      "question": "What is the Nova Widget's default reading interval?",
+      "answer": "Every 15 minutes.",
+      "facts": [
+        [
+          "15 min",
+          "15-min",
+          "fifteen min"
+        ]
+      ],
+      "sources": [
+        "articles/2026-05-15-product-spec-draft.md",
+        "dummy-test/2026-07-08-customer-onboarding-faq.md",
+        "samples/specs/[SAMPLE]-2026-07-07-meshsync-protocol-header.txt"
+      ],
+      "keywords": "default read interval"
+    },
+    {
+      "id": "q04",
+      "category": "contradiction",
+      "question": "What reading interval did the kickoff meeting originally plan, and what does the spec say now?",
+      "answer": "Kickoff assumed hourly readings; the spec changed the default to 15 minutes.",
+      "facts": [
+        [
+          "hourly"
+        ],
+        [
+          "15 min",
+          "15-min",
+          "fifteen min"
+        ]
+      ],
+      "sources": [
+        "notes/2026-05-01-kickoff-notes.md",
+        "articles/2026-05-15-product-spec-draft.md",
+        "transcripts/2026-05-28-weekly-sync.md"
+      ],
+      "keywords": "hourly 15 minutes kickoff"
+    },
+    {
+      "id": "q05",
+      "category": "fact",
+      "question": "What IP rating do the Nova Widget beta units have?",
+      "answer": "IP54 (splash resistant, not submersible).",
+      "facts": [
+        [
+          "ip54"
+        ]
+      ],
+      "sources": [
+        "articles/2026-05-15-product-spec-draft.md",
+        "samples/specs/[SAMPLE]-2026-07-03-nova-widget-hardware-rev-C.md",
+        "dummy-test/2026-07-08-customer-onboarding-faq.md"
+      ],
+      "keywords": "nova ip54"
+    },
+    {
+      "id": "q06",
+      "category": "fact",
+      "question": "What IP rating does the SenseNode SN-400 have?",
+      "answer": "IP67.",
+      "facts": [
+        [
+          "ip67"
+        ]
+      ],
+      "sources": [
+        "articles/2026-05-20-competitor-teardown-blog.md",
+        "samples/articles/[SAMPLE]-2026-07-09-competitive-landscape-q3.md"
+      ],
+      "keywords": "sensenode ip67"
+    },
+    {
+      "id": "q07",
+      "category": "fact",
+      "question": "How much would the IP65 enclosure tooling cost?",
+      "answer": "About $8k (a later quote says $7,850).",
+      "facts": [
+        [
+          "8k",
+          "8,000",
+          "7,850",
+          "$8 k"
+        ]
+      ],
+      "sources": [
+        "articles/2026-05-15-product-spec-draft.md",
+        "samples/specs/[SAMPLE]-2026-07-03-nova-widget-hardware-rev-C.md",
+        "transcripts/2026-05-28-weekly-sync.md"
+      ],
+      "keywords": "ip65 tooling cost"
+    },
+    {
+      "id": "q08",
+      "category": "multi_source",
+      "question": "Which sensors does the Nova Widget v2 include?",
+      "answer": "Capacitive soil moisture, an SHT41 temperature/humidity sensor and a VEML7700 light sensor.",
+      "facts": [
+        [
+          "soil moisture",
+          "capacitive"
+        ],
+        [
+          "sht41"
+        ],
+        [
+          "veml7700"
+        ]
+      ],
+      "sources": [
+        "articles/2026-05-15-product-spec-draft.md"
+      ],
+      "keywords": "nova sensors sht41 veml7700"
+    },
+    {
+      "id": "q09",
+      "category": "fact",
+      "question": "What is the Nova Widget's target average current including mesh overhead at 10 nodes?",
+      "answer": "Under 85 µA.",
+      "facts": [
+        [
+          "85 ua",
+          "85ua"
+        ]
+      ],
+      "sources": [
+        "articles/2026-05-15-product-spec-draft.md"
+      ],
+      "keywords": "target average current"
+    },
+    {
+      "id": "q10",
+      "category": "fact",
+      "question": "What average current did the Hardware Habit teardown measure on the Nova Widget beta unit?",
+      "answer": "About 92 µA with a 3-node mesh.",
+      "facts": [
+        [
+          "92 ua",
+          "92ua"
+        ]
+      ],
+      "sources": [
+        "articles/2026-05-20-competitor-teardown-blog.md"
+      ],
+      "keywords": "teardown average current"
+    },
+    {
+      "id": "q11",
+      "category": "contradiction",
+      "question": "What battery life do marketing and engineering each claim for the Nova Widget?",
+      "answer": "Marketing says 2 years (24 months); engineering commits to 18 months minimum at 10 nodes.",
+      "facts": [
+        [
+          "2 year",
+          "24 month",
+          "two year",
+          "2yr"
+        ],
+        [
+          "18 month",
+          "eighteen month",
+          "18mo"
+        ]
+      ],
+      "sources": [
+        "articles/2026-05-15-product-spec-draft.md",
+        "dummy-test/2026-07-07-power-budget-spreadsheet-notes.txt",
+        "samples/transcripts/[SAMPLE]-2026-07-02-investor-call-fragment.txt"
+      ],
+      "keywords": "battery life marketing engineering"
+    },
+    {
+      "id": "q12",
+      "category": "contradiction",
+      "question": "Which battery did the teardown blog originally (wrongly) say the Nova Widget used?",
+      "answer": "CR2450, later corrected to CR2032.",
+      "facts": [
+        [
+          "cr2450"
+        ]
+      ],
+      "sources": [
+        "articles/2026-05-20-competitor-teardown-blog.md",
+        "samples/support/[SAMPLE]-2026-07-01-ticket-2201-battery-docs.txt"
+      ],
+      "keywords": "teardown cr2450 correction"
+    },
+    {
+      "id": "q13",
+      "category": "fact",
+      "question": "What wireless technology does the SenseNode SN-400 use?",
+      "answer": "LoRaWAN (not mesh).",
+      "facts": [
+        [
+          "lorawan"
+        ]
+      ],
+      "sources": [
+        "articles/2026-05-20-competitor-teardown-blog.md",
+        "samples/articles/[SAMPLE]-2026-07-09-competitive-landscape-q3.md"
+      ],
+      "keywords": "sensenode lorawan"
+    },
+    {
+      "id": "q14",
+      "category": "fact",
+      "question": "How much does the SenseNode SN-400 cost?",
+      "answer": "$49.",
+      "facts": [
+        [
+          "$49",
+          "49 usd",
+          "49 dollars"
+        ]
+      ],
+      "sources": [
+        "articles/2026-05-20-competitor-teardown-blog.md"
+      ],
+      "keywords": "sensenode price"
+    },
+    {
+      "id": "q15",
+      "category": "fact",
+      "question": "What battery life did the teardown author estimate for the SenseNode SN-400?",
+      "answer": "About 22 months (it claims 3 years).",
+      "facts": [
+        [
+          "22 month",
+          "~22"
+        ]
+      ],
+      "sources": [
+        "articles/2026-05-20-competitor-teardown-blog.md"
+      ],
+      "keywords": "sensenode battery estimate"
+    },
+    {
+      "id": "q16",
+      "category": "fact",
+      "question": "What material are the beta enclosures made of?",
+      "answer": "3D-printed PETG.",
+      "facts": [
+        [
+          "petg"
+        ]
+      ],
+      "sources": [
+        "notes/2026-05-01-kickoff-notes.md",
+        "samples/specs/[SAMPLE]-2026-07-03-nova-widget-hardware-rev-C.md",
+        "articles/voice-memo-transcription.txt"
+      ],
+      "keywords": "enclosure petg"
+    },
+    {
+      "id": "q17",
+      "category": "fact",
+      "question": "Which enclosure shape was chosen for the Nova Widget?",
+      "answer": "A pebble shape (Jonah's proposal).",
+      "facts": [
+        [
+          "pebble"
+        ]
+      ],
+      "sources": [
+        "samples/specs/[SAMPLE]-2026-07-03-nova-widget-hardware-rev-C.md",
+        "samples/notes/[SAMPLE]-2026-06-16-sprint-retro-aurora.txt"
+      ],
+      "keywords": "enclosure pebble shape"
+    },
+    {
+      "id": "q18",
+      "category": "fact",
+      "question": "What is MeshSync's maximum hop count in the spec?",
+      "answer": "4 hops.",
+      "facts": [
+        [
+          "hop count: 4",
+          "4 hops",
+          "four hops"
+        ]
+      ],
+      "sources": [
+        "articles/2026-05-15-product-spec-draft.md"
+      ],
+      "keywords": "meshsync max hop count"
+    },
+    {
+      "id": "q19",
+      "category": "fact",
+      "question": "What is MeshSync's theoretical maximum number of nodes?",
+      "answer": "32 nodes.",
+      "facts": [
+        [
+          "max_nodes 32",
+          "max 32 nodes",
+          "32 nodes"
+        ]
+      ],
+      "sources": [
+        "samples/specs/[SAMPLE]-2026-07-07-meshsync-protocol-header.txt",
+        "samples/articles/[SAMPLE]-2026-06-11-nova-widget-spec-fragment.md"
+      ],
+      "keywords": "meshsync max nodes 32"
+    },
+    {
+      "id": "q20",
+      "category": "fact",
+      "question": "How many nodes are recommended per mesh during the beta?",
+      "answer": "6 nodes, until the rejoin fix lands.",
+      "facts": [
+        [
+          "6 nodes",
+          "six nodes",
+          "safe_nodes 6",
+          "cap at 6",
+          "recommend 6"
+        ]
+      ],
+      "sources": [
+        "dummy-test/2026-07-08-customer-onboarding-faq.md",
+        "samples/specs/[SAMPLE]-2026-07-07-meshsync-protocol-header.txt",
+        "samples/social/[SAMPLE]-2026-07-02-twitter-thread-scrape.txt"
+      ],
+      "keywords": "beta recommended nodes"
+    },
+    {
+      "id": "q21",
+      "category": "fact",
+      "question": "What CR2032 capacity does the power budget assume?",
+      "answer": "220 mAh nominal.",
+      "facts": [
+        [
+          "220mah",
+          "220 mah"
+        ]
+      ],
+      "sources": [
+        "dummy-test/2026-07-07-power-budget-spreadsheet-notes.txt"
+      ],
+      "keywords": "cr2032 capacity mah"
+    },
+    {
+      "id": "q22",
+      "category": "fact",
+      "question": "What total daily consumption and battery life does the power budget estimate?",
+      "answer": "About 0.19 mAh/day, giving roughly 18 months.",
+      "facts": [
+        [
+          "0.19"
+        ],
+        [
+          "18 month"
+        ]
+      ],
+      "sources": [
+        "dummy-test/2026-07-07-power-budget-spreadsheet-notes.txt"
+      ],
+      "keywords": "power budget daily mah"
+    },
+    {
+      "id": "q23",
+      "category": "fact",
+      "question": "What is the Nova Widget's sleep current?",
+      "answer": "4.2 µA.",
+      "facts": [
+        [
+          "4.2 ua",
+          "4.2ua"
+        ]
+      ],
+      "sources": [
+        "dummy-test/2026-07-07-power-budget-spreadsheet-notes.txt",
+        "samples/articles/[SAMPLE]-2026-06-11-nova-widget-spec-fragment.md"
+      ],
+      "keywords": "sleep current"
+    },
+    {
+      "id": "q24",
+      "category": "fact",
+      "question": "By how much did MeshSync 0.3.8 reduce the power spike on rejoin?",
+      "answer": "From 340 µA to 180 µA (target 110 µA).",
+      "facts": [
+        [
+          "340ua",
+          "340 ua"
+        ],
+        [
+          "180ua",
+          "180 ua"
+        ]
+      ],
+      "sources": [
+        "2026-07-02-aurora-meshsync-release-notes.md"
+      ],
+      "keywords": "rejoin power spike 0.3.8"
+    },
+    {
+      "id": "q25",
+      "category": "fact",
+      "question": "When was MeshSync 0.3.8 released?",
+      "answer": "2026-07-02.",
+      "facts": [
+        [
+          "2026-07-02",
+          "july 2"
+        ]
+      ],
+      "sources": [
+        "2026-07-02-aurora-meshsync-release-notes.md"
+      ],
+      "keywords": "meshsync 0.3.8 release date"
+    },
+    {
+      "id": "q26",
+      "category": "fact",
+      "question": "Who owned firmware and QA sign-off for the MeshSync 0.3.8 release?",
+      "answer": "Mira Chen (firmware) and Jonah Park (QA sign-off).",
+      "facts": [
+        [
+          "mira"
+        ],
+        [
+          "jonah"
+        ]
+      ],
+      "sources": [
+        "2026-07-02-aurora-meshsync-release-notes.md"
+      ],
+      "keywords": "0.3.8 owners"
+    },
+    {
+      "id": "q27",
+      "category": "fact",
+      "question": "What is the MQTT topic for Nova Widget telemetry?",
+      "answer": "aurora/{device_id}/telemetry.",
+      "facts": [
+        [
+          "aurora/{device_id}/telemetry",
+          "aurora/+/telemetry"
+        ]
+      ],
+      "sources": [
+        "samples/articles/[SAMPLE]-2026-07-02-mqtt-export-schema.md",
+        "samples/articles/[SAMPLE]-2026-07-08-homelab-integration-guide.md"
+      ],
+      "keywords": "mqtt telemetry topic"
+    },
+    {
+      "id": "q28",
+      "category": "fact",
+      "question": "Which MQTT schema version is required for firmware 0.3.8 and later?",
+      "answer": "Schema v2.",
+      "facts": [
+        [
+          "schema v2",
+          "v2 required"
+        ]
+      ],
+      "sources": [
+        "samples/support/[SAMPLE]-2026-07-04-ticket-2210-mqtt-setup.txt",
+        "2026-07-02-aurora-meshsync-release-notes.md"
+      ],
+      "keywords": "mqtt schema version"
+    },
+    {
+      "id": "q29",
+      "category": "fact",
+      "question": "How do you enable MQTT export before the app supports it?",
+      "answer": "Send the UART command `mqtt on`.",
+      "facts": [
+        [
+          "mqtt on"
+        ]
+      ],
+      "sources": [
+        "samples/articles/[SAMPLE]-2026-07-08-homelab-integration-guide.md"
+      ],
+      "keywords": "enable mqtt export uart"
+    },
+    {
+      "id": "q30",
+      "category": "fact",
+      "question": "What signature scheme is planned for OTA firmware images?",
+      "answer": "ed25519.",
+      "facts": [
+        [
+          "ed25519"
+        ]
+      ],
+      "sources": [
+        "samples/articles/[SAMPLE]-2026-07-04-ota-update-design-sketch.md"
+      ],
+      "keywords": "ota signed firmware"
+    },
+    {
+      "id": "q31",
+      "category": "fact",
+      "question": "Are OTA updates shipping in the beta?",
+      "answer": "No; OTA is not shipping in beta (deferred to v2.1).",
+      "facts": [
+        [
+          "not shipping",
+          "deferred"
+        ]
+      ],
+      "sources": [
+        "samples/articles/[SAMPLE]-2026-07-04-ota-update-design-sketch.md",
+        "articles/2026-05-15-product-spec-draft.md"
+      ],
+      "keywords": "ota beta deferred"
+    },
+    {
+      "id": "q32",
+      "category": "fact",
+      "question": "How much faster did batch 4 units drain their battery with MeshSync relay mode on?",
+      "answer": "Roughly 30% faster than spec.",
+      "facts": [
+        [
+          "30%",
+          "30 %"
+        ]
+      ],
+      "sources": [
+        "emails/2026-06-02-meshsync-battery-report.eml"
+      ],
+      "keywords": "relay mode battery drain"
+    },
+    {
+      "id": "q33",
+      "category": "fact",
+      "question": "Which ticket tracks the MeshSync relay battery drain?",
+      "answer": "MESH-118.",
+      "facts": [
+        [
+          "mesh-118"
+        ]
+      ],
+      "sources": [
+        "emails/2026-06-02-meshsync-battery-report.eml",
+        "emails/2026-06-03-meshsync-battery-reply.eml"
+      ],
+      "keywords": "relay battery drain ticket"
+    },
+    {
+      "id": "q34",
+      "category": "fact",
+      "question": "What was the root cause of MESH-118?",
+      "answer": "The relay radio's sleep timer resets on every received packet, so a busy mesh never lets it sleep.",
+      "facts": [
+        [
+          "sleep timer"
+        ],
+        [
+          "received packet"
+        ]
+      ],
+      "sources": [
+        "emails/2026-06-03-meshsync-battery-reply.eml"
+      ],
+      "keywords": "mesh-118 root cause sleep timer"
+    },
+    {
+      "id": "q35",
+      "category": "fact",
+      "question": "How did the MESH-118 fix change radio wake time per hop?",
+      "answer": "From 400 ms to 80 ms.",
+      "facts": [
+        [
+          "400ms",
+          "400 ms"
+        ],
+        [
+          "80ms",
+          "80 ms"
+        ]
+      ],
+      "sources": [
+        "emails/2026-06-03-meshsync-battery-reply.eml"
+      ],
+      "keywords": "radio wake time per hop"
+    },
+    {
+      "id": "q36",
+      "category": "fact",
+      "question": "Which firmware version contains the MESH-118 fix?",
+      "answer": "0.3.9.",
+      "facts": [
+        [
+          "0.3.9"
+        ]
+      ],
+      "sources": [
+        "emails/2026-06-03-meshsync-battery-reply.eml",
+        "emails/2026-06-10-nova-widget-beta-invite.eml"
+      ],
+      "keywords": "mesh-118 fix version"
+    },
+    {
+      "id": "q37",
+      "category": "fact",
+      "question": "What was ordered on PowerCell order #PC-88213?",
+      "answer": "2,400 CR2477 cells for batch 5.",
+      "facts": [
+        [
+          "2,400",
+          "2400"
+        ],
+        [
+          "cr2477"
+        ]
+      ],
+      "sources": [
+        "emails/2026-06-04-mesh-118-vendor-battery-delay.eml"
+      ],
+      "keywords": "order pc-88213 cells"
+    },
+    {
+      "id": "q38",
+      "category": "fact",
+      "question": "Why was order #PC-88213 delayed, and to when?",
+      "answer": "A customs hold in Shenzhen at the cathode supplier; revised ship date June 18.",
+      "facts": [
+        [
+          "customs"
+        ],
+        [
+          "june 18"
+        ]
+      ],
+      "sources": [
+        "emails/2026-06-04-mesh-118-vendor-battery-delay.eml"
+      ],
+      "keywords": "cell restock delay customs"
+    },
+    {
+      "id": "q39",
+      "category": "fact",
+      "question": "Which shipping option did Mira choose for the delayed cells?",
+      "answer": "The split shipment: 600 cells by air on June 8.",
+      "facts": [
+        [
+          "600 cells"
+        ],
+        [
+          "by air",
+          "air-ship",
+          "air freight"
+        ]
+      ],
+      "sources": [
+        "emails/2026-06-04-mesh-118-vendor-battery-delay-reply.eml"
+      ],
+      "keywords": "split shipment air"
+    },
+    {
+      "id": "q40",
+      "category": "fact",
+      "question": "What is the pass bar for the 0.3.9 MESH-118 retest?",
+      "answer": "Drain within 10% of the 0.3.7 baseline at 6 nodes or fewer.",
+      "facts": [
+        [
+          "10%"
+        ],
+        [
+          "0.3.7"
+        ]
+      ],
+      "sources": [
+        "emails/2026-06-05-mesh-118-qa-standup-notes.eml"
+      ],
+      "keywords": "retest pass bar"
+    },
+    {
+      "id": "q41",
+      "category": "fact",
+      "question": "What problem is tracked as NOVA-59?",
+      "answer": "Wifi credentials/state not surviving an unclean power loss on 0.3.8.",
+      "facts": [
+        [
+          "wifi",
+          "wi-fi"
+        ],
+        [
+          "power loss",
+          "power outage"
+        ]
+      ],
+      "sources": [
+        "emails/2026-06-11-nova-59-support-triage.eml",
+        "emails/2026-06-11-nova-59-customer-wifi-complaint.eml"
+      ],
+      "keywords": "nova-59 wifi power"
+    },
+    {
+      "id": "q42",
+      "category": "fact",
+      "question": "How do you do a soft wifi-only reset on the Nova Widget?",
+      "answer": "Hold the side button for 3 seconds; it keeps sensor history.",
+      "facts": [
+        [
+          "3 seconds"
+        ],
+        [
+          "side button"
+        ]
+      ],
+      "sources": [
+        "emails/2026-06-11-nova-59-support-triage.eml"
+      ],
+      "keywords": "soft wifi reset side button"
+    },
+    {
+      "id": "q43",
+      "category": "fact",
+      "question": "Who is the account manager at PowerCell Supply Co.?",
+      "answer": "Rosa Delgado.",
+      "facts": [
+        [
+          "rosa delgado"
+        ]
+      ],
+      "sources": [
+        "emails/2026-06-04-mesh-118-vendor-battery-delay.eml"
+      ],
+      "keywords": "powercell account manager"
+    },
+    {
+      "id": "q44",
+      "category": "fact",
+      "question": "Where did the Aurora Labs kickoff meeting take place?",
+      "answer": "In Mira's garage workshop in Portland, OR.",
+      "facts": [
+        [
+          "portland"
+        ],
+        [
+          "garage"
+        ]
+      ],
+      "sources": [
+        "notes/2026-05-01-kickoff-notes.md"
+      ],
+      "keywords": "kickoff location"
+    },
+    {
+      "id": "q45",
+      "category": "fact",
+      "question": "Why was the company named Aurora Labs?",
+      "answer": "Jonah wanted something that sounds like dawn, a new beginning.",
+      "facts": [
+        [
+          "dawn"
+        ]
+      ],
+      "sources": [
+        "notes/2026-05-01-kickoff-notes.md"
+      ],
+      "keywords": "aurora labs name"
+    },
+    {
+      "id": "q46",
+      "category": "fact",
+      "question": "What is Aurora Labs' draft mission statement?",
+      "answer": "\"Open sensors for people who own their data.\"",
+      "facts": [
+        [
+          "open sensors for people who own their data"
+        ]
+      ],
+      "sources": [
+        "notes/2026-05-01-kickoff-notes.md",
+        "ideas/2026-06-07-product-naming-brainstorm.txt"
+      ],
+      "keywords": "mission statement open sensors"
+    },
+    {
+      "id": "q47",
+      "category": "fact",
+      "question": "Which proposed rename of MeshSync keeps getting rejected?",
+      "answer": "MeshSink.",
+      "facts": [
+        [
+          "meshsink"
+        ]
+      ],
+      "sources": [
+        "ideas/backlog-shower-thoughts.txt",
+        "samples/notes/[SAMPLE]-2026-07-10-sprint-planning-aurora.txt"
+      ],
+      "keywords": "meshsync rename rejected"
+    },
+    {
+      "id": "q48",
+      "category": "fact",
+      "question": "How many beta testers were on the list at the June 8 meeting, and who were they?",
+      "answer": "12 people: 3 farmers, the rest hobbyists.",
+      "facts": [
+        [
+          "12 people",
+          "12 beta testers",
+          "12 testers"
+        ],
+        [
+          "3 farmers",
+          "three farmers"
+        ]
+      ],
+      "sources": [
+        "notes/2026-06-08-meeting-no-agenda.txt"
+      ],
+      "keywords": "beta tester list farmers"
+    },
+    {
+      "id": "q49",
+      "category": "fact",
+      "question": "How many Nova Widget beta units were in the field per the July investor update?",
+      "answer": "47.",
+      "facts": [
+        [
+          "47 beta",
+          "47 units"
+        ]
+      ],
+      "sources": [
+        "samples/2026-07-04-investor-update-draft.txt"
+      ],
+      "keywords": "beta units in field"
+    },
+    {
+      "id": "q50",
+      "category": "fact",
+      "question": "How much funding does the investor update ask for?",
+      "answer": "A $500k bridge for the injection mold and 2 firmware FTEs.",
+      "facts": [
+        [
+          "500k",
+          "500,000"
+        ]
+      ],
+      "sources": [
+        "samples/2026-07-04-investor-update-draft.txt"
+      ],
+      "keywords": "investor ask bridge"
+    },
+    {
+      "id": "q51",
+      "category": "contradiction",
+      "question": "What is TeaBuddy's herbal preset in firmware versus in the marketing copy?",
+      "answer": "7:00 in firmware; the marketing copy said 5:00.",
+      "facts": [
+        [
+          "7:00",
+          "7 min",
+          "firmware is 7"
+        ],
+        [
+          "5:00",
+          "5 min",
+          "marketing pdf is 5"
+        ]
+      ],
+      "sources": [
+        "dummy-test/2026-07-01-firmware-changelog.md",
+        "dummy-test/2026-07-06-slack-dump-product.txt"
+      ],
+      "keywords": "teabuddy herbal preset"
+    },
+    {
+      "id": "q52",
+      "category": "fact",
+      "question": "What BLE pairing timeout did TeaBuddy v0.9.4 set for iOS 18?",
+      "answer": "45 seconds.",
+      "facts": [
+        [
+          "45s",
+          "45 s",
+          "45 sec"
+        ]
+      ],
+      "sources": [
+        "dummy-test/2026-07-01-firmware-changelog.md"
+      ],
+      "keywords": "teabuddy pairing timeout"
+    },
+    {
+      "id": "q53",
+      "category": "fact",
+      "question": "Does the Nova Widget share an app or codebase with TeaBuddy?",
+      "answer": "No: different product, company and app.",
+      "facts": [
+        [
+          "different product",
+          "different company",
+          "different companies",
+          "not shared codebase"
+        ]
+      ],
+      "sources": [
+        "dummy-test/2026-07-08-customer-onboarding-faq.md",
+        "samples/support/[SAMPLE]-2026-07-01-ticket-2201-battery-docs.txt",
+        "dummy-test/2026-07-01-firmware-changelog.md"
+      ],
+      "keywords": "nova teabuddy same app"
+    },
+    {
+      "id": "q54",
+      "category": "fact",
+      "question": "What was TeaBuddy's raw beta NPS?",
+      "answer": "42.",
+      "facts": [
+        [
+          "nps raw: 42",
+          "nps of 42",
+          "nps 42",
+          "nps: 42"
+        ]
+      ],
+      "sources": [
+        "dummy-test/2026-07-06-slack-dump-product.txt"
+      ],
+      "keywords": "teabuddy nps"
+    },
+    {
+      "id": "q55",
+      "category": "fact",
+      "question": "What caused TeaBuddy ticket #2156?",
+      "answer": "iOS 18 changed the CoreBluetooth permission prompt order.",
+      "facts": [
+        [
+          "ios 18"
+        ],
+        [
+          "permission prompt"
+        ]
+      ],
+      "sources": [
+        "samples/research/[SAMPLE]-2026-07-02-ble-pairing-ios18-notes.md",
+        "dummy-test/2026-07-01-firmware-changelog.md"
+      ],
+      "keywords": "ticket 2156 ios 18"
+    },
+    {
+      "id": "q56",
+      "category": "fact",
+      "question": "Which support ticket covers the rejoin loop after adding an 8th node?",
+      "answer": "Ticket #2099.",
+      "facts": [
+        [
+          "2099"
+        ]
+      ],
+      "sources": [
+        "samples/support/[SAMPLE]-2026-06-27-ticket-2099-mesh-rejoin.txt",
+        "dummy-test/2026-07-08-customer-onboarding-faq.md",
+        "2026-07-02-aurora-meshsync-release-notes.md"
+      ],
+      "keywords": "rejoin loop 8 nodes ticket"
+    },
+    {
+      "id": "q57",
+      "category": "fact",
+      "question": "What was support ticket #2201 about?",
+      "answer": "Battery documentation: the blog said CR2450 but the device uses CR2032.",
+      "facts": [
+        [
+          "cr2450"
+        ],
+        [
+          "cr2032"
+        ]
+      ],
+      "sources": [
+        "samples/support/[SAMPLE]-2026-07-01-ticket-2201-battery-docs.txt"
+      ],
+      "keywords": "ticket 2201 battery docs"
+    },
+    {
+      "id": "q58",
+      "category": "fact",
+      "question": "Which GitHub issue tracks the rejoin storm at 8 nodes?",
+      "answer": "aurora-labs/meshsync #442.",
+      "facts": [
+        [
+          "#442",
+          "issue 442"
+        ]
+      ],
+      "sources": [
+        "samples/forums/[SAMPLE]-2026-07-03-github-issue-meshsync-442.txt"
+      ],
+      "keywords": "github issue rejoin storm"
+    },
+    {
+      "id": "q59",
+      "category": "fact",
+      "question": "Which MCU is being evaluated for the next hardware revision?",
+      "answer": "The nRF5340.",
+      "facts": [
+        [
+          "nrf5340"
+        ]
+      ],
+      "sources": [
+        "samples/notes/[SAMPLE]-2026-06-12-meshsync-debug-scribbles.txt",
+        "samples/notes/[SAMPLE]-2026-07-10-sprint-planning-aurora.txt"
+      ],
+      "keywords": "next rev mcu nrf5340"
+    },
+    {
+      "id": "q60",
+      "category": "fact",
+      "question": "How long do cheap capacitive soil probes last in acidic soil?",
+      "answer": "About 6–9 months.",
+      "facts": [
+        [
+          "6-9 month",
+          "6 to 9 month"
+        ]
+      ],
+      "sources": [
+        "samples/research/[SAMPLE]-2026-07-04-soil-probe-corrosion-study.txt"
+      ],
+      "keywords": "soil probe corrosion acidic"
+    },
+    {
+      "id": "q61",
+      "category": "fact",
+      "question": "How much does a replacement SenseNode probe cost?",
+      "answer": "$12.",
+      "facts": [
+        [
+          "$12"
+        ]
+      ],
+      "sources": [
+        "samples/research/[SAMPLE]-2026-07-04-soil-probe-corrosion-study.txt"
+      ],
+      "keywords": "sensenode probe replacement"
+    },
+    {
+      "id": "q62",
+      "category": "fact",
+      "question": "How much power does an always-on LoRaWAN gateway draw?",
+      "answer": "About 2 W of wall power.",
+      "facts": [
+        [
+          "2w",
+          "2 w"
+        ]
+      ],
+      "sources": [
+        "samples/research/[SAMPLE]-2026-07-06-lorawan-vs-mesh-power.md"
+      ],
+      "keywords": "lorawan gateway power"
+    },
+    {
+      "id": "q63",
+      "category": "fact",
+      "question": "How many points did the Show HN post for the Nova Widget get?",
+      "answer": "142.",
+      "facts": [
+        [
+          "points: 142",
+          "142 points"
+        ]
+      ],
+      "sources": [
+        "samples/forums/[SAMPLE]-2026-07-10-hackernews-thread-scrape.txt"
+      ],
+      "keywords": "show hn points"
+    },
+    {
+      "id": "q64",
+      "category": "fact",
+      "question": "Who presented the local-first IoT lunch-and-learn?",
+      "answer": "Alex Kim from TeaBuddy.",
+      "facts": [
+        [
+          "alex kim"
+        ]
+      ],
+      "sources": [
+        "samples/notes/[SAMPLE]-2026-07-05-lunch-and-learn-notes.txt"
+      ],
+      "keywords": "lunch and learn presenter"
+    },
+    {
+      "id": "q65",
+      "category": "fact",
+      "question": "What minimum logo separation did counsel require for co-marketing?",
+      "answer": "24px.",
+      "facts": [
+        [
+          "24px",
+          "24 px"
+        ]
+      ],
+      "sources": [
+        "samples/emails/[SAMPLE]-2026-07-08-legal-review-trademark.txt"
+      ],
+      "keywords": "co-marketing logo separation"
+    }
+  ]
+}

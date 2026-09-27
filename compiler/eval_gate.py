@@ -82,6 +82,16 @@ def collect_metrics() -> dict[str, float]:
     metrics["faithfulness.extractive.verbatim_rate"] = extractive.verbatim_rate
     metrics["faithfulness.extractive.answers"] = extractive.total
 
+    import qa_benchmark_eval
+    import rag_engine
+
+    questions = qa_benchmark_eval.load_benchmark()
+    metrics["qa.questions"] = len(questions)
+    metrics["qa.wiki.coverage"] = qa_benchmark_eval.coverage(questions, rag_engine.build_corpus())
+    for score in qa_benchmark_eval.evaluate(questions, ("naive",)):
+        metrics[f"qa.{score.corpus}.naive.fact_recall"] = score.fact_recall
+        metrics[f"qa.{score.corpus}.naive.source_hit"] = score.source_hit
+
     grounded = faithfulness_heuristic.check_corpus_groundedness()
     checkable = sum(r.report.checkable_count for r in grounded)
     unsupported = sum(len(r.report.unsupported) for r in grounded)
@@ -118,12 +128,17 @@ def compare(current: dict[str, float], baseline: dict) -> list[str]:
 
 
 def build_baseline(current: dict[str, float], tolerance: float = DEFAULT_TOLERANCE) -> dict:
-    counts = {k for k in current if k.endswith((".queries", ".gold_pairs", ".claim_groups", ".true_positives", ".answers", ".pages", ".checkable_sentences"))}
+    counts = {k for k in current if k.endswith((".queries", ".questions", ".gold_pairs", ".claim_groups", ".true_positives", ".answers", ".pages", ".checkable_sentences"))}
     return {
         "tolerance": tolerance,
         # Measured over the committed wiki pages, which legitimately change on
         # every recompile -- only a large drop should fail CI.
-        "tolerances": {"groundedness.supported_rate": 0.10},
+        "tolerances": {
+            "groundedness.supported_rate": 0.10,
+            "qa.wiki.coverage": 0.05,
+            "qa.wiki.naive.fact_recall": 0.05,
+            "qa.wiki.naive.source_hit": 0.05,
+        },
         "metrics": {k: round(v, 4) for k, v in sorted(current.items()) if k not in counts and not math.isnan(v)},
         # Floors at half the current count: tolerant of corpus edits, but
         # catches an eval that suddenly runs on (almost) nothing.

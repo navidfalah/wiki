@@ -1,7 +1,10 @@
 {
   "tolerance": 0.02,
   "tolerances": {
-    "groundedness.supported_rate": 0.1
+    "groundedness.supported_rate": 0.1,
+    "qa.wiki.coverage": 0.05,
+    "qa.wiki.naive.fact_recall": 0.05,
+    "qa.wiki.naive.source_hit": 0.05
   },
   "metrics": {
     "entity_resolution.heuristic.f1": 1.0,
@@ -11,6 +14,11 @@
     "groundedness.supported_rate": 0.6458,
     "pii.precision": 1.0,
     "pii.recall": 1.0,
+    "qa.raw.naive.fact_recall": 0.9,
+    "qa.raw.naive.source_hit": 0.8615,
+    "qa.wiki.coverage": 0.9538,
+    "qa.wiki.naive.fact_recall": 0.8128,
+    "qa.wiki.naive.source_hit": 0.8615,
     "retrieval.bm25.ndcg_at_5": 0.7467,
     "retrieval.bm25.recall_at_5": 0.6844,
     "temporal.mean_precision": 0.9389,
@@ -24,6 +32,7 @@
     "groundedness.checkable_sentences": 1761,
     "groundedness.pages": 112,
     "pii.true_positives": 6,
+    "qa.questions": 32,
     "retrieval.queries": 4,
     "trust.claim_groups": 3
   }
