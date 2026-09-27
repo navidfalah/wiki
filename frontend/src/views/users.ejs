@@ -32,4 +32,24 @@
   </div>
 </section>
 
+<section class="mt-6 rounded-xl border border-gray-200 bg-white shadow-card">
+  <div class="flex flex-wrap items-center justify-between gap-3 border-b border-gray-100 px-5 py-4">
+    <div class="min-w-0">
+      <h2 class="text-base font-semibold text-gray-900"><%= t('users.backups.title') %></h2>
+      <p class="mt-0.5 max-w-2xl text-xs text-gray-500"><%= t('users.backups.intro') %></p>
+      <p id="backup-schedule" class="mt-0.5 text-xs text-gray-500"></p>
+    </div>
+    <div class="flex shrink-0 items-center gap-2">
+      <label class="cursor-pointer rounded-lg border border-gray-300 bg-white px-3 py-1.5 text-sm font-medium text-gray-700 hover:bg-gray-50">
+        <%= t('users.backups.upload') %>
+        <input id="backup-upload" type="file" accept=".gz,.tgz,application/gzip" class="hidden" />
+      </label>
+      <button id="backup-create" type="button" class="rounded-lg bg-accent px-3 py-1.5 text-sm font-medium text-white hover:bg-accent-dark"><%= t('users.backups.create') %></button>
+    </div>
+  </div>
+  <div id="backups-list" class="divide-y divide-gray-100">
+    <p class="p-5 text-sm text-gray-500"><%= t('common.loading') %></p>
+  </div>
+</section>
+
 <%- include('partials/foot', { clientScript }) %>

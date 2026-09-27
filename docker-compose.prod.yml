@@ -145,6 +145,9 @@ services:
       PY_MAX_CONCURRENCY: ${PY_MAX_CONCURRENCY:-2}
       PY_WORKER: ${PY_WORKER:-1}
       PY_WORKER_POOL_SIZE: ${PY_WORKER_POOL_SIZE:-1}
+      # Automatic backups into data/backups (see doc 40); copy them off-host.
+      BACKUP_INTERVAL_HOURS: ${BACKUP_INTERVAL_HOURS:-24}
+      BACKUP_KEEP: ${BACKUP_KEEP:-7}
       # There is no sample Postgres in production; skip the boot-time spawn.
       SKIP_DEFAULT_CONNECTIONS: "true"
       CORS_ORIGINS: https://${DOMAIN:-wissensbau.de}

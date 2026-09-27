@@ -21,6 +21,7 @@ data/last-compile.log
 data/connectors/
 data/pipeline_runs/
 data/page_history/
+data/backups/
 data/llm_settings.json
 data/users.json
 data/sessions.json

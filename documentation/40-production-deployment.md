@@ -180,6 +180,8 @@ All values go in `.env` (see `.env.example`):
 | `PY_WORKER` | `1` | `0` = spawn a fresh `cli.py` per call instead of using the warm worker |
 | `PY_WORKER_POOL_SIZE` | `1` | Warm `cli.py --serve` workers (~50 MB each while warm) |
 | `PY_WORKER_IDLE_MS` / `PY_WORKER_MAX_REQUESTS` / `PY_WORKER_TIMEOUT_MS` | `300000` / `500` / `600000` | Idle shutdown, recycling, per-call kill timeout |
+| `BACKUP_INTERVAL_HOURS` / `BACKUP_KEEP` | `24` / `7` | Automatic backups (`0` = off) and how many scheduled ones to keep |
+| `BACKUP_MAX_UPLOAD_MB` | `1024` | Largest backup archive the admin panel accepts |
 
 Lower `PY_MAX_CONCURRENCY` to `1` and `BACKEND_MEM_LIMIT` to `512m` on a 1 GB
 host (or also set `PY_WORKER=0` there); raise both on a bigger one.
@@ -248,9 +250,42 @@ gzip/zstd compression, and strips the `Server` header.
 
 ## Backups
 
-State lives in `./data` (users, sessions, chat history, pipeline runs, LLM
-cache, raw sources) and `./wiki-app/docs` (compiled pages). Back up both, e.g.
-`tar czf backup-$(date +%F).tgz data wiki-app/docs`.
+**Admin panel → Backups** (`/users`) creates, downloads, uploads, restores
+and deletes backups. A backup is a `.tar.gz` of:
+
+- `data/`: raw sources, users, sessions, chat, settings, the LLM cache, page
+  history and pipeline runs;
+- `wiki-app/docs/` (compiled pages) and `wiki-app/static/media/`;
+- the topic index `compiler/temp_output/index.json`.
+
+Archives are stored in `data/backups/`
+(`backend/src/lib/backups.ts`, `backupScheduler.ts`).
+
+- **Automatic**: a backup every `BACKUP_INTERVAL_HOURS` (default `24`, `0`
+  turns it off), keeping the newest `BACKUP_KEEP` (default `7`) scheduled
+  ones. Manual, uploaded and pre-restore backups are never pruned
+  automatically.
+- **Off-site copies are your job.** `data/backups/` sits on the same disk as
+  the data. Download backups regularly, or copy the directory off the host
+  (for example with a nightly `rsync` or `rclone` from the host).
+- **Restore** is refused while a compile is running. It first saves the
+  current state as a `pre-restore` backup, replaces `wiki-app/docs/*.md`
+  entirely (pages created since the backup are removed), and overwrites every
+  other file the archive contains. Files not in the archive are left alone.
+  Accounts and sessions come back as they were in the backup, so you may be
+  signed out.
+- **What an archive may contain**: only regular files and directories under
+  the paths above. Archives with links, devices, absolute or `..` paths, or
+  paths outside those trees are rejected, and so are entries that would
+  write through a symlink on disk. That makes uploading an archive from
+  another server safe.
+- **Source-folder mirrors** in `data/raw` are symlinks to folders outside
+  the project. They aren't archived; they are recreated from
+  `data/sources.json` after a restore.
+- Upload size limit: `BACKUP_MAX_UPLOAD_MB` (default `1024`).
+
+The files are ordinary `tar.gz` archives, so a manual restore on the host is
+`tar -xzf wissensbau-<stamp>.tar.gz -C <project dir>` with the stack stopped.
 
 ## Troubleshooting
 

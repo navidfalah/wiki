@@ -6,6 +6,8 @@ import { runCli } from './lib/pythonBridge';
 import { logSystemEvent } from './lib/activityLog';
 import { langFromRequest, localizeMessage } from './lib/localizeMessage';
 import { HttpError } from './lib/httpError';
+import { startBackupScheduler } from './lib/backupScheduler';
+import { BACKUPS_DIR, PROJECT_ROOT } from './paths';
 
 const app = express();
 const PORT = Number(process.env.PORT ?? 8000);
@@ -96,6 +98,8 @@ if (process.env.SKIP_DEFAULT_CONNECTIONS === 'true') {
       logSystemEvent('Skipped default sample connections', err.message, 'warn');
     });
 }
+
+startBackupScheduler({ projectRoot: PROJECT_ROOT, backupsDir: BACKUPS_DIR });
 
 logSystemEvent('Backend started', `pid ${process.pid}, port ${PORT}`);
 

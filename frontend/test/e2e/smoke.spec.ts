@@ -130,3 +130,38 @@ test('search answers a typed question and deep-links resource and email hits', a
   await expect(page.locator('#email-modal h2')).toBeVisible();
   await expect(page.locator('#email-body')).toContainText(/sleep timer/i);
 });
+
+test('admin can create, download, restore and delete a backup', async ({ page }) => {
+  await logIn(page);
+  const before: string[] = (await (await page.request.get('/api/admin/backups')).json()).backups.map((b: { name: string }) => b.name);
+  const made: string[] = [];
+  try {
+    await page.goto('/users');
+    await page.click('#backup-create');
+    const rows = page.locator('#backups-list [data-restore]');
+    await expect(rows).toHaveCount(before.length + 1);
+    const name = (await rows.evaluateAll((els) => els.map((e) => (e as HTMLElement).dataset.restore!))).find((n) => !before.includes(n))!;
+    made.push(name);
+
+    const download = await page.request.get(`/api/admin/backups/${encodeURIComponent(name)}`);
+    expect(download.ok()).toBe(true);
+    expect((await download.body()).subarray(0, 2)).toEqual(Buffer.from([0x1f, 0x8b])); // gzip magic
+
+    page.once('dialog', (dialog) => dialog.accept());
+    await page.locator(`#backups-list [data-restore="${name}"]`).click();
+    await expect(page.locator('#backups-list')).toContainText('pre-restore');
+    const after: string[] = (await (await page.request.get('/api/admin/backups')).json()).backups.map((b: { name: string }) => b.name);
+    made.push(...after.filter((n) => n.includes('pre-restore') && !before.includes(n)));
+
+    // Restoring the backup we just took leaves the wiki as it was.
+    const res = await page.goto('/wiki/aurora-labs');
+    expect(res?.status()).toBe(200);
+  } finally {
+    for (const name of made) await page.request.delete(`/api/admin/backups/${encodeURIComponent(name)}`);
+  }
+});
+
+test('non-admin API calls to backups are refused', async ({ request }) => {
+  const res = await request.get('/api/admin/backups');
+  expect(res.status()).toBe(401);
+});
