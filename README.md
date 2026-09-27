@@ -790,14 +790,24 @@ Then point Cloudflare Tunnel (`cloudflared`, recommended — no open port needed
 
 ## CI/CD
 
-Workflow: `.github/workflows/pr-checks.yml` (pull requests to `main`):
+Workflow: `.github/workflows/pr-checks.yml`. It runs on every push to every branch and on pull requests to `main`. Each job calls the repository's `./wiki` CLI, so CI runs exactly what you run locally:
 
-| Job | Checks |
-|-----|--------|
-| `compiler` | `ruff check`, `pytest` |
-| `backend` | `tsc` typecheck, `vitest`, build |
-| `frontend` | `tsc` typecheck, full build (fonts + Tailwind + client bundles) |
-| `docker` | validates `docker-compose.prod.yml` and the `Caddyfile`, builds both production images |
+| Job | Runs |
+|-----|------|
+| `compiler` (Python 3.10 + 3.12) | `./wiki ci --only compiler`: ruff, pytest + coverage floor, eval regression gate |
+| `backend` | `./wiki ci --only backend`: eslint, tsc, vitest (units + route integration tests) + coverage floor, build |
+| `frontend` | `./wiki ci --only frontend`: eslint, tsc + i18n parity, vitest + coverage floor, build |
+| `e2e` | `./wiki e2e`: Playwright against the real backend + frontend |
+| `docker` | `./wiki docker`: compose + Caddyfile validation, image build |
+
+```bash
+./wiki setup --browsers   # once
+./wiki check --changed    # fast pre-push check of what you touched
+./wiki ci --parallel      # the full CI run locally
+./wiki --help             # everything else (test -k, coverage, eval, bench, e2e, dev)
+```
+
+Details: [documentation/46-cli-and-testing.md](./documentation/46-cli-and-testing.md).
 
 The former GitHub Pages workflow (Docusaurus) was removed: the site is served by the Express frontend at [wissensbau.de](https://wissensbau.de) instead.
 

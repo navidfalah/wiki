@@ -1,6 +1,7 @@
 """Tests for the repository's ./wiki command line (a Python script at the repo root)."""
 
 import json
+import os
 import subprocess
 import sys
 from importlib.machinery import SourceFileLoader
@@ -21,6 +22,14 @@ def _load():
 
 
 cli = _load()
+
+
+@pytest.fixture(autouse=True)
+def _outside_ci(monkeypatch):
+    """These tests also run *on* GitHub Actions: don't let the real job's
+    environment change the CLI's behaviour or leak into its step summary."""
+    monkeypatch.setattr(cli, "IN_CI", False)
+    monkeypatch.delenv("GITHUB_STEP_SUMMARY", raising=False)
 
 
 def ns(**kw):
@@ -123,6 +132,12 @@ class TestReport:
         out = capsys.readouterr().out
         assert "1 failed" in out and "line2" in out
 
+    def test_a_skip_passes_locally_but_fails_on_ci(self, capsys):
+        only_skip = [self.results()[0], self.results()[2]]
+        assert cli.report(only_skip, "x", None, strict=False) == 0
+        assert cli.report(only_skip, "x", None, strict=True) == 1
+        assert "1 failed" in capsys.readouterr().out
+
     def test_json_and_github_step_summary(self, tmp_path, monkeypatch):
         summary = tmp_path / "summary.md"
         monkeypatch.setenv("GITHUB_STEP_SUMMARY", str(summary))
@@ -135,19 +150,25 @@ class TestReport:
 
 
 def run_cli(*args, cwd=ROOT):
-    return subprocess.run([sys.executable, str(ROOT / "wiki"), *args], cwd=cwd, capture_output=True, text=True, timeout=60)
+    env = {k: v for k, v in os.environ.items() if k not in ("GITHUB_ACTIONS", "CI", "GITHUB_STEP_SUMMARY")}
+    return subprocess.run([sys.executable, str(ROOT / "wiki"), *args], cwd=cwd, capture_output=True, text=True, timeout=60, env=env)
 
 
 class TestCommandLine:
     def test_help_lists_the_commands(self):
         out = run_cli("--help").stdout
-        for command in ("doctor", "check", "coverage", "eval", "e2e", "ci", "dev"):
+        for command in ("doctor", "check", "coverage", "eval", "e2e", "docker", "ci", "dev"):
             assert command in out
 
     def test_dry_run_prints_commands_without_running(self):
         proc = run_cli("ci", "--only", "compiler", "--dry-run")
         assert proc.returncode == 0
         assert "pytest" in proc.stdout and "eval_gate.py" in proc.stdout
+
+    def test_docker_command(self):
+        proc = run_cli("docker", "--dry-run")
+        assert proc.returncode == 0
+        assert "compose" in proc.stdout and "caddy validate" in proc.stdout and "build" in proc.stdout
 
     def test_list(self):
         assert "Coverage floors" in run_cli("list").stdout

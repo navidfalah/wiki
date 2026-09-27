@@ -3,22 +3,29 @@
 ## GitHub Actions
 
 **Workflow:** `.github/workflows/pr-checks.yml`
-**Triggers:** pull requests to `main`, pushes to `main`, manual dispatch
+**Triggers:** every push to every branch, pull requests to `main`, manual dispatch
 
-| Job | What it checks |
-|---|---|
-| `compiler` (Python 3.10 and 3.12) | `ruff check` with a pinned ruff version, `pytest`, and the offline eval regression gate `python eval_gate.py` (doc 14, doc 44) |
-| `backend` | eslint, `tsc`, vitest (including the search benchmark floor), build |
-| `frontend` | eslint (`src` + `test`), `tsc` (server, client bundles, tests), i18n key parity, vitest unit tests, build |
-| `e2e` | Starts the real backend and frontend and runs Playwright in Chromium (`frontend/test/e2e`). Every page must load without a script error or CSP violation. Search must return results and link to pages. Raw previews must be `nosniff`. On failure the HTML report is uploaded. |
-| `docker` | Validates the production compose file (with and without the Caddy profile) and the Caddyfile, and builds the images |
+Every job installs its dependencies and then runs the repository's
+`./wiki` CLI. The CLI is the same command developers run locally, so CI
+and local runs cannot drift apart. Full reference:
+[46-cli-and-testing.md](./46-cli-and-testing.md).
 
-Run the browser smoke test locally:
+| Job | Runs | What it checks |
+|---|---|---|
+| `compiler` (Python 3.10 and 3.12) | `./wiki ci --only compiler` | `ruff` (pinned; also lints the CLI), `pytest` with a coverage floor, the offline eval regression gate (doc 14, doc 44) |
+| `backend` | `./wiki ci --only backend` | eslint, `tsc`, vitest with a coverage floor (units, route integration tests, search benchmark floor), build |
+| `frontend` | `./wiki ci --only frontend` | eslint, `tsc` (server, client bundles, tests) with i18n key parity, vitest with a coverage floor, build |
+| `e2e` | `./wiki e2e` | Starts the real backend and frontend and runs Playwright in Chromium (`frontend/test/e2e`). Every page must load without a script error or CSP violation. Also checks search deep links, page history, backups and the dashboard. On failure the HTML report is uploaded. |
+| `docker` | `./wiki docker` | Validates the production compose file (with and without the Caddy profile) and the Caddyfile, and builds the images |
+
+On CI, a step whose prerequisite is missing fails instead of being skipped.
+Each job writes a results table to the run's summary page.
+
+Run the same checks locally:
 
 ```bash
-cd frontend && npm run build
-# Uses running servers if present; otherwise starts both itself.
-E2E_USERNAME=admin E2E_PASSWORD=<your admin password> npm run test:e2e
+./wiki ci --parallel            # compiler + backend + frontend, as CI does
+E2E_PASSWORD=<your admin password> ./wiki e2e   # reuses running servers if present
 ```
 
 The old GitHub Pages workflow (`wiki-build.yml`, a static Docusaurus deploy)

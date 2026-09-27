@@ -1,12 +1,20 @@
-name: PR Checks
+name: Checks
+
+# Every job runs the same ./wiki CLI a developer runs locally, so "green on
+# my machine" and "green in CI" mean the same thing:
+#   ./wiki ci --only <pkg>   lint, typecheck, coverage (with floors), eval gate, build
+#   ./wiki e2e               Playwright against the real backend + frontend
+#   ./wiki docker            compose/Caddyfile validation + image build
+# On CI a step whose prerequisite is missing fails instead of being skipped,
+# and each job writes its results table to the run's summary page.
 
 on:
-  pull_request:
-    branches:
-      - main
-  # Also on direct pushes: main went red once from commits that never
-  # passed through a PR (a raw-data reorg that broke eval dataset paths).
+  # Every push to every branch, so a broken commit is caught before a PR
+  # exists (main went red once from commits that never passed through one).
   push:
+    branches:
+      - "**"
+  pull_request:
     branches:
       - main
   workflow_dispatch:
@@ -15,7 +23,7 @@ permissions:
   contents: read
 
 concurrency:
-  group: pr-checks-${{ github.ref }}
+  group: checks-${{ github.event_name }}-${{ github.ref }}
   cancel-in-progress: true
 
 jobs:
@@ -27,9 +35,6 @@ jobs:
         # 3.12 is what the Docker images run; 3.10 is the oldest interpreter
         # the compiler supports outside Docker (it broke there twice before).
         python-version: ["3.10", "3.12"]
-    defaults:
-      run:
-        working-directory: compiler
 
     steps:
       - name: Checkout repository
@@ -43,22 +48,13 @@ jobs:
           cache-dependency-path: compiler/requirements-dev.txt
 
       - name: Install Python dependencies
-        run: pip install -r requirements-dev.txt
+        run: pip install -r compiler/requirements-dev.txt
 
-      - name: Lint (ruff)
-        run: ruff check .
-
-      - name: Test (pytest)
-        run: python -m pytest -q
-
-      - name: Eval regression gate (offline evals vs. eval_baseline.json)
-        run: python eval_gate.py
+      - name: ./wiki ci --only compiler (ruff, pytest + coverage floor, eval gate)
+        run: ./wiki ci --only compiler
 
   backend:
     runs-on: ubuntu-latest
-    defaults:
-      run:
-        working-directory: backend
 
     steps:
       - name: Checkout repository
@@ -72,25 +68,13 @@ jobs:
           cache-dependency-path: backend/package-lock.json
 
       - name: Install Node dependencies
-        run: npm ci
+        run: npm ci --prefix backend
 
-      - name: Lint (eslint)
-        run: npm run lint
-
-      - name: Typecheck
-        run: npm run typecheck
-
-      - name: Test (vitest)
-        run: npm test
-
-      - name: Build
-        run: npm run build
+      - name: ./wiki ci --only backend (eslint, typecheck, vitest + coverage floor, build)
+        run: ./wiki ci --only backend
 
   frontend:
     runs-on: ubuntu-latest
-    defaults:
-      run:
-        working-directory: frontend
 
     steps:
       - name: Checkout repository
@@ -104,25 +88,14 @@ jobs:
           cache-dependency-path: frontend/package-lock.json
 
       - name: Install Node dependencies
-        run: npm ci
+        run: npm ci --prefix frontend
 
-      - name: Lint (eslint)
-        run: npm run lint
-
-      - name: Typecheck
-        # Also covers the client bundle typecheck and the i18n key check --
-        # see frontend/package.json's "typecheck" script.
-        run: npm run typecheck
-
-      - name: Unit tests (vitest)
-        run: npm test
-
-      - name: Build (fonts + Tailwind + client bundles + server)
-        run: npm run build
+      - name: ./wiki ci --only frontend (eslint, typecheck + i18n, vitest + coverage floor, build)
+        run: ./wiki ci --only frontend
 
   e2e:
-    # Real backend + frontend in Chromium: every page must load without a
-    # script error or CSP violation, search must work, raw previews nosniff.
+    # Real backend + frontend in Chromium: every page loads without a script
+    # error or CSP violation; search, history, backups and the dashboard work.
     runs-on: ubuntu-latest
     steps:
       - name: Checkout repository
@@ -150,16 +123,12 @@ jobs:
           npm ci --prefix backend
           npm ci --prefix frontend
 
-      - name: Build frontend assets
-        run: npm run build --prefix frontend
-
       - name: Install Chromium
         working-directory: frontend
         run: npx playwright install --with-deps chromium
 
-      - name: Smoke test (Playwright)
-        working-directory: frontend
-        run: npx playwright test
+      - name: ./wiki e2e (build frontend, Playwright smoke suite)
+        run: ./wiki e2e
 
       - name: Upload Playwright report
         if: failure()
@@ -176,20 +145,5 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v4
 
-      - name: Validate production compose file
-        env:
-          ADMIN_PASSWORD: ci-placeholder
-        run: docker compose -f docker-compose.prod.yml config -q
-
-      - name: Validate production compose file with the --caddy profile
-        env:
-          ADMIN_PASSWORD: ci-placeholder
-        run: docker compose -f docker-compose.prod.yml --profile caddy config -q
-
-      - name: Validate Caddyfile
-        run: docker run --rm -v "$PWD/deploy/Caddyfile:/etc/caddy/Caddyfile:ro" caddy:2-alpine caddy validate --config /etc/caddy/Caddyfile
-
-      - name: Build images
-        env:
-          ADMIN_PASSWORD: ci-placeholder
-        run: docker compose -f docker-compose.prod.yml build
+      - name: ./wiki docker (compose config, Caddyfile, image build)
+        run: ./wiki docker

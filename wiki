@@ -9,14 +9,16 @@
     ./wiki eval [--update-baseline]   offline eval regression gate
     ./wiki bench                  Q&A retrieval benchmark + search benchmark
     ./wiki e2e [-- ARGS]          build the frontend and run the Playwright suite
+    ./wiki docker                 validate compose files + Caddyfile, build the images
     ./wiki ci [--only PKG] [--e2e] [--docker]   exactly what GitHub Actions runs
     ./wiki dev                    start backend (:8000) and frontend (:3000)
     ./wiki list                   show every step and the command it runs
 
 Packages: compiler (Python), backend (Express/TS), frontend (Express/EJS/TS).
 Every command prints a timed summary and exits non-zero if any step failed.
-On GitHub Actions each step's log is a collapsible group and the summary is
-written to the job's step summary. Python 3.10+, standard library only.
+On GitHub Actions each step's log is a collapsible group, the summary is
+written to the job's step summary, and a skipped step (missing prerequisite)
+counts as a failure. Python 3.10+, standard library only.
 """
 
 from __future__ import annotations
@@ -278,7 +280,7 @@ def _tail(text: str, lines: int = 60) -> str:
     return "\n".join(parts[-lines:])
 
 
-def report(results: list[Result], title: str, json_path: str | None) -> int:
+def report(results: list[Result], title: str, json_path: str | None, strict: bool | None = None) -> int:
     for r in results:
         if r.status == "fail" and r.output:
             print(red(bold(f"\n✗ {r.step.package} · {r.step.name} failed -- last lines:")))
@@ -291,6 +293,10 @@ def report(results: list[Result], title: str, json_path: str | None) -> int:
         note = f"  {dim(r.note)}" if r.note else ""
         print(f"  {label}  {icon[r.status]}  {r.seconds:6.1f}s{note}")
     failed = [r for r in results if r.status == "fail"]
+    if IN_CI if strict is None else strict:
+        # On CI a missing prerequisite means the job is misconfigured -- a
+        # "skipped" step there would silently turn a check green.
+        failed += [r for r in results if r.status == "skip"]
     total = sum(r.seconds for r in results)
     verdict = red(f"{len(failed)} failed") if failed else green("all passed")
     print(f"  {'-' * width}\n  {verdict} · {len(results)} steps · {total:.1f}s")
@@ -492,6 +498,7 @@ def build_parser() -> argparse.ArgumentParser:
     sub.add_parser("bench", parents=[common], help="Q&A retrieval benchmark + search benchmark")
     p = sub.add_parser("e2e", parents=[common], help="Playwright smoke suite (starts both servers)")
     p.add_argument("extra", nargs=argparse.REMAINDER, help="extra Playwright arguments after --")
+    sub.add_parser("docker", parents=[common], help="Docker compose/Caddyfile validation and image build")
     p = sub.add_parser("ci", parents=[common, selection], help="everything CI runs")
     p.add_argument("--e2e", action="store_true", help="include the Playwright suite")
     p.add_argument("--docker", action="store_true", help="include Docker compose/image checks")
@@ -513,6 +520,8 @@ def main(argv: list[str] | None = None) -> int:
         return _run(args, eval_steps(args.update_baseline), "eval")
     if args.command == "bench":
         return _run(args, bench_steps(), "bench")
+    if args.command == "docker":
+        return _run(args, docker_steps(), "docker")
     if args.command == "e2e":
         extra = [a for a in args.extra if a != "--"]
         return _run(args, e2e_steps(extra), "e2e")
