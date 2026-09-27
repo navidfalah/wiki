@@ -59,6 +59,7 @@ cd ../wiki-app && npm install && npm start
 | Cross-corpus search | [42-cross-corpus-search.md](./documentation/42-cross-corpus-search.md) |
 | Project assessment, R&D priorities & task backlog | [43-project-assessment-and-roadmap.md](./documentation/43-project-assessment-and-roadmap.md) |
 | Gold Q&A benchmark (wiki vs. raw retrieval, search) | [44-qa-benchmark.md](./documentation/44-qa-benchmark.md) |
+| Page version history (diff, restore) | [45-page-version-history.md](./documentation/45-page-version-history.md) |
 
 ## Also see
 

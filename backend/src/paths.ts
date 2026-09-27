@@ -25,4 +25,5 @@ export const STATIC_MEDIA_DIR = path.join(PROJECT_ROOT, 'wiki-app', 'static', 'm
 export const REVIEW_REPORT_PATH = path.join(COMPILER_DIR, 'review_report.txt');
 export const PIPELINE_RUNS_DIR = path.join(PROJECT_ROOT, 'data', 'pipeline_runs');
 export const PIPELINE_RUNS_INDEX = path.join(PIPELINE_RUNS_DIR, 'index.json');
+export const PAGE_HISTORY_DIR = path.join(PROJECT_ROOT, 'data', 'page_history');
 export const PYTHON_BIN = process.env.PYTHON_BIN ?? 'python3';

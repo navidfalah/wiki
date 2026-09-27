@@ -22,6 +22,7 @@ Detailed project documentation, split by topic. Start with [01-overview.md](./01
 | [42-cross-corpus-search.md](./42-cross-corpus-search.md) | One search across wiki pages, resources and emails (`/search`, `GET /api/search`) |
 | [43-project-assessment-and-roadmap.md](./43-project-assessment-and-roadmap.md) | Scored project assessment, ranked R&D priorities, task backlog T1–T13 |
 | [44-qa-benchmark.md](./44-qa-benchmark.md) | 65-question gold benchmark: wiki vs. raw retrieval, synthesis loss, search hit@5 |
+| [45-page-version-history.md](./45-page-version-history.md) | Versions saved before every compile/edit/delete; diff and restore per page |
 | [40-production-deployment.md](./40-production-deployment.md) | Hosting at wissensbau.de: Caddy + Docker Compose, sizing, resource limits, security, backups |
 | [11-wiki-app-and-dashboards.md](./11-wiki-app-and-dashboards.md) | Docusaurus, React pages, components, routes |
 | [12-api-server.md](./12-api-server.md) | FastAPI endpoints, SSE builds, CORS |

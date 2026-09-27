@@ -84,3 +84,27 @@ test('raw file previews are served with nosniff', async ({ page }) => {
   expect(res.ok()).toBe(true);
   expect(res.headers()['x-content-type-options']).toBe('nosniff');
 });
+
+test('page history records an edit, shows the diff, and restores it', async ({ page }) => {
+  await logIn(page);
+  const docUrl = '/api/docs/aurora-labs.md';
+  const original: string = (await (await page.request.get(docUrl)).json()).body;
+  const marker = 'E2E history marker line';
+  try {
+    const edit = await page.request.put(docUrl, { data: { body: `${original}\n\n${marker}\n` } });
+    expect(edit.ok()).toBe(true);
+
+    await page.goto('/wiki/aurora-labs/history');
+    await expect(page.locator('table tbody tr').first()).toContainText(/Before edit/);
+    await expect(page.locator('.bg-green-50', { hasText: marker })).toHaveCount(1);
+
+    page.once('dialog', (dialog) => dialog.accept());
+    await page.click('#history-restore-btn');
+    await expect(page).toHaveURL(/\/wiki\/aurora-labs$/);
+    const restored: string = (await (await page.request.get(docUrl)).json()).body;
+    expect(restored).not.toContain(marker);
+  } finally {
+    const now: string = (await (await page.request.get(docUrl)).json()).body;
+    if (now.includes(marker)) await page.request.put(docUrl, { data: { body: original } });
+  }
+});

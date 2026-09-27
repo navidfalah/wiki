@@ -72,6 +72,8 @@ import {
 } from '../lib/rawFiles';
 import { getResourceDetail, listResources, resolveDocPaths } from '../lib/resourcesEngine';
 import { searchCorpus, type EmailSummary } from '../lib/searchEngine';
+import { isPageFile, lineDiff, listVersions, readVersion, snapshotPage, withContext } from '../lib/pageHistory';
+import { atomicWriteText } from '../lib/atomicWrite';
 import { addSource, listSources, removeSource, setEnabled, SourceError, syncSymlinks } from '../lib/sourcesRegistry';
 
 function safePath(root: string, relPath: string): string {
@@ -606,6 +608,7 @@ export function registerRoutes(app: Express): void {
       if (fs.existsSync(OUTPUT_DIR)) {
         for (const name of fs.readdirSync(OUTPUT_DIR)) {
           if (!name.endsWith('.md')) continue;
+          if (isPageFile(name)) snapshotPage(path.join(OUTPUT_DIR, name), 'delete');
           fs.unlinkSync(path.join(OUTPUT_DIR, name));
           pagesDeleted += 1;
         }
@@ -666,6 +669,7 @@ export function registerRoutes(app: Express): void {
           next = raw.slice(0, second + 3) + '\n\n' + body.replace(/^\n+/, '');
         }
       }
+      snapshotPage(docPath, 'edit', next);
       fs.writeFileSync(docPath, next, 'utf-8');
       logEvent(req.user?.username, 'Edited wiki page', relPath);
       res.json(readDocPayload(docPath));
@@ -680,9 +684,57 @@ export function registerRoutes(app: Express): void {
       if (!fs.existsSync(docPath) || !fs.statSync(docPath).isFile()) {
         throw new HttpError(404, `Doc not found: ${relPath}`);
       }
+      snapshotPage(docPath, 'delete');
       fs.unlinkSync(docPath);
       logEvent(req.user?.username, 'Deleted wiki page', relPath);
       res.json({ deleted: relPath });
+    }),
+  );
+
+  // --- Page version history (see lib/pageHistory.ts) ------------------------
+
+  function historyPage(req: any): string {
+    const page = (req.params as any)[0] as string;
+    if (!isPageFile(page)) throw new HttpError(400, `Invalid page: ${page}`);
+    return page;
+  }
+
+  app.get(
+    '/api/doc-history/*',
+    wrap((req, res) => {
+      const page = historyPage(req);
+      const versions = listVersions(page);
+      const versionId = typeof req.query.version === 'string' ? req.query.version : undefined;
+      if (!versionId) {
+        res.json({ page, versions });
+        return;
+      }
+      const content = readVersion(page, versionId);
+      if (content === null) throw new HttpError(404, `Version not found: ${versionId}`);
+      const docPath = safePath(OUTPUT_DIR, page);
+      const current = fs.existsSync(docPath) ? fs.readFileSync(docPath, 'utf-8') : '';
+      res.json({
+        page,
+        version: versions.find((v) => v.id === versionId),
+        content,
+        current_exists: fs.existsSync(docPath),
+        diff: withContext(lineDiff(content, current)),
+      });
+    }),
+  );
+
+  app.post(
+    '/api/doc-history/*',
+    wrap((req, res) => {
+      const page = historyPage(req);
+      const versionId = (req.body as any)?.version;
+      const content = typeof versionId === 'string' ? readVersion(page, versionId) : null;
+      if (content === null) throw new HttpError(404, `Version not found: ${String(versionId)}`);
+      const docPath = safePath(OUTPUT_DIR, page);
+      snapshotPage(docPath, 'restore', content);
+      atomicWriteText(docPath, content);
+      logEvent(req.user?.username, 'Restored wiki page version', `${page} @ ${versionId}`);
+      res.json({ restored: page, version: versionId });
     }),
   );
 

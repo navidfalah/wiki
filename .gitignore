@@ -20,6 +20,7 @@ data/_archive_non_aurora/
 data/last-compile.log
 data/connectors/
 data/pipeline_runs/
+data/page_history/
 data/llm_settings.json
 data/users.json
 data/sessions.json

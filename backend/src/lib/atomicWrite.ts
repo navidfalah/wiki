@@ -22,9 +22,13 @@
 import fs from 'node:fs';
 import path from 'node:path';
 
-export function atomicWriteJson(filePath: string, data: unknown): void {
+export function atomicWriteText(filePath: string, text: string): void {
   fs.mkdirSync(path.dirname(filePath), { recursive: true });
   const tmpPath = `${filePath}.${process.pid}.${Date.now()}.tmp`;
-  fs.writeFileSync(tmpPath, JSON.stringify(data, null, 2));
+  fs.writeFileSync(tmpPath, text);
   fs.renameSync(tmpPath, filePath);
+}
+
+export function atomicWriteJson(filePath: string, data: unknown): void {
+  atomicWriteText(filePath, JSON.stringify(data, null, 2));
 }
