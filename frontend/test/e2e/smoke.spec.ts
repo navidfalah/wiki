@@ -165,3 +165,38 @@ test('non-admin API calls to backups are refused', async ({ request }) => {
   const res = await request.get('/api/admin/backups');
   expect(res.status()).toBe(401);
 });
+
+test('dashboard: status cards link out, "/" focuses search, Ask opens a new chat', async ({ page }) => {
+  const problems = watchForBreakage(page);
+  await logIn(page);
+  await page.waitForLoadState('networkidle');
+
+  const cards = page.locator('#status-cards a[data-card]');
+  await expect(cards).toHaveCount(4);
+  await expect(page.locator('[data-card="pages"]')).toHaveAttribute('href', '/wiki');
+  await expect(page.locator('[data-card="pages"]')).not.toContainText(/^\s*0\s/);
+  await expect(page.locator('#recent-pages a[href^="/wiki/"]').first()).toBeVisible();
+
+  await page.keyboard.press('/');
+  await expect(page.locator('#dashboard-q')).toBeFocused();
+
+  const before: string[] = (await (await page.request.get('/api/chat/sessions')).json()).sessions.map((s: { id: string }) => s.id);
+  const question = 'E2E dashboard question about Aurora Labs';
+  try {
+    await page.keyboard.type(question);
+    await page.click('button[formaction="/chat"]');
+    await expect(page).toHaveURL(/\/chat$/); // the ?q= is consumed so a reload does not re-ask
+    await expect(page.getByText(question).first()).toBeVisible();
+  } finally {
+    const after: { id: string }[] = (await (await page.request.get('/api/chat/sessions')).json()).sessions;
+    for (const s of after) if (!before.includes(s.id)) await page.request.delete(`/api/chat/sessions/${s.id}`);
+  }
+
+  await page.goto('/wiki');
+  await page.keyboard.press('/');
+  await expect(page.locator('#sidebar-search')).toBeFocused();
+  await page.keyboard.type('battery');
+  await page.keyboard.press('Enter');
+  await expect(page).toHaveURL(/\/search\?q=battery/);
+  expect(problems).toEqual([]);
+});

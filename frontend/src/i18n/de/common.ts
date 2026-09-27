@@ -36,6 +36,7 @@ export const common: Record<keyof typeof en, string> = {
   'common.back': 'Zurück',
   'common.refresh': 'Aktualisieren',
   'common.loading': 'Wird geladen …',
+  'common.searchWiki': 'Wiki durchsuchen…',
   'common.search': 'Suchen',
   'common.none': 'Keine',
   'common.yes': 'Ja',

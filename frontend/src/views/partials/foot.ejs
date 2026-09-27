@@ -32,6 +32,19 @@
         sessionStorage.setItem('pending-toast', JSON.stringify({ message: message, type: type || 'success' }));
       } catch (err) {}
     };
+    // "/" jumps to search from anywhere (like GitHub/Slack): the page's own
+    // main search box if it has one, else the sidebar box. Ignored while
+    // typing in a field so it never eats a literal slash.
+    document.addEventListener('keydown', function (event) {
+      if (event.key !== '/' || event.ctrlKey || event.metaKey || event.altKey) return;
+      var target = event.target;
+      if (target && (target.isContentEditable || /^(INPUT|TEXTAREA|SELECT)$/.test(target.tagName))) return;
+      var box = document.querySelector('[data-primary-search]') || document.getElementById('sidebar-search');
+      if (!box || box.offsetParent === null) return;
+      event.preventDefault();
+      box.focus();
+      if (box.select) box.select();
+    });
     (function () {
       try {
         var raw = sessionStorage.getItem('pending-toast');

@@ -185,7 +185,7 @@ npm start                        # node dist/index.js
 ## What to do after first run
 
 1. Open http://localhost:3000/wiki — browse the wiki pages
-2. Open http://localhost:3000/dashboard — run the compiler, manage source folders, browse raw files
+2. Open http://localhost:3000/dashboard — search or ask the wiki, see what needs attention, run the compiler and manage source folders (raw files live under Resources → Files)
 3. Add a `.md` file under `data/raw/notes/` and run `python main.py`
 4. Read [05-compiler-pipeline.md](./05-compiler-pipeline.md) for pipeline details
 

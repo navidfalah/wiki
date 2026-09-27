@@ -954,6 +954,16 @@ async function init() {
   await loadLlmSettings();
   await loadResources();
   await loadSessions();
+  // "Ask" from the dashboard or the sidebar lands here as /chat?q=... --
+  // start a fresh conversation with that question instead of reopening the
+  // last one, then drop the query so a reload does not ask it again.
+  const question = new URLSearchParams(window.location.search).get('q')?.trim();
+  if (question) {
+    history.replaceState(null, '', window.location.pathname);
+    await createSession();
+    submitMessage(question);
+    return;
+  }
   const lastId = (() => {
     try {
       return localStorage.getItem(LAST_SESSION_KEY);

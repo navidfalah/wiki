@@ -34,6 +34,7 @@ export const common = {
   'common.back': 'Back',
   'common.refresh': 'Refresh',
   'common.loading': 'Loading…',
+  'common.searchWiki': 'Search the wiki…',
   'common.search': 'Search',
   'common.none': 'None',
   'common.yes': 'Yes',

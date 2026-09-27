@@ -22,6 +22,7 @@ describe('docs', () => {
     expect(body.total).toBe(2);
     expect(body.pages.map((p: any) => p.title).sort()).toEqual(['Aurora Labs', 'Nova Widget']);
     expect(body.pages[0]).toHaveProperty('category');
+    expect(Date.parse(body.pages[0].modified_at)).not.toBeNaN();
   });
 
   it('returns one page with body, tags and links', async () => {
@@ -151,6 +152,19 @@ describe('resources, graph and analytics', () => {
   it('analytics and attention reports build from the docs', async () => {
     expect((await h.json('GET', '/api/analytics', auth())).status).toBe(200);
     expect((await h.json('GET', '/api/attention', auth())).status).toBe(200);
+  });
+
+  it('counts the compiled pages even when the topic index is missing', async () => {
+    const indexPath = path.join(h.root, 'compiler/temp_output/index.json');
+    const saved = fs.readFileSync(indexPath, 'utf-8');
+    fs.unlinkSync(indexPath);
+    try {
+      const { body } = await h.json('GET', '/api/analytics', auth());
+      expect(body.metrics.wiki_pages_created).toBe(2);
+      expect(body.metrics.cross_links_established).toBeGreaterThanOrEqual(0);
+    } finally {
+      fs.writeFileSync(indexPath, saved);
+    }
   });
 });
 

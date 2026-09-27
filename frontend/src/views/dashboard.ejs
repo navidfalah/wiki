@@ -1,16 +1,103 @@
 <%- include('partials/head', { title, apiBase, active }) %>
 
-<h1 class="text-2xl font-semibold tracking-tight text-gray-900"><%= t('dashboard.title') %></h1>
-<p class="mt-1 max-w-2xl text-sm text-gray-600">
-  <%= t('dashboard.intro') %>
-</p>
+<%
+  const qa = (inner) => `<svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">${inner}</svg>`;
+  const quickActions = [
+    { href: '/chat', label: t('dashboard.home.qa.ask'), hint: t('dashboard.home.qa.askHint'), tone: 'bg-accent/10 text-accent',
+      icon: qa('<path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z"></path>') },
+    { href: '/wiki', label: t('dashboard.home.qa.browse'), hint: t('dashboard.home.qa.browseHint'), tone: 'bg-generated-bg text-generated',
+      icon: qa('<path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"></path><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"></path>') },
+    { href: '/resources', label: t('dashboard.home.qa.add'), hint: t('dashboard.home.qa.addHint'), tone: 'bg-source-bg text-source',
+      icon: qa('<path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="17 8 12 3 7 8"></polyline><line x1="12" y1="3" x2="12" y2="15"></line>') },
+    { href: '#compile', label: t('dashboard.home.qa.compile'), hint: t('dashboard.home.qa.compileHint'), tone: 'bg-amber-50 text-amber-700',
+      icon: qa('<polygon points="5 3 19 12 5 21 5 3"></polygon>') },
+    { href: '/graph', label: t('dashboard.home.qa.graph'), hint: t('dashboard.home.qa.graphHint'), tone: 'bg-sky-50 text-sky-700',
+      icon: qa('<circle cx="18" cy="5" r="3"></circle><circle cx="6" cy="12" r="3"></circle><circle cx="18" cy="19" r="3"></circle><line x1="8.59" y1="13.51" x2="15.42" y2="17.49"></line><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"></line>') },
+    { href: '/review-queue', label: t('dashboard.home.qa.review'), hint: t('dashboard.home.qa.reviewHint'), tone: 'bg-emerald-50 text-emerald-700',
+      icon: qa('<path d="M9 11l3 3L22 4"></path><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"></path>') },
+  ];
+  const userName = typeof currentUser !== 'undefined' && currentUser ? currentUser.username : null;
+%>
+
+<header class="flex flex-wrap items-end justify-between gap-2">
+  <div>
+    <h1 class="text-2xl font-semibold tracking-tight text-gray-900">
+      <%= userName ? t('dashboard.home.welcomeName', { name: userName }) : t('dashboard.home.welcome') %>
+    </h1>
+    <p class="mt-1 max-w-2xl text-sm text-gray-600"><%= t('dashboard.home.intro') %></p>
+  </div>
+</header>
 
 <div id="offline-banner" class="hidden mt-4 rounded-lg border border-amber-200 bg-amber-50 px-3 py-2 text-xs text-amber-700"></div>
 
-<div id="stat-cards" class="mt-6 grid grid-cols-2 gap-3 sm:grid-cols-4"></div>
+<form id="dashboard-ask" action="/search" method="get" role="search"
+      class="mt-5 rounded-2xl border border-gray-200 bg-white p-2 shadow-panel focus-within:border-accent/50 focus-within:ring-4 focus-within:ring-accent/10">
+  <div class="flex flex-col gap-2 sm:flex-row sm:items-center">
+    <label for="dashboard-q" class="sr-only"><%= t('dashboard.home.hero.label') %></label>
+    <div class="flex min-w-0 flex-1 items-center gap-2 px-2">
+      <svg class="shrink-0 text-gray-400" viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
+      <input id="dashboard-q" data-primary-search name="q" type="search" required autocomplete="off" enterkeyhint="search"
+             placeholder="<%= t('dashboard.home.hero.placeholder') %>"
+             class="min-w-0 flex-1 border-0 bg-transparent py-2.5 text-base text-gray-900 placeholder:text-gray-400 focus:outline-none focus:ring-0" />
+    </div>
+    <div class="flex shrink-0 gap-2">
+      <button type="submit" class="inline-flex flex-1 items-center justify-center gap-2 rounded-xl border border-gray-300 bg-white px-4 py-2.5 text-sm font-medium text-gray-700 hover:bg-gray-50 sm:flex-none"><%= t('dashboard.home.hero.search') %></button>
+      <button type="submit" formaction="/chat" class="inline-flex flex-1 items-center justify-center gap-2 rounded-xl bg-accent px-4 py-2.5 text-sm font-medium text-white hover:bg-accent-dark sm:flex-none"><%= t('dashboard.home.hero.ask') %></button>
+    </div>
+  </div>
+  <p class="px-3 pb-1 pt-1.5 text-xs text-gray-400"><%- t('dashboard.home.hero.tipHtml') %></p>
+</form>
 
-<div class="mt-6 flex flex-col gap-6">
-  <section class="rounded-xl border border-gray-200 bg-white shadow-card">
+<section aria-label="<%= t('dashboard.home.statusLabel') %>" id="status-cards" class="mt-6 grid grid-cols-1 gap-3 min-[420px]:grid-cols-2 lg:grid-cols-4">
+  <% for (let i = 0; i < 4; i++) { %>
+    <div class="h-[132px] animate-pulse rounded-xl border border-gray-200 bg-white shadow-card"></div>
+  <% } %>
+</section>
+
+<section aria-labelledby="qa-title" class="mt-8">
+  <h2 id="qa-title" class="text-sm font-semibold text-gray-900"><%= t('dashboard.home.qa.title') %></h2>
+  <div class="mt-3 grid grid-cols-2 gap-3 md:grid-cols-3 xl:grid-cols-6">
+    <% quickActions.forEach(function(a) { %>
+      <a href="<%= a.href %>" class="group flex flex-col gap-2 rounded-xl border border-gray-200 bg-white p-3.5 no-underline shadow-card transition hover:-translate-y-0.5 hover:border-accent/40 hover:shadow-panel focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent/40">
+        <span class="flex h-9 w-9 items-center justify-center rounded-lg <%= a.tone %>"><%- a.icon %></span>
+        <span class="text-sm font-medium text-gray-900 group-hover:text-accent"><%= a.label %></span>
+        <span class="text-xs leading-snug text-gray-500"><%= a.hint %></span>
+      </a>
+    <% }); %>
+  </div>
+</section>
+
+<div class="mt-8 grid grid-cols-1 gap-6 lg:grid-cols-3">
+  <section aria-labelledby="att-title" class="min-w-0 rounded-xl border border-gray-200 bg-white shadow-card">
+    <div class="flex items-center justify-between gap-2 border-b border-gray-100 px-5 py-3.5">
+      <h2 id="att-title" class="text-sm font-semibold text-gray-900"><%= t('dashboard.home.att.title') %></h2>
+      <a href="/review-queue" class="text-xs font-medium text-accent no-underline hover:underline"><%= t('dashboard.home.seeAll') %></a>
+    </div>
+    <div id="attention-summary"><p class="px-5 py-6 text-sm text-gray-400"><%= t('common.loading') %></p></div>
+  </section>
+
+  <section aria-labelledby="recent-title" class="min-w-0 rounded-xl border border-gray-200 bg-white shadow-card">
+    <div class="flex items-center justify-between gap-2 border-b border-gray-100 px-5 py-3.5">
+      <h2 id="recent-title" class="text-sm font-semibold text-gray-900"><%= t('dashboard.home.recent.title') %></h2>
+      <a href="/wiki" class="text-xs font-medium text-accent no-underline hover:underline"><%= t('dashboard.home.seeAll') %></a>
+    </div>
+    <div id="recent-pages"><p class="px-5 py-6 text-sm text-gray-400"><%= t('common.loading') %></p></div>
+  </section>
+
+  <section aria-labelledby="activity-title" class="min-w-0 rounded-xl border border-gray-200 bg-white shadow-card">
+    <div class="flex items-center justify-between gap-2 border-b border-gray-100 px-5 py-3.5">
+      <h2 id="activity-title" class="text-sm font-semibold text-gray-900"><%= t('dashboard.home.activity.title') %></h2>
+      <a href="/logs" class="text-xs font-medium text-accent no-underline hover:underline"><%= t('dashboard.home.seeAll') %></a>
+    </div>
+    <div id="recent-activity"><p class="px-5 py-6 text-sm text-gray-400"><%= t('common.loading') %></p></div>
+  </section>
+</div>
+
+<h2 class="mt-10 text-lg font-semibold tracking-tight text-gray-900"><%= t('dashboard.home.workspace') %></h2>
+<p class="mt-0.5 text-sm text-gray-600"><%= t('dashboard.intro') %></p>
+
+<div class="mt-4 flex flex-col gap-6">
+  <section id="compile" class="scroll-mt-6 rounded-xl border border-gray-200 bg-white shadow-card">
     <div class="flex flex-wrap items-center justify-between gap-3 border-b border-gray-100 px-5 py-4">
       <div class="flex items-center gap-3">
         <h2 class="text-base font-semibold text-gray-900"><%= t('dashboard.run.title') %></h2>
@@ -93,27 +180,6 @@
     <div id="add-source-form" class="hidden border-b border-gray-100 p-5"></div>
     <div id="sources-grid" class="grid gap-3 p-5 sm:grid-cols-2 lg:grid-cols-3"></div>
   </section>
-
-  <section class="rounded-xl border border-gray-200 bg-white shadow-card">
-    <div class="border-b border-gray-100 px-5 py-4">
-      <h2 class="text-base font-semibold text-gray-900"><%= t('dashboard.files.title') %></h2>
-      <p class="mt-0.5 text-sm text-gray-500"><%= t('dashboard.files.intro') %></p>
-    </div>
-    <div class="flex flex-wrap items-center justify-between gap-2 border-b border-gray-100 px-5 py-2.5">
-      <nav id="breadcrumbs" class="flex min-w-0 flex-wrap items-center gap-1 text-sm"></nav>
-      <div class="flex items-center gap-2">
-        <input aria-label="<%= t('dashboard.files.searchPh') %>" id="file-search" type="search" placeholder="<%= t('dashboard.files.searchPh') %>" class="w-40 rounded-lg border border-gray-300 px-2.5 py-1 text-sm focus:border-accent focus:outline-none focus:ring-2 focus:ring-accent/20" />
-        <button aria-controls="new-folder-form" aria-expanded="false" aria-haspopup="true" id="new-folder-toggle" type="button" class="inline-flex items-center justify-center gap-2 rounded-lg border border-gray-300 bg-white px-3 py-1 text-xs font-medium text-gray-700 hover:bg-gray-50"><%= t('dashboard.files.newFolder') %></button>
-        <button id="upload-files-toggle" type="button" title="<%= t('dashboard.files.uploadTitle') %>" class="inline-flex items-center justify-center gap-2 rounded-lg bg-accent px-3 py-1 text-xs font-medium text-white hover:bg-accent-dark"><%= t('dashboard.files.upload') %></button>
-        <input id="upload-files-input" type="file" multiple class="hidden" />
-      </div>
-    </div>
-    <div id="new-folder-form" class="hidden mx-5 mt-4 rounded-lg border border-dashed border-gray-300 bg-gray-50 px-3 py-2"></div>
-    <div id="upload-status" class="hidden mx-5 mt-4 rounded-lg border border-dashed border-source-border bg-source-bg/60 px-3 py-2 text-xs text-source"></div>
-    <div id="file-grid" data-dropzone class="grid grid-cols-3 gap-1 p-4 transition-colors sm:grid-cols-4 md:grid-cols-6 lg:grid-cols-8"></div>
-  </section>
 </div>
-
-<div id="preview-modal" class="hidden"></div>
 
 <%- include('partials/foot', { clientScript: 'dashboard' }) %>

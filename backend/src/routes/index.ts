@@ -681,6 +681,7 @@ export function registerRoutes(app: Express): void {
         .map((name) => {
           const filePath = path.join(OUTPUT_DIR, name);
           const raw = fs.readFileSync(filePath, 'utf-8');
+          const stat = fs.statSync(filePath);
           const meta = parseFrontmatter(raw);
           const stem = path.basename(name, '.md');
           const title =
@@ -691,7 +692,8 @@ export function registerRoutes(app: Express): void {
             title,
             id: meta.id ?? null,
             slug: meta.slug ?? null,
-            size_bytes: fs.statSync(filePath).size,
+            size_bytes: stat.size,
+            modified_at: stat.mtime.toISOString(),
             tags: meta.tags_list ?? [],
           };
         });
