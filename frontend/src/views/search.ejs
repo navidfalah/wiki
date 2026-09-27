@@ -1,0 +1,27 @@
+<%- include('partials/head', { title, apiBase, active }) %>
+
+<h1 class="text-2xl font-semibold tracking-tight text-gray-900"><%= t('search.title') %></h1>
+<p class="mt-1 max-w-2xl text-sm text-gray-600">
+  <%= t('search.intro') %>
+</p>
+
+<div class="mt-4">
+  <input
+    id="search-input"
+    type="search"
+    autofocus
+    placeholder="<%= t('search.placeholder') %>"
+    class="w-full rounded-lg border border-gray-300 px-3.5 py-2.5 text-sm focus:border-accent focus:outline-none focus:ring-2 focus:ring-accent/20" />
+</div>
+
+<div class="mt-3 flex flex-wrap items-center gap-2">
+  <button type="button" data-filter="all" class="search-filter rounded-full border border-accent bg-accent/10 px-3 py-1 text-xs font-medium text-accent"><%= t('search.filter.all') %></button>
+  <button type="button" data-filter="wiki" class="search-filter rounded-full border border-gray-300 bg-white px-3 py-1 text-xs font-medium text-gray-600 hover:bg-gray-50"><%= t('search.filter.wiki') %></button>
+  <button type="button" data-filter="resource" class="search-filter rounded-full border border-gray-300 bg-white px-3 py-1 text-xs font-medium text-gray-600 hover:bg-gray-50"><%= t('search.filter.resource') %></button>
+  <button type="button" data-filter="email" class="search-filter rounded-full border border-gray-300 bg-white px-3 py-1 text-xs font-medium text-gray-600 hover:bg-gray-50"><%= t('search.filter.email') %></button>
+  <span id="search-count" class="ml-auto text-xs text-gray-500"></span>
+</div>
+
+<div id="search-results" class="mt-4 flex flex-col gap-2"></div>
+
+<%- include('partials/foot', { clientScript }) %>

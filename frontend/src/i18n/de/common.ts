@@ -8,6 +8,7 @@ export const common: Record<keyof typeof en, string> = {
   'nav.dashboard': 'Dashboard',
   'nav.section.knowledge': 'Wissensbasis',
   'nav.wiki': 'Wiki',
+  'nav.search': 'Suche',
   'nav.resources': 'Ressourcen',
   'nav.graph': 'Graph',
   'nav.entities': 'Entitäten',

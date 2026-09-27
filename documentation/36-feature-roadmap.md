@@ -149,11 +149,14 @@ the user weighing in first:
 - **Full-corpus export/backup** — one zip of `data/raw/` + `wiki-app/docs/`
   + `data/*.json` for portability/backup; today only per-page/per-graph
   export exists (`graph.ts`'s export menu).
-- **Search across the whole app, not per-page** — `/wiki` and `/resources`
-  each have local filters; there's no single search box spanning pages,
-  emails, and resources at once.
 
-None of these were scoped or estimated in depth — they're flagged as
+The remaining item, **search across the whole app, not per-page** — closed.
+See [42-cross-corpus-search.md](./42-cross-corpus-search.md): `GET
+/api/search` + a `/search` page now match one query against wiki pages,
+resources, and emails in a single ranked, snippeted result list, instead of
+each corpus having only its own local filter.
+
+The other two were not scoped or estimated in depth — they're flagged as
 candidates for a future pass, not committed to.
 
 ## Next
@@ -163,3 +166,4 @@ candidates for a future pass, not committed to.
 - [28-faithfulness-evaluation.md](./28-faithfulness-evaluation.md) — gap #3, closed (see above)
 - [26-entity-resolution.md](./26-entity-resolution.md) — gap #4, closed (see above)
 - [27-temporal-modeling.md](./27-temporal-modeling.md) — gap #5, closed (see above; doc 27's own Limitations section still names the larger "real compiled claims" adapter as open)
+- [42-cross-corpus-search.md](./42-cross-corpus-search.md) — "search across the whole app" newer idea, closed

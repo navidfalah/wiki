@@ -70,6 +70,7 @@ import {
   TEXT_PREVIEW_EXTENSIONS,
 } from '../lib/rawFiles';
 import { getResourceDetail, listResources, resolveDocPaths } from '../lib/resourcesEngine';
+import { searchCorpus, type EmailSummary } from '../lib/searchEngine';
 import { addSource, listSources, removeSource, setEnabled, SourceError, syncSymlinks } from '../lib/sourcesRegistry';
 
 function safePath(root: string, relPath: string): string {
@@ -907,6 +908,31 @@ export function registerRoutes(app: Express): void {
       const detail = getResourceDetail(sourcePath, OUTPUT_DIR, RAW_DIR);
       if (!detail) throw new HttpError(404, `Resource not found: ${sourcePath}`);
       res.json(detail);
+    }),
+  );
+
+  // --- Cross-corpus search --------------------------------------------------
+  // One query across wiki pages, resources, and emails -- previously each had
+  // only its own local filter (see documentation/36-feature-roadmap.md).
+
+  app.get(
+    '/api/search',
+    wrap(async (req, res) => {
+      const q = String((req.query as Record<string, string | undefined>).q ?? '').trim();
+      if (!q) {
+        res.json({ query: '', total: 0, results: [] });
+        return;
+      }
+      let emails: EmailSummary[] = [];
+      try {
+        const emailsData = await runCli<{ emails: EmailSummary[] }>('emails-list');
+        emails = emailsData.emails ?? [];
+      } catch {
+        // Emails are best-effort here -- a broken compiler bridge shouldn't
+        // block search over wiki pages and resources, which are plain fs reads.
+      }
+      const results = searchCorpus(q, emails, OUTPUT_DIR);
+      res.json({ query: q, total: results.length, results });
     }),
   );
 

@@ -35,6 +35,8 @@ import { resources as en_resources } from './en/resources';
 import { resources as de_resources } from './de/resources';
 import { reviewQueue as en_reviewQueue } from './en/review-queue';
 import { reviewQueue as de_reviewQueue } from './de/review-queue';
+import { search as en_search } from './en/search';
+import { search as de_search } from './de/search';
 import { settings as en_settings } from './en/settings';
 import { settings as de_settings } from './de/settings';
 import { usage as en_usage } from './en/usage';
@@ -45,8 +47,8 @@ import { wiki as en_wiki } from './en/wiki';
 import { wiki as de_wiki } from './de/wiki';
 
 export const dictionaries: Record<Lang, Dict> = {
-  en: { ...en_analytics, ...en_chat, ...en_common, ...en_company, ...en_connectorsCallback, ...en_dashboard, ...en_entities, ...en_graph, ...en_login, ...en_logs, ...en_pipelineArchitecture, ...en_pipelines, ...en_ragArchitecture, ...en_resources, ...en_reviewQueue, ...en_settings, ...en_usage, ...en_users, ...en_wiki },
-  de: { ...de_analytics, ...de_chat, ...de_common, ...de_company, ...de_connectorsCallback, ...de_dashboard, ...de_entities, ...de_graph, ...de_login, ...de_logs, ...de_pipelineArchitecture, ...de_pipelines, ...de_ragArchitecture, ...de_resources, ...de_reviewQueue, ...de_settings, ...de_usage, ...de_users, ...de_wiki },
+  en: { ...en_analytics, ...en_chat, ...en_common, ...en_company, ...en_connectorsCallback, ...en_dashboard, ...en_entities, ...en_graph, ...en_login, ...en_logs, ...en_pipelineArchitecture, ...en_pipelines, ...en_ragArchitecture, ...en_resources, ...en_reviewQueue, ...en_search, ...en_settings, ...en_usage, ...en_users, ...en_wiki },
+  de: { ...de_analytics, ...de_chat, ...de_common, ...de_company, ...de_connectorsCallback, ...de_dashboard, ...de_entities, ...de_graph, ...de_login, ...de_logs, ...de_pipelineArchitecture, ...de_pipelines, ...de_ragArchitecture, ...de_resources, ...de_reviewQueue, ...de_search, ...de_settings, ...de_usage, ...de_users, ...de_wiki },
 };
 
 /** Keys of one namespace group (e.g. `common.`, `dashboard.`) -- what the server embeds for browser scripts. */

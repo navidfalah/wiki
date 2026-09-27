@@ -35,6 +35,7 @@
         users: svg('<path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path><circle cx="9" cy="7" r="4"></circle><path d="M23 21v-2a4 4 0 0 0-3-3.87"></path><path d="M16 3.13a4 4 0 0 1 0 7.75"></path>'),
         company: svg('<path d="M3 21h18"></path><path d="M5 21V7l7-4 7 4v14"></path><path d="M9 21v-6h6v6"></path><path d="M9 10h.01"></path><path d="M15 10h.01"></path><path d="M9 14h.01"></path><path d="M15 14h.01"></path>'),
         usage: svg('<circle cx="12" cy="12" r="10"></circle><path d="M12 6v6l4 2"></path>'),
+        search: svg('<circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line>'),
       };
       const isAdmin = typeof currentUser !== 'undefined' && currentUser?.role === 'admin';
       // Grouped instead of one flat 20-item list -- same pages, but
@@ -45,6 +46,7 @@
         { items: [{href: '/dashboard', id: 'Dashboard', label: t('nav.dashboard'), icon: icons.dashboard}] },
         { section: t('nav.section.knowledge'), items: [
           {href: '/wiki', id: 'Wiki', label: t('nav.wiki'), icon: icons.wiki},
+          {href: '/search', id: 'Search', label: t('nav.search'), icon: icons.search},
           {href: '/resources', id: 'Resources', label: t('nav.resources'), icon: icons.link},
           {href: '/graph', id: 'Graph', label: t('nav.graph'), icon: icons.graph},
           {href: '/entities', id: 'Entities', label: t('nav.entities'), icon: icons.entities},

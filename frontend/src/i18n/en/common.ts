@@ -6,6 +6,7 @@ export const common = {
   'nav.dashboard': 'Dashboard',
   'nav.section.knowledge': 'Knowledge base',
   'nav.wiki': 'Wiki',
+  'nav.search': 'Search',
   'nav.resources': 'Resources',
   'nav.graph': 'Graph',
   'nav.entities': 'Entities',

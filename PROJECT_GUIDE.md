@@ -53,6 +53,10 @@ cd ../wiki-app && npm install && npm start
 | Feature roadmap (R&D survey) | [36-feature-roadmap.md](./documentation/36-feature-roadmap.md) |
 | Web search enrichment during synthesis | [37-web-search-enrichment.md](./documentation/37-web-search-enrichment.md) |
 | RAG architectures (Naive, HyDE, RAG-Fusion, GraphRAG-lite, Corrective) | [38-rag-architectures.md](./documentation/38-rag-architectures.md) |
+| Postgres database connector | [39-postgres-database-connector.md](./documentation/39-postgres-database-connector.md) |
+| Production deployment | [40-production-deployment.md](./documentation/40-production-deployment.md) |
+| Internationalization & fonts | [41-internationalization-and-fonts.md](./documentation/41-internationalization-and-fonts.md) |
+| Cross-corpus search | [42-cross-corpus-search.md](./documentation/42-cross-corpus-search.md) |
 
 ## Also see
 
