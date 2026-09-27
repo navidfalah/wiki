@@ -26,13 +26,10 @@ const TYPE_BADGE_TONE: Record<HitType, string> = {
   email: 'bg-blue-50 text-blue-700',
 };
 
-// Resource/email hits land on the matching Resources tab rather than a deep
-// link to the specific item: the Files explorer's own search only scopes to
-// the currently open folder, and emails have no per-item URL of their own.
 function hitHref(hit: SearchHit): string {
   if (hit.type === 'wiki') return `/wiki/${hit.path.replace(/\.md$/, '')}`;
-  if (hit.type === 'resource') return '/resources?tab=files';
-  return '/resources?tab=emails';
+  const tab = hit.type === 'resource' ? 'files' : 'emails';
+  return `/resources?tab=${tab}&open=${encodeURIComponent(hit.path)}`;
 }
 
 function hitMetaLine(hit: SearchHit): string {
@@ -66,6 +63,7 @@ function hitViewLabelKey(type: HitType): string {
 }
 
 let allHits: SearchHit[] = [];
+let totalMatches = 0;
 let activeFilter: Filter = 'all';
 let currentQuery = '';
 
@@ -81,7 +79,8 @@ function render() {
     return;
   }
 
-  countEl.textContent = tn('search.result', filtered.length);
+  // The API returns the top 100 hits; the unfiltered count is the full total.
+  countEl.textContent = tn('search.result', activeFilter === 'all' ? totalMatches : filtered.length);
 
   if (!filtered.length) {
     resultsEl.innerHTML = `<p class="mt-2 text-sm text-gray-400">${th('search.noMatch', { query: currentQuery })}</p>`;
@@ -108,8 +107,9 @@ async function runSearch(query: string) {
   }
 
   try {
-    const data = await apiFetch<{ results: SearchHit[] }>(`/api/search?q=${encodeURIComponent(currentQuery)}`);
+    const data = await apiFetch<{ total: number; results: SearchHit[] }>(`/api/search?q=${encodeURIComponent(currentQuery)}`);
     allHits = data.results ?? [];
+    totalMatches = data.total ?? allHits.length;
   } catch (err: any) {
     allHits = [];
     el('search-count').textContent = '';

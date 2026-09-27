@@ -108,3 +108,25 @@ test('page history records an edit, shows the diff, and restores it', async ({ p
     if (now.includes(marker)) await page.request.put(docUrl, { data: { body: original } });
   }
 });
+
+test('search answers a typed question and deep-links resource and email hits', async ({ page }) => {
+  await logIn(page);
+  await page.goto('/search?q=' + encodeURIComponent('What battery cell does the Nova Widget use?'));
+  await expect(page.locator('#search-count')).toHaveText(/\d+ results?/);
+
+  await page.click('.search-filter[data-filter="resource"]');
+  const resourceHit = page.locator('#search-results a[href^="/resources?tab=files&open="]').first();
+  await expect(resourceHit).toBeVisible();
+  const resourcePath = decodeURIComponent((await resourceHit.getAttribute('href'))!.split('open=')[1]);
+  await resourceHit.click();
+  // The modal wrapper has no box of its own (its child is position: fixed), so check its heading.
+  await expect(page.locator('#preview-modal h2')).toHaveText(resourcePath);
+
+  await page.goto('/search?q=' + encodeURIComponent('MESH-118 relay radio sleep timer'));
+  await page.click('.search-filter[data-filter="email"]');
+  const emailHit = page.locator('#search-results a[href^="/resources?tab=emails&open="]').first();
+  await expect(emailHit).toBeVisible();
+  await emailHit.click();
+  await expect(page.locator('#email-modal h2')).toBeVisible();
+  await expect(page.locator('#email-body')).toContainText(/sleep timer/i);
+});

@@ -24,6 +24,20 @@ def test_list_emails_reads_eml_headers(tmp_path):
     assert email["trust"]["level"] == "medium"
 
 
+def test_list_emails_includes_the_full_body_only_when_asked(tmp_path):
+    raw_dir = tmp_path / "raw"
+    (raw_dir / "emails").mkdir(parents=True)
+    long_body = "Start. " + "filler " * 60 + "The keyword zeppelin is near the end."
+    (raw_dir / "emails" / "long.eml").write_text(f"Subject: Long\nFrom: a@example.com\n\n{long_body}\n", encoding="utf-8")
+
+    plain = email_engine.list_emails(raw_dir=raw_dir)["emails"][0]
+    assert "body" not in plain
+    assert "zeppelin" not in plain["body_preview"]
+
+    full = email_engine.list_emails(raw_dir=raw_dir, include_body=True)["emails"][0]
+    assert full["body"].endswith("zeppelin is near the end.")
+
+
 def test_list_emails_ignores_non_email_sources(tmp_path):
     raw_dir = tmp_path / "raw"
     raw_dir.mkdir()

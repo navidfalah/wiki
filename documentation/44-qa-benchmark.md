@@ -91,15 +91,16 @@ What this does and doesn't show:
 
 ### Search (`searchCorpus`, top 5)
 
-| Query | hit@5 |
-|---|---|
-| Hand-written keywords (`keywords`) | **0.908** |
-| The natural-language question | **0.077** |
+| Query | v1: substring AND | v2: BM25 (T10) |
+|---|---|---|
+| Hand-written keywords (`keywords`) | 0.908 | 0.908 |
+| The natural-language question | 0.077 | **0.938** |
 
-Substring AND-matching needs keywords. A typed question almost never matches
-every word. This is the main motivation for search v2 (T10), which moves to
-BM25 ranking. The keyword number is optimistic: the same person wrote the
-keywords and the answers.
+v1 needed keywords, because a typed question almost never matched every
+word. v2 ranks with BM25 (doc 42) and answers typed questions as well as
+keywords. The keyword number is optimistic: the same person wrote the
+keywords and the answers. Both rates are regression floors in
+`searchBenchmark.test.ts`.
 
 ## Limits
 

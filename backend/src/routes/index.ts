@@ -71,7 +71,7 @@ import {
   TEXT_PREVIEW_EXTENSIONS,
 } from '../lib/rawFiles';
 import { getResourceDetail, listResources, resolveDocPaths } from '../lib/resourcesEngine';
-import { searchCorpus, type EmailSummary } from '../lib/searchEngine';
+import { searchCorpusPage, type EmailSummary } from '../lib/searchEngine';
 import { isPageFile, lineDiff, listVersions, readVersion, snapshotPage, withContext } from '../lib/pageHistory';
 import { atomicWriteText } from '../lib/atomicWrite';
 import { addSource, listSources, removeSource, setEnabled, SourceError, syncSymlinks } from '../lib/sourcesRegistry';
@@ -980,14 +980,14 @@ export function registerRoutes(app: Express): void {
       }
       let emails: EmailSummary[] = [];
       try {
-        const emailsData = await runCli<{ emails: EmailSummary[] }>('emails-list');
+        const emailsData = await runCli<{ emails: EmailSummary[] }>('emails-list', { include_body: true });
         emails = emailsData.emails ?? [];
       } catch {
         // Emails are best-effort here -- a broken compiler bridge shouldn't
         // block search over wiki pages and resources, which are plain fs reads.
       }
-      const results = searchCorpus(q, emails, OUTPUT_DIR);
-      res.json({ query: q, total: results.length, results });
+      const { total, results } = searchCorpusPage(q, emails, OUTPUT_DIR, 100);
+      res.json({ query: q, total, results });
     }),
   );
 

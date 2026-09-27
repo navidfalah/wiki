@@ -19,47 +19,79 @@ against three corpora in one response:
   (`compiler/email_engine.py`), matched against subject, sender, date, and
   the 220-character body preview the compiler already extracts.
 
-## Matching, not ranking
+## Ranking (search v2)
 
-This is deliberately **not** a new retrieval engine. It's an
-AND-of-lowercase-terms substring match — the same approach `listResources()`
-and the Logs/Resources pages' own client-side filters already use — just
-spanning all three corpora and returning ranked, snippeted hits instead of
-one flat list. Terms all need to appear somewhere in the combined
-title+meta+body haystack; a title hit outweighs a body hit (score 8 vs. 1)
-so a page actually about the query surfaces above one that merely mentions
-it once.
+The first version matched a lowercase substring AND across all query words.
+The Q&A benchmark (doc 44) showed it found a gold source in the top 5 for
+only **8% of typed questions**. A question almost never contains only words
+that all appear in one document. Search v2 (task T10) ranks instead:
 
-Real ranked retrieval over the compiled corpus — BM25 + embeddings +
-reranker, used by chat/RAG — is `compiler/hybrid_retrieval.py` (doc 25).
-That path is unrelated to this one: chat answers a question with grounded
-generation; this finds *where something lives* across three different
-places you'd otherwise have to check one at a time.
+- **BM25** over one index shared by all three corpora, so how rare a term is
+  (its IDF) is measured across everything.
+- **Field weights**: title ×3, metadata (tags, source type, citing pages,
+  sender, date) ×2, body ×1.
+- **Tokens**: lowercased, with English/German stopwords dropped from the
+  query and light plural stemming ("batteries" finds "battery").
+  Compounds such as `MESH-118` or `0.3.9` are kept whole and also split, so
+  `mesh-118`, `118` and `0.3.9` all match.
+- **Coordination**: a document needs at least one query term, and its score
+  is multiplied by (matched terms ÷ query terms)². A page matching every
+  word stays far above one that matches a single common word.
+- **Emails are searched by their full body**: `emails-list` accepts
+  `{"include_body": true}`. Before, only the 220-character preview was
+  searched.
+
+| Benchmark (doc 44), hit@5 | v1 (substring AND) | v2 (BM25) |
+|---|---|---|
+| Keyword queries | 0.908 | 0.908 |
+| Typed natural-language questions | **0.077** | **0.938** |
+
+Both numbers are regression floors in
+`backend/src/lib/searchBenchmark.test.ts`.
+
+This is still not the chat retriever. Chat uses `compiler/hybrid_retrieval.py`
+(doc 25) to put passages in front of an LLM. Search is about *finding where
+something lives*.
+
+## Performance
+
+The wiki and resource part of the index is cached and rebuilt when
+`wiki-app/docs/` changes. The change check stats every page, so it runs at
+most every 2 seconds. The combined index is also cached, keyed by the email
+set. Scoring goes through postings lists, so only documents that contain a
+query term are visited. Snippets are built only for the returned hits: the
+API returns the top 100, plus `total`, the true number of matches.
+
+Measured with the 65 benchmark questions:
+
+| Corpus | Cold index build | Warm p50 | Warm p95 |
+|---|---|---|---|
+| Sample wiki (227 pages) | 156 ms | 6 ms | 8 ms |
+| 10,000 pages (copies of the sample) | 4.6 s | 19 ms | **45 ms** |
 
 ## Implementation
 
-- `backend/src/lib/searchEngine.ts` — pure, synchronous matching functions
-  (`searchWikiPages`, `searchResourceItems`, `searchEmails`, and
-  `searchCorpus` which merges and ranks all three). Data-only: no English
-  strings baked into snippets or labels, since the app's `t()`/`th()`
-  convention (doc 41) means all user-visible text is the frontend's job.
-  Covered by `backend/src/lib/searchEngine.test.ts`.
-- `GET /api/search` in `backend/src/routes/index.ts` calls `searchCorpus()`
-  with the live `emails-list` result. The CLI call is wrapped in a
-  best-effort `try/catch` — a broken Python bridge shouldn't take down
-  search over wiki pages and resources, which are plain filesystem reads.
-- `/search` (`frontend/src/views/search.ejs` +
-  `frontend/src/client/search.ts`) — a debounced search box, type filter
-  chips (client-side, over the already-fetched result set), and one card per
-  hit. The query is reflected in the URL (`?q=...`) via
-  `history.replaceState`, so a search is bookmarkable/shareable and
-  `/search?q=...` deep-links straight into results.
+- `backend/src/lib/searchEngine.ts`:
+  - tokenizer, stemmer, BM25 index and cache;
+  - `searchCorpusPage()`, which the route uses;
+  - `searchCorpus`, `searchWikiPages`, `searchResourceItems` and
+    `searchEmails` for tests and the benchmark.
 
-## Known limitation
+  It is data-only: no English strings go into snippets or labels.
+- `GET /api/search?q=` returns `{query, total, results}`. The email list
+  comes from the warm Python worker (doc 40) and is best-effort, so a broken
+  bridge still leaves wiki and resource search working.
+- `/search` (`frontend/src/client/search.ts`) has a debounced input, type
+  filter chips and `?q=` deep links.
 
-A resource or email hit links to `/resources?tab=files` /
-`/resources?tab=emails` rather than the specific item: the Files explorer's
-own search only scopes to the currently open folder (not a deep-link
-target), and emails have no per-item URL of their own. Landing on the right
-tab and letting the user scan from there was the honest tradeoff for v1
-rather than a deep-link that would silently fail for a nested file.
+## Deep links
+
+- A wiki hit opens `/wiki/<page>`.
+- A resource hit opens `/resources?tab=files&open=<path>`, which moves the
+  Files explorer to that file's folder and opens its preview.
+- An email hit opens `/resources?tab=emails&open=<path>`, which opens the
+  email.
+
+Each `open` parameter is used once, so the preview doesn't reappear after an
+upload or an edit reloads the list. The Playwright smoke suite covers all
+three kinds of link.

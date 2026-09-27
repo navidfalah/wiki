@@ -105,7 +105,10 @@ def cmd_chat_status() -> dict:
 
 
 def cmd_emails_list() -> dict:
-    return email_engine.list_emails()
+    """Optional input {"include_body": true} adds each email's full body
+    text (the cross-corpus search index uses it)."""
+    payload = _read_stdin_json()
+    return email_engine.list_emails(include_body=bool(payload.get("include_body")))
 
 
 def cmd_email_detail() -> dict:

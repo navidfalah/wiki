@@ -2,7 +2,9 @@ import fs from 'node:fs';
 import os from 'node:os';
 import path from 'node:path';
 import { afterEach, beforeEach, describe, expect, it } from 'vitest';
-import { makeSnippet, searchCorpus, searchEmails, searchResourceItems, searchWikiPages } from './searchEngine';
+
+beforeEach(() => clearSearchCache());
+import { clearSearchCache, makeSnippet, searchCorpus, searchCorpusPage, searchEmails, searchResourceItems, searchWikiPages } from './searchEngine';
 
 describe('searchWikiPages', () => {
   let docsDir: string;
@@ -29,12 +31,30 @@ describe('searchWikiPages', () => {
     expect(hits[0].snippet).toContain('firmware');
   });
 
-  it('requires every query term to match (AND semantics)', () => {
+  it('ranks pages matching every query term above partial matches', () => {
     fs.writeFileSync(path.join(docsDir, 'a.md'), '---\ntitle: Aurora Labs\n---\nBattery life is good.');
     fs.writeFileSync(path.join(docsDir, 'b.md'), '---\ntitle: Other Page\n---\nBattery life is bad.');
     const hits = searchWikiPages('aurora battery', docsDir);
-    expect(hits).toHaveLength(1);
-    expect(hits[0].path).toBe('a.md');
+    expect(hits.map((h) => h.path)).toEqual(['a.md', 'b.md']);
+    expect(hits[0].score).toBeGreaterThan(hits[1].score * 2);
+  });
+
+  it('answers a natural-language question by ignoring stopwords', () => {
+    fs.writeFileSync(path.join(docsDir, 'battery.md'), '---\ntitle: Battery\n---\nThe Nova Widget uses a CR2032 cell.');
+    fs.writeFileSync(path.join(docsDir, 'other.md'), '---\ntitle: Other\n---\nWhat is this? It is what it is.');
+    expect(searchWikiPages('What battery does the Nova Widget use?', docsDir)[0].path).toBe('battery.md');
+  });
+
+  it('matches plural and singular forms', () => {
+    fs.writeFileSync(path.join(docsDir, 'b.md'), '---\ntitle: Cells\n---\nWe stock spare batteries.');
+    expect(searchWikiPages('battery', docsDir).map((h) => h.path)).toEqual(['b.md']);
+  });
+
+  it('matches version numbers and ticket ids whole or in parts', () => {
+    fs.writeFileSync(path.join(docsDir, 'fw.md'), '---\ntitle: Firmware\n---\nMESH-118 is fixed in 0.3.9.');
+    expect(searchWikiPages('mesh-118', docsDir)).toHaveLength(1);
+    expect(searchWikiPages('0.3.9', docsDir)).toHaveLength(1);
+    expect(searchWikiPages('118', docsDir)).toHaveLength(1);
   });
 
   it('is case-insensitive', () => {
@@ -198,5 +218,36 @@ describe('searchCorpus', () => {
     fs.writeFileSync(path.join(docsDir, 'body-match.md'), '---\ntitle: Other\n---\nMentions recall once.');
     const hits = searchCorpus('recall', [], docsDir);
     expect(hits[0].path).toBe('title-match.md');
+  });
+});
+
+describe('searchCorpusPage', () => {
+  let docsDir: string;
+
+  beforeEach(() => {
+    docsDir = fs.mkdtempSync(path.join(os.tmpdir(), 'search-engine-page-test-'));
+    for (let i = 0; i < 5; i++) fs.writeFileSync(path.join(docsDir, `p${i}.md`), `---\ntitle: Page ${i}\n---\nbattery note ${i}`);
+  });
+
+  afterEach(() => {
+    fs.rmSync(docsDir, { recursive: true, force: true });
+  });
+
+  it('returns the top `limit` hits but the full match count', () => {
+    const page = searchCorpusPage('battery', [], docsDir, 2);
+    expect(page.total).toBe(5);
+    expect(page.results).toHaveLength(2);
+  });
+
+  it('picks up a changed page once the cache is invalidated', () => {
+    expect(searchCorpusPage('zeppelin', [], docsDir).total).toBe(0);
+    fs.writeFileSync(path.join(docsDir, 'p0.md'), '---\ntitle: Page 0\n---\nzeppelin');
+    clearSearchCache();
+    expect(searchCorpusPage('zeppelin', [], docsDir).total).toBe(1);
+  });
+
+  it('searches full email bodies, not only the preview', () => {
+    const email = { path: 'e.eml', subject: 'Status', body_preview: 'short preview', body: 'short preview ... much later: zeppelin' };
+    expect(searchCorpusPage('zeppelin', [email], docsDir).results[0]).toMatchObject({ type: 'email', path: 'e.eml' });
   });
 });
