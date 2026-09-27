@@ -34,7 +34,7 @@
 <script nonce="<%= cspNonce %>">
   (function () {
     var apiBase = document.querySelector('meta[name="api-base"]')?.getAttribute('content') ?? '';
-    var slug = <%- JSON.stringify(slug) %>;
+    var slug = <%- JSON.stringify(slug).replace(/</g, "\\u003c") %>;
     var saveBtn = document.getElementById('wiki-save-btn');
     var status = document.getElementById('wiki-edit-status');
     var textarea = document.getElementById('wiki-edit-body');

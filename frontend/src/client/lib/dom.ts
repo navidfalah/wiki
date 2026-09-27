@@ -7,8 +7,16 @@ export function el(id: string): HTMLElement {
   return found;
 }
 
+/**
+ * Escape for HTML text *and* attribute values. The old textContent/innerHTML
+ * trick left quotes alone, so a raw file named `x" style="...` broke out of
+ * the 50-odd `attr="${escapeHtml(...)}"` sites in the client scripts.
+ */
 export function escapeHtml(text: string | null | undefined): string {
-  const div = document.createElement('div');
-  div.textContent = text ?? '';
-  return div.innerHTML;
+  return String(text ?? '')
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;')
+    .replace(/'/g, '&#39;');
 }

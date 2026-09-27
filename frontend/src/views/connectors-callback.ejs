@@ -16,7 +16,7 @@
 </form>
 
 <script nonce="<%= cspNonce %>">
-  window.__connectorId = <%- JSON.stringify(connectorId) %>;
+  window.__connectorId = <%- JSON.stringify(connectorId).replace(/</g, "\\u003c") %>;
 </script>
 
 <%- include('partials/foot', { clientScript }) %>

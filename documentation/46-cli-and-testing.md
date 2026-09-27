@@ -76,11 +76,16 @@ The floors live in `COVERAGE_FLOORS` in `./wiki`. They sit a little below
 the measured value, so a PR that deletes tests or adds untested code fails.
 Raise them when coverage goes up.
 
+Frontend coverage looks low overall (about 16%) because it counts the page
+scripts in `frontend/src/client/*.ts`. These are DOM-heavy and exercised
+by the Playwright suite in a real browser, not by unit tests. The server
+code and the shared client libraries are at 90–100%.
+
 ## What is tested where
 
 | Package | Suite | Highlights |
 |---|---|---|
 | compiler | `compiler/tests/` (pytest) | Pipeline stages, linker, ingest formats, connectors, eval gate, and the CLI itself (`test_wiki_cli.py`: package selection, step plans, pass/fail/skip, CI strictness, step summary, `--changed`). |
 | backend | `backend/src/**/*.test.ts` (vitest) | Library units, plus **route integration tests** (`src/routes/*.routes.test.ts`). These boot the real Express app from `createApp()` against a throwaway data root (`WIKI_DATA_ROOT`), with a fake Python bridge (`__fixtures__/fakePython.cjs`) standing in for `compiler/cli.py`. They cover auth and roles, docs/history/search, files and uploads (path traversal, sandbox headers), settings masking, backups, and the SSE compile and chat streams. |
-| frontend | `frontend/test/unit/` (vitest + happy-dom) | i18n core and middleware, client helpers, and the dashboard home renderers (`dashboard-home.test.ts`: links, empty and error states, HTML escaping of corpus text, relative times in EN/DE). |
+| frontend | `frontend/test/unit/` (vitest; happy-dom, server tests in node) | **Server** (`server.test.ts`): the real app from `createApp()` in front of a stub backend. Covers security headers and per-request CSP nonces on every inline script, the login gate and `?next=` open-redirect guard, login/throttle/logout, admin-only pages, wiki list/page/edit/history/download with escaped bodies, generic 500s that leak no internals, the `/api` proxy (cookie → bearer, spoofed `X-Client-IP` overwritten, SSE streaming), language switching, and script-context escaping of URL values. **Client** libraries: i18n, `apiFetch`, `escapeHtml` (attribute-safe), cache and offline banner, server-text mapping, modal a11y, copy buttons, the search page (escaping, links, filters, debounce), and the dashboard home renderers. |
 | end to end | `frontend/test/e2e/smoke.spec.ts` (Playwright) | Every page loads without script errors or CSP violations. Also covers search deep links, page history edit/diff/restore, backups, and the dashboard (status cards, the `/` shortcut, Ask → new chat). |

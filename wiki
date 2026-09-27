@@ -42,7 +42,7 @@ IN_CI = os.environ.get("GITHUB_ACTIONS") == "true" or os.environ.get("CI") == "t
 
 # Coverage floors (percent of statements). Raise them as coverage grows; a
 # drop below the floor fails `./wiki coverage` and CI.
-COVERAGE_FLOORS = {"compiler": 78, "backend": 82, "frontend": 3}
+COVERAGE_FLOORS = {"compiler": 78, "backend": 82, "frontend": 15}
 
 
 # --- Output -------------------------------------------------------------------
