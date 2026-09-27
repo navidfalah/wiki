@@ -30,3 +30,7 @@ compiler/temp_output/*
 !compiler/temp_output/.gitkeep
 wiki-app/static/media/*
 !wiki-app/static/media/.gitkeep
+
+# Playwright
+playwright-report/
+test-results/
