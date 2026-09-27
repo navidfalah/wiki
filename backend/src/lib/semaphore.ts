@@ -1,9 +1,9 @@
 /**
- * Tiny counting semaphore. Every chat/email/connector call spawns a fresh
- * `python3 cli.py ...` process (~100+ MB resident each), so on a small
- * server a burst of requests can exhaust RAM long before CPU matters.
- * Capping how many run at once trades a little latency for not getting
- * OOM-killed -- see pythonBridge.ts and PY_MAX_CONCURRENCY.
+ * Tiny counting semaphore. Each Python call (a streaming chat process, or a
+ * request to the warm cli.py worker) holds tens of MB, so on a small server
+ * a burst of requests can exhaust RAM long before CPU matters. Capping how
+ * many run at once trades a little latency for not getting OOM-killed --
+ * see pythonBridge.ts and PY_MAX_CONCURRENCY.
  */
 export class Semaphore {
   private available: number;

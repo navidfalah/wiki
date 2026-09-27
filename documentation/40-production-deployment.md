@@ -54,9 +54,17 @@ adds a Python process (~100–250 MB).
 - **Hard memory caps** per container (`*_MEM_LIMIT`) and capped Node heaps
   (`*_HEAP_MB`), so a leak or spike is killed and restarted by Docker instead of
   swapping the host to death.
-- **Python concurrency limit** (`PY_MAX_CONCURRENCY`, default 2): chat, email and
-  connector calls each spawn an interpreter; excess requests queue instead of
-  running in parallel.
+- **Python concurrency limit** (`PY_MAX_CONCURRENCY`, default 2): at most this
+  many Python calls run at once (streaming chat, email, connector, review-queue
+  calls); excess requests queue instead of running in parallel.
+- **Warm Python worker** (`PY_WORKER_POOL_SIZE`, default 1): short calls
+  (emails, review queue, connectors, entity graph, ...) go to a long-lived
+  `cli.py --serve` process instead of starting a new interpreter each time.
+  Measured on `/api/emails`: p50 **763 ms → 33 ms**. The worker holds about
+  50 MB while warm and exits after `PY_WORKER_IDLE_MS` (5 min) idle or
+  `PY_WORKER_MAX_REQUESTS` (500) calls. Streaming chat and compiles still get
+  their own processes, so the worst case is one Python process more than
+  `PY_MAX_CONCURRENCY`. Set `PY_WORKER=0` to go back to one process per call.
 - **No boot-time Python spawn** and no sample Postgres (`SKIP_DEFAULT_CONNECTIONS`).
 - **Precompiled bytecode** so each spawned interpreter starts fast.
 - **Asset caching:** CSS/JS are served with a content-versioned URL and a
@@ -169,9 +177,12 @@ All values go in `.env` (see `.env.example`):
 | `FRONTEND_MEM_LIMIT` | `160m` | Frontend container cap |
 | `BACKEND_HEAP_MB` / `FRONTEND_HEAP_MB` | `160` / `96` | Node heap ceilings |
 | `PY_MAX_CONCURRENCY` | `2` | Parallel Python processes (chat/email/connectors) |
+| `PY_WORKER` | `1` | `0` = spawn a fresh `cli.py` per call instead of using the warm worker |
+| `PY_WORKER_POOL_SIZE` | `1` | Warm `cli.py --serve` workers (~50 MB each while warm) |
+| `PY_WORKER_IDLE_MS` / `PY_WORKER_MAX_REQUESTS` / `PY_WORKER_TIMEOUT_MS` | `300000` / `500` / `600000` | Idle shutdown, recycling, per-call kill timeout |
 
 Lower `PY_MAX_CONCURRENCY` to `1` and `BACKEND_MEM_LIMIT` to `512m` on a 1 GB
-host; raise both on a bigger one.
+host (or also set `PY_WORKER=0` there); raise both on a bigger one.
 
 ### Local dry run
 

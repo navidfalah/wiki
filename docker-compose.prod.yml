@@ -139,9 +139,12 @@ services:
       # well-known default.
       ADMIN_USERNAME: ${ADMIN_USERNAME:-admin}
       ADMIN_PASSWORD: ${ADMIN_PASSWORD:?Set ADMIN_PASSWORD in .env before the first start}
-      # Chat/email/connector calls each spawn a Python process (~100+ MB).
-      # Cap how many run at once so a burst queues instead of OOM-killing.
+      # Cap concurrent Python calls so a burst queues instead of OOM-killing.
+      # Short calls share one warm `cli.py --serve` worker (~50 MB while warm);
+      # streaming chat and compiles still start their own process.
       PY_MAX_CONCURRENCY: ${PY_MAX_CONCURRENCY:-2}
+      PY_WORKER: ${PY_WORKER:-1}
+      PY_WORKER_POOL_SIZE: ${PY_WORKER_POOL_SIZE:-1}
       # There is no sample Postgres in production; skip the boot-time spawn.
       SKIP_DEFAULT_CONNECTIONS: "true"
       CORS_ORIGINS: https://${DOMAIN:-wissensbau.de}

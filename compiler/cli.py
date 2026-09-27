@@ -12,7 +12,9 @@ JSON object to stdout; a non-zero exit code means the stdout body is
 
 from __future__ import annotations
 
+import io
 import json
+import os
 import sys
 from dataclasses import asdict
 
@@ -366,26 +368,93 @@ COMMANDS = {
 STREAMING_COMMANDS = {"chat-stream"}
 
 
-def main() -> int:
-    if len(sys.argv) != 2 or sys.argv[1] not in COMMANDS:
-        print(json.dumps({"error": f"Usage: cli.py <{'|'.join(COMMANDS)}>"}))
-        return 1
-    command = sys.argv[1]
+def _run_command(command: str) -> tuple[dict, int]:
+    """Run one command; returns (payload, exit code). Shared by the one-shot
+    and --serve modes so both report errors identically."""
     try:
-        result = COMMANDS[command]()
+        return COMMANDS[command](), 0
     except email_engine.NotAnEmailError as exc:
-        print(json.dumps({"error": str(exc), "error_type": "not_an_email"}))
-        return 1
+        return {"error": str(exc), "error_type": "not_an_email"}, 1
     except FileNotFoundError as exc:
-        print(json.dumps({"error": str(exc), "error_type": "not_found"}))
-        return 1
+        return {"error": str(exc), "error_type": "not_found"}, 1
     except Exception as exc:  # noqa: BLE001 -- surface any failure as JSON, not a traceback
         error_type = _connector_error_type(exc)
-        print(json.dumps({"error": str(exc), **({"error_type": error_type} if error_type else {})}))
-        return 1
-    if command not in STREAMING_COMMANDS:
-        print(json.dumps(result, ensure_ascii=False))
+        return {"error": str(exc), **({"error_type": error_type} if error_type else {})}, 1
+
+
+def serve() -> int:
+    """Long-lived worker for backend/src/lib/pythonWorker.ts: one JSON request
+    per stdin line ({"id", "command", "input", "env"}), one JSON response per
+    line ({"id", "code", "payload"}). Saves the ~0.6 s of imports every
+    one-shot `cli.py <command>` pays.
+
+    - `env` holds the backend's per-request LLM settings; they are applied for
+      that request only and then restored.
+    - The response channel is a private duplicate of the original stdout;
+      fd 1 itself is pointed at stderr, so a stray print() or a C extension
+      writing to stdout can't corrupt the protocol.
+    - A BaseException (e.g. pyo3's PanicException) is reported and ends the
+      worker, so the backend restarts a clean process.
+    """
+    protocol = os.fdopen(os.dup(1), "w", buffering=1, encoding="utf-8")
+    os.dup2(2, 1)
+    sys.stdout = sys.stderr
+    requests = sys.stdin
+
+    def respond(request_id, code: int, payload: dict) -> None:
+        try:
+            line = json.dumps({"id": request_id, "code": code, "payload": payload}, ensure_ascii=False)
+        except (TypeError, ValueError) as exc:
+            line = json.dumps({"id": request_id, "code": 1, "payload": {"error": f"Unserializable result: {exc}"}})
+        protocol.write(line + "\n")
+
+    for line in requests:
+        if not line.strip():
+            continue
+        try:
+            request = json.loads(line)
+            request_id = request.get("id")
+            command = request["command"]
+        except (ValueError, KeyError, AttributeError) as exc:
+            respond(None, 1, {"error": f"Bad worker request: {exc}"})
+            continue
+        if command not in COMMANDS or command in STREAMING_COMMANDS:
+            respond(request_id, 1, {"error": f"Unsupported worker command: {command}"})
+            continue
+
+        env = {str(k): str(v) for k, v in (request.get("env") or {}).items()}
+        saved = {k: os.environ.get(k) for k in env}
+        os.environ.update(env)
+        sys.stdin = io.StringIO("" if request.get("input") is None else json.dumps(request["input"]))
+        try:
+            payload, code = _run_command(command)
+        except (KeyboardInterrupt, SystemExit):
+            raise
+        except BaseException as exc:  # noqa: BLE001 -- report, then exit so the backend restarts us clean
+            respond(request_id, 1, {"error": f"Worker crashed: {type(exc).__name__}: {exc}"})
+            return 1
+        finally:
+            sys.stdin = requests
+            for key, value in saved.items():
+                if value is None:
+                    os.environ.pop(key, None)
+                else:
+                    os.environ[key] = value
+        respond(request_id, code, payload)
     return 0
+
+
+def main() -> int:
+    if sys.argv[1:] == ["--serve"]:
+        return serve()
+    if len(sys.argv) != 2 or sys.argv[1] not in COMMANDS:
+        print(json.dumps({"error": f"Usage: cli.py <{'|'.join(COMMANDS)}> | --serve"}))
+        return 1
+    command = sys.argv[1]
+    payload, code = _run_command(command)
+    if code != 0 or command not in STREAMING_COMMANDS:
+        print(json.dumps(payload, ensure_ascii=False))
+    return code
 
 
 if __name__ == "__main__":

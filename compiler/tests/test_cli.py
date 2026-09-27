@@ -223,3 +223,77 @@ def test_connector_commands_report_a_json_error_when_cryptography_is_broken():
     assert proc.returncode == 1
     payload = json.loads(proc.stdout)
     assert "Connectors are unavailable" in payload["error"]
+
+
+_SERVE_WITH_TEST_COMMANDS = """
+import os, sys
+sys.path.insert(0, os.getcwd())
+import cli
+
+class FakePanic(BaseException):
+    pass
+
+def echo():
+    return {"var": os.environ.get("WORKER_TEST_VAR"), "input": cli._read_stdin_json()}
+
+def noisy():
+    print("stray print")
+    os.write(1, b"raw write to fd 1\\n")
+    return {"ok": True}
+
+def panic():
+    raise FakePanic("Python API call failed")
+
+cli.COMMANDS.update({"echo": echo, "noisy": noisy, "panic": panic})
+sys.exit(cli.serve())
+"""
+
+
+def _serve(lines):
+    import subprocess
+    import sys
+    from pathlib import Path
+
+    proc = subprocess.run(
+        [sys.executable, "-c", _SERVE_WITH_TEST_COMMANDS],
+        cwd=Path(cli.__file__).parent,
+        input="".join(json.dumps(line) + "\n" if not isinstance(line, str) else line + "\n" for line in lines),
+        capture_output=True,
+        text=True,
+        timeout=60,
+    )
+    return proc, [json.loads(line) for line in proc.stdout.splitlines()]
+
+
+def test_serve_applies_env_and_input_per_request_then_restores_them():
+    _proc, responses = _serve([
+        {"id": 1, "command": "echo", "input": {"q": "a"}, "env": {"WORKER_TEST_VAR": "set"}},
+        {"id": 2, "command": "echo"},
+    ])
+    assert responses[0] == {"id": 1, "code": 0, "payload": {"var": "set", "input": {"q": "a"}}}
+    assert responses[1] == {"id": 2, "code": 0, "payload": {"var": None, "input": {}}}
+
+
+def test_serve_keeps_stray_stdout_off_the_protocol_channel():
+    proc, responses = _serve([{"id": 1, "command": "noisy"}, {"id": 2, "command": "echo"}])
+    assert [r["id"] for r in responses] == [1, 2]
+    assert "stray print" in proc.stderr and "raw write to fd 1" in proc.stderr
+
+
+def test_serve_survives_bad_requests():
+    _proc, responses = _serve(["not json", {"id": 3, "command": "chat-stream"}, {"id": 4, "command": "echo"}])
+    assert responses[0]["id"] is None and responses[0]["code"] == 1
+    assert responses[1]["code"] == 1 and "Unsupported" in responses[1]["payload"]["error"]
+    assert responses[2]["code"] == 0
+
+
+def test_serve_reports_a_panic_and_exits_so_the_backend_restarts_it():
+    proc, responses = _serve([{"id": 1, "command": "panic"}, {"id": 2, "command": "echo"}])
+    assert proc.returncode == 1
+    assert responses == [{"id": 1, "code": 1, "payload": {"error": "Worker crashed: FakePanic: Python API call failed"}}]
+
+
+def test_serve_maps_error_types_like_one_shot_mode():
+    _proc, responses = _serve([{"id": 1, "command": "email-detail", "input": {"path": "does/not/exist.eml"}}])
+    assert responses[0]["code"] == 1
+    assert responses[0]["payload"]["error_type"] == "not_found"
