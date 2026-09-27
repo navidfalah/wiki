@@ -8,6 +8,7 @@ non-existent path makes every test start from the documented defaults.
 """
 import pytest
 
+import llm_client
 import page_history
 import rag_settings
 
@@ -15,6 +16,13 @@ import rag_settings
 @pytest.fixture(autouse=True)
 def _isolate_rag_settings(tmp_path, monkeypatch):
     monkeypatch.setattr(rag_settings, "RAG_SETTINGS_FILE", tmp_path / "no-rag-settings.json")
+
+
+@pytest.fixture(autouse=True)
+def _isolate_llm_cache(tmp_path, monkeypatch):
+    # Any LLMClient() opens (and on a fresh checkout creates) the response
+    # cache; keep that out of the real data/.
+    monkeypatch.setattr(llm_client, "DEFAULT_CACHE_PATH", tmp_path / "llm-cache.sqlite")
 
 
 @pytest.fixture(autouse=True)
