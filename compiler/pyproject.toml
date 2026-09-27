@@ -26,6 +26,9 @@ source = ["."]
 # FastAPI server -- production uses the Express backend + cli.py, and its
 # dependencies (requirements-server.txt) aren't installed in CI.
 omit = ["tests/*", "scripts/*", "server.py", "temp_output/*"]
+# Many tests drive cli.py / main.py as real subprocesses (the way the
+# backend does); measure those too instead of under-reporting them.
+patch = ["subprocess"]
 
 [tool.coverage.report]
 exclude_also = ['if __name__ == "__main__":', "raise NotImplementedError"]

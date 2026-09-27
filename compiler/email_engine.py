@@ -30,7 +30,8 @@ class NotAnEmailError(ValueError):
 
 def _resolve_raw_path(raw_dir: Path, file_path: str) -> Path:
     candidate = (raw_dir / file_path).resolve()
-    if not str(candidate).startswith(str(raw_dir.resolve())):
+    # is_relative_to, not a string prefix: "raw" is a prefix of a sibling "raw_old".
+    if not candidate.is_relative_to(raw_dir.resolve()):
         raise NotAnEmailError(f"Invalid raw file path: {file_path}")
     return candidate
 

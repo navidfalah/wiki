@@ -95,7 +95,7 @@ def get_resource_detail(
 
     preview = None
     candidate = (raw_dir / source_path).resolve()
-    if str(candidate).startswith(str(raw_dir.resolve())) and candidate.is_file():
+    if candidate.is_relative_to(raw_dir.resolve()) and candidate.is_file():
         try:
             preview = candidate.read_text(encoding="utf-8")[:4000]
         except (UnicodeDecodeError, OSError):

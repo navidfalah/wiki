@@ -70,7 +70,7 @@ app.add_middleware(
 
 def _safe_raw_path(rel_path: str) -> Path:
     candidate = (RAW_DIR / rel_path).resolve()
-    if not str(candidate).startswith(str(RAW_DIR.resolve())):
+    if not candidate.is_relative_to(RAW_DIR.resolve()):
         raise HTTPException(status_code=400, detail="Invalid raw file path")
     if not candidate.is_file():
         raise HTTPException(status_code=404, detail=f"Raw file not found: {rel_path}")
@@ -79,7 +79,7 @@ def _safe_raw_path(rel_path: str) -> Path:
 
 def _safe_doc_path(rel_path: str) -> Path:
     candidate = (OUTPUT_DIR / rel_path).resolve()
-    if not str(candidate).startswith(str(OUTPUT_DIR.resolve())):
+    if not candidate.is_relative_to(OUTPUT_DIR.resolve()):
         raise HTTPException(status_code=400, detail="Invalid doc path")
     if not candidate.is_file():
         raise HTTPException(status_code=404, detail=f"Doc not found: {rel_path}")
