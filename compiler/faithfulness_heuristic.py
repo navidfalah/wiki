@@ -156,24 +156,32 @@ def score_text_against_sources(
     return HeuristicFaithfulnessReport(sentence_reports=reports)
 
 
-_SOURCES_SECTION_RE = re.compile(r"^## Sources\n(.*?)(?=\n##|\n```|\Z)", re.DOTALL | re.MULTILINE)
+# The compiler has written two source-section formats over time: the
+# original '## Sources' bullet list, and the current '## References & Trust'
+# table (| # | `path` | type | trust |). Both are parsed.
+_SOURCES_HEADING_RE = re.compile(r"^## (?:Sources|References & Trust)\n", re.MULTILINE)
+_SOURCES_SECTION_RE = re.compile(r"^## (?:Sources|References & Trust)\n(.*?)(?=\n##|\n```|\Z)", re.DOTALL | re.MULTILINE)
 _SOURCE_BULLET_RE = re.compile(r"^\*\s+`([^`]+)`\s*$", re.MULTILINE)
+_SOURCE_TABLE_ROW_RE = re.compile(r"^\|\s*\d+\s*\|\s*`([^`]+)`\s*\|", re.MULTILINE)
 _FRONTMATTER_RE = re.compile(r"\A---\n.*?\n---\n", re.DOTALL)
 
 
 def parse_page(page_text: str) -> tuple[str, list[str]]:
-    """Split a compiled wiki page into (body-before-Sources, [raw source
-    paths]) — the self-reported grounding this page's own '## Sources'
-    section names. Returns ("", []) for a page with no Sources section
-    (e.g. the generated index/MOC page, which isn't a synthesized topic
-    page in the first place)."""
+    """Split a compiled wiki page into (body-before-sources, [raw source
+    paths]) — the self-reported grounding this page's own sources section
+    names. Returns ("", []) for a page with no sources section (e.g. the
+    generated index/MOC page, which isn't a synthesized topic page in the
+    first place)."""
     body = _FRONTMATTER_RE.sub("", page_text, count=1)
-    match = re.search(r"^## Sources\n", body, re.MULTILINE)
+    match = _SOURCES_HEADING_RE.search(body)
     if not match:
         return "", []
     content_before = body[: match.start()]
     sources_match = _SOURCES_SECTION_RE.search(body)
-    source_paths = _SOURCE_BULLET_RE.findall(sources_match.group(1)) if sources_match else []
+    if not sources_match:
+        return content_before, []
+    section = sources_match.group(1)
+    source_paths = _SOURCE_BULLET_RE.findall(section) + _SOURCE_TABLE_ROW_RE.findall(section)
     return content_before, source_paths
 
 

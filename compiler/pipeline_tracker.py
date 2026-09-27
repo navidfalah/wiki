@@ -11,7 +11,7 @@ from __future__ import annotations
 
 import json
 import uuid
-from datetime import datetime, timezone
+from datetime import UTC, datetime
 from pathlib import Path
 from typing import Any
 
@@ -22,7 +22,7 @@ MAX_RUNS_KEPT = 100
 
 
 def _utc_now_iso() -> str:
-    return datetime.now(timezone.utc).isoformat()
+    return datetime.now(UTC).isoformat()
 
 
 def _atomic_write_json(path: Path, data: Any) -> None:
@@ -52,8 +52,8 @@ class PipelineRun:
         self._step_index: dict[str, int] = {}
 
     @classmethod
-    def start(cls, *, force: bool, settings: dict[str, Any] | None = None) -> "PipelineRun":
-        run_id = f"{datetime.now(timezone.utc).strftime('%Y%m%d-%H%M%S')}-{uuid.uuid4().hex[:6]}"
+    def start(cls, *, force: bool, settings: dict[str, Any] | None = None) -> PipelineRun:
+        run_id = f"{datetime.now(UTC).strftime('%Y%m%d-%H%M%S')}-{uuid.uuid4().hex[:6]}"
         run = cls(run_id, force=force, settings=settings)
         run._save()
         run._update_index()

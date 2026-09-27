@@ -26,7 +26,13 @@ from __future__ import annotations
 
 import json
 
-from entity_resolution import DEFAULT_CONFIG, EntityCluster, Mention, ResolutionConfig, resolve_entities
+from entity_resolution import (
+    DEFAULT_CONFIG,
+    EntityCluster,
+    Mention,
+    ResolutionConfig,
+    resolve_entities,
+)
 from models import STATE_FILE
 
 

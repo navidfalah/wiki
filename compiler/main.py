@@ -75,7 +75,7 @@ def _make_progress_callback(
     *,
     label: str,
     log_every: int = 1,
-    run: "PipelineRun | None" = None,
+    run: PipelineRun | None = None,
     step_name: str = "",
     recent_window: int = 20,
 ) -> Callable[[int, int, str], None]:
@@ -189,7 +189,7 @@ def step_extract(
     extra_system_context: str = "",
     redact_pii: bool = False,
     exclude_prefixes: frozenset[str] | None = None,
-    run: "PipelineRun | None" = None,
+    run: PipelineRun | None = None,
     step_name: str = "",
 ) -> dict:
     """Step 2: Extract topics, entities, and concepts from each chunk."""
@@ -258,7 +258,7 @@ def step_synthesize(
     web_search_max_topics: int = web_search.DEFAULT_MAX_TOPICS,
     web_search_provider: str | None = None,
     web_search_api_key: str | None = None,
-    run: "PipelineRun | None" = None,
+    run: PipelineRun | None = None,
     step_name: str = "",
 ) -> dict:
     """Step 3: Group by topic and write draft wiki pages to temp_output/."""
@@ -414,7 +414,7 @@ def step_link(
     removed_filenames: set[str],
     force: bool,
     extractions: dict | None = None,
-    run: "PipelineRun | None" = None,
+    run: PipelineRun | None = None,
     step_name: str = "",
     resolve_entities_llm: bool = False,
 ) -> list[Path]:
@@ -716,7 +716,7 @@ def run_pipeline(
                 "output": {"linked": sorted(str(p) for p in written)},
             },
         )
-    except Exception as exc:
+    except Exception:
         # Full traceback, not just str(exc) -- a one-line message like
         # "database disk image is malformed" tells you nothing about which
         # call raised it. This is what the dashboard/Pipelines page shows

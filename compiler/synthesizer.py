@@ -7,7 +7,7 @@ import json
 import re
 from collections.abc import Callable
 from dataclasses import asdict, dataclass, field
-from datetime import datetime, timezone
+from datetime import UTC, datetime
 from pathlib import Path
 
 import email_ingest
@@ -222,7 +222,7 @@ def scan_raw_file_changes(
 
 
 def _utc_now_iso() -> str:
-    return datetime.now(timezone.utc).isoformat()
+    return datetime.now(UTC).isoformat()
 
 
 def _raw_chunk_from_dict(rel_source: str, chunk_dict: dict) -> RawChunk:

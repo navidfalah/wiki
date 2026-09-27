@@ -62,7 +62,7 @@
         },
         {
           "id": "nri-5",
-          "source_path": "dummy-test/2026-07-02-aurora-meshsync-release-notes.md",
+          "source_path": "2026-07-02-aurora-meshsync-release-notes.md",
           "source_type": "text",
           "date": "2026-07-02",
           "value": "15 minutes",
@@ -277,7 +277,7 @@
         },
         {
           "id": "nbl-3",
-          "source_path": "dummy-test/2026-07-02-aurora-meshsync-release-notes.md",
+          "source_path": "2026-07-02-aurora-meshsync-release-notes.md",
           "source_type": "text",
           "date": "2026-07-02",
           "value": "engineering 18mo @ 10 nodes; marketing may still say 2yr",
@@ -477,7 +477,7 @@
         },
         {
           "id": "nip-5",
-          "source_path": "dummy-test/2026-07-04-investor-update-draft.txt",
+          "source_path": "samples/2026-07-04-investor-update-draft.txt",
           "source_type": "text",
           "date": "2026-07-04",
           "value": "IP54 beta shipping; IP65 tooling ($8k) deferred",

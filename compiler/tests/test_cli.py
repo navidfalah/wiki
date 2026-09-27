@@ -148,11 +148,8 @@ def test_connectors_catalog_lists_the_known_connectors(tmp_path, monkeypatch):
 
 def test_connectors_oauth_start_requires_connector_id(monkeypatch):
     _stdin(monkeypatch, {})
-    try:
+    with pytest.raises(ValueError, match="connector_id"):
         cli.cmd_connectors_oauth_start()
-        assert False, "expected ValueError"
-    except ValueError as exc:
-        assert "connector_id" in str(exc)
 
 
 def test_connectors_oauth_start_reports_missing_config(tmp_path, monkeypatch):
@@ -160,11 +157,8 @@ def test_connectors_oauth_start_reports_missing_config(tmp_path, monkeypatch):
     for var in ("GMAIL_CLIENT_ID", "GMAIL_CLIENT_SECRET", "GMAIL_REDIRECT_URI"):
         monkeypatch.delenv(var, raising=False)
     _stdin(monkeypatch, {"connector_id": "gmail"})
-    try:
+    with pytest.raises(connectors_service.ConnectorConfigError):
         cli.cmd_connectors_oauth_start()
-        assert False, "expected ConnectorConfigError"
-    except connectors_service.ConnectorConfigError:
-        pass
 
 
 def test_connectors_imap_connect_and_disconnect_round_trip(tmp_path, monkeypatch):
@@ -181,8 +175,5 @@ def test_connectors_imap_connect_and_disconnect_round_trip(tmp_path, monkeypatch
 def test_connectors_items_list_reports_not_connected(tmp_path, monkeypatch):
     _isolate_connectors(tmp_path, monkeypatch)
     _stdin(monkeypatch, {"connector_id": "imap", "account_label": "nobody@example.com"})
-    try:
+    with pytest.raises(connectors_service.ConnectorNotConnectedError):
         cli.cmd_connectors_items_list()
-        assert False, "expected ConnectorNotConnectedError"
-    except connectors_service.ConnectorNotConnectedError:
-        pass

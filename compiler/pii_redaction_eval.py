@@ -163,7 +163,7 @@ def run_eval(
         result = redact_text(fixture.text, policy, ner_backend=ner_backend)
         found = {(f.category, f.original) for f in result.findings}
 
-        for hit in found & fixture.expected:
+        for _hit in found & fixture.expected:
             true_positives += 1
         for extra in found - fixture.expected:
             false_positives += 1

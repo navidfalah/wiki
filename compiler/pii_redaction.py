@@ -90,7 +90,7 @@ NER_CATEGORIES = frozenset({"location"})
 class RedactionPolicy:
     categories: frozenset[str] = DEFAULT_CATEGORIES
 
-    def with_categories(self, categories: frozenset[str]) -> "RedactionPolicy":
+    def with_categories(self, categories: frozenset[str]) -> RedactionPolicy:
         return RedactionPolicy(categories=categories)
 
 

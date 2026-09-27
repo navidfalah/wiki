@@ -23,11 +23,11 @@ from __future__ import annotations
 
 import json
 from dataclasses import asdict, dataclass, field
-from datetime import datetime, timezone
+from datetime import UTC, datetime
 from pathlib import Path
 
 from models import PROJECT_ROOT
-from trust_eval_dataset import Claim, ClaimGroup
+from trust_eval_dataset import ClaimGroup
 from trust_propagation import ClaimTrust, PropagationConfig, propagate_group_trust
 
 CORRECTIONS_PATH = PROJECT_ROOT / "data" / "review_corrections.json"
@@ -129,7 +129,7 @@ class Correction:
     verdict: str
     note: str
     quote_excerpt: str
-    reviewed_at: str = field(default_factory=lambda: datetime.now(timezone.utc).isoformat())
+    reviewed_at: str = field(default_factory=lambda: datetime.now(UTC).isoformat())
 
     def __post_init__(self) -> None:
         if self.verdict not in VERDICTS:

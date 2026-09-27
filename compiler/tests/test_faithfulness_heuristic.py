@@ -97,6 +97,22 @@ def test_parse_page_extracts_body_and_source_paths():
     assert sources == ["notes/a.md", "notes/b.txt"]
 
 
+def test_parse_page_extracts_source_paths_from_references_and_trust_table():
+    page_text = (
+        "---\nid: x\ntitle: X\n---\n\n"
+        "# X\n\n## Overview\nSome prose here.\n\n"
+        "## References & Trust\n\n"
+        "| # | Source | Type | Trust |\n"
+        "|---|--------|------|-------|\n"
+        "| 1 | `emails/a.eml` | email | Medium |\n"
+        "| 2 | `notes/b.txt` | text | High |\n"
+    )
+    body, sources = parse_page(page_text)
+    assert "Some prose here." in body
+    assert "## References & Trust" not in body
+    assert sources == ["emails/a.eml", "notes/b.txt"]
+
+
 def test_parse_page_no_sources_section_returns_empty():
     page_text = "---\nid: x\ntitle: X\n---\n\n# X\n\nJust prose, no sources heading.\n"
     body, sources = parse_page(page_text)

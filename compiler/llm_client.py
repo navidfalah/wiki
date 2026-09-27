@@ -10,9 +10,10 @@ import re
 import sqlite3
 import sys
 import time
-from datetime import datetime, timezone
+from collections.abc import Iterator
+from datetime import UTC, datetime
 from pathlib import Path
-from typing import Any, Iterator
+from typing import Any
 
 from dotenv import load_dotenv
 
@@ -44,7 +45,7 @@ except ImportError:  # pragma: no cover - openai not installed in some environme
 
 
 def _utc_now_iso() -> str:
-    return datetime.now(timezone.utc).isoformat()
+    return datetime.now(UTC).isoformat()
 
 
 def _retry_after_seconds(exc: Exception) -> float | None:
@@ -298,7 +299,7 @@ class LLMClient:
         self.usage_log: list[dict[str, Any]] = []
 
     @classmethod
-    def for_purpose(cls, purpose: str, **kwargs: Any) -> "LLMClient":
+    def for_purpose(cls, purpose: str, **kwargs: Any) -> LLMClient:
         """Build a client for a named purpose (e.g. "thinking", "embedding").
 
         Reads `{PURPOSE}_OPENAI_API_KEY` / `_BASE_URL` / `_MODEL` env vars in

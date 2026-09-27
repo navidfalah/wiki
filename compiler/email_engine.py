@@ -11,7 +11,7 @@ testable on its own.
 from __future__ import annotations
 
 import re
-from datetime import datetime, timezone
+from datetime import UTC, datetime
 from email.message import EmailMessage
 from email.utils import format_datetime
 from pathlib import Path
@@ -67,7 +67,7 @@ def _build_eml_bytes(
     msg["To"] = ", ".join(to_addrs) or "(unknown recipient)"
     if cc_addrs:
         msg["Cc"] = ", ".join(cc_addrs)
-    msg["Date"] = date.strip() if date and date.strip() else format_datetime(datetime.now(timezone.utc))
+    msg["Date"] = date.strip() if date and date.strip() else format_datetime(datetime.now(UTC))
     msg.set_content(body or "")
     return msg.as_bytes()
 
