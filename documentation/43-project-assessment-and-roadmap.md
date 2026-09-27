@@ -183,3 +183,51 @@ Each task has a clear definition of done. IDs map to §3.
 Suggested order: **T1 → T3 → T4 → T2 → T5 → T7 → T6 → T8 → T9**, then the rest.
 T1–T4 are all small and remove the risks that let `main` drift silently.
 T5 must exist before T9, because the study needs fixed tasks.
+
+## 6. Status after the implementation pass (2026-09-27)
+
+All tasks were worked in priority order directly on `main`. Every commit
+passed CI, which now runs on every push.
+
+| Task | Status | Result |
+|---|---|---|
+| T1 CI on main, pinned tooling | **Done** | CI runs on push to `main` and on manual dispatch. Ruff is pinned and targets Python 3.10, and the suite runs on both 3.10 and 3.12, which exposed and fixed an `asyncio.TimeoutError` bug on 3.10. |
+| T3 Isolate optional imports | **Done** | A broken `cryptography` install now fails only the connector commands. Tested with a simulated pyo3 panic. |
+| T4 Security quick wins | **Done** | Nonce-based CSP on every page. Fixed a **stored XSS**: uploaded `.html`/`.xml` previews were served same-origin; they now get a `sandbox` CSP. 0 npm vulnerabilities in both packages. |
+| T2 Eval regression gate | **Done** | `eval_gate.py` runs in CI and fails on a score drop, or on an eval that ran on nothing. It catches the old groundedness bug. |
+| T5 Gold Q&A benchmark | **Done** | 65 grounded questions; results in doc 44. |
+| T7 Frontend tests + e2e | **Done** | 23 unit tests, plus a Playwright suite in CI (9 tests) that fails on any script error or CSP violation. |
+| T6 Persistent Python worker | **Done** | `/api/emails` p50 went from **763 ms to 33 ms**. A warm worker uses about 49 MB. |
+| T8 Page version history | **Done** | Versions are saved before every compile, edit, delete or restore, with a diff and restore UI (doc 45). |
+| T9 User study pilot | **Not done: needs people** | It can't be run by an agent, and fabricating data is out of the question. The instrument (doc 32) and fixed tasks (doc 44) are ready. |
+| T10 Search v2 | **Done** | BM25, full email bodies and deep links. Typed-question hit@5 went from **0.077 to 0.938**; p95 is 45 ms at 10k pages (doc 42). |
+| T11 Backups | **Done** | Scheduled plus manual backups, download/upload, and restore that rejects unsafe archives (doc 40). |
+| T12 SQLite app state | **Not recommended now** | Re-checked against the code, the premise doesn't hold for this deployment: every JSON store does a synchronous read-modify-write, so there are no lost updates inside the single Node process; writes are atomic; the logs are capped; only the backend writes them. SQLite matters only for running several backend instances, which the single-server deployment doesn't do. Revisit if that changes. |
+| T13 Live-corpus claim adapter | **Open (research)** | Needs design decisions (what counts as a claim, and which claims contradict each other) and an API key to evaluate. |
+
+### What the benchmark changed about the picture
+
+The first real measurement of the core claim is not flattering. With
+BM25, retrieving from the compiled wiki finds answers no better than
+retrieving from the raw files, once both get the same amount of text. And
+about 5% of the facts were lost during synthesis (doc 44). The case for the
+wiki therefore has to rest on what BM25 can't measure: answer quality with
+an LLM, trust and contradiction signals, browsing, and version history.
+Next steps, in order:
+
+1. `python qa_benchmark_eval.py --with-llm`, which separates HyDE, Fusion
+   and hybrid retrieval.
+2. An LLM-judged answer-quality eval on the same 65 questions.
+3. The user-study pilot (T9), with doc 44's questions as its tasks.
+
+### Revised scorecard
+
+| Area | Before | After | Why |
+|---|---|---|---|
+| Engineering quality | 7.5 | **8.5** | CI on every push across 5 jobs, a 3.10/3.12 matrix, and an eval gate |
+| Evidence | 3 | **4** | A grounded benchmark with real, partly negative results; still no user study |
+| Operability / scale | 5 | **6.5** | Warm worker (23× faster Python calls), backups, sub-50 ms search at 10k pages |
+| Security | 7 | **8.5** | CSP, stored XSS fixed, safe archive restore, 0 dependency vulnerabilities |
+| Test coverage balance | 6 | **8** | Frontend unit tests and a browser suite in CI |
+| Feature completeness | 7.5 | **8** | Page history, search v2, backups |
+| **Overall** | **6.9** | **7.6** | The biggest gap is still evidence. The tooling to produce it now exists; what's missing is an API key and participants. |
