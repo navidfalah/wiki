@@ -67,6 +67,7 @@ import {
   IMAGE_PREVIEW_EXTENSIONS,
   loadState,
   mimeTypeFor,
+  rawFileSecurityHeaders,
   TEXT_PREVIEW_EXTENSIONS,
 } from '../lib/rawFiles';
 import { getResourceDetail, listResources, resolveDocPaths } from '../lib/resourcesEngine';
@@ -353,7 +354,9 @@ export function registerRoutes(app: Express): void {
       if (!fs.existsSync(filePath) || !fs.statSync(filePath).isFile()) {
         throw new HttpError(404, `Raw file not found: ${relPath}`);
       }
-      res.setHeader('Content-Type', mimeTypeFor(filePath));
+      const mimeType = mimeTypeFor(filePath);
+      res.setHeader('Content-Type', mimeType);
+      for (const [name, value] of Object.entries(rawFileSecurityHeaders(mimeType))) res.setHeader(name, value);
       res.setHeader('Content-Disposition', `inline; filename="${encodeURIComponent(path.basename(filePath))}"`);
       fs.createReadStream(filePath).pipe(res);
     }),

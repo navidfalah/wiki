@@ -217,6 +217,15 @@ gzip/zstd compression, and strips the `Server` header.
   SAMEORIGIN`, a referrer policy, and HSTS (`frontend/src/index.ts`) — present
   regardless of what's in front (Cloudflare, the optional Caddy profile, or
   neither in local dev).
+- Every rendered page also carries a `Content-Security-Policy`. Scripts must
+  be same-origin bundles or carry a per-request nonce, so an injected
+  `<script>` won't run. Any new inline `<script>` in a view needs
+  `nonce="<%= cspNonce %>"`. Styles still allow `'unsafe-inline'`, because
+  client code sets style attributes.
+- Raw-file previews (`/api/raw-files/raw/*`) are always `nosniff`. HTML, XML
+  and SVG uploads are additionally served under a `sandbox` CSP, so an
+  uploaded page can render but can't run script as the viewer
+  (`backend/src/lib/rawFiles.ts`).
 - The backend port is not published; the API is only reachable through the
   authenticated frontend proxy.
 - If using Option B (proxied DNS, not Tunnel), firewall `FRONTEND_PORT` to

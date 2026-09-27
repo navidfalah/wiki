@@ -35,7 +35,7 @@
     "@types/node": "^20.14.2",
     "autoprefixer": "^10.4.20",
     "d3-force-3d": "^3.0.6",
-    "esbuild": "^0.24.0",
+    "esbuild": "^0.28.2",
     "eslint": "^9.39.5",
     "force-graph": "^1.51.4",
     "postcss": "^8.4.47",

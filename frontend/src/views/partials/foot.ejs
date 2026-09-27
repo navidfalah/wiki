@@ -3,7 +3,7 @@
   </div>
 
   <div id="toast-stack" class="pointer-events-none fixed bottom-4 right-4 z-50 flex w-full max-w-xs flex-col gap-2"></div>
-  <script>
+  <script nonce="<%= cspNonce %>">
     window.showToast = function (message, type) {
       var stack = document.getElementById('toast-stack');
       if (!stack) return;

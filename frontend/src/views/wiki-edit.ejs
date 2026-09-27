@@ -31,7 +31,7 @@
   class="mt-6 h-[65vh] w-full resize-y rounded-xl border border-gray-200 bg-white p-5 font-mono text-sm leading-relaxed text-gray-800 shadow-card focus:border-accent focus:outline-none focus:ring-2 focus:ring-accent/20"
 ><%= doc.body %></textarea>
 
-<script>
+<script nonce="<%= cspNonce %>">
   (function () {
     var apiBase = document.querySelector('meta[name="api-base"]')?.getAttribute('content') ?? '';
     var slug = <%- JSON.stringify(slug) %>;

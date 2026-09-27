@@ -1,3 +1,4 @@
+import crypto from 'node:crypto';
 import path from 'node:path';
 import cookieParser from 'cookie-parser';
 import express, { NextFunction, Request, Response } from 'express';
@@ -101,6 +102,38 @@ app.use(
     },
   }),
 );
+
+// Content-Security-Policy for the pages this server renders. Registered
+// after the /api proxy so proxied API/file responses keep their own
+// headers. Scripts must be same-origin bundles or carry the per-request
+// nonce -- an injected <script> (the XSS class this app has had several
+// fixes for) won't run. Styles stay 'unsafe-inline': client code sets
+// style attributes in rendered markup, and style injection is far less
+// dangerous than script injection.
+const apiOrigin = PUBLIC_API_URL ? new URL(PUBLIC_API_URL).origin : '';
+app.use((_req, res, next) => {
+  const nonce = crypto.randomBytes(16).toString('base64');
+  res.locals.cspNonce = nonce;
+  const self = apiOrigin ? `'self' ${apiOrigin}` : "'self'";
+  res.setHeader(
+    'Content-Security-Policy',
+    [
+      "default-src 'self'",
+      `script-src 'self' 'nonce-${nonce}'`,
+      "style-src 'self' 'unsafe-inline'",
+      `img-src ${self} data: blob:`,
+      `media-src ${self} blob:`,
+      "font-src 'self'",
+      `connect-src ${self}`,
+      `object-src ${self}`, // <embed> previews of raw PDFs
+      `frame-src ${self}`,
+      "frame-ancestors 'self'",
+      "base-uri 'self'",
+      "form-action 'self'",
+    ].join('; '),
+  );
+  next();
+});
 
 app.use('/', langRouter);
 app.use('/', authRouter);

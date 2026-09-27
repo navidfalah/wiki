@@ -117,3 +117,19 @@ const MIME_TYPES: Record<string, string> = {
 export function mimeTypeFor(filePath: string): string {
   return MIME_TYPES[path.extname(filePath).toLowerCase()] ?? 'application/octet-stream';
 }
+
+// Raw files are user uploads served inline from the app's own origin (via
+// the frontend's /api proxy). An uploaded .html/.xml would otherwise run its
+// scripts with the viewer's session -- stored XSS against whoever previews
+// it. `sandbox` gives the document an opaque origin with scripts disabled
+// while still letting it render. Not applied to PDFs: Chrome refuses to
+// show a PDF under a sandbox CSP, and PDFs are not same-origin script.
+const ACTIVE_CONTENT_RE = /^(text\/html|application\/xhtml\+xml|application\/xml|text\/xml|image\/svg\+xml)\b/;
+
+export function rawFileSecurityHeaders(mimeType: string): Record<string, string> {
+  const headers: Record<string, string> = { 'X-Content-Type-Options': 'nosniff' };
+  if (ACTIVE_CONTENT_RE.test(mimeType)) {
+    headers['Content-Security-Policy'] = "sandbox; default-src 'none'; img-src data:; style-src 'unsafe-inline'";
+  }
+  return headers;
+}

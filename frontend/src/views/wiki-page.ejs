@@ -54,7 +54,7 @@
   </div>
 <% } %>
 
-<script>
+<script nonce="<%= cspNonce %>">
   (function () {
     var apiBase = document.querySelector('meta[name="api-base"]')?.getAttribute('content') ?? '';
     var btn = document.getElementById('wiki-delete-btn');
