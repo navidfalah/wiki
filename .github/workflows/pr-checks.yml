@@ -51,6 +51,9 @@ jobs:
       - name: Test (pytest)
         run: python -m pytest -q
 
+      - name: Eval regression gate (offline evals vs. eval_baseline.json)
+        run: python eval_gate.py
+
   backend:
     runs-on: ubuntu-latest
     defaults:

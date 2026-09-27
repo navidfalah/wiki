@@ -58,6 +58,30 @@ Check for:
 | Contradictions | Cross-read entity/concept pages (sample data has intentional conflicts) |
 | Structural quality | `python reviewer.py` (LLM, needs API key) |
 
+## Eval regression gate
+
+`cd compiler && python eval_gate.py` runs every eval that needs no API key.
+Those are BM25 retrieval, heuristic entity resolution, trust propagation,
+PII redaction, the temporal model, extractive-answer faithfulness, and
+groundedness of the compiled pages. It compares each result with
+`compiler/eval_baseline.json`.
+
+CI fails when either of these happens:
+
+- A score drops by more than the tolerance. The default is 0.02.
+  `groundedness.supported_rate` allows 0.10, because it is measured over the
+  committed wiki pages and those change on every recompile.
+- A count falls below its floor, for example `groundedness.pages`. That
+  means an eval quietly ran on nothing.
+
+When a change legitimately moves the numbers (a better tokenizer, a
+recompiled wiki, new eval fixtures), accept them explicitly and commit the
+diff with the change:
+
+```bash
+python eval_gate.py --update-baseline
+```
+
 ## Regenerate test data
 
 ```bash

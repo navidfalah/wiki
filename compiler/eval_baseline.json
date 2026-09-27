@@ -1,0 +1,30 @@
+{
+  "tolerance": 0.02,
+  "tolerances": {
+    "groundedness.supported_rate": 0.1
+  },
+  "metrics": {
+    "entity_resolution.heuristic.f1": 1.0,
+    "entity_resolution.heuristic.precision": 1.0,
+    "entity_resolution.heuristic.recall": 1.0,
+    "faithfulness.extractive.verbatim_rate": 1.0,
+    "groundedness.supported_rate": 0.6458,
+    "pii.precision": 1.0,
+    "pii.recall": 1.0,
+    "retrieval.bm25.ndcg_at_5": 0.7467,
+    "retrieval.bm25.recall_at_5": 0.6844,
+    "temporal.mean_precision": 0.9389,
+    "temporal.mean_recall": 1.0,
+    "trust.full_default.pairwise_accuracy": 0.9412,
+    "trust.full_default.precision_at_1": 1.0
+  },
+  "minimums": {
+    "entity_resolution.gold_pairs": 5,
+    "faithfulness.extractive.answers": 4,
+    "groundedness.checkable_sentences": 1761,
+    "groundedness.pages": 112,
+    "pii.true_positives": 6,
+    "retrieval.queries": 4,
+    "trust.claim_groups": 3
+  }
+}
