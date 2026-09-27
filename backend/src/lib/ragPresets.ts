@@ -11,11 +11,11 @@
 import crypto from 'node:crypto';
 import fs from 'node:fs';
 import path from 'node:path';
-import { PROJECT_ROOT } from '../paths';
+import { DATA_ROOT } from '../paths';
 import { atomicWriteJson } from './atomicWrite';
 import { buildRagSettings, loadRagSettings, RagSettings, RagSettingsError, saveRagSettings } from './ragSettings';
 
-export const RAG_PRESETS_FILE = path.join(PROJECT_ROOT, 'data', 'rag_presets.json');
+export const RAG_PRESETS_FILE = path.join(DATA_ROOT, 'data', 'rag_presets.json');
 
 export interface RagPreset {
   id: string;

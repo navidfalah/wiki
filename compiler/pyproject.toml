@@ -19,3 +19,13 @@ ignore = ["E501", "UP040"]
 
 [tool.pytest.ini_options]
 testpaths = ["tests"]
+
+[tool.coverage.run]
+source = ["."]
+# tests/ and scripts/ aren't product code; server.py is the legacy standalone
+# FastAPI server -- production uses the Express backend + cli.py, and its
+# dependencies (requirements-server.txt) aren't installed in CI.
+omit = ["tests/*", "scripts/*", "server.py", "temp_output/*"]
+
+[tool.coverage.report]
+exclude_also = ['if __name__ == "__main__":', "raise NotImplementedError"]

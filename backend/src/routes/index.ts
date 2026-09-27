@@ -3,7 +3,7 @@ import path from 'node:path';
 import type { Express } from 'express';
 import multer from 'multer';
 
-import { BACKUPS_DIR, INDEX_JSON, OUTPUT_DIR, PROJECT_ROOT, RAW_DIR, REVIEW_REPORT_PATH, STATE_FILE, STATIC_MEDIA_DIR, TEMP_OUTPUT_DIR } from '../paths';
+import { BACKUPS_DIR, DATA_ROOT, INDEX_JSON, OUTPUT_DIR, RAW_DIR, REVIEW_REPORT_PATH, STATE_FILE, STATIC_MEDIA_DIR, TEMP_OUTPUT_DIR } from '../paths';
 import { HttpError, wrap } from '../lib/httpError';
 import { LoginThrottle } from '../lib/loginThrottle';
 import { buildAnalytics, getTagDetail } from '../lib/analytics';
@@ -187,7 +187,7 @@ export function registerRoutes(app: Express): void {
 
   // --- Backups (admin only; see lib/backups.ts) ------------------------------
 
-  const backupRoots = { projectRoot: PROJECT_ROOT, backupsDir: BACKUPS_DIR };
+  const backupRoots = { projectRoot: DATA_ROOT, backupsDir: BACKUPS_DIR };
   const backupUpload = multer({
     storage: multer.diskStorage({
       destination: (_req, _file, cb) => {

@@ -1,0 +1,541 @@
+#!/usr/bin/env python3
+"""wiki -- one command line for developing, testing and checking Wissensbau.
+
+    ./wiki doctor                 check tools and installed dependencies
+    ./wiki setup [--browsers]     install Python + Node dependencies (and Chromium)
+    ./wiki check [--changed]      fast pre-push checks: lint, typecheck, unit tests
+    ./wiki test [PKG] [-k EXPR]   unit tests (compiler: pytest -k, JS: vitest filter)
+    ./wiki coverage [PKG]         tests with coverage and the enforced floors
+    ./wiki eval [--update-baseline]   offline eval regression gate
+    ./wiki bench                  Q&A retrieval benchmark + search benchmark
+    ./wiki e2e [-- ARGS]          build the frontend and run the Playwright suite
+    ./wiki ci [--only PKG] [--e2e] [--docker]   exactly what GitHub Actions runs
+    ./wiki dev                    start backend (:8000) and frontend (:3000)
+    ./wiki list                   show every step and the command it runs
+
+Packages: compiler (Python), backend (Express/TS), frontend (Express/EJS/TS).
+Every command prints a timed summary and exits non-zero if any step failed.
+On GitHub Actions each step's log is a collapsible group and the summary is
+written to the job's step summary. Python 3.10+, standard library only.
+"""
+
+from __future__ import annotations
+
+import argparse
+import json
+import os
+import shutil
+import signal
+import subprocess
+import sys
+import time
+from concurrent.futures import ThreadPoolExecutor
+from dataclasses import dataclass, field
+from pathlib import Path
+
+ROOT = Path(__file__).resolve().parent
+PACKAGES = ("compiler", "backend", "frontend")
+PYTHON = sys.executable or "python3"
+IN_CI = os.environ.get("GITHUB_ACTIONS") == "true" or os.environ.get("CI") == "true"
+
+# Coverage floors (percent of statements). Raise them as coverage grows; a
+# drop below the floor fails `./wiki coverage` and CI.
+COVERAGE_FLOORS = {"compiler": 78, "backend": 82, "frontend": 3}
+
+
+# --- Output -------------------------------------------------------------------
+
+
+def _use_color() -> bool:
+    if os.environ.get("NO_COLOR"):
+        return False
+    return bool(os.environ.get("FORCE_COLOR")) or IN_CI or sys.stdout.isatty()
+
+
+COLOR = _use_color()
+
+
+def c(text: str, code: str) -> str:
+    return f"\033[{code}m{text}\033[0m" if COLOR else text
+
+
+def bold(t: str) -> str:
+    return c(t, "1")
+
+
+def green(t: str) -> str:
+    return c(t, "32")
+
+
+def red(t: str) -> str:
+    return c(t, "31")
+
+
+def yellow(t: str) -> str:
+    return c(t, "33")
+
+
+def dim(t: str) -> str:
+    return c(t, "2")
+
+
+# --- Steps --------------------------------------------------------------------
+
+
+@dataclass
+class Step:
+    name: str
+    package: str
+    cmd: list[str]
+    cwd: Path
+    env: dict[str, str] = field(default_factory=dict)
+    # A step whose prerequisite is missing is skipped, not failed.
+    requires: str | None = None
+
+
+@dataclass
+class Result:
+    step: Step
+    status: str  # pass | fail | skip
+    seconds: float
+    output: str = ""
+    note: str = ""
+
+
+def npm(*args: str) -> list[str]:
+    return ["npm", *args]
+
+
+def npx(*args: str) -> list[str]:
+    return ["npx", "--no-install", *args]
+
+
+def pkg_dir(package: str) -> Path:
+    return ROOT / package
+
+
+def lint_steps(packages: list[str]) -> list[Step]:
+    steps = []
+    if "compiler" in packages:
+        # ../wiki is this CLI; lint it with the compiler's ruff settings.
+        steps.append(Step("lint", "compiler", [PYTHON, "-m", "ruff", "check", "--config", "pyproject.toml", ".", "../wiki"], pkg_dir("compiler")))
+    for p in ("backend", "frontend"):
+        if p in packages:
+            steps.append(Step("lint", p, npm("run", "lint"), pkg_dir(p), requires="node_modules"))
+    return steps
+
+
+def typecheck_steps(packages: list[str]) -> list[Step]:
+    return [
+        Step("typecheck", p, npm("run", "typecheck"), pkg_dir(p), requires="node_modules")
+        for p in ("backend", "frontend")
+        if p in packages
+    ]
+
+
+def test_steps(packages: list[str], expr: str | None = None, coverage: bool = False) -> list[Step]:
+    steps = []
+    if "compiler" in packages:
+        cmd = [PYTHON, "-m", "pytest", "-q"]
+        if expr:
+            cmd += ["-k", expr]
+        if coverage:
+            cmd += ["--cov=.", "--cov-report=term:skip-covered", f"--cov-fail-under={COVERAGE_FLOORS['compiler']}"]
+        steps.append(Step("coverage" if coverage else "test", "compiler", cmd, pkg_dir("compiler")))
+    for p in ("backend", "frontend"):
+        if p in packages:
+            cmd = npx("vitest", "run")
+            if expr:
+                cmd.append(expr)
+            if coverage:
+                cmd += ["--coverage", f"--coverage.thresholds.statements={COVERAGE_FLOORS[p]}"]
+            steps.append(Step("coverage" if coverage else "test", p, cmd, pkg_dir(p), requires="node_modules"))
+    return steps
+
+
+def eval_steps(update_baseline: bool = False) -> list[Step]:
+    cmd = [PYTHON, "eval_gate.py"] + (["--update-baseline"] if update_baseline else [])
+    return [Step("eval-gate", "compiler", cmd, pkg_dir("compiler"))]
+
+
+def bench_steps() -> list[Step]:
+    return [
+        Step("qa-benchmark", "compiler", [PYTHON, "qa_benchmark_eval.py"], pkg_dir("compiler")),
+        Step("search-benchmark", "backend", npx("vitest", "run", "src/lib/searchBenchmark.test.ts"), pkg_dir("backend"), requires="node_modules"),
+    ]
+
+
+def build_steps(packages: list[str]) -> list[Step]:
+    return [Step("build", p, npm("run", "build"), pkg_dir(p), requires="node_modules") for p in ("backend", "frontend") if p in packages]
+
+
+def e2e_steps(extra: list[str]) -> list[Step]:
+    return [
+        Step("build", "frontend", npm("run", "build"), pkg_dir("frontend"), requires="node_modules"),
+        Step("e2e", "frontend", npx("playwright", "test", *extra), pkg_dir("frontend"), requires="node_modules"),
+    ]
+
+
+def audit_steps(packages: list[str]) -> list[Step]:
+    return [Step("audit", p, npm("audit", "--omit=dev"), pkg_dir(p)) for p in ("backend", "frontend") if p in packages]
+
+
+def docker_steps() -> list[Step]:
+    env = {"ADMIN_PASSWORD": os.environ.get("ADMIN_PASSWORD", "ci-placeholder")}
+    compose = ["docker", "compose", "-f", "docker-compose.prod.yml"]
+    return [
+        Step("compose-config", "docker", compose + ["config", "-q"], ROOT, env, requires="docker"),
+        Step("compose-config-caddy", "docker", compose + ["--profile", "caddy", "config", "-q"], ROOT, env, requires="docker"),
+        Step("caddyfile", "docker", ["docker", "run", "--rm", "-v", f"{ROOT}/deploy/Caddyfile:/etc/caddy/Caddyfile:ro", "caddy:2-alpine", "caddy", "validate", "--config", "/etc/caddy/Caddyfile"], ROOT, requires="docker"),
+        Step("images", "docker", compose + ["build"], ROOT, env, requires="docker"),
+    ]
+
+
+def ci_steps(packages: list[str], e2e: bool, docker: bool) -> list[Step]:
+    """The exact sequence each GitHub Actions job runs, per package."""
+    steps: list[Step] = []
+    for p in packages:
+        steps += lint_steps([p]) + typecheck_steps([p]) + test_steps([p], coverage=True)
+        if p == "compiler":
+            steps += eval_steps()
+        steps += build_steps([p])
+    if e2e:
+        steps += e2e_steps([])
+    if docker:
+        steps += docker_steps()
+    return steps
+
+
+# --- Running ------------------------------------------------------------------
+
+
+def _skip_reason(step: Step) -> str | None:
+    if step.requires == "node_modules" and not (step.cwd / "node_modules").is_dir():
+        return f"{step.package}/node_modules missing -- run ./wiki setup"
+    if step.requires == "docker" and not shutil.which("docker"):
+        return "docker not installed"
+    if step.cmd[0] in ("npm", "npx") and not shutil.which(step.cmd[0]):
+        return f"{step.cmd[0]} not found"
+    return None
+
+
+def run_step(step: Step, stream: bool) -> Result:
+    reason = _skip_reason(step)
+    if reason:
+        return Result(step, "skip", 0.0, note=reason)
+    env = {**os.environ, **step.env}
+    if IN_CI:
+        env.setdefault("FORCE_COLOR", "1")
+    started = time.monotonic()
+    if stream:
+        title = f"{step.package} · {step.name}"
+        print(f"::group::{title}" if IN_CI else bold(f"\n▶ {title}  {dim(' '.join(step.cmd))}"), flush=True)
+        proc = subprocess.run(step.cmd, cwd=step.cwd, env=env, check=False)
+        if IN_CI:
+            print("::endgroup::", flush=True)
+        output = ""
+    else:
+        proc = subprocess.run(step.cmd, cwd=step.cwd, env=env, stdout=subprocess.PIPE, stderr=subprocess.STDOUT, text=True, check=False)
+        output = proc.stdout
+    seconds = time.monotonic() - started
+    return Result(step, "pass" if proc.returncode == 0 else "fail", seconds, output, note=f"exit {proc.returncode}" if proc.returncode else "")
+
+
+def run_all(steps: list[Step], *, stream: bool, fail_fast: bool, parallel: bool) -> list[Result]:
+    if parallel and not stream:
+        # Packages run side by side; steps within a package stay in order.
+        by_package: dict[str, list[Step]] = {}
+        for s in steps:
+            by_package.setdefault(s.package, []).append(s)
+
+        def run_package(pkg_steps: list[Step]) -> list[Result]:
+            out = []
+            for s in pkg_steps:
+                print(dim(f"  … {s.package} · {s.name}"), flush=True)
+                r = run_step(s, stream=False)
+                out.append(r)
+                if r.status == "fail" and fail_fast:
+                    break
+            return out
+
+        with ThreadPoolExecutor(max_workers=len(by_package) or 1) as pool:
+            results = [r for batch in pool.map(run_package, by_package.values()) for r in batch]
+        return results
+
+    results = []
+    for s in steps:
+        if not stream:
+            print(dim(f"  … {s.package} · {s.name}"), flush=True)
+        r = run_step(s, stream)
+        results.append(r)
+        if r.status == "fail" and fail_fast:
+            break
+    return results
+
+
+def _tail(text: str, lines: int = 60) -> str:
+    parts = text.rstrip().splitlines()
+    return "\n".join(parts[-lines:])
+
+
+def report(results: list[Result], title: str, json_path: str | None) -> int:
+    for r in results:
+        if r.status == "fail" and r.output:
+            print(red(bold(f"\n✗ {r.step.package} · {r.step.name} failed -- last lines:")))
+            print(_tail(r.output))
+    width = max((len(f"{r.step.package} · {r.step.name}") for r in results), default=10)
+    print(bold(f"\n{title}"))
+    icon = {"pass": green("✓ pass"), "fail": red("✗ fail"), "skip": yellow("- skip")}
+    for r in results:
+        label = f"{r.step.package} · {r.step.name}".ljust(width)
+        note = f"  {dim(r.note)}" if r.note else ""
+        print(f"  {label}  {icon[r.status]}  {r.seconds:6.1f}s{note}")
+    failed = [r for r in results if r.status == "fail"]
+    total = sum(r.seconds for r in results)
+    verdict = red(f"{len(failed)} failed") if failed else green("all passed")
+    print(f"  {'-' * width}\n  {verdict} · {len(results)} steps · {total:.1f}s")
+
+    summary_file = os.environ.get("GITHUB_STEP_SUMMARY")
+    if summary_file:
+        rows = "\n".join(
+            f"| {r.step.package} | {r.step.name} | {'✅' if r.status == 'pass' else '❌' if r.status == 'fail' else '⏭️'} {r.status} | {r.seconds:.1f}s | {r.note} |"
+            for r in results
+        )
+        with open(summary_file, "a", encoding="utf-8") as fh:
+            fh.write(f"### {title}\n\n| Package | Step | Result | Time | Note |\n|---|---|---|---|---|\n{rows}\n\n")
+    if json_path:
+        Path(json_path).write_text(
+            json.dumps(
+                [{"package": r.step.package, "step": r.step.name, "status": r.status, "seconds": round(r.seconds, 2), "command": r.step.cmd, "note": r.note} for r in results],
+                indent=2,
+            )
+            + "\n",
+            encoding="utf-8",
+        )
+    return 1 if failed else 0
+
+
+# --- Package selection ----------------------------------------------------------
+
+
+def changed_packages(base: str) -> list[str]:
+    """Packages touched since `base` (plus uncommitted changes). Changes to
+    shared files (CI config, this CLI, data/) select everything."""
+    try:
+        merge_base = subprocess.run(["git", "merge-base", base, "HEAD"], cwd=ROOT, capture_output=True, text=True, check=True).stdout.strip()
+        committed = subprocess.run(["git", "diff", "--name-only", merge_base], cwd=ROOT, capture_output=True, text=True, check=True).stdout
+        untracked = subprocess.run(["git", "ls-files", "--others", "--exclude-standard"], cwd=ROOT, capture_output=True, text=True, check=True).stdout
+    except (subprocess.CalledProcessError, FileNotFoundError):
+        return list(PACKAGES)
+    files = [f for f in (committed + untracked).splitlines() if f]
+    selected = {f.split("/", 1)[0] for f in files if f.split("/", 1)[0] in PACKAGES}
+    if any(f.startswith((".github/", "data/", "wiki")) and f.split("/", 1)[0] not in PACKAGES for f in files):
+        return list(PACKAGES)
+    return [p for p in PACKAGES if p in selected]
+
+
+def select_packages(args: argparse.Namespace) -> list[str]:
+    if getattr(args, "changed", False):
+        return changed_packages(args.base)
+    chosen = getattr(args, "only", None) or getattr(args, "package", None)
+    if not chosen:
+        return list(PACKAGES)
+    items = [p.strip() for p in (chosen if isinstance(chosen, list) else [chosen]) for p in p.split(",") if p.strip()]
+    unknown = [p for p in items if p not in PACKAGES]
+    if unknown:
+        raise SystemExit(red(f"Unknown package(s): {', '.join(unknown)} (choose from {', '.join(PACKAGES)})"))
+    return items
+
+
+# --- Commands -------------------------------------------------------------------
+
+
+def cmd_doctor(_args: argparse.Namespace) -> int:
+    checks: list[tuple[str, bool, str]] = []
+
+    def version(cmd: list[str]) -> str | None:
+        try:
+            return subprocess.run(cmd, capture_output=True, text=True, check=True).stdout.strip().splitlines()[0]
+        except (OSError, subprocess.CalledProcessError, IndexError):
+            return None
+
+    py_ok = sys.version_info >= (3, 10)
+    checks.append((f"python {sys.version.split()[0]}", py_ok, "needs Python 3.10+"))
+    node = version(["node", "--version"])
+    node_ok = bool(node) and int(node.lstrip("v").split(".")[0]) >= 22
+    checks.append((f"node {node or 'missing'}", node_ok, "needs Node 22+"))
+    for tool, hint in (("npm", "comes with Node"), ("git", "install git"), ("tar", "needed for backups")):
+        checks.append((tool, bool(shutil.which(tool)), hint))
+    for module, hint in (("pytest", "./wiki setup"), ("ruff", "./wiki setup"), ("pytest_cov", "./wiki setup"), ("dotenv", "./wiki setup")):
+        try:
+            __import__(module)
+            checks.append((f"python module {module}", True, ""))
+        except ImportError:
+            checks.append((f"python module {module}", False, hint))
+    for p in ("backend", "frontend"):
+        checks.append((f"{p}/node_modules", (pkg_dir(p) / "node_modules").is_dir(), "./wiki setup"))
+    chromium = Path(os.environ.get("PLAYWRIGHT_BROWSERS_PATH", Path.home() / ".cache" / "ms-playwright"))
+    has_chromium = chromium.is_dir() and any(d.name.startswith("chromium") for d in chromium.iterdir())
+    checks.append(("Playwright Chromium (for e2e)", has_chromium, "./wiki setup --browsers"))
+    checks.append(("docker (optional, for ./wiki ci --docker)", bool(shutil.which("docker")), "optional"))
+
+    print(bold("Environment"))
+    required_failed = False
+    for label, ok, hint in checks:
+        optional = "optional" in label or "e2e" in label
+        mark = green("✓") if ok else (yellow("○") if optional else red("✗"))
+        print(f"  {mark} {label}{'' if ok else dim('  → ' + hint)}")
+        required_failed |= not ok and not optional
+    print(green("\nReady.") if not required_failed else red("\nSome required tools are missing."))
+    return 1 if required_failed else 0
+
+
+def cmd_setup(args: argparse.Namespace) -> int:
+    steps = [Step("pip install", "compiler", [PYTHON, "-m", "pip", "install", "-r", "requirements-dev.txt"], pkg_dir("compiler"))]
+    steps += [Step("npm ci", p, npm("ci"), pkg_dir(p)) for p in ("backend", "frontend")]
+    if args.browsers:
+        steps.append(Step("playwright install", "frontend", npx("playwright", "install", "chromium"), pkg_dir("frontend")))
+    return report(run_all(steps, stream=True, fail_fast=True, parallel=False), "setup", None)
+
+
+def _run(args: argparse.Namespace, steps: list[Step], title: str) -> int:
+    if args.dry_run:
+        for s in steps:
+            env = " ".join(f"{k}={v}" for k, v in s.env.items())
+            print(f"{bold(s.package + ' · ' + s.name):40s} (cd {s.cwd.relative_to(ROOT) if s.cwd != ROOT else '.'} && {env + ' ' if env else ''}{' '.join(s.cmd)})")
+        return 0
+    if not steps:
+        print(yellow("Nothing to run for the selected packages."))
+        return 0
+    stream = args.verbose or IN_CI
+    return report(run_all(steps, stream=stream, fail_fast=args.fail_fast, parallel=args.parallel), title, args.json)
+
+
+def cmd_list(_args: argparse.Namespace) -> int:
+    groups = {
+        "lint": lint_steps(list(PACKAGES)),
+        "typecheck": typecheck_steps(list(PACKAGES)),
+        "test": test_steps(list(PACKAGES)),
+        "coverage": test_steps(list(PACKAGES), coverage=True),
+        "eval": eval_steps(),
+        "bench": bench_steps(),
+        "build": build_steps(list(PACKAGES)),
+        "e2e": e2e_steps([]),
+        "audit": audit_steps(list(PACKAGES)),
+        "docker (ci --docker)": docker_steps(),
+    }
+    for name, steps in groups.items():
+        print(bold(name))
+        for s in steps:
+            print(f"  {s.package:9s} {dim(' '.join(s.cmd))}")
+    print(dim(f"\nCoverage floors: {', '.join(f'{k} {v}%' for k, v in COVERAGE_FLOORS.items())}"))
+    return 0
+
+
+def cmd_dev(_args: argparse.Namespace) -> int:
+    env = {**os.environ}
+    env.setdefault("ADMIN_USERNAME", "admin")
+    env.setdefault("ADMIN_PASSWORD", "dev-admin-password")
+    procs = [
+        subprocess.Popen(npm("run", "dev"), cwd=pkg_dir("backend"), env=env, start_new_session=True),
+        subprocess.Popen(npm("run", "dev:server"), cwd=pkg_dir("frontend"), env={**env, "BACKEND_API_URL": "http://localhost:8000"}, start_new_session=True),
+    ]
+    print(bold(f"Backend :8000, frontend http://localhost:3000 (login {env['ADMIN_USERNAME']} / {env['ADMIN_PASSWORD']} on a fresh data/). Ctrl-C stops both."))
+    try:
+        while all(p.poll() is None for p in procs):
+            time.sleep(0.5)
+    except KeyboardInterrupt:
+        pass
+    finally:
+        for p in procs:
+            if p.poll() is None:
+                os.killpg(p.pid, signal.SIGTERM)
+    return 0
+
+
+def build_parser() -> argparse.ArgumentParser:
+    common = argparse.ArgumentParser(add_help=False)
+    common.add_argument("-v", "--verbose", action="store_true", help="stream every step's output (default on CI)")
+    common.add_argument("--fail-fast", action="store_true", help="stop at the first failing step")
+    common.add_argument("--parallel", action="store_true", help="run packages side by side (output is captured)")
+    common.add_argument("--dry-run", action="store_true", help="print the commands without running them")
+    common.add_argument("--json", metavar="PATH", help="also write a JSON report")
+
+    selection = argparse.ArgumentParser(add_help=False)
+    selection.add_argument("--only", action="append", metavar="PKG", help="compiler, backend, frontend (repeat or comma-separate)")
+    selection.add_argument("--changed", action="store_true", help="only packages changed since --base")
+    selection.add_argument("--base", default="origin/main", help="base ref for --changed (default origin/main)")
+
+    parser = argparse.ArgumentParser(prog="wiki", description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
+    sub = parser.add_subparsers(dest="command", required=True, metavar="COMMAND")
+
+    sub.add_parser("doctor", help="check tools and installed dependencies")
+    p = sub.add_parser("setup", help="install dependencies")
+    p.add_argument("--browsers", action="store_true", help="also install Playwright's Chromium")
+    sub.add_parser("list", help="show every step and its command")
+    sub.add_parser("dev", help="start backend and frontend")
+
+    for name, help_text in (
+        ("lint", "run linters"),
+        ("typecheck", "run TypeScript/i18n checks"),
+        ("build", "build backend and frontend"),
+        ("audit", "npm audit of production dependencies"),
+        ("check", "lint + typecheck + unit tests (fast pre-push check)"),
+    ):
+        sub.add_parser(name, parents=[common, selection], help=help_text)
+    for name, help_text in (("test", "unit tests"), ("coverage", "unit tests with coverage floors")):
+        p = sub.add_parser(name, parents=[common, selection], help=help_text)
+        p.add_argument("package", nargs="?", help="limit to one package")
+        p.add_argument("-k", dest="expr", help="test filter (pytest -k expression / vitest file filter)")
+    p = sub.add_parser("eval", parents=[common], help="offline eval regression gate")
+    p.add_argument("--update-baseline", action="store_true", help="accept current metrics as the new baseline")
+    sub.add_parser("bench", parents=[common], help="Q&A retrieval benchmark + search benchmark")
+    p = sub.add_parser("e2e", parents=[common], help="Playwright smoke suite (starts both servers)")
+    p.add_argument("extra", nargs=argparse.REMAINDER, help="extra Playwright arguments after --")
+    p = sub.add_parser("ci", parents=[common, selection], help="everything CI runs")
+    p.add_argument("--e2e", action="store_true", help="include the Playwright suite")
+    p.add_argument("--docker", action="store_true", help="include Docker compose/image checks")
+    return parser
+
+
+def main(argv: list[str] | None = None) -> int:
+    args = build_parser().parse_args(argv)
+    os.chdir(ROOT)
+    if args.command == "doctor":
+        return cmd_doctor(args)
+    if args.command == "setup":
+        return cmd_setup(args)
+    if args.command == "list":
+        return cmd_list(args)
+    if args.command == "dev":
+        return cmd_dev(args)
+    if args.command == "eval":
+        return _run(args, eval_steps(args.update_baseline), "eval")
+    if args.command == "bench":
+        return _run(args, bench_steps(), "bench")
+    if args.command == "e2e":
+        extra = [a for a in args.extra if a != "--"]
+        return _run(args, e2e_steps(extra), "e2e")
+
+    packages = select_packages(args)
+    if args.command == "lint":
+        steps = lint_steps(packages)
+    elif args.command == "typecheck":
+        steps = typecheck_steps(packages)
+    elif args.command == "build":
+        steps = build_steps(packages)
+    elif args.command == "audit":
+        steps = audit_steps(packages)
+    elif args.command == "check":
+        steps = lint_steps(packages) + typecheck_steps(packages) + test_steps(packages)
+    elif args.command in ("test", "coverage"):
+        steps = test_steps(packages, args.expr, coverage=args.command == "coverage")
+    elif args.command == "ci":
+        steps = ci_steps(packages, args.e2e, args.docker)
+    else:  # pragma: no cover -- argparse enforces the choices
+        raise SystemExit(f"unknown command {args.command}")
+    return _run(args, steps, f"{args.command} ({', '.join(packages) or 'nothing selected'})")
+
+
+if __name__ == "__main__":
+    sys.exit(main())

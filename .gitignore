@@ -36,3 +36,8 @@ wiki-app/static/media/*
 # Playwright
 playwright-report/
 test-results/
+
+# Coverage output
+.coverage
+coverage/
+htmlcov/
