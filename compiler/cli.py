@@ -17,13 +17,41 @@ import sys
 from dataclasses import asdict
 
 import active_learning
-import connectors_service
 import email_engine
 import rag_engine
 import synthesizer
 import temporal_model
 import trust_eval_dataset
 from entity_graph import entity_graph_payload
+
+
+class ConnectorsUnavailableError(RuntimeError):
+    pass
+
+
+def _connectors():
+    """Import connectors_service on first use. It pulls in `cryptography`
+    (credential encryption), and a broken native install of that package
+    used to crash cli.py at import time -- taking down every command,
+    including emails, chat and the review queue, not just connectors."""
+    try:
+        import connectors_service
+    except (KeyboardInterrupt, SystemExit):
+        raise
+    except BaseException as exc:  # noqa: BLE001 -- pyo3's PanicException derives from BaseException
+        raise ConnectorsUnavailableError(f"Connectors are unavailable: {type(exc).__name__}: {exc}") from exc
+    return connectors_service
+
+
+def _connector_error_type(exc: BaseException) -> str | None:
+    svc = sys.modules.get("connectors_service")
+    if svc is None:
+        return None
+    if isinstance(exc, svc.ConnectorNotConnectedError):
+        return "not_connected"
+    if isinstance(exc, svc.ConnectorConfigError):
+        return "not_configured"
+    return None
 
 
 def _read_stdin_json() -> dict:
@@ -210,7 +238,7 @@ def cmd_temporal_facts() -> dict:
 
 
 def cmd_connectors_catalog() -> dict:
-    return {"connectors": connectors_service.catalog()}
+    return {"connectors": _connectors().catalog()}
 
 
 def cmd_connectors_oauth_start() -> dict:
@@ -218,7 +246,7 @@ def cmd_connectors_oauth_start() -> dict:
     connector_id = str(payload.get("connector_id", "")).strip()
     if not connector_id:
         raise ValueError("'connector_id' is required")
-    return connectors_service.start_authorization(connector_id)
+    return _connectors().start_authorization(connector_id)
 
 
 def cmd_connectors_oauth_callback() -> dict:
@@ -233,7 +261,7 @@ def cmd_connectors_oauth_callback() -> dict:
         raise ValueError("'code' is required")
     if not state:
         raise ValueError("'state' is required")
-    return connectors_service.complete_authorization(connector_id, code, state, account_label)
+    return _connectors().complete_authorization(connector_id, code, state, account_label)
 
 
 def cmd_connectors_imap_connect() -> dict:
@@ -243,7 +271,7 @@ def cmd_connectors_imap_connect() -> dict:
     password = str(payload.get("password", ""))
     port = int(payload.get("port") or 993)
     mailbox = str(payload.get("mailbox") or "INBOX").strip()
-    return connectors_service.connect_imap(account_label, host, password, port=port, mailbox=mailbox)
+    return _connectors().connect_imap(account_label, host, password, port=port, mailbox=mailbox)
 
 
 def cmd_connectors_postgres_connect() -> dict:
@@ -255,18 +283,18 @@ def cmd_connectors_postgres_connect() -> dict:
     dbname = str(payload.get("dbname", "")).strip()
     user = str(payload.get("user", "")).strip()
     schema = str(payload.get("schema") or "public").strip()
-    return connectors_service.connect_postgres(account_label, host, password, port=port, dbname=dbname, user=user, schema=schema)
+    return _connectors().connect_postgres(account_label, host, password, port=port, dbname=dbname, user=user, schema=schema)
 
 
 def cmd_connectors_sqlite_connect() -> dict:
     payload = _read_stdin_json()
     account_label = str(payload.get("account_label", "")).strip()
     db_path = str(payload.get("db_path", "")).strip()
-    return connectors_service.connect_sqlite(account_label, db_path)
+    return _connectors().connect_sqlite(account_label, db_path)
 
 
 def cmd_connectors_ensure_defaults() -> dict:
-    return connectors_service.ensure_default_connections()
+    return _connectors().ensure_default_connections()
 
 
 def cmd_connectors_items_list() -> dict:
@@ -279,7 +307,7 @@ def cmd_connectors_items_list() -> dict:
         raise ValueError("'connector_id' is required")
     if not account_label:
         raise ValueError("'account_label' is required")
-    return {"items": connectors_service.list_items(connector_id, account_label, query=query, limit=limit)}
+    return {"items": _connectors().list_items(connector_id, account_label, query=query, limit=limit)}
 
 
 def cmd_connectors_item_import() -> dict:
@@ -294,7 +322,7 @@ def cmd_connectors_item_import() -> dict:
         raise ValueError("'account_label' is required")
     if not item_id:
         raise ValueError("'item_id' is required")
-    return connectors_service.import_item(connector_id, account_label, item_id, item_title=item_title)
+    return _connectors().import_item(connector_id, account_label, item_id, item_title=item_title)
 
 
 def cmd_connectors_disconnect() -> dict:
@@ -305,7 +333,7 @@ def cmd_connectors_disconnect() -> dict:
         raise ValueError("'connector_id' is required")
     if not account_label:
         raise ValueError("'account_label' is required")
-    return connectors_service.disconnect(connector_id, account_label)
+    return _connectors().disconnect(connector_id, account_label)
 
 
 COMMANDS = {
@@ -351,14 +379,9 @@ def main() -> int:
     except FileNotFoundError as exc:
         print(json.dumps({"error": str(exc), "error_type": "not_found"}))
         return 1
-    except connectors_service.ConnectorNotConnectedError as exc:
-        print(json.dumps({"error": str(exc), "error_type": "not_connected"}))
-        return 1
-    except connectors_service.ConnectorConfigError as exc:
-        print(json.dumps({"error": str(exc), "error_type": "not_configured"}))
-        return 1
     except Exception as exc:  # noqa: BLE001 -- surface any failure as JSON, not a traceback
-        print(json.dumps({"error": str(exc)}))
+        error_type = _connector_error_type(exc)
+        print(json.dumps({"error": str(exc), **({"error_type": error_type} if error_type else {})}))
         return 1
     if command not in STREAMING_COMMANDS:
         print(json.dumps(result, ensure_ascii=False))

@@ -177,3 +177,49 @@ def test_connectors_items_list_reports_not_connected(tmp_path, monkeypatch):
     _stdin(monkeypatch, {"connector_id": "imap", "account_label": "nobody@example.com"})
     with pytest.raises(connectors_service.ConnectorNotConnectedError):
         cli.cmd_connectors_items_list()
+
+
+_BROKEN_CRYPTOGRAPHY = """
+import sys, runpy
+
+class FakePanic(BaseException):  # mimics pyo3_runtime.PanicException
+    pass
+
+class BrokenCryptography:
+    def find_spec(self, name, path=None, target=None):
+        if name == "cryptography" or name.startswith("cryptography."):
+            raise FakePanic("Python API call failed")
+        return None
+
+sys.meta_path.insert(0, BrokenCryptography())
+sys.argv = ["cli.py", sys.argv[1]]
+runpy.run_path("cli.py", run_name="__main__")
+"""
+
+
+def _run_cli_with_broken_cryptography(command):
+    import subprocess
+    import sys
+    from pathlib import Path
+
+    return subprocess.run(
+        [sys.executable, "-c", _BROKEN_CRYPTOGRAPHY, command],
+        cwd=Path(cli.__file__).parent,
+        capture_output=True,
+        text=True,
+        input="",
+        timeout=60,
+    )
+
+
+def test_non_connector_commands_survive_a_broken_cryptography_install():
+    proc = _run_cli_with_broken_cryptography("emails-list")
+    assert proc.returncode == 0, proc.stderr
+    assert "emails" in json.loads(proc.stdout)
+
+
+def test_connector_commands_report_a_json_error_when_cryptography_is_broken():
+    proc = _run_cli_with_broken_cryptography("connectors-catalog")
+    assert proc.returncode == 1
+    payload = json.loads(proc.stdout)
+    assert "Connectors are unavailable" in payload["error"]
