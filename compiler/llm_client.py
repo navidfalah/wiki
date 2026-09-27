@@ -11,7 +11,7 @@ import sqlite3
 import sys
 import time
 from collections.abc import Iterator
-from datetime import UTC, datetime
+from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any
 
@@ -45,7 +45,7 @@ except ImportError:  # pragma: no cover - openai not installed in some environme
 
 
 def _utc_now_iso() -> str:
-    return datetime.now(UTC).isoformat()
+    return datetime.now(timezone.utc).isoformat()
 
 
 def _retry_after_seconds(exc: Exception) -> float | None:

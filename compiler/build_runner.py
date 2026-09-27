@@ -71,7 +71,7 @@ async def _kill_process(process: asyncio.subprocess.Process) -> None:
         return
     try:
         await asyncio.wait_for(process.wait(), timeout=TERMINATE_GRACE_SECONDS)
-    except TimeoutError:
+    except asyncio.TimeoutError:
         try:
             process.kill()
         except ProcessLookupError:
@@ -170,7 +170,7 @@ async def stream_compiler_build(
                 break
             try:
                 line_bytes = await asyncio.wait_for(process.stdout.readline(), timeout=remaining)
-            except TimeoutError:
+            except asyncio.TimeoutError:
                 timed_out = True
                 break
             if not line_bytes:
@@ -190,7 +190,7 @@ async def stream_compiler_build(
 
         try:
             return_code = await asyncio.wait_for(process.wait(), timeout=TERMINATE_GRACE_SECONDS)
-        except TimeoutError:
+        except asyncio.TimeoutError:
             # Output hit EOF but the process itself hasn't been reaped yet
             # (rare, but seen with children that outlive their own stdout).
             await _kill_process(process)

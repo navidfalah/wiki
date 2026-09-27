@@ -23,7 +23,7 @@ from __future__ import annotations
 
 import json
 from dataclasses import asdict, dataclass, field
-from datetime import UTC, datetime
+from datetime import datetime, timezone
 from pathlib import Path
 
 from models import PROJECT_ROOT
@@ -129,7 +129,7 @@ class Correction:
     verdict: str
     note: str
     quote_excerpt: str
-    reviewed_at: str = field(default_factory=lambda: datetime.now(UTC).isoformat())
+    reviewed_at: str = field(default_factory=lambda: datetime.now(timezone.utc).isoformat())
 
     def __post_init__(self) -> None:
         if self.verdict not in VERDICTS:

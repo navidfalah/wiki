@@ -8,7 +8,7 @@ import json
 import re
 from collections.abc import Callable
 from dataclasses import dataclass, field
-from datetime import UTC, datetime
+from datetime import datetime, timezone
 from pathlib import Path
 
 from entity_resolution import Mention
@@ -118,7 +118,7 @@ def _finalize_linked_doc(
     """Merge linked body with Docusaurus frontmatter (preserve synthesizer fields)."""
     doc_id = Path(filename).stem
     slug = f"/{doc_id}"
-    now = datetime.now(UTC).isoformat()
+    now = datetime.now(timezone.utc).isoformat()
     linked_body = strip_generated_banner(linked_body)
 
     if existing_frontmatter:

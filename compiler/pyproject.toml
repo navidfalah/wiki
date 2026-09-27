@@ -1,6 +1,9 @@
 [tool.ruff]
 line-length = 100
-target-version = "py312"
+# The compiler also runs outside Docker on Python 3.10 (CI tests 3.10 and
+# 3.12); targeting 3.10 stops ruff from suggesting 3.11+ rewrites such as
+# datetime.UTC or builtin TimeoutError for asyncio timeouts.
+target-version = "py310"
 exclude = ["temp_output", ".venv"]
 
 [tool.ruff.lint]

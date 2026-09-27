@@ -77,10 +77,18 @@ existing five are not yet benchmarked (item 5).
     been scoring 0 pages. It now parses both formats, with a new test for
     the table format.
   - `ruff>=0.6,<0.17` resolves to a newer ruff with stricter rules, which
-    gave 33 lint errors. Most were auto-fixed (`datetime.UTC`, import order,
-    unquoted annotations). The rest were fixed by hand: `pytest.raises`
-    instead of `assert False`, `zip(strict=True)`, and unused loop
-    variables.
+    gave 33 lint errors. Most were auto-fixed (import order, unquoted
+    annotations). The rest were fixed by hand: `pytest.raises` instead of
+    `assert False`, `zip(strict=True)`, and unused loop variables.
+    *Correction:* the auto-fix also rewrote `timezone.utc` to
+    `datetime.UTC`, which needs Python 3.11 and re-broke the compiler on
+    3.10. That was reverted in a follow-up, which also:
+    - set ruff's `target-version` to `py310`, so it stops suggesting
+      3.11+ rewrites;
+    - fixed a separate existing 3.10 bug where `build_runner.py` caught the
+      builtin `TimeoutError`, so a build timeout was reported as an
+      "unexpected" crash;
+    - added Python 3.10 to the CI matrix.
   - Result: `ruff check` is clean and **822/822** tests pass.
 
 ## 5. Task backlog
