@@ -99,6 +99,12 @@ def collect_metrics() -> dict[str, float]:
     metrics["groundedness.checkable_sentences"] = checkable
     metrics["groundedness.supported_rate"] = 1 - unsupported / checkable if checkable else float("nan")
 
+    import fact_coverage
+
+    coverage_report = fact_coverage.evaluate()
+    metrics["factcoverage.recall_cited"] = coverage_report.recall if coverage_report.recall is not None else float("nan")
+    metrics["factcoverage.facts"] = sum(s.facts for s in coverage_report.scored)
+
     return {k: float(v) if v is not None else float("nan") for k, v in metrics.items()}
 
 

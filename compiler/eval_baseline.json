@@ -1,6 +1,7 @@
 {
   "tolerance": 0.02,
   "tolerances": {
+    "factcoverage.recall_cited": 0.05,
     "groundedness.supported_rate": 0.1,
     "qa.wiki.coverage": 0.05,
     "qa.wiki.naive.fact_recall": 0.05,
@@ -10,6 +11,7 @@
     "entity_resolution.heuristic.f1": 0.8,
     "entity_resolution.heuristic.precision": 1.0,
     "entity_resolution.heuristic.recall": 0.6667,
+    "factcoverage.recall_cited": 0.7053,
     "faithfulness.extractive.verbatim_rate": 1.0,
     "groundedness.supported_rate": 0.9447,
     "pii.precision": 1.0,
@@ -28,6 +30,7 @@
   },
   "minimums": {
     "entity_resolution.gold_pairs": 9,
+    "factcoverage.facts": 150,
     "faithfulness.extractive.answers": 4,
     "groundedness.checkable_sentences": 99,
     "groundedness.pages": 13,

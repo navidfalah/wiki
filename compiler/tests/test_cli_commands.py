@@ -265,3 +265,12 @@ class TestSourceText:
         monkeypatch.setattr(sys, "stdin", io.StringIO(json.dumps({"path": "notes/missing.txt"})))
         payload, code = cli._run_command("source-text")
         assert code == 1 and payload["error_type"] == "not_found"
+
+
+def test_fact_coverage_command_returns_the_report(monkeypatch):
+    import fact_coverage
+
+    monkeypatch.setattr(fact_coverage, "evaluate", lambda: fact_coverage.CoverageReport([fact_coverage.SourceCoverage("a.txt", 2, 1, 0, ["p.md"], ["5 kg"])], pages=1))
+    payload, code = cli._run_command("fact-coverage")
+    assert code == 0
+    assert payload["recall_cited"] == 0.5 and payload["sources"][0]["missing"] == ["5 kg"]

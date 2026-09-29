@@ -186,6 +186,14 @@ def cmd_source_text() -> dict:
     }
 
 
+def cmd_fact_coverage() -> dict:
+    """Source-to-wiki fact coverage (fact_coverage.py): which figures and
+    dates in the raw sources are missing from the pages built from them."""
+    import fact_coverage
+
+    return fact_coverage.to_dict(fact_coverage.evaluate())
+
+
 def cmd_review_queue() -> dict:
     """Active-learning review queue (active_learning.py, task #9): claims
     trust_propagation.py scored as low-confidence or an unresolved
@@ -379,6 +387,7 @@ COMMANDS = {
     "chat-stream": cmd_chat_stream,
     "emails-list": cmd_emails_list,
     "source-text": cmd_source_text,
+    "fact-coverage": cmd_fact_coverage,
     "email-detail": cmd_email_detail,
     "email-create": cmd_email_create,
     "email-update": cmd_email_update,
