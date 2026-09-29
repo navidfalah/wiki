@@ -27,6 +27,7 @@ Detailed project documentation, split by topic. Start with [01-overview.md](./01
 | [47-mcp-server.md](./47-mcp-server.md) | The MCP server: search and read the wiki from Claude, Cursor and other MCP clients with a personal API token |
 | [48-scheduled-sync.md](./48-scheduled-sync.md) | Scheduled connector sync and incremental compile: settings, what a run does, safety rules, API |
 | [49-fact-coverage.md](./49-fact-coverage.md) | Source-to-wiki fact coverage: which figures and dates in sources are missing from the pages built from them |
+| [50-answer-quality-eval.md](./50-answer-quality-eval.md) | LLM-judged answer correctness on the 65 gold questions, wiki vs. raw; judge checked against required facts. Built, not yet run on a real model |
 | [40-production-deployment.md](./40-production-deployment.md) | Hosting at wissensbau.de: Caddy + Docker Compose, sizing, resource limits, security, backups |
 | [11-wiki-app-and-dashboards.md](./11-wiki-app-and-dashboards.md) | Docusaurus, React pages, components, routes |
 | [12-api-server.md](./12-api-server.md) | FastAPI endpoints, SSE builds, CORS |
