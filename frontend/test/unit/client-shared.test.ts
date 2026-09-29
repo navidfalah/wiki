@@ -95,6 +95,27 @@ describe('serverText', () => {
     expect(s.attentionDetail('free text')).toBe('free text');
   });
 
+  const STALE = 'Built from sources that changed since it was compiled: a.pdf, b.docx (and 2 more); and no longer in data/raw/: c.txt. Recompile to bring the page up to date.';
+
+  it('translates the out-of-date and contradiction details, including the "and N more" tail (en + de)', async () => {
+    setPage('en');
+    let s = await import('../../src/client/lib/serverText');
+    expect(s.attentionDetail(STALE)).toBe(STALE);
+    expect(s.attentionDetail('Sources disagree: 150 kWh vs 100 kWh.')).toBe('Sources disagree: 150 kWh vs 100 kWh.');
+
+    setPage('de');
+    s = await import('../../src/client/lib/serverText');
+    const de = s.attentionDetail(STALE);
+    expect(de).toContain('a.pdf, b.docx (und 2 weitere)');
+    expect(de).toContain('c.txt');
+    expect(de).toContain('Neu kompilieren');
+    expect(de).not.toMatch(/Recompile|changed since/);
+    expect(s.attentionDetail('Built from sources that no longer in data/raw/: x.txt. Recompile to bring the page up to date.')).toContain('x.txt');
+    expect(s.attentionDetail('Sources disagree: 150 kWh vs 100 kWh.')).toBe('Quellen widersprechen sich: 150 kWh vs 100 kWh.');
+    // free text that merely resembles a prefix is left alone
+    expect(s.attentionDetail('Sources disagree')).toBe('Sources disagree');
+  });
+
   it('ageLabel covers minutes, hours and days', async () => {
     setPage('en');
     const { ageLabel } = await import('../../src/client/lib/serverText');

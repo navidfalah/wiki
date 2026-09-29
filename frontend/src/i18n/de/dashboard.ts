@@ -137,4 +137,6 @@ export const dashboard: Record<keyof typeof en, string> = {
   'dashboard.home.workspace': 'Compiler-Arbeitsbereich',
   "dashboard.home.att.stale": "Veraltete Seiten",
   "dashboard.home.att.staleHint": "Aus Quellen erstellt, die sich seit dem letzten Compile geändert haben",
+  "dashboard.home.att.contradictions": "Offene Widersprüche",
+  "dashboard.home.att.contradictionsHint": "Quellen widersprechen sich, und es ist noch nicht geklärt",
 };

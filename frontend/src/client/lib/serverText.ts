@@ -71,7 +71,26 @@ export function attentionDetail(detail: string): string {
   if (exact[detail]) return t(exact[detail]);
   const broken = /^Broken link in (.+) -- target file does not exist\.$/.exec(detail);
   if (broken) return t('review-queue.detail.brokenLink', { where: broken[1] });
+  const stale = /^Built from sources that (.+)\. Recompile to bring the page up to date\.$/.exec(detail);
+  if (stale) {
+    const parts = stale[1].split('; and ').map((part) => {
+      const changed = /^changed since it was compiled: (.+)$/.exec(part);
+      if (changed) return t('review-queue.detail.staleChanged', { sources: moreSources(changed[1]) });
+      const removed = /^no longer in data\/raw\/: (.+)$/.exec(part);
+      if (removed) return t('review-queue.detail.staleRemoved', { sources: moreSources(removed[1]) });
+      return part;
+    });
+    return t('review-queue.detail.stale', { parts: parts.join(t('review-queue.detail.staleJoin')) });
+  }
+  const contradiction = /^Sources disagree: ([\s\S]+)$/.exec(detail);
+  if (contradiction) return t('review-queue.detail.contradiction', { text: contradiction[1] });
   return detail;
+}
+
+/** "a, b (and 2 more)" as the server writes it -> the reader's language. */
+function moreSources(text: string): string {
+  const more = /^(.+) \(and (\d+) more\)$/.exec(text);
+  return more ? t('review-queue.detail.andMore', { sources: more[1], n: more[2] }) : text;
 }
 
 /** Run-level messages the backend writes into a pipeline run (stopped / interrupted). Others pass through. */

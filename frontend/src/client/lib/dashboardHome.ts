@@ -164,6 +164,7 @@ export interface AttentionCounts {
   ungrounded_topics?: number;
   unprocessed_files?: number;
   stale_pages?: number;
+  open_contradictions?: number;
   review_findings?: number;
   total?: number;
 }
@@ -210,6 +211,14 @@ export function renderAttentionSummary(counts: AttentionCounts | null | undefine
       hint: t('dashboard.home.att.staleHint'),
       href: '#compile',
       cta: t('dashboard.home.att.compile'),
+      tone: 'warn',
+    },
+    {
+      n: counts.open_contradictions ?? 0,
+      label: t('dashboard.home.att.contradictions'),
+      hint: t('dashboard.home.att.contradictionsHint'),
+      href: '/review-queue#contradictions',
+      cta: t('dashboard.home.att.review'),
       tone: 'warn',
     },
     {

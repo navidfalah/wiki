@@ -423,3 +423,6 @@ document.getElementById('contra-refresh')?.addEventListener('click', loadContrad
 loadReview();
 loadAttention();
 loadContradictions();
+
+// The dashboard links here with #contradictions.
+if (location.hash === '#contradictions') document.getElementById('tab-btn-contradictions')?.click();

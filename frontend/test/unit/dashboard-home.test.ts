@@ -130,6 +130,14 @@ describe('needs attention', () => {
     expect(rows[2]).toContain('1');
   });
 
+  it('lists open contradictions with a link that opens the Contradictions tab', () => {
+    const root = dom(home.renderAttentionSummary({ open_contradictions: 3, total: 3 }, []));
+    const link = root.querySelector('li > a')!;
+    expect(link.textContent).toContain('3');
+    expect(link.textContent).toContain('Open contradictions');
+    expect(link.getAttribute('href')).toBe('/review-queue#contradictions');
+  });
+
   it('"Fix" on broken links jumps straight to the first affected page', () => {
     const items = [{ kind: 'dead_link', severity: 'high', title: '[X] → x.md', detail: '', doc_path: 'api.md' }];
     const root = dom(home.renderAttentionSummary({ dead_links: 1, total: 1 }, items));

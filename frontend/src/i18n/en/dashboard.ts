@@ -135,4 +135,6 @@ export const dashboard = {
   'dashboard.home.workspace': 'Compiler workspace',
   "dashboard.home.att.stale": "Out-of-date pages",
   "dashboard.home.att.staleHint": "Built from sources that changed since the last compile",
+  "dashboard.home.att.contradictions": "Open contradictions",
+  "dashboard.home.att.contradictionsHint": "Sources disagree and nobody has settled it yet",
 } as const;

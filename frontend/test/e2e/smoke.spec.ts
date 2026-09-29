@@ -295,3 +295,16 @@ test('review: settle a contradiction, see it under Resolved, reopen it', async (
   }
   expect(problems).toEqual([]);
 });
+
+test('dashboard: the open-contradictions row opens the Contradictions tab', async ({ page }) => {
+  const problems = watchForBreakage(page);
+  await logIn(page);
+  await page.goto('/dashboard');
+  const row = page.locator('#attention-summary a[href="/review-queue#contradictions"]');
+  await expect(row).toBeVisible(); // the sample corpus has unsettled contradictions
+  await row.click();
+  await expect(page).toHaveURL(/\/review-queue#contradictions$/);
+  await expect(page.locator('#tab-panel-contradictions')).toBeVisible();
+  await expect(page.locator('#contra-list [data-status="open"]').first()).toBeVisible();
+  expect(problems).toEqual([]);
+});

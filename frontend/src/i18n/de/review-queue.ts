@@ -88,4 +88,10 @@ export const reviewQueue: Record<keyof typeof en, string> = {
   "review-queue.kind.open_contradiction": "Offener Widerspruch",
   "review-queue.att.contradictions": "Offene Widersprüche",
   "review-queue.card.contradictions": "Offene Widersprüche",
+  "review-queue.detail.stale": "Aus Quellen erstellt, die {parts}. Neu kompilieren, um die Seite zu aktualisieren.",
+  "review-queue.detail.staleChanged": "sich seit dem Kompilieren geändert haben: {sources}",
+  "review-queue.detail.staleRemoved": "nicht mehr in data/raw/ liegen: {sources}",
+  "review-queue.detail.staleJoin": "; und die ",
+  "review-queue.detail.andMore": "{sources} (und {n} weitere)",
+  "review-queue.detail.contradiction": "Quellen widersprechen sich: {text}",
 };

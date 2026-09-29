@@ -86,4 +86,10 @@ export const reviewQueue = {
   "review-queue.kind.open_contradiction": "Open contradiction",
   "review-queue.att.contradictions": "Open contradictions",
   "review-queue.card.contradictions": "Open contradictions",
+  "review-queue.detail.stale": "Built from sources that {parts}. Recompile to bring the page up to date.",
+  "review-queue.detail.staleChanged": "changed since it was compiled: {sources}",
+  "review-queue.detail.staleRemoved": "no longer in data/raw/: {sources}",
+  "review-queue.detail.staleJoin": "; and ",
+  "review-queue.detail.andMore": "{sources} (and {n} more)",
+  "review-queue.detail.contradiction": "Sources disagree: {text}",
 } as const;
