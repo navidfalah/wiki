@@ -1,23 +1,22 @@
 """A small hand-labeled entity resolution eval set, built from real name/
-email mentions actually present in data/raw/ (paths below are verified —
-see tests/test_entity_resolution_eval_dataset.py — not invented).
+email mentions actually present in data/raw/ (paths below are verified --
+see tests/test_entity_resolution_eval_dataset.py -- not invented).
 
-Includes the hard-negative case this repo's own corpus happens to contain:
-Alex Kim, Alex Rivera, and Sam Rivera are three different people who share
-a first or last name, and Nova Widget vs. a bare "Nova" mention should
-still resolve to one product — a small but real test of whether a resolver
-merges on name overlap alone (wrong) or requires stronger evidence (right).
+The sample corpus (a fictional energy cooperative in the village of
+Eschenbrück) contains two kinds of hard negative:
 
-Two more hard cases, both drawn from articles/2026-05-20-competitor-teardown-blog.md
-(which discusses two products side by side, in the same table): "Aurora Nova
-Widget" is a longer surface form of the same product as "Nova Widget"/"Nova"
-(should merge — a positive case that also stresses the multi-word "Aurora
-Nova Widget" vs. "Nova Widget" partial-token overlap), while "SenseNode
-SN-400" is a *competitor's* product mentioned in the same document, in the
-same comparison table — a hard negative that isn't a name-token collision
-like Alex Kim/Alex Rivera, but a proximity/co-occurrence one: two distinct
-products discussed together should not be pulled toward each other by
-whatever the resolver uses for context.
+- Shared place names: "BürgerEnergie Eschenbrück eG", "Gemeinde Eschenbrück"
+  and "Freibad Eschenbrück" are three different entities (the cooperative,
+  the municipality, the outdoor pool), and "Grundschule am Lindenhof" (a
+  school) is not "Sonnendach Lindenhof" (the solar project on its roof). A
+  resolver that merges on a shared name token gets these wrong.
+- Co-occurrence: "Helion H-440" and "Nordlicht NL-430" are competing solar
+  modules discussed side by side in the same emails -- two distinct
+  products that context alone should not pull together.
+
+It also contains hard positives the heuristic tier is not expected to
+solve: the abbreviation "BEE" for the cooperative, and "Frau Aydın" for
+Selin Aydın.
 """
 
 from __future__ import annotations
@@ -27,20 +26,28 @@ from entity_resolution import Mention
 # (Mention, gold_entity_id) pairs. gold_entity_id is this eval set's own
 # annotation — it doesn't exist anywhere in the compiler pipeline itself.
 GOLD_MENTIONS: list[tuple[Mention, str]] = [
-    (Mention("Mira Chen", "articles/2026-05-15-product-spec-draft.md"), "mira-chen"),
-    (Mention("Mira", "samples/transcripts/[SAMPLE]-2026-06-19-mira-jonah-battery-debate.txt"), "mira-chen"),
-    (Mention("mira.chen@auroralabs.example", "emails/2026-06-02-meshsync-battery-report.eml"), "mira-chen"),
-    (Mention("Jonah Park", "notes/2026-05-01-kickoff-notes.md"), "jonah-park"),
-    (Mention("Jonah", "samples/transcripts/[SAMPLE]-2026-06-19-mira-jonah-battery-debate.txt"), "jonah-park"),
-    (Mention("jonah.park@auroralabs.example", "emails/2026-06-03-meshsync-battery-reply.eml"), "jonah-park"),
-    (Mention("Alex Kim", "dummy-test/2026-07-01-firmware-changelog.md"), "alex-kim"),
-    (Mention("alex.kim@teabuddy.example", "samples/emails/[SAMPLE]-2026-07-08-legal-review-trademark.txt"), "alex-kim"),
-    (Mention("Alex Rivera", "articles/2026-05-20-competitor-teardown-blog.md"), "alex-rivera"),
-    (Mention("Sam Rivera", "2026-07-02-aurora-meshsync-release-notes.md"), "sam-rivera"),
-    (Mention("Sam Rivera", "dummy-test/2026-07-01-firmware-changelog.md"), "sam-rivera"),
-    (Mention("Nova Widget", "articles/2026-05-15-product-spec-draft.md"), "nova-widget"),
-    (Mention("Nova", "notes/2026-05-01-kickoff-notes.md"), "nova-widget"),
-    (Mention("Aurora Nova Widget", "articles/2026-05-20-competitor-teardown-blog.md"), "nova-widget"),
-    (Mention("SenseNode SN-400", "articles/2026-05-20-competitor-teardown-blog.md"), "sensenode-sn-400"),
-    (Mention("Sam", "dummy-test/2026-07-07-power-budget-spreadsheet-notes.txt"), "sam-rivera"),
+    (Mention("Dr. Hanna Vogt", "project/2026-02-10-foerderantrag-klimakommunal.pdf"), "hanna-vogt"),
+    (Mention("Hanna Vogt", "meetings/2026-07-15-board-minutes.md"), "hanna-vogt"),
+    (Mention("Hanna", "meetings/2026-01-20-board-minutes.docx"), "hanna-vogt"),
+    (Mention("Selin Aydın", "project/2026-03-02-project-plan.docx"), "selin-aydin"),
+    (Mention("Selin", "meetings/2026-05-06-site-meeting-transcript.txt"), "selin-aydin"),
+    (Mention("selin.aydin@eschenbrueck-energie.example", "emails/2026-03-18-netzanschlussanfrage.eml"), "selin-aydin"),
+    (Mention("Frau Aydın", "emails/2026-06-24-netzanschlusszusage.eml"), "selin-aydin"),
+    (Mention("Tobias Brandt", "meetings/2026-06-13-generalversammlung-protokoll.md"), "tobias-brandt"),
+    (Mention("Tobias", "meetings/2026-01-20-board-minutes.docx"), "tobias-brandt"),
+    (Mention("tobias.brandt@eschenbrueck-energie.example", "emails/2026-07-09-re-mitgliederfrage-anteil.eml"), "tobias-brandt"),
+    (Mention("Marco Petrović", "meetings/2026-05-06-site-meeting-transcript.txt"), "marco-petrovic"),
+    (Mention("Marco", "project/2026-04-30-selin-field-notes.txt"), "marco-petrovic"),
+    (Mention("m.petrovic@lichtbau-solar.example", "emails/2026-05-12-lichtbau-modulverzoegerung.eml"), "marco-petrovic"),
+    (Mention("Lichtbau Solartechnik GmbH", "public/faq.md"), "lichtbau-solartechnik"),
+    (Mention("Lichtbau", "project/2026-04-30-selin-field-notes.txt"), "lichtbau-solartechnik"),
+    (Mention("BürgerEnergie Eschenbrück eG", "meetings/2026-06-13-generalversammlung-protokoll.md"), "buergerenergie-eschenbrueck"),
+    (Mention("BEE", "meetings/2026-05-06-site-meeting-transcript.txt"), "buergerenergie-eschenbrueck"),
+    (Mention("Gemeinde Eschenbrück", "project/2026-03-26-dachnutzungsvertrag-zusammenfassung.txt"), "gemeinde-eschenbrueck"),
+    (Mention("Freibad Eschenbrück", "meetings/2026-01-20-board-minutes.docx"), "freibad-eschenbrueck"),
+    (Mention("Grundschule am Lindenhof", "project/2026-03-02-project-plan.docx"), "grundschule-am-lindenhof"),
+    (Mention("Sonnendach Lindenhof", "presentations/2026-06-13-agm-slides.pptx"), "sonnendach-lindenhof"),
+    (Mention("Helion H-440", "emails/2026-05-12-lichtbau-modulverzoegerung.eml"), "helion-h-440"),
+    (Mention("Nordlicht NL-430", "emails/2026-05-12-lichtbau-modulverzoegerung.eml"), "nordlicht-nl-430"),
+    (Mention("NL-430", "meetings/2026-05-06-site-meeting-transcript.txt"), "nordlicht-nl-430"),
 ]

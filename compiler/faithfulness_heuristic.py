@@ -45,6 +45,7 @@ from dataclasses import dataclass, field
 from pathlib import Path
 
 from models import OUTPUT_DIR, RAW_DIR
+from source_text import read_source_text
 
 _WORD_RE = re.compile(r"[a-z0-9]+")
 
@@ -80,6 +81,9 @@ _BULLET_PREFIX_RE = re.compile(r"^\s*[*\-]\s+", re.MULTILINE)
 _HEADING_RE = re.compile(r"^#{1,6}\s.*$", re.MULTILINE)
 
 
+_HTML_COMMENT_RE = re.compile(r"<!--.*?-->", re.DOTALL)
+
+
 def _content_tokens(text: str) -> set[str]:
     return {w for w in _WORD_RE.findall(text.lower()) if w not in _STOPWORDS and len(w) > 2}
 
@@ -89,7 +93,9 @@ def clean_markdown_to_prose(text: str) -> str:
     and headings entirely, unwrap links/bold/italic/inline-code to their
     inner text, drop leading bullet markers. Not a full markdown parser —
     good enough to stop structural syntax from polluting sentence-level
-    token comparisons."""
+    token comparisons. HTML comments (the compiler's AUTO-GENERATED
+    banner) are not page content and are dropped too."""
+    text = _HTML_COMMENT_RE.sub(" ", text)
     text = _CODE_FENCE_RE.sub(" ", text)
     text = _HEADING_RE.sub(" ", text)
     text = _MARKDOWN_LINK_RE.sub(r"\1", text)
@@ -214,7 +220,7 @@ def check_corpus_groundedness(
         for rel_path in source_paths:
             source_file = raw_dir / rel_path
             if source_file.is_file():
-                source_texts.append(source_file.read_text(encoding="utf-8", errors="replace"))
+                source_texts.append(read_source_text(source_file))
         sources_text = "\n\n".join(source_texts)
 
         prose = clean_markdown_to_prose(content_before)

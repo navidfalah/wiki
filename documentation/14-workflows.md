@@ -86,11 +86,9 @@ python eval_gate.py --update-baseline
 
 ```bash
 cd compiler
-python scripts/dev/generate_junk_data.py --overwrite
-python scripts/dev/generate_bulk_dummy_data.py --overwrite
-python scripts/dev/generate_extended_dummy_data.py --overwrite
-python scripts/dev/generate_varied_dummy_data.py --overwrite
-python main.py --force
+python scripts/build_sample_corpus.py --clean   # the sample corpus (doc 09)
+python main.py --force                          # needs an LLM; or seed pages without one:
+# python scripts/seed_pages.py && python moc_generator.py
 ```
 
 ## Fix front matter

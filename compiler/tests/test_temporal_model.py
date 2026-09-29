@@ -140,18 +140,55 @@ def test_build_dataset_timelines_covers_every_claim_group():
         assert set(timelines[group.id]) == {c.id for c in group.claims}
 
 
-def test_real_dataset_read_interval_as_of_before_and_after_the_spec():
-    """The one real, human-legible bi-temporal query this dataset supports
-    end to end: what did the corpus say the read interval was before vs.
-    after the May 15 spec fixed it."""
-    dataset = load_trust_eval_dataset()
-    group = next(g for g in dataset.claim_groups if g.id == "nova_read_interval")
-    timeline = build_dataset_timelines(dataset)["nova_read_interval"]
+def test_supersession_carries_across_corroboration():
+    """Two early sources state the same old value; an annotator draws the
+    supersedes edge to only one of them. The other asserted the same
+    value, so it stops being current at the same moment."""
+    group = ClaimGroup(
+        id="g", domain="t", subject="s", description="d",
+        claims=[_claim("early-a", "2026-01-01"), _claim("early-b", "2026-02-01"), _claim("new", "2026-03-01")],
+        relations=[
+            Relation(from_id="early-b", to_id="early-a", type="corroborates"),
+            Relation(from_id="new", to_id="early-b", type="supersedes"),
+        ],
+    )
+    timeline = build_group_timeline(group)
+    assert timeline["early-b"].valid_until == date(2026, 3, 1)
+    assert timeline["early-a"].valid_until == date(2026, 3, 1)
+    assert [c.id for c in current_claims(group, timeline)] == ["new"]
 
-    before = as_of(group, timeline, date(2026, 5, 10))
-    assert [c.id for c in before] == ["nri-1"]
-    assert before[0].value == "hourly"
+
+def test_corroboration_dated_after_the_replacement_stays_current():
+    """A source repeating the old value *after* it was replaced is a fresh
+    assertion (maybe wrong, but not a stale copy) -- the timeline has no
+    date at which it stopped being asserted."""
+    group = ClaimGroup(
+        id="g", domain="t", subject="s", description="d",
+        claims=[_claim("old", "2026-01-01"), _claim("new", "2026-02-01"), _claim("late-copy", "2026-03-01")],
+        relations=[
+            Relation(from_id="new", to_id="old", type="supersedes"),
+            Relation(from_id="late-copy", to_id="old", type="corroborates"),
+        ],
+    )
+    timeline = build_group_timeline(group)
+    assert timeline["old"].valid_until == date(2026, 2, 1)
+    assert timeline["late-copy"].is_current
+
+
+def test_real_dataset_plant_size_as_of_before_and_after_the_survey():
+    """A real bi-temporal query on the sample corpus: what did the sources
+    say the plant size was before the structural survey, between the
+    survey and the module switch, and after it."""
+    dataset = load_trust_eval_dataset()
+    group = next(g for g in dataset.claim_groups if g.id == "pv_capacity")
+    timeline = build_dataset_timelines(dataset)["pv_capacity"]
+
+    before = as_of(group, timeline, date(2026, 4, 1))
+    assert {c.value for c in before} == {"198 kWp"}
+
+    between = as_of(group, timeline, date(2026, 5, 1))
+    assert [c.id for c in between] == ["pvc-4"]
 
     after = as_of(group, timeline, date(2026, 6, 1))
-    assert "nri-1" not in {c.id for c in after}
-    assert any(c.value == "15 minutes" for c in after)
+    assert {c.value for c in after} == {"171.6 kWp"}
+    assert {c.id for c in current_claims(group, timeline)} == {"pvc-5", "pvc-6", "pvc-7", "pvc-8", "pvc-9"}

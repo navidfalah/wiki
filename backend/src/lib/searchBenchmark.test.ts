@@ -1,11 +1,13 @@
 import { describe, expect, it } from 'vitest';
 import { loadBenchmark, searchHitRate } from './searchBenchmark';
 
-// Regression floors for searchCorpus() on data/qa_benchmark.json (measured
-// 2026-09-27; see documentation/44-qa-benchmark.md). Raise them when search
-// improves -- don't lower them to make a change pass.
-const KEYWORD_HIT_AT_5_FLOOR = 0.88; // measured 0.908
-const QUESTION_HIT_AT_5_FLOOR = 0.9; // measured 0.938 (0.077 before BM25 ranking)
+// Regression floors for searchCorpus() on data/qa_benchmark.json; see
+// documentation/44-qa-benchmark.md. Measured 2026-09-29 on the energy-
+// cooperative sample corpus: 1.000 for both (0.908 / 0.938 on the earlier
+// corpus). The floors were set on the earlier corpus and are kept: don't
+// lower them to make a change pass.
+const KEYWORD_HIT_AT_5_FLOOR = 0.88;
+const QUESTION_HIT_AT_5_FLOOR = 0.9;
 
 describe('search benchmark', () => {
   const questions = loadBenchmark();

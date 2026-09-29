@@ -45,7 +45,7 @@ def test_fetch_renders_a_markdown_table(sample_db):
     assert lines[4].startswith("| id | device_serial | status")
     assert lines[5].startswith("| --- |")
     assert len(lines) == 6 + len(SUPPORT_TICKETS)
-    assert "AUR-SNS-0087" in md
+    assert "BEE-WR-2026-03" in md
 
 
 def test_fetch_escapes_pipes_newlines_and_nulls_and_caps_rows(tmp_path):

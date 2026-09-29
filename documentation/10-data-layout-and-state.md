@@ -12,19 +12,19 @@ how each non-text type is handled.
 
 ### Typical subfolders (this repo)
 
-| Subfolder | Origin | Notes |
-|-----------|--------|-------|
-| `notes/` | junk + procedural | Standups, scribbles |
-| `transcripts/` | junk + procedural | Meeting/support transcripts |
-| `articles/` | junk + samples | Spec fragments, blog scrapes |
-| `ideas/` | junk + samples | Brainstorms |
-| `emails/` | procedural + extended | Email threads |
-| `specs/` | procedural + extended | Product/hardware specs |
-| `research/` | extended | Competitive research |
-| `dummy-test/` | extended + procedural | Labeled ops docs |
-| `bulk/` | procedural | High-volume generator output |
-| `samples/` | bulk + extended | `[SAMPLE]` curated narratives |
-| `varied-samples/` | varied generator | Large multi-type files |
+The sample corpus (`compiler/scripts/build_sample_corpus.py`, see
+[18-sample-domain.md](./18-sample-domain.md)) uses these folders:
+
+| Subfolder | Contents |
+|-----------|----------|
+| `meetings/` | Board and general assembly minutes, a site-meeting transcript |
+| `project/` | Grant application, project plan, structural survey, roof lease, field notes |
+| `finance/` | Budget workbook, member shares by year |
+| `emails/` | `.eml` threads with the installer, grid operator and members |
+| `presentations/` | General assembly slides |
+| `public/`, `press/` | Flyer, FAQ, newspaper article |
+| `survey/`, `monitoring/` | Survey results; production, logger and inverter exports |
+| `media/`, `archive/` | Roof layout image, invoice ZIP |
 
 Subfolder name does **not** change compiler behavior — only organization for humans.
 

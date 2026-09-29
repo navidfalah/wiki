@@ -27,6 +27,49 @@ claims that are wrong or superseded from the ones that aren't."
 Groups with no BAD claims (`meshsync_relay_battery_drain_root_cause`) report
 `None` for both — undefined, not a misleadingly perfect score.
 
+## Current results (dataset v2, 2026-09-29)
+
+On the rebuilt dataset (doc 21: 8 groups, 57 claims, energy-cooperative
+corpus), with the new per-folder trust rules in `data/source_trust.json`:
+
+| Config | precision@1 | pairwise accuracy |
+|---|---|---|
+| static baseline (prior only) | 0.43 | 0.424 |
+| **full propagation (default)** | **1.00** | **0.826** |
+| no corroboration | 0.86 | 0.761 |
+| no contradiction | 1.00 | 0.815 |
+| no supersession | 0.86 | 0.511 |
+| relational only (prior_weight=0) | 1.00 | 0.696 |
+
+Mean propagated score by gold label: correct 0.565, scope-dependent 0.574,
+superseded 0.360, incorrect 0.209.
+
+The `prior_weight` sweep peaks at 0.2 and 0.4 (0.826) and falls at both
+ends (0.696 at 0.0, 0.761 at 1.0), so the shipped default of 0.2 still sits
+at the maximum. Unlike v1, the curve is not monotonic: with more reliable
+priors (official minutes and monitoring data high, the public flyer and FAQ
+low), dropping the prior entirely now costs accuracy.
+
+**What v1 hid.** precision@1 is still perfect, but pairwise accuracy fell
+from 0.94 to 0.83, and "every correct claim outranks every superseded one"
+no longer holds. Two causes, both properties of the algorithm rather than
+of the labels:
+
+1. *Corroboration among outdated claims.* The January concept (198 kWp)
+   is corroborated by the grant application, which repeats it, so it is
+   boosted above several correct claims. Corroboration measures agreement,
+   not currency.
+2. *Only the corroborated claim gains.* A claim that corroborates another
+   gets nothing back, so independent late sources (the newspaper, the grid
+   operator's letter) stay at their prior of 0.5.
+
+In v1 every corroboration edge happened to point at the correct claim,
+which masked both. A natural next step is to let a `supersedes` edge also
+demote the claims that corroborate its target, as the temporal model now
+does (doc 27).
+
+The sections below are the v1 evaluation over the earlier corpus.
+
 ## Headline result: propagation vs. the static baseline
 
 `STATIC_BASELINE_CONFIG` (`prior_weight=1`, `supersede_decay=1`) makes

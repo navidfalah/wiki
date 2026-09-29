@@ -70,7 +70,7 @@ Expected output: Rich terminal panels for Steps 1–5, then Map of Content gener
 If you see `No raw files found under data/raw/`:
 
 ```bash
-python scripts/dev/generate_junk_data.py    # from compiler/ — creates 10 seed files
+python scripts/build_sample_corpus.py       # from compiler/ — writes the 30-file sample corpus
 python main.py --force
 ```
 
@@ -158,11 +158,9 @@ docker compose up --build
 python main.py                   # incremental
 python main.py --force           # reprocess all raw files
 
-# Test data generators (from compiler/)
-python scripts/dev/generate_junk_data.py [--overwrite]
-python scripts/dev/generate_bulk_dummy_data.py [--overwrite] [--samples-only | --dummy-only | --varied-only]
-python scripts/dev/generate_varied_dummy_data.py [--overwrite] [--count N]
-python scripts/dev/generate_extended_dummy_data.py [--overwrite]
+# Sample corpus (from compiler/) -- see doc 09
+python scripts/build_sample_corpus.py [--clean] [--out DIR]
+python scripts/seed_pages.py && python moc_generator.py   # seed wiki pages without an LLM
 
 # Maintenance
 python fix_frontmatter.py [--dry-run] [--docs-dir PATH]

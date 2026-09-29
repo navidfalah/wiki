@@ -1,5 +1,6 @@
 from entity_resolution_eval_dataset import GOLD_MENTIONS
 from models import RAW_DIR
+from source_text import read_source_text
 
 
 def test_every_mention_source_path_exists_and_contains_the_mention():
@@ -11,14 +12,15 @@ def test_every_mention_source_path_exists_and_contains_the_mention():
     "Mira" from a transcript that literally reads "MIRA:"), not a verbatim
     quote — unlike trust_eval_dataset.json's claim quotes, which are exact
     excerpts by design. Emails are handled separately below via
-    email_ingest.parse_eml rather than raw (possibly MIME-encoded) bytes.
+    email_ingest.parse_eml rather than raw (possibly MIME-encoded) bytes,
+    and PDF/DOCX/XLSX/PPTX through the pipeline's own text extraction.
     """
     for mention, _gold_id in GOLD_MENTIONS:
         path = RAW_DIR / mention.source
         assert path.is_file(), f"missing source: {mention.source}"
         if path.suffix.lower() == ".eml":
             continue  # handled in the email-specific test below
-        text = path.read_text(encoding="utf-8")
+        text = read_source_text(path)
         assert mention.name.lower() in text.lower(), f"{mention.name!r} not found in {mention.source}"
 
 
@@ -30,25 +32,26 @@ def test_email_mention_sources_are_grounded_via_email_ingest():
             continue
         path = RAW_DIR / mention.source
         parsed = parse_eml(path)
-        haystack = f"{parsed.subject}\n{parsed.from_addr}\n{' '.join(parsed.to_addrs)}\n{parsed.body_text}"
+        haystack = f"{parsed.subject}\n{parsed.from_addr}\n{' '.join(parsed.to_addrs + parsed.cc_addrs)}\n{parsed.body_text}"
         assert mention.name.lower() in haystack.lower(), f"{mention.name!r} not found in {mention.source}"
 
 
 def test_dataset_contains_a_hard_negative_cluster():
     """The whole point of this dataset: entities that share a name token
-    but are NOT the same person/product should have distinct gold ids."""
+    but are NOT the same thing should have distinct gold ids."""
     gold_ids_by_name = {m.name: gold_id for m, gold_id in GOLD_MENTIONS}
-    assert gold_ids_by_name["Alex Kim"] != gold_ids_by_name["Alex Rivera"]
-    assert gold_ids_by_name["Alex Rivera"] != gold_ids_by_name["Sam Rivera"]
+    eschenbrueck = {gold_ids_by_name[n] for n in ("BürgerEnergie Eschenbrück eG", "Gemeinde Eschenbrück", "Freibad Eschenbrück")}
+    assert len(eschenbrueck) == 3
+    assert gold_ids_by_name["Grundschule am Lindenhof"] != gold_ids_by_name["Sonnendach Lindenhof"]
 
 
 def test_dataset_contains_a_co_occurrence_hard_negative():
-    """Aurora Nova Widget and SenseNode SN-400 are two different products
-    discussed side by side in the same document/table — a hard negative
-    that isn't a name-token collision, but a proximity/co-occurrence one."""
+    """Helion H-440 and Nordlicht NL-430 are two different modules discussed
+    side by side in the same email -- a hard negative that isn't a
+    name-token collision but a proximity/co-occurrence one."""
     gold_ids_by_name = {m.name: gold_id for m, gold_id in GOLD_MENTIONS}
-    assert gold_ids_by_name["Aurora Nova Widget"] == gold_ids_by_name["Nova Widget"]
-    assert gold_ids_by_name["SenseNode SN-400"] != gold_ids_by_name["Aurora Nova Widget"]
+    assert gold_ids_by_name["NL-430"] == gold_ids_by_name["Nordlicht NL-430"]
+    assert gold_ids_by_name["Helion H-440"] != gold_ids_by_name["Nordlicht NL-430"]
 
 
 def test_dataset_has_multiple_positive_clusters_with_more_than_one_mention():

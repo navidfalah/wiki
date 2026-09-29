@@ -51,11 +51,11 @@ def test_review_correct_saves_a_correction(monkeypatch, tmp_path):
         io.StringIO(
             json.dumps(
                 {
-                    "claim_id": "nri-1",
-                    "group_id": "nova_read_interval",
+                    "claim_id": "pvc-2",
+                    "group_id": "pv_capacity",
                     "verdict": "confirm_superseded",
-                    "note": "fixed in firmware 2.1",
-                    "quote": "the old hourly claim",
+                    "note": "replaced by 171.6 kWp",
+                    "quote": "the old 198 kWp claim",
                 }
             )
         ),
@@ -63,11 +63,11 @@ def test_review_correct_saves_a_correction(monkeypatch, tmp_path):
 
     result = cli.cmd_review_correct()
 
-    assert result["saved"]["claim_id"] == "nri-1"
+    assert result["saved"]["claim_id"] == "pvc-2"
     assert result["saved"]["verdict"] == "confirm_superseded"
     loaded = active_learning.load_corrections(corrections_path)
     assert len(loaded) == 1
-    assert loaded[0].note == "fixed in firmware 2.1"
+    assert loaded[0].note == "replaced by 171.6 kWp"
 
 
 def test_review_correct_requires_claim_id_and_group_id(monkeypatch):
@@ -115,13 +115,13 @@ def test_temporal_facts_runs_end_to_end_on_the_real_pilot_dataset():
     result = cli.cmd_temporal_facts()
 
     assert result["groups"]  # the pilot dataset has real claim groups
-    group = next(g for g in result["groups"] if g["group_id"] == "nova_read_interval")
+    group = next(g for g in result["groups"] if g["group_id"] == "pv_capacity")
     assert {"group_id", "domain", "subject", "facts"} <= group.keys()
     assert group["facts"]
 
-    fact = next(f for f in group["facts"] if f["claim_id"] == "nri-1")
+    fact = next(f for f in group["facts"] if f["claim_id"] == "pvc-2")
     assert {"claim_id", "value", "source_path", "date", "valid_from", "valid_until", "is_current"} <= fact.keys()
-    assert fact["valid_from"] == "2026-05-01"
+    assert fact["valid_from"] == "2026-02-10"
     assert fact["is_current"] is False  # superseded by a later claim in the same group
 
     current_facts = [f for f in group["facts"] if f["is_current"]]

@@ -177,19 +177,16 @@ CLI to re-quote broken front matter fields in `wiki-app/docs/`
 
 MDX body repair utility
 
-## Test data generators (`scripts/dev/`)
+## Sample data tooling (`scripts/`)
 
 Dev-only — not imported by the compiler pipeline. See
 [09-test-data-generation.md](./09-test-data-generation.md).
 
 | Module | Function |
 |--------|----------|
-| `generate_dummy_data.py` | Dispatcher CLI: `python generate_dummy_data.py <junk\|bulk\|extended\|varied\|keep-aurora>` |
-| `generate_junk_data.py` | `generate_junk_data()` — 10 seed files |
-| `generate_bulk_dummy_data.py` | `generate_bulk_dummy_data()`, `generate_procedural_dummy_test_data()` |
-| `generate_varied_dummy_data.py` | `generate_varied_dummy_data()` |
-| `generate_extended_dummy_data.py` | Extended wave-2 file dict |
-| `keep_aurora_raw.py` | Archive non-Aurora raw files to `data/_archive_non_aurora/` |
+| `build_sample_corpus.py` | Writes the 30-file, 15-format sample corpus into `data/raw/` (deterministic) |
+| `seed_pages.py` | Writes hand-written seed pages for that corpus into `wiki-app/docs/` |
+| `source_text.py` (compiler root) | `read_source_text(path)` — a raw file's text as the pipeline extracts it |
 
 ## Shell scripts
 

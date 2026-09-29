@@ -45,6 +45,7 @@ import re
 from dataclasses import dataclass
 from pathlib import Path
 
+import source_text
 from models import OUTPUT_DIR, PROJECT_ROOT, RAW_DIR
 
 BENCHMARK_PATH = PROJECT_ROOT / "data" / "qa_benchmark.json"
@@ -81,13 +82,7 @@ def facts_found(facts: list[list[str]], text: str) -> int:
 
 
 def read_source_text(rel_path: str, raw_dir: Path = RAW_DIR) -> str:
-    path = raw_dir / rel_path
-    if path.suffix.lower() == ".eml":
-        from email_ingest import parse_eml
-
-        parsed = parse_eml(path)
-        return f"{parsed.subject}\n{parsed.from_addr}\n{parsed.body_text}"
-    return path.read_text(encoding="utf-8", errors="replace")
+    return source_text.read_source_text(raw_dir / rel_path)
 
 
 def _content_key(path: Path) -> str:

@@ -133,15 +133,24 @@ def test_parse_page_stops_sources_section_at_trailing_code_fence():
 
 
 def test_check_corpus_groundedness_runs_against_the_real_compiled_wiki():
-    """Not a fixture -- runs the heuristic against the real, historically
-    LLM-generated pages under wiki-app/docs/. Loosely bounded assertions
-    (this is real generated text, not a controlled fixture) just confirming
-    the mechanism actually produces results, not that a specific score is
-    "correct" -- see documentation/28-faithfulness-evaluation.md for the
-    full real numbers and the honest discussion of what they do and don't
-    mean."""
+    """Not a fixture -- runs the heuristic against the real pages under
+    wiki-app/docs/ and their real sources in data/raw/ (including PDF, DOCX,
+    XLSX and email sources, read through the pipeline's text extraction).
+    Loosely bounded assertions just confirming the mechanism produces
+    results, not that a specific score is "correct" -- see
+    documentation/28-faithfulness-evaluation.md."""
     results = check_corpus_groundedness()
-    assert len(results) > 100  # most of the ~174 committed pages have a Sources section
+    assert len(results) >= 20  # every topic page has a References & Trust table
     assert all(r.report.checkable_count >= 0 for r in results)
     total_checkable = sum(r.report.checkable_count for r in results)
-    assert total_checkable > 1000  # real prose, not an empty corpus
+    assert total_checkable > 150  # real prose, not an empty corpus
+    supported = 1 - sum(len(r.report.unsupported) for r in results) / total_checkable
+    assert supported > 0.8  # binary sources contribute their text, not raw bytes
+
+
+def test_clean_markdown_to_prose_drops_html_comments():
+    text = "<!-- AUTO-GENERATED — compiled by the LLM Wiki compiler.\nEdits are overwritten. -->\n\nThe plant has 171.6 kWp."
+    prose = clean_markdown_to_prose(text)
+    assert "AUTO-GENERATED" not in prose
+    assert "overwritten" not in prose
+    assert "171.6 kWp" in prose

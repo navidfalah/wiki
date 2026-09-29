@@ -60,4 +60,4 @@ Use `[[slug/path|Label]]` in body — the compiler's `linker.py` converts these 
 
 ## Domain
 
-Sample domain: **Aurora Labs** (fictional IoT startup). Replace with your topic when ready.
+Sample domain: **BürgerEnergie Eschenbrück eG** (fictional citizens' energy cooperative; EN/DE sources in 15 formats, built by `compiler/scripts/build_sample_corpus.py` — see `documentation/18-sample-domain.md`). Replace with your topic when ready.

@@ -92,8 +92,7 @@ if __name__ == "__main__":
         print(f"precision={full.precision:.2f} recall={full.recall:.2f} f1={full.f1:.2f}")
     else:
         print(
-            "\nNo OPENAI_API_KEY configured (.env) — skipping the embeddings/LLM tiers. "
-            "On the current dataset the heuristic tier alone already resolves every pair "
-            "correctly, so there is nothing left for those tiers to adjudicate here; a "
-            "larger/harder dataset would be needed to say anything about them."
+            "\nNo OPENAI_API_KEY configured (.env) -- skipping the embeddings/LLM tiers, "
+            "which exist for the pairs the name heuristic cannot link (abbreviations, "
+            "honorifics, first names alone)."
         )

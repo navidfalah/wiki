@@ -24,20 +24,14 @@ wiki/
 ```
 data/
 ├── raw/                      # ALL compiler input, recursive
-│   ├── notes/                 # .txt / .md
-│   ├── transcripts/
-│   ├── articles/
-│   ├── ideas/
-│   ├── emails/                 # .eml — see email_ingest.py
-│   ├── specs/
-│   ├── research/
-│   ├── dummy-test/
-│   ├── bulk/
-│   ├── samples/               # [SAMPLE] curated narratives
-│   │   ├── notes/, articles/, transcripts/, ...
-│   │   └── bulk/
-│   └── varied-samples/        # Large multi-type test files
-│       ├── transcript/, prd/, email/, adr/, ...
+│   ├── meetings/              # minutes (DOCX/MD), transcript (TXT)
+│   ├── project/               # grant application + survey (PDF), plan (DOCX), notes
+│   ├── finance/               # budget (XLSX), member shares (CSV)
+│   ├── emails/                # .eml — see email_ingest.py
+│   ├── presentations/         # slides (PPTX)
+│   ├── public/, press/        # flyer (HTML), FAQ, newspaper article
+│   ├── survey/, monitoring/   # JSON, CSV, TSV, LOG, YAML exports
+│   └── media/, archive/       # roof layout (PNG), invoices (ZIP)
 │
 ├── state.json                # Incremental compiler state (gitignored, created on compile)
 ├── link_overrides.json       # Manual knowledge-graph connection rules
@@ -99,13 +93,9 @@ compiler/
 │   ├── test_trust.py
 │   ├── test_multimedia_pipeline.py     # mixed source types, end-to-end w/ fake LLM
 │   └── test_generated_banner_pipeline.py
-├── scripts/dev/               # Dev-only test-data generators (not part of the pipeline)
-│   ├── generate_dummy_data.py         # Dispatcher CLI for the generators below
-│   ├── generate_junk_data.py          # 10 seed Aurora junk files
-│   ├── generate_bulk_dummy_data.py    # [SAMPLE] + procedural bulk
-│   ├── generate_varied_dummy_data.py
-│   ├── generate_extended_dummy_data.py
-│   └── keep_aurora_raw.py             # Archive non-Aurora raw files
+├── scripts/                  # Dev-only tooling (not part of the pipeline)
+│   ├── build_sample_corpus.py         # Writes the sample corpus into data/raw/ (doc 09)
+│   └── seed_pages.py                  # Hand-written seed wiki pages for that corpus
 └── .venv/                    # Python virtualenv (local, gitignored)
 ```
 

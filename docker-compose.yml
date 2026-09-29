@@ -100,7 +100,7 @@ services:
   # Sample PostgreSQL database for the "Connect your own database" feature
   # (/database page, compiler/connectors/postgres_db.py). Represents a
   # user's own external Postgres instance -- seeded with a small fictional
-  # Aurora Labs knowledge base (departments/employees/projects/kb_articles)
+  # Sample cooperative knowledge base (departments/employees/projects/kb_articles)
   # via docker/postgres/init.sql so the whole connect -> browse -> import
   # -> compile flow can be tried with zero setup. Not required for the
   # feature itself: the /database page connects to ANY reachable Postgres

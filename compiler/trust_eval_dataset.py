@@ -25,8 +25,8 @@ from dataclasses import dataclass, field
 from pathlib import Path
 from typing import Any
 
-from email_ingest import EMAIL_EXTENSIONS, parse_eml
 from models import PROJECT_ROOT, RAW_DIR
+from source_text import read_source_text
 
 DATASET_PATH = PROJECT_ROOT / "data" / "trust_eval_dataset.json"
 
@@ -163,18 +163,9 @@ def validate_dataset(dataset: TrustEvalDataset, raw_dir: Path | None = None) -> 
                 problems.append(f"[{group.id}/{claim.id}] source_path not found: {claim.source_path}")
                 continue
 
-            if source_file.suffix.lower() in EMAIL_EXTENSIONS:
-                # .eml files are MIME documents (often quoted-printable
-                # encoded) — read them the same way the pipeline does rather
-                # than matching against raw, possibly-encoded bytes.
-                parsed = parse_eml(source_file)
-                file_text = f"{parsed.subject}\n{parsed.body_text}"
-            else:
-                try:
-                    file_text = source_file.read_text(encoding="utf-8")
-                except UnicodeDecodeError:
-                    problems.append(f"[{group.id}/{claim.id}] source file is not valid UTF-8: {claim.source_path}")
-                    continue
+            # Read the file the way the pipeline does: parsed email body,
+            # extracted PDF/DOCX/XLSX/PPTX text -- not raw bytes.
+            file_text = read_source_text(source_file)
 
             if not _quote_is_grounded(claim.quote, file_text):
                 problems.append(

@@ -98,8 +98,8 @@ def test_import_claim_group_loads_the_real_pilot_dataset(tmp_path):
     assert len(store.all_nodes(node_type="claim_group")) == len(dataset.claim_groups)
     assert store.edge_count() == total_relations
 
-    # Spot check: nova_read_interval's supersedes edge should be queryable.
+    # Spot check: pv_capacity's supersedes edge should be queryable.
     # Claim node ids are namespaced by group (see graph_store._claim_node_id),
     # since a bare claim id is only guaranteed unique within its own group.
-    nri_1_incoming = store.incoming(_claim_node_id("nova_read_interval", "nri-1"), edge_type="supersedes")
-    assert [e.from_id for e in nri_1_incoming] == [_claim_node_id("nova_read_interval", "nri-2")]
+    pvc_4_incoming = store.incoming(_claim_node_id("pv_capacity", "pvc-4"), edge_type="supersedes")
+    assert [e.from_id for e in pvc_4_incoming] == [_claim_node_id("pv_capacity", "pvc-5")]

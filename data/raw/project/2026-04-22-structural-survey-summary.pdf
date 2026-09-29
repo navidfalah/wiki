@@ -1,0 +1,127 @@
+%PDF-1.4
+1 0 obj
+<< /Type /Catalog /Pages 2 0 R >>
+endobj
+2 0 obj
+<< /Type /Pages /Kids [6 0 R] /Count 1 >>
+endobj
+3 0 obj
+<< /Type /Font /Subtype /Type1 /BaseFont /Helvetica /Encoding /WinAnsiEncoding >>
+endobj
+4 0 obj
+<< /Type /Font /Subtype /Type1 /BaseFont /Helvetica-Bold /Encoding /WinAnsiEncoding >>
+endobj
+5 0 obj
+<< /Length 1807 >>
+stream
+BT
+50 790 Td
+/F2 16 Tf
+(Structural survey: summary of findings) Tj
+0 -20 Td
+/F1 11 Tf
+() Tj
+0 -15 Td
+/F1 10 Tf
+(Client: B\374rgerEnergie Eschenbr\374ck eG. Engineer: Dr. Ines Kraft, Ingenieurb\374ro Kraft &) Tj
+0 -14 Td
+/F1 10 Tf
+(Partner. Date: 22 April 2026. Site visits: 14 and 16 April 2026.) Tj
+0 -14 Td
+/F1 10 Tf
+() Tj
+0 -14 Td
+/F1 11 Tf
+() Tj
+0 -15 Td
+/F2 12 Tf
+(Roof A - Grundschule am Lindenhof) Tj
+0 -16 Td
+/F1 10 Tf
+(Concrete flat roof, renovated in 2019. The load reserve of 0.85 kN/m2 is sufficient for a) Tj
+0 -14 Td
+/F1 10 Tf
+(ballasted east-west or south-facing system. No restrictions.) Tj
+0 -14 Td
+/F1 10 Tf
+() Tj
+0 -14 Td
+/F1 11 Tf
+() Tj
+0 -15 Td
+/F2 12 Tf
+(Roof B - Sporthalle Nord) Tj
+0 -16 Td
+/F1 10 Tf
+(Timber roof structure from 1978. The west and middle sections have a load reserve of 0.42) Tj
+0 -14 Td
+/F1 10 Tf
+(kN/m2. The east section has a load reserve of only 0.12 kN/m2 and must not carry modules.) Tj
+0 -14 Td
+/F1 10 Tf
+() Tj
+0 -14 Td
+/F1 11 Tf
+() Tj
+0 -15 Td
+/F2 12 Tf
+(Recommendation) Tj
+0 -16 Td
+/F1 10 Tf
+(With the planned Helion H-440 modules \(24.3 kg each\) and ballast, the plant should be) Tj
+0 -14 Td
+/F1 10 Tf
+(limited to approximately 165 kWp in total. Lighter modules would allow more modules on roof) Tj
+0 -14 Td
+/F1 10 Tf
+(B; the client should send the data sheet of any alternative module for a re-check.) Tj
+0 -14 Td
+/F1 10 Tf
+() Tj
+0 -14 Td
+/F1 10 Tf
+(The battery room in the school basement needs a fire door of class F90 before the battery is) Tj
+0 -14 Td
+/F1 10 Tf
+(installed.) Tj
+0 -14 Td
+/F1 10 Tf
+() Tj
+0 -14 Td
+/F1 11 Tf
+() Tj
+0 -15 Td
+/F2 12 Tf
+(Fee) Tj
+0 -16 Td
+/F1 10 Tf
+(Invoice KP-2026-007 for this survey: 4,380 euros.) Tj
+0 -14 Td
+/F1 10 Tf
+() Tj
+0 -14 Td
+ET
+BT /F1 8 Tf 50 30 Td (Structural survey summary - Sonnendach Lindenhof - 1/1) Tj ET
+endstream
+endobj
+6 0 obj
+<< /Type /Page /Parent 2 0 R /MediaBox [0 0 595 842] /Resources << /Font << /F1 3 0 R /F2 4 0 R >> >> /Contents 5 0 R >>
+endobj
+7 0 obj
+<< /Title (Structural survey summary - Sonnendach Lindenhof) /Producer (build_sample_corpus.py) /CreationDate (D:20260915120000Z) >>
+endobj
+xref
+0 8
+0000000000 65535 f 
+0000000009 00000 n 
+0000000058 00000 n 
+0000000115 00000 n 
+0000000212 00000 n 
+0000000314 00000 n 
+0000002173 00000 n 
+0000002309 00000 n 
+trailer
+<< /Size 8 /Root 1 0 R /Info 7 0 R >>
+startxref
+2457
+%%EOF

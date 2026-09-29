@@ -5,6 +5,12 @@ from __future__ import annotations
 
 import re
 
+# A ">" run at the start of a line is a Markdown blockquote marker (the
+# synthesizer flags contradictions as "> **Contradiction:** ..."); escaping
+# it to "&gt;" showed the marker as text instead of a quote block. A bare
+# ">" is harmless in MDX once every "<" is escaped.
+_BLOCKQUOTE_PREFIX_RE = re.compile(r"^([ \t]*(?:>[ \t]?)+)", re.MULTILINE)
+
 _MD_SEGMENT_RE = re.compile(
     r"(\[[^\]]*\]\([^)]*\)|```[\s\S]*?```|`[^`\n]+`)"
 )
@@ -12,7 +18,15 @@ _MD_SEGMENT_RE = re.compile(
 
 def _escape_mdx_outside_segments(text: str, *, escape_braces: bool) -> str:
     text = re.sub(r"<([^<>\s]+@[^<>\s]+)>", r"&lt;\1&gt;", text)
+    markers: list[str] = []
+
+    def keep_marker(match: re.Match[str]) -> str:
+        markers.append(match.group(1))
+        return f"\0{len(markers) - 1}\0"
+
+    text = _BLOCKQUOTE_PREFIX_RE.sub(keep_marker, text)
     text = text.replace("<", "&lt;").replace(">", "&gt;")
+    text = re.sub(r"\0(\d+)\0", lambda m: markers[int(m.group(1))], text)
     if escape_braces:
         text = text.replace("{", "&#123;").replace("}", "&#125;")
     return text

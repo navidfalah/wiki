@@ -1,0 +1,14 @@
+notes 30.4. -- call w/ Marco (Lichtbau) + Ines
+
+- statik: 165 kWp max w/ Helion (east part sporthalle = no go)
+- Ines: if modules lighter ~2 kg each -> could re-check, maybe ~400 modules ok??
+- Marco has contract ready, 220k for modules+inverters+battery+mounting
+- battery 150 kWh too expensive?? Tobias says budget tight, ask about 100 kWh
+- grid: no answer from Netze Mittelland yet (sent 18.3.!!) -> call Frau Sommer
+- F90 door for battery room: Jonas Feld (Bauamt) says municipality pays the door
+- scaffolding only in Pfingstferien, school says NO crane in the schoolyard during breaks
+
+TODO
+[ ] budget revision w/ Tobias before board mtg
+[ ] ask Marco about delivery times again, Helion "6 weeks" feels optimistic
+[x] send survey results to Hanna (89% yes!)

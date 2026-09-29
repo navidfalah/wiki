@@ -152,10 +152,10 @@ Two things, both deliberately deterministic (not left up to the LLM):
    was said in a recording, is treated as less certain than parsed text by
    default).
 
-`data/source_trust.json` ships with two example rules for this repo's sample
-data (`samples/**` and `dummy-test/**` → `unverified`, since they're
-fictional/generated) — edit it for your own domain, same pattern as
-`data/link_overrides.json`.
+`data/source_trust.json` ships with example rules for this repo's sample
+corpus (official minutes and monitoring data → `high`, the public flyer
+and FAQ → `low`; see [18-sample-domain.md](./18-sample-domain.md)) —
+edit it for your own domain, same pattern as `data/link_overrides.json`.
 
 **2. References** — `build_references()` dedupes a topic's chunk entries
 down to one row per source, and `render_references_markdown()` renders a

@@ -27,3 +27,11 @@ def test_preserves_markdown_links():
 def test_escapes_email_like_angle_brackets():
     result = sanitize_for_mdx("contact <me@example.com> now")
     assert "&lt;me@example.com&gt;" in result
+
+
+def test_keeps_blockquote_markers():
+    body = "Intro\n\n> **Contradiction:** a > b\n>> nested\n  > indented"
+    result = sanitize_for_mdx(body)
+    assert "\n> **Contradiction:** a &gt; b\n" in result
+    assert "\n>> nested" in result
+    assert "\n  > indented" in result

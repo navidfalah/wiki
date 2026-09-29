@@ -50,31 +50,31 @@ def test_run_ablation_covers_all_named_configs():
         assert 0.0 <= report.pooled_pairwise_accuracy <= 1.0
 
 
-def test_prior_weight_sweep_is_monotonic_non_increasing_on_this_dataset():
-    """Not a universal law of the algorithm — a property of this specific
-    pilot dataset (heavily corroborated/contradicted claims dominate, so
-    relying more on relational evidence and less on the static prior can
-    only help or stay flat here). Documents the actual sweep result the
-    prior_weight=0.2 default is based on."""
+def test_shipped_prior_weight_is_at_the_sweep_maximum():
+    """The evidence the prior_weight=0.2 default rests on: on this dataset
+    it reaches the best pooled pairwise accuracy of the sweep, and both
+    extremes -- relational evidence only (0.0) and the static prior only
+    (1.0) -- do worse. Not a universal law of the algorithm; re-run the
+    sweep (documentation/23) when the dataset changes."""
     dataset = load_trust_eval_dataset()
     values = [0.0, 0.2, 0.4, 0.6, 0.8, 1.0]
-    sweep = te.sweep_prior_weight(dataset, values)
+    accuracies = dict((w, r.pooled_pairwise_accuracy) for w, r in te.sweep_prior_weight(dataset, values))
 
-    accuracies = [report.pooled_pairwise_accuracy for _, report in sweep]
-    assert all(a is not None for a in accuracies)
-    assert accuracies == sorted(accuracies, reverse=True)
-    # The static extreme (prior_weight=1.0) should be the worst point.
-    assert accuracies[-1] == min(accuracies)
+    assert all(a is not None for a in accuracies.values())
+    assert DEFAULT_CONFIG.prior_weight == 0.2
+    assert accuracies[0.2] == max(accuracies.values())
+    assert accuracies[0.0] < accuracies[0.2]
+    assert accuracies[1.0] < accuracies[0.2]
 
 
 def test_group_result_returns_none_metrics_when_no_bad_claims_present():
-    """meshsync_relay_battery_drain_root_cause has zero superseded/incorrect/
-    disputed claims — precision@1/pairwise accuracy are undefined there, and
+    """The dividend group has zero superseded/incorrect/
+    disputed claims (only scope-dependent ones) — precision@1/pairwise accuracy are undefined there, and
     should report None rather than a misleadingly perfect 1.0."""
     dataset = load_trust_eval_dataset()
     report = te.evaluate_config(dataset, DEFAULT_CONFIG, "full_default")
     dispute_free = next(
-        g for g in report.group_results if g.group_id == "meshsync_relay_battery_drain_root_cause"
+        g for g in report.group_results if g.group_id == "dividend"
     )
     assert dispute_free.n_bad == 0
     assert dispute_free.precision_at_1 is None
@@ -84,7 +84,7 @@ def test_group_result_returns_none_metrics_when_no_bad_claims_present():
 
 def test_simulate_isolated_claim_shows_a_bad_claim_scoring_higher_when_cut_off_from_evidence():
     """The concrete answer to 'does an entity-resolution error upstream
-    compound into a worse trust score': nri-1 is a superseded (bad) claim
+    compound into a worse trust score': pvc-4 (the survey's 165 kWp) is a superseded (bad) claim
     whose low score depends entirely on its contradicts/supersedes edges.
     Wrongly isolating it (what a false-negative entity merge would cause,
     per export_claim_group()'s cross-group edge dropping) removes that
@@ -92,7 +92,7 @@ def test_simulate_isolated_claim_shows_a_bad_claim_scoring_higher_when_cut_off_f
     bad claim looking more trustworthy after the simulated error, not
     less, which is the whole point of naming this as a real risk."""
     dataset = load_trust_eval_dataset()
-    report = te.simulate_isolated_claim(dataset, "nova_read_interval", "nri-1")
+    report = te.simulate_isolated_claim(dataset, "pv_capacity", "pvc-4")
 
     assert report.gold_label == "superseded"
     assert report.score_when_wrongly_isolated > report.score_when_correctly_grouped
@@ -109,9 +109,9 @@ def test_simulate_isolated_claim_isolated_score_is_prior_only():
     from trust_propagation import _prior_score
 
     dataset = load_trust_eval_dataset()
-    group = next(g for g in dataset.claim_groups if g.id == "nova_read_interval")
-    claim = next(c for c in group.claims if c.id == "nri-1")
+    group = next(g for g in dataset.claim_groups if g.id == "pv_capacity")
+    claim = next(c for c in group.claims if c.id == "pvc-4")
 
-    report = te.simulate_isolated_claim(dataset, "nova_read_interval", "nri-1")
+    report = te.simulate_isolated_claim(dataset, "pv_capacity", "pvc-4")
     expected_prior = _prior_score(claim, load_trust_config())
     assert report.score_when_wrongly_isolated == expected_prior

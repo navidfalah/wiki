@@ -1,0 +1,43 @@
+{
+  "plant": "Sonnendach Lindenhof",
+  "operator": "BürgerEnergie Eschenbrück eG",
+  "snapshot_utc": "2026-09-15T06:00:00Z",
+  "peak_power_kwp": 171.6,
+  "energy_since_commissioning_kwh": 21615,
+  "inverters": [
+    {
+      "id": "WR-1",
+      "model": "Kestrel K-60",
+      "state": "ok",
+      "strings": 8,
+      "energy_kwh": 7641
+    },
+    {
+      "id": "WR-2",
+      "model": "Kestrel K-60",
+      "state": "ok",
+      "strings": 8,
+      "energy_kwh": 7598
+    },
+    {
+      "id": "WR-3",
+      "model": "Kestrel K-60",
+      "state": "warning",
+      "strings": 7,
+      "energy_kwh": 6376,
+      "active_warnings": [
+        {
+          "code": "ISO-217",
+          "text": "Isolation resistance low on string 7 (180 kOhm, limit 500 kOhm)",
+          "first_seen": "2026-09-03T05:58:00Z",
+          "occurrences": 6
+        }
+      ]
+    }
+  ],
+  "battery": {
+    "capacity_kwh": 100,
+    "state_of_charge_pct": 18,
+    "cycles": 24
+  }
+}

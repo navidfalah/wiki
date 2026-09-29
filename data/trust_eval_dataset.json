@@ -1,6 +1,6 @@
 {
-  "version": 1,
-  "description": "Hand-labeled pilot set for evaluating trust propagation over the compiler's own corpus. Every claim is a real, verbatim quote from a file under data/raw/ (source_path is relative to data/raw/) — nothing here is synthetic text invented for the dataset, though the underlying corpus itself is the repo's fictional Aurora Labs / TeaBuddy sample domain. See documentation/21-trust-eval-dataset.md for labeling protocol and known limitations.",
+  "version": 2,
+  "description": "Hand-labeled set for evaluating trust propagation and temporal reasoning over the compiler's own sample corpus. Every claim is a verbatim quote from a file under data/raw/ (source_path is relative to data/raw/; PDF/DOCX/XLSX/PPTX/EML quotes are matched against the text the pipeline extracts). The corpus is the fictional BürgerEnergie Eschenbrück eG sample domain (documentation/18-sample-domain.md). See documentation/21-trust-eval-dataset.md for the labeling protocol.",
   "gold_labels": {
     "correct": "Current, authoritative value for this claim group.",
     "incorrect": "Actively wrong; not just outdated, factually false when it was written.",
@@ -15,496 +15,896 @@
   ],
   "claim_groups": [
     {
-      "id": "nova_read_interval",
-      "domain": "aurora",
-      "subject": "Nova Widget default sensor read interval",
-      "description": "How often a Nova Widget takes a reading by default. Kickoff notes said hourly; every source from the May 15 spec onward says 15 minutes and explicitly calls the hourly figure a mistake.",
+      "id": "pv_capacity",
+      "domain": "sonnendach",
+      "subject": "Sonnendach Lindenhof peak power (kWp)",
+      "description": "The first concept and the grant application said 198 kWp; the structural survey limited the plant to about 165 kWp with the planned modules; the switch to lighter Nordlicht NL-430 modules made 399 modules = 171.6 kWp possible, which is what was built.",
       "claims": [
         {
-          "id": "nri-1",
-          "source_path": "notes/2026-05-01-kickoff-notes.md",
-          "source_type": "text",
-          "date": "2026-05-01",
-          "value": "hourly",
-          "quote": "Power target | 2 years on CR2032 with hourly readings",
+          "id": "pvc-1",
+          "source_path": "meetings/2026-01-20-board-minutes.docx",
+          "source_type": "file",
+          "date": "2026-01-20",
+          "quote": "First estimate: about 198 kWp with 450 modules of the type Helion H-440",
+          "value": "198 kWp",
           "gold_label": "superseded",
-          "note": "Earliest source; superseded two weeks later by the spec."
+          "note": "First concept, before the structural survey."
         },
         {
-          "id": "nri-2",
-          "source_path": "articles/2026-05-15-product-spec-draft.md",
-          "source_type": "text",
-          "date": "2026-05-15",
-          "value": "15 minutes",
-          "quote": "Default: every 15 minutes when mesh is active. [...] Note: kickoff notes mentioned hourly default; this spec changes to 15 min for beta feedback.",
-          "gold_label": "correct",
-          "note": "First source to state 15 min and explicitly flag the kickoff figure as changed."
+          "id": "pvc-2",
+          "source_path": "project/2026-02-10-foerderantrag-klimakommunal.pdf",
+          "source_type": "file",
+          "date": "2026-02-10",
+          "quote": "Die Genossenschaft plant eine Photovoltaikanlage mit 198 kWp",
+          "value": "198 kWp",
+          "gold_label": "superseded",
+          "note": "Grant application repeats the concept figure."
         },
         {
-          "id": "nri-3",
-          "source_path": "samples/emails/[SAMPLE]-2026-07-01-beta-invite-batch.txt",
-          "source_type": "text",
-          "date": "2026-07-01",
-          "value": "15 minutes",
-          "quote": "Default read interval: 15 minutes (ignore old PDF saying hourly).",
-          "gold_label": "correct",
-          "note": "Corroborates nri-2; explicitly disclaims the old (hourly) figure."
+          "id": "pvc-3",
+          "source_path": "public/2026-03-15-mitglieder-flyer.html",
+          "source_type": "file",
+          "date": "2026-03-15",
+          "quote": "Die BürgerEnergie Eschenbrück eG baut eine Solaranlage mit 198 kWp",
+          "value": "198 kWp",
+          "gold_label": "superseded",
+          "note": "Public flyer, printed before the survey."
         },
         {
-          "id": "nri-4",
-          "source_path": "samples/support/[SAMPLE]-2026-07-01-ticket-2201-battery-docs.txt",
-          "source_type": "text",
-          "date": "2026-07-01",
-          "value": "15 minutes",
-          "quote": "Depends on node count and read interval (15 min default).",
-          "gold_label": "correct",
-          "note": "Corroborates nri-2."
+          "id": "pvc-4",
+          "source_path": "project/2026-04-22-structural-survey-summary.pdf",
+          "source_type": "file",
+          "date": "2026-04-22",
+          "quote": "the plant should be limited to approximately 165 kWp in total",
+          "value": "about 165 kWp",
+          "gold_label": "superseded",
+          "note": "Correct for the Helion modules; replaced once lighter modules were chosen."
         },
         {
-          "id": "nri-5",
-          "source_path": "2026-07-02-aurora-meshsync-release-notes.md",
-          "source_type": "text",
-          "date": "2026-07-02",
-          "value": "15 minutes",
-          "quote": "Default read interval remains 15 minutes (NOT hourly — kickoff slides were wrong)",
-          "gold_label": "correct",
-          "note": "Explicitly contradicts nri-1 by name (\"kickoff slides\")."
-        },
-        {
-          "id": "nri-6",
-          "source_path": "dummy-test/2026-07-07-power-budget-spreadsheet-notes.txt",
-          "source_type": "text",
-          "date": "2026-07-07",
-          "value": "15 minutes",
-          "quote": "Read interval: 15 min (spec authoritative)",
-          "gold_label": "correct",
-          "note": "Corroborates nri-2, cites the spec as the authority."
-        },
-        {
-          "id": "nri-7",
-          "source_path": "dummy-test/2026-07-08-customer-onboarding-faq.md",
-          "source_type": "text",
-          "date": "2026-07-08",
-          "value": "15 minutes",
-          "quote": "15 minutes. Some older docs say hourly — that was a kickoff mistake.",
-          "gold_label": "correct",
-          "note": "Corroborates nri-2; names the kickoff notes as the origin of the error."
-        },
-        {
-          "id": "nri-8",
-          "source_path": "emails/2026-06-02-meshsync-battery-report.eml",
+          "id": "pvc-5",
+          "source_path": "emails/2026-05-12-lichtbau-modulverzoegerung.eml",
           "source_type": "email",
-          "date": "2026-06-02",
-          "value": "15 minutes",
-          "quote": "Read interval is set to 15 minutes per the current firmware default (0.3.8), so this isn't an interval misconfiguration.",
+          "date": "2026-05-12",
+          "quote": "That is 399 modules, i.e. 171.6 kWp in total.",
+          "value": "171.6 kWp",
           "gold_label": "correct",
-          "note": "Corroborates nri-2 from an independent (email) channel."
+          "note": "First source with the final figure, re-checked by the engineer."
+        },
+        {
+          "id": "pvc-6",
+          "source_path": "emails/2026-05-13-re-modulverzoegerung.eml",
+          "source_type": "email",
+          "date": "2026-05-13",
+          "quote": "The plant will therefore have 171.6 kWp instead of the 198 kWp in the grant application",
+          "value": "171.6 kWp",
+          "gold_label": "correct",
+          "note": "Board decision; names the old figure explicitly."
+        },
+        {
+          "id": "pvc-7",
+          "source_path": "emails/2026-06-24-netzanschlusszusage.eml",
+          "source_type": "email",
+          "date": "2026-06-24",
+          "quote": "wir bestätigen den Netzanschluss für Ihre Photovoltaikanlage mit 171,6 kWp",
+          "value": "171.6 kWp",
+          "gold_label": "correct",
+          "note": "Grid operator, independent channel (German decimal comma)."
+        },
+        {
+          "id": "pvc-8",
+          "source_path": "emails/2026-08-19-inbetriebnahme-bericht.eml",
+          "source_type": "email",
+          "date": "2026-08-19",
+          "quote": "399 x Nordlicht NL-430, 171.6 kWp",
+          "value": "171.6 kWp",
+          "gold_label": "correct",
+          "note": "As built."
+        },
+        {
+          "id": "pvc-9",
+          "source_path": "press/2026-08-22-eschenbruecker-anzeiger.md",
+          "source_type": "text",
+          "date": "2026-08-22",
+          "quote": "leisten zusammen 171,6 Kilowatt Peak",
+          "value": "171.6 kWp",
+          "gold_label": "correct",
+          "note": "Newspaper, after commissioning."
         }
       ],
       "relations": [
         {
-          "from": "nri-2",
-          "to": "nri-1",
+          "from": "pvc-2",
+          "to": "pvc-1",
+          "type": "corroborates"
+        },
+        {
+          "from": "pvc-3",
+          "to": "pvc-2",
+          "type": "corroborates"
+        },
+        {
+          "from": "pvc-4",
+          "to": "pvc-2",
           "type": "supersedes"
         },
         {
-          "from": "nri-3",
-          "to": "nri-1",
+          "from": "pvc-5",
+          "to": "pvc-4",
+          "type": "supersedes"
+        },
+        {
+          "from": "pvc-6",
+          "to": "pvc-2",
           "type": "contradicts"
         },
         {
-          "from": "nri-4",
-          "to": "nri-2",
+          "from": "pvc-6",
+          "to": "pvc-5",
           "type": "corroborates"
         },
         {
-          "from": "nri-5",
-          "to": "nri-1",
-          "type": "contradicts"
-        },
-        {
-          "from": "nri-5",
-          "to": "nri-2",
+          "from": "pvc-7",
+          "to": "pvc-5",
           "type": "corroborates"
         },
         {
-          "from": "nri-6",
-          "to": "nri-2",
+          "from": "pvc-8",
+          "to": "pvc-5",
           "type": "corroborates"
         },
         {
-          "from": "nri-7",
-          "to": "nri-1",
-          "type": "contradicts"
-        },
-        {
-          "from": "nri-8",
-          "to": "nri-2",
+          "from": "pvc-9",
+          "to": "pvc-8",
           "type": "corroborates"
         }
       ]
     },
     {
-      "id": "nova_battery_cell_type",
-      "domain": "aurora",
-      "subject": "Nova Widget battery cell type",
-      "description": "CR2032 is the correct cell. An early version of a competitor's teardown blog said CR2450; the blog post itself was later corrected in place, and the error is independently reported in a team transcript and the customer FAQ.",
+      "id": "commissioning_date",
+      "domain": "sonnendach",
+      "subject": "Sonnendach Lindenhof commissioning date",
+      "description": "Planned for June (15 June in the project plan), moved to mid-July by the module delay, then to 1 August because the grid operator had to upgrade the transformer station; the plant was actually energised on 19 August 2026.",
       "claims": [
         {
-          "id": "nbc-1",
-          "source_path": "notes/2026-05-01-kickoff-notes.md",
-          "source_type": "text",
-          "date": "2026-05-01",
-          "value": "CR2032",
-          "quote": "Power target | 2 years on CR2032 with hourly readings",
-          "gold_label": "correct",
-          "note": "Correct on cell type even though this same source is wrong on read interval (see nova_read_interval) — a reminder that trust should be scored per-claim, not per-source."
-        },
-        {
-          "id": "nbc-2",
-          "source_path": "articles/2026-05-15-product-spec-draft.md",
-          "source_type": "text",
-          "date": "2026-05-15",
-          "value": "CR2032",
-          "quote": "Battery: CR2032 primary cell",
-          "gold_label": "correct",
-          "note": "Corroborates nbc-1."
-        },
-        {
-          "id": "nbc-3",
-          "source_path": "articles/2026-05-20-competitor-teardown-blog.md",
-          "source_type": "text",
-          "date": "2026-05-21",
-          "value": "CR2450 (prior version); corrected to CR2032",
-          "quote": "An earlier version of this post said Nova used a CR2450 battery. That was wrong — the beta unit uses CR2032. Apologies to Aurora Labs.",
+          "id": "cd-1",
+          "source_path": "project/2026-02-10-foerderantrag-klimakommunal.pdf",
+          "source_type": "file",
+          "date": "2026-02-10",
+          "quote": "Geplante Inbetriebnahme: Juni 2026.",
+          "value": "June 2026",
           "gold_label": "superseded",
-          "note": "Self-correcting source: the file's current text documents its own prior error inline, dated one day after the original post."
+          "note": "Original plan."
         },
         {
-          "id": "nbc-4",
-          "source_path": "samples/transcripts/[SAMPLE]-2026-06-19-mira-jonah-battery-debate.txt",
-          "source_type": "text",
-          "date": "2026-06-19",
-          "value": "CR2450 was wrong; CR2032 is correct",
-          "quote": "Alex's blog had the wrong battery. CR2450. We use two-oh-three-two.",
-          "gold_label": "correct",
-          "note": "Independent (spoken/transcript) confirmation that CR2450 was an error and CR2032 is correct."
+          "id": "cd-2",
+          "source_path": "project/2026-03-02-project-plan.docx",
+          "source_type": "file",
+          "date": "2026-03-02",
+          "quote": "Commissioning | 15 June 2026 | Lichtbau / Netze Mittelland",
+          "value": "15 June 2026",
+          "gold_label": "superseded",
+          "note": "Project plan milestone."
         },
         {
-          "id": "nbc-5",
-          "source_path": "dummy-test/2026-07-07-power-budget-spreadsheet-notes.txt",
-          "source_type": "text",
-          "date": "2026-07-07",
-          "value": "CR2032",
-          "quote": "CR2032 nominal 220mAh (not 240 — datasheet variance)",
-          "gold_label": "correct",
-          "note": "Corroborates nbc-1/nbc-2."
+          "id": "cd-3",
+          "source_path": "public/2026-03-15-mitglieder-flyer.html",
+          "source_type": "file",
+          "date": "2026-03-15",
+          "quote": "Inbetriebnahme: Juni 2026",
+          "value": "June 2026",
+          "gold_label": "superseded",
+          "note": "Flyer repeats the plan."
         },
         {
-          "id": "nbc-6",
-          "source_path": "dummy-test/2026-07-08-customer-onboarding-faq.md",
-          "source_type": "text",
-          "date": "2026-07-08",
-          "value": "CR2032; CR2450 explicitly flagged as wrong",
-          "quote": "CR2032. Some blog posts incorrectly said CR2450 — corrected in wiki.",
+          "id": "cd-4",
+          "source_path": "emails/2026-05-13-re-modulverzoegerung.eml",
+          "source_type": "email",
+          "date": "2026-05-13",
+          "quote": "Commissioning target is now mid-July 2026.",
+          "value": "mid-July 2026",
+          "gold_label": "superseded",
+          "note": "Module substitution delay."
+        },
+        {
+          "id": "cd-5",
+          "source_path": "presentations/2026-06-13-agm-slides.pptx",
+          "source_type": "file",
+          "date": "2026-06-13",
+          "quote": "Commissioning: mid-July 2026",
+          "value": "mid-July 2026",
+          "gold_label": "superseded",
+          "note": "General assembly slides."
+        },
+        {
+          "id": "cd-6",
+          "source_path": "emails/2026-06-24-netzanschlusszusage.eml",
+          "source_type": "email",
+          "date": "2026-06-24",
+          "quote": "Die Zuschaltung der Anlage ist deshalb frühestens ab dem 1. August 2026 möglich.",
+          "value": "1 August 2026 at the earliest",
           "gold_label": "correct",
-          "note": "Corroborates nbc-1/nbc-2 and explicitly names the CR2450 error (matches nbc-3)."
+          "note": "A constraint (earliest possible date), not a date; the July target was based on it but is a different value, so no corroborates edge."
+        },
+        {
+          "id": "cd-7",
+          "source_path": "meetings/2026-07-15-board-minutes.md",
+          "source_type": "text",
+          "date": "2026-07-15",
+          "quote": "New commissioning target: 1 August 2026.",
+          "value": "1 August 2026",
+          "gold_label": "superseded",
+          "note": "Board target after the grid operator's letter."
+        },
+        {
+          "id": "cd-8",
+          "source_path": "emails/2026-08-19-inbetriebnahme-bericht.eml",
+          "source_type": "email",
+          "date": "2026-08-19",
+          "quote": "the plant was energised today, 19 August 2026, at 10:42",
+          "value": "19 August 2026",
+          "gold_label": "correct",
+          "note": "Installer's commissioning report."
+        },
+        {
+          "id": "cd-9",
+          "source_path": "press/2026-08-22-eschenbruecker-anzeiger.md",
+          "source_type": "text",
+          "date": "2026-08-22",
+          "quote": "Am 19. August hat die BürgerEnergie Eschenbrück eG ihre neue Solaranlage in Betrieb genommen.",
+          "value": "19 August 2026",
+          "gold_label": "correct",
+          "note": "Newspaper."
+        },
+        {
+          "id": "cd-10",
+          "source_path": "monitoring/site-config.yaml",
+          "source_type": "file",
+          "date": "2026-08-19",
+          "quote": "commissioned: 2026-08-19",
+          "value": "19 August 2026",
+          "gold_label": "correct",
+          "note": "Monitoring configuration."
         }
       ],
       "relations": [
         {
-          "from": "nbc-2",
-          "to": "nbc-1",
+          "from": "cd-2",
+          "to": "cd-1",
           "type": "corroborates"
         },
         {
-          "from": "nbc-3",
-          "to": "nbc-2",
-          "type": "contradicts"
-        },
-        {
-          "from": "nbc-4",
-          "to": "nbc-3",
-          "type": "contradicts"
-        },
-        {
-          "from": "nbc-4",
-          "to": "nbc-2",
+          "from": "cd-3",
+          "to": "cd-1",
           "type": "corroborates"
         },
         {
-          "from": "nbc-5",
-          "to": "nbc-2",
+          "from": "cd-4",
+          "to": "cd-2",
+          "type": "supersedes"
+        },
+        {
+          "from": "cd-5",
+          "to": "cd-4",
           "type": "corroborates"
         },
         {
-          "from": "nbc-6",
-          "to": "nbc-2",
+          "from": "cd-7",
+          "to": "cd-4",
+          "type": "supersedes"
+        },
+        {
+          "from": "cd-8",
+          "to": "cd-7",
+          "type": "supersedes"
+        },
+        {
+          "from": "cd-9",
+          "to": "cd-8",
           "type": "corroborates"
         },
         {
-          "from": "nbc-6",
-          "to": "nbc-3",
-          "type": "contradicts"
+          "from": "cd-10",
+          "to": "cd-8",
+          "type": "corroborates"
         }
       ]
     },
     {
-      "id": "nova_battery_life_claim",
-      "domain": "aurora",
-      "subject": "Nova Widget battery life claim (marketing vs. engineering)",
-      "description": "Not a simple true/false pair: marketing's 24-month figure and engineering's 18-month figure describe different deployment sizes. But the power-budget notes reveal the marketing figure additionally rests on the debunked hourly read interval, which moves it from merely scope-dependent to disputed.",
+      "id": "battery_capacity",
+      "domain": "sonnendach",
+      "subject": "Battery storage capacity",
+      "description": "Planned at 150 kWh, reduced to 100 kWh for budget reasons in May; the July FAQ still says 150 kWh although it was written after the change.",
       "claims": [
         {
-          "id": "nbl-1",
-          "source_path": "articles/2026-05-15-product-spec-draft.md",
+          "id": "bc-1",
+          "source_path": "project/2026-03-02-project-plan.docx",
+          "source_type": "file",
+          "date": "2026-03-02",
+          "quote": "Battery storage: 150 kWh in the school basement.",
+          "value": "150 kWh",
+          "gold_label": "superseded",
+          "note": "Original plan."
+        },
+        {
+          "id": "bc-2",
+          "source_path": "public/2026-03-15-mitglieder-flyer.html",
+          "source_type": "file",
+          "date": "2026-03-15",
+          "quote": "Batteriespeicher: 150 kWh",
+          "value": "150 kWh",
+          "gold_label": "superseded",
+          "note": "Flyer, printed before the change."
+        },
+        {
+          "id": "bc-3",
+          "source_path": "emails/2026-05-13-re-modulverzoegerung.eml",
+          "source_type": "email",
+          "date": "2026-05-13",
+          "quote": "We also reduce the battery from 150 kWh to 100 kWh",
+          "value": "100 kWh",
+          "gold_label": "correct",
+          "note": "Board decision."
+        },
+        {
+          "id": "bc-4",
+          "source_path": "finance/2026-05-18-budget-revision.xlsx",
+          "source_type": "file",
+          "date": "2026-05-18",
+          "quote": "Battery storage 100 kWh, 1, 54000, 54000, reduced from 150 kWh",
+          "value": "100 kWh",
+          "gold_label": "correct",
+          "note": "Budget revision."
+        },
+        {
+          "id": "bc-5",
+          "source_path": "meetings/2026-06-13-generalversammlung-protokoll.md",
           "source_type": "text",
-          "date": "2026-05-15",
-          "value": "24 months (marketing, moderate mesh ≤ 5 nodes)",
-          "quote": "Marketing target: 24 months at 15-minute intervals in moderate mesh (≤ 5 nodes).",
+          "date": "2026-06-13",
+          "quote": "Der Batteriespeicher wurde aus Kostengründen auf 100 kWh verkleinert.",
+          "value": "100 kWh",
+          "gold_label": "correct",
+          "note": "General assembly minutes."
+        },
+        {
+          "id": "bc-6",
+          "source_path": "public/faq.md",
+          "source_type": "text",
+          "date": "2026-07-20",
+          "quote": "Yes, a 150 kWh battery in the school basement stores midday power for the afternoon.",
+          "value": "150 kWh",
+          "gold_label": "incorrect",
+          "note": "Written in July, two months after the reduction: wrong when written, not merely outdated."
+        },
+        {
+          "id": "bc-7",
+          "source_path": "emails/2026-08-19-inbetriebnahme-bericht.eml",
+          "source_type": "email",
+          "date": "2026-08-19",
+          "quote": "battery storage 100 kWh, first charge completed at 14:10",
+          "value": "100 kWh",
+          "gold_label": "correct",
+          "note": "As built."
+        },
+        {
+          "id": "bc-8",
+          "source_path": "monitoring/2026-09-15-inverter-status.json",
+          "source_type": "file",
+          "date": "2026-09-15",
+          "quote": "\"capacity_kwh\": 100",
+          "value": "100 kWh",
+          "gold_label": "correct",
+          "note": "Monitoring snapshot."
+        }
+      ],
+      "relations": [
+        {
+          "from": "bc-2",
+          "to": "bc-1",
+          "type": "corroborates"
+        },
+        {
+          "from": "bc-3",
+          "to": "bc-1",
+          "type": "supersedes"
+        },
+        {
+          "from": "bc-4",
+          "to": "bc-3",
+          "type": "corroborates"
+        },
+        {
+          "from": "bc-5",
+          "to": "bc-3",
+          "type": "corroborates"
+        },
+        {
+          "from": "bc-6",
+          "to": "bc-3",
+          "type": "contradicts"
+        },
+        {
+          "from": "bc-7",
+          "to": "bc-3",
+          "type": "corroborates"
+        },
+        {
+          "from": "bc-7",
+          "to": "bc-6",
+          "type": "contradicts"
+        },
+        {
+          "from": "bc-8",
+          "to": "bc-7",
+          "type": "corroborates"
+        }
+      ]
+    },
+    {
+      "id": "share_price",
+      "domain": "cooperative",
+      "subject": "Price of one cooperative share",
+      "description": "A share costs 250 euros throughout; the March flyer's 200 euros is a printing error that the board corrected.",
+      "claims": [
+        {
+          "id": "sp-1",
+          "source_path": "meetings/2026-01-20-board-minutes.docx",
+          "source_type": "file",
+          "date": "2026-01-20",
+          "quote": "The share price stays at 250 euros per share",
+          "value": "250 EUR",
+          "gold_label": "correct",
+          "note": "Board minutes."
+        },
+        {
+          "id": "sp-2",
+          "source_path": "project/2026-02-10-foerderantrag-klimakommunal.pdf",
+          "source_type": "file",
+          "date": "2026-02-10",
+          "quote": "Ein Geschäftsanteil kostet 250 Euro.",
+          "value": "250 EUR",
+          "gold_label": "correct",
+          "note": "Grant application."
+        },
+        {
+          "id": "sp-3",
+          "source_path": "public/2026-03-15-mitglieder-flyer.html",
+          "source_type": "file",
+          "date": "2026-03-15",
+          "quote": "Ein Anteil kostet nur 200 Euro",
+          "value": "200 EUR",
+          "gold_label": "incorrect",
+          "note": "Printing error."
+        },
+        {
+          "id": "sp-4",
+          "source_path": "meetings/2026-06-13-generalversammlung-protokoll.md",
+          "source_type": "text",
+          "date": "2026-06-13",
+          "quote": "der Vorstand stellt klar, dass ein Anteil weiterhin 250 Euro kostet",
+          "value": "250 EUR",
+          "gold_label": "correct",
+          "note": "Clarified at the general assembly."
+        },
+        {
+          "id": "sp-5",
+          "source_path": "emails/2026-07-09-re-mitgliederfrage-anteil.eml",
+          "source_type": "email",
+          "date": "2026-07-09",
+          "quote": "Ein Anteil kostet 250 Euro. Die 200 Euro auf dem Flyer vom März sind ein Druckfehler",
+          "value": "250 EUR",
+          "gold_label": "correct",
+          "note": "Treasurer's reply, names the flyer error."
+        },
+        {
+          "id": "sp-6",
+          "source_path": "meetings/2026-07-15-board-minutes.md",
+          "source_type": "text",
+          "date": "2026-07-15",
+          "quote": "The March flyer said a share costs 200 euros; the correct price is 250 euros.",
+          "value": "250 EUR",
+          "gold_label": "correct",
+          "note": "Board minutes."
+        },
+        {
+          "id": "sp-7",
+          "source_path": "public/faq.md",
+          "source_type": "text",
+          "date": "2026-07-20",
+          "quote": "250 euros. Each member can hold up to 40 shares.",
+          "value": "250 EUR",
+          "gold_label": "correct",
+          "note": "FAQ."
+        }
+      ],
+      "relations": [
+        {
+          "from": "sp-2",
+          "to": "sp-1",
+          "type": "corroborates"
+        },
+        {
+          "from": "sp-4",
+          "to": "sp-3",
+          "type": "contradicts"
+        },
+        {
+          "from": "sp-5",
+          "to": "sp-3",
+          "type": "contradicts"
+        },
+        {
+          "from": "sp-5",
+          "to": "sp-1",
+          "type": "corroborates"
+        },
+        {
+          "from": "sp-6",
+          "to": "sp-3",
+          "type": "contradicts"
+        },
+        {
+          "from": "sp-7",
+          "to": "sp-1",
+          "type": "corroborates"
+        }
+      ]
+    },
+    {
+      "id": "member_count",
+      "domain": "cooperative",
+      "subject": "Number of cooperative members",
+      "description": "388 at the end of 2025, 412 at the general assembly in June, 419 by mid-July. Each older figure was right on its date.",
+      "claims": [
+        {
+          "id": "mc-1",
+          "source_path": "meetings/2026-01-20-board-minutes.docx",
+          "source_type": "file",
+          "date": "2026-01-20",
+          "quote": "Tobias reported 388 members holding 5,912 shares at the end of 2025.",
+          "value": "388",
+          "gold_label": "superseded",
+          "note": "End of 2025."
+        },
+        {
+          "id": "mc-2",
+          "source_path": "project/2026-02-10-foerderantrag-klimakommunal.pdf",
+          "source_type": "file",
+          "date": "2026-02-10",
+          "quote": "Die Genossenschaft hat 388 Mitglieder.",
+          "value": "388",
+          "gold_label": "superseded",
+          "note": "February."
+        },
+        {
+          "id": "mc-3",
+          "source_path": "meetings/2026-06-13-generalversammlung-protokoll.md",
+          "source_type": "text",
+          "date": "2026-06-13",
+          "quote": "Anwesend: 97 von 412 Mitgliedern",
+          "value": "412",
+          "gold_label": "superseded",
+          "note": "13 June."
+        },
+        {
+          "id": "mc-4",
+          "source_path": "presentations/2026-06-13-agm-slides.pptx",
+          "source_type": "file",
+          "date": "2026-06-13",
+          "quote": "412 members (388 at the end of 2025)",
+          "value": "412",
+          "gold_label": "superseded",
+          "note": "13 June."
+        },
+        {
+          "id": "mc-5",
+          "source_path": "finance/2026-06-30-member-shares-by-year.csv",
+          "source_type": "file",
+          "date": "2026-06-30",
+          "quote": "2026-H1, 24, 412, 330, 6242",
+          "value": "412",
+          "gold_label": "superseded",
+          "note": "30 June."
+        },
+        {
+          "id": "mc-6",
+          "source_path": "meetings/2026-07-15-board-minutes.md",
+          "source_type": "text",
+          "date": "2026-07-15",
+          "quote": "Membership is now 419 (412 at the general assembly, plus seven new members",
+          "value": "419",
+          "gold_label": "correct",
+          "note": "15 July, the latest count."
+        },
+        {
+          "id": "mc-7",
+          "source_path": "press/2026-08-22-eschenbruecker-anzeiger.md",
+          "source_type": "text",
+          "date": "2026-08-22",
+          "quote": "Die Genossenschaft hat inzwischen über 400 Mitglieder.",
+          "value": "over 400",
+          "gold_label": "correct",
+          "note": "Rounded, consistent with 419."
+        }
+      ],
+      "relations": [
+        {
+          "from": "mc-2",
+          "to": "mc-1",
+          "type": "corroborates"
+        },
+        {
+          "from": "mc-3",
+          "to": "mc-1",
+          "type": "supersedes"
+        },
+        {
+          "from": "mc-4",
+          "to": "mc-3",
+          "type": "corroborates"
+        },
+        {
+          "from": "mc-5",
+          "to": "mc-3",
+          "type": "corroborates"
+        },
+        {
+          "from": "mc-6",
+          "to": "mc-3",
+          "type": "supersedes"
+        },
+        {
+          "from": "mc-7",
+          "to": "mc-6",
+          "type": "corroborates"
+        }
+      ]
+    },
+    {
+      "id": "module_type",
+      "domain": "sonnendach",
+      "subject": "Solar module type",
+      "description": "Helion H-440 was planned; a 14-week delivery delay led to Nordlicht NL-430 in May.",
+      "claims": [
+        {
+          "id": "mt-1",
+          "source_path": "project/2026-02-10-foerderantrag-klimakommunal.pdf",
+          "source_type": "file",
+          "date": "2026-02-10",
+          "quote": "Vorgesehen sind 450 Module vom Typ Helion H-440",
+          "value": "Helion H-440",
+          "gold_label": "superseded",
+          "note": "Grant application."
+        },
+        {
+          "id": "mt-2",
+          "source_path": "project/2026-03-02-project-plan.docx",
+          "source_type": "file",
+          "date": "2026-03-02",
+          "quote": "198 kWp, 450 x Helion H-440.",
+          "value": "Helion H-440",
+          "gold_label": "superseded",
+          "note": "Project plan."
+        },
+        {
+          "id": "mt-3",
+          "source_path": "emails/2026-05-13-re-modulverzoegerung.eml",
+          "source_type": "email",
+          "date": "2026-05-13",
+          "quote": "please go ahead with 399 x Nordlicht NL-430",
+          "value": "Nordlicht NL-430",
+          "gold_label": "correct",
+          "note": "Board decision."
+        },
+        {
+          "id": "mt-4",
+          "source_path": "finance/2026-05-18-budget-revision.xlsx",
+          "source_type": "file",
+          "date": "2026-05-18",
+          "quote": "Module, Helion H-440, Nordlicht NL-430, 14-week delivery delay",
+          "value": "Nordlicht NL-430",
+          "gold_label": "correct",
+          "note": "Budget change log."
+        },
+        {
+          "id": "mt-5",
+          "source_path": "meetings/2026-06-13-generalversammlung-protokoll.md",
+          "source_type": "text",
+          "date": "2026-06-13",
+          "quote": "nun 399 Module vom Typ Nordlicht NL-430 bestellt",
+          "value": "Nordlicht NL-430",
+          "gold_label": "correct",
+          "note": "General assembly minutes."
+        },
+        {
+          "id": "mt-6",
+          "source_path": "monitoring/site-config.yaml",
+          "source_type": "file",
+          "date": "2026-08-19",
+          "quote": "type: Nordlicht NL-430",
+          "value": "Nordlicht NL-430",
+          "gold_label": "correct",
+          "note": "Monitoring configuration."
+        }
+      ],
+      "relations": [
+        {
+          "from": "mt-2",
+          "to": "mt-1",
+          "type": "corroborates"
+        },
+        {
+          "from": "mt-3",
+          "to": "mt-2",
+          "type": "supersedes"
+        },
+        {
+          "from": "mt-4",
+          "to": "mt-3",
+          "type": "corroborates"
+        },
+        {
+          "from": "mt-5",
+          "to": "mt-3",
+          "type": "corroborates"
+        },
+        {
+          "from": "mt-6",
+          "to": "mt-3",
+          "type": "corroborates"
+        }
+      ]
+    },
+    {
+      "id": "heat_pump_pilot",
+      "domain": "cooperative",
+      "subject": "Freibad heat pump pilot timing",
+      "description": "Planned for autumn 2026 until the July board meeting postponed it to spring 2027.",
+      "claims": [
+        {
+          "id": "hp-1",
+          "source_path": "project/2026-03-02-project-plan.docx",
+          "source_type": "file",
+          "date": "2026-03-02",
+          "quote": "planned as a follow-up project for autumn 2026",
+          "value": "autumn 2026",
+          "gold_label": "superseded",
+          "note": "Project plan."
+        },
+        {
+          "id": "hp-2",
+          "source_path": "presentations/2026-06-13-agm-slides.pptx",
+          "source_type": "file",
+          "date": "2026-06-13",
+          "quote": "Pilot planned for autumn 2026",
+          "value": "autumn 2026",
+          "gold_label": "superseded",
+          "note": "General assembly slides."
+        },
+        {
+          "id": "hp-3",
+          "source_path": "meetings/2026-06-13-generalversammlung-protokoll.md",
+          "source_type": "text",
+          "date": "2026-06-13",
+          "quote": "Die Wärmepumpe für das Freibad Eschenbrück soll im Herbst 2026 als Pilotprojekt geplant werden.",
+          "value": "autumn 2026",
+          "gold_label": "superseded",
+          "note": "General assembly minutes."
+        },
+        {
+          "id": "hp-4",
+          "source_path": "meetings/2026-07-15-board-minutes.md",
+          "source_type": "text",
+          "date": "2026-07-15",
+          "quote": "Decision: the heat pump pilot is postponed to spring 2027.",
+          "value": "spring 2027",
+          "gold_label": "correct",
+          "note": "Board decision."
+        },
+        {
+          "id": "hp-5",
+          "source_path": "public/faq.md",
+          "source_type": "text",
+          "date": "2026-07-20",
+          "quote": "The pilot has been postponed to spring 2027.",
+          "value": "spring 2027",
+          "gold_label": "correct",
+          "note": "FAQ."
+        },
+        {
+          "id": "hp-6",
+          "source_path": "press/2026-08-22-eschenbruecker-anzeiger.md",
+          "source_type": "text",
+          "date": "2026-08-22",
+          "quote": "Die geplante Wärmepumpe für das Freibad soll im Frühjahr 2027 folgen.",
+          "value": "spring 2027",
+          "gold_label": "correct",
+          "note": "Newspaper."
+        }
+      ],
+      "relations": [
+        {
+          "from": "hp-2",
+          "to": "hp-1",
+          "type": "corroborates"
+        },
+        {
+          "from": "hp-3",
+          "to": "hp-1",
+          "type": "corroborates"
+        },
+        {
+          "from": "hp-4",
+          "to": "hp-3",
+          "type": "supersedes"
+        },
+        {
+          "from": "hp-5",
+          "to": "hp-4",
+          "type": "corroborates"
+        },
+        {
+          "from": "hp-6",
+          "to": "hp-4",
+          "type": "corroborates"
+        }
+      ]
+    },
+    {
+      "id": "dividend",
+      "domain": "cooperative",
+      "subject": "Dividend rate",
+      "description": "2.0 % for 2025 and a 3 % target from 2027: different years, not a contradiction.",
+      "claims": [
+        {
+          "id": "dv-1",
+          "source_path": "meetings/2026-06-13-generalversammlung-protokoll.md",
+          "source_type": "text",
+          "date": "2026-06-13",
+          "quote": "Für 2025 wird eine Dividende von 2,0 % ausgeschüttet",
+          "value": "2.0 % (2025)",
           "gold_label": "scope_dependent",
-          "note": "As stated here, scoped to <=5 nodes at 15-min intervals — internally consistent."
+          "note": "Applies to 2025."
         },
         {
-          "id": "nbl-2",
-          "source_path": "articles/2026-05-15-product-spec-draft.md",
+          "id": "dv-2",
+          "source_path": "meetings/2026-06-13-generalversammlung-protokoll.md",
           "source_type": "text",
-          "date": "2026-05-15",
-          "value": "18 months minimum (engineering, 10 nodes)",
-          "quote": "Internal engineering target: 18 months minimum at 10 nodes — do not publish externally.",
-          "gold_label": "correct",
-          "note": "Stress-case internal figure; treated as the authoritative number for the worst-case deployment."
+          "date": "2026-06-13",
+          "quote": "Ab dem Geschäftsjahr 2027 strebt die Genossenschaft eine Dividende von 3 % an.",
+          "value": "3 % (from 2027)",
+          "gold_label": "scope_dependent",
+          "note": "Target from 2027."
         },
         {
-          "id": "nbl-3",
-          "source_path": "2026-07-02-aurora-meshsync-release-notes.md",
-          "source_type": "text",
-          "date": "2026-07-02",
-          "value": "engineering 18mo @ 10 nodes; marketing may still say 2yr",
-          "quote": "Battery life: engineering 18mo @ 10 nodes; marketing may still say 2yr",
-          "gold_label": "correct",
-          "note": "Corroborates nbl-1/nbl-2 and flags the marketing/engineering divergence as still unresolved as of this release."
-        },
-        {
-          "id": "nbl-4",
-          "source_path": "dummy-test/2026-07-07-power-budget-spreadsheet-notes.txt",
-          "source_type": "text",
-          "date": "2026-07-07",
-          "value": "~18 months (engineering, from measured mAh/day)",
-          "quote": "Total ~0.19 mAh/day → ~18 months (engineering claim)",
-          "gold_label": "correct",
-          "note": "Corroborates nbl-2 with a bottom-up power calculation."
-        },
-        {
-          "id": "nbl-5",
-          "source_path": "dummy-test/2026-07-07-power-budget-spreadsheet-notes.txt",
-          "source_type": "text",
-          "date": "2026-07-07",
-          "value": "2 years (marketing, relies on wrong read interval)",
-          "quote": "Marketing slide \"2 years\" assumes 6 nodes + optimistic cell + hourly reads (WRONG interval)",
-          "gold_label": "disputed",
-          "note": "Downgraded from scope_dependent to disputed: this source shows the marketing figure's inputs include the hourly read interval, which nova_read_interval's gold labels mark superseded/incorrect. A propagation algorithm that only looks within this claim group cannot see that dependency — flagged as a known limitation in the methodology doc."
-        }
-      ],
-      "relations": [
-        {
-          "from": "nbl-2",
-          "to": "nbl-1",
-          "type": "contradicts"
-        },
-        {
-          "from": "nbl-3",
-          "to": "nbl-1",
-          "type": "corroborates"
-        },
-        {
-          "from": "nbl-3",
-          "to": "nbl-2",
-          "type": "corroborates"
-        },
-        {
-          "from": "nbl-4",
-          "to": "nbl-2",
-          "type": "corroborates"
-        },
-        {
-          "from": "nbl-5",
-          "to": "nbl-4",
-          "type": "contradicts"
-        },
-        {
-          "from": "nbl-5",
-          "to": "nbl-1",
-          "type": "corroborates"
-        }
-      ]
-    },
-    {
-      "id": "teabuddy_herbal_preset_timing",
-      "domain": "teabuddy",
-      "subject": "TeaBuddy herbal steep preset timing constant",
-      "description": "A single changelog entry documents its own contradiction: the firmware constant (7:00) was aligned to fix a mismatch with marketing copy (5:00). Only one raw source currently documents this, so both claims share it — a candidate for follow-up ingestion (e.g. the marketing copy itself) in a future dataset version.",
-      "claims": [
-        {
-          "id": "thp-1",
-          "source_path": "dummy-test/2026-07-01-firmware-changelog.md",
-          "source_type": "text",
-          "date": "2026-06-XX (marketing copy, undated; referenced retroactively)",
-          "value": "5:00",
-          "quote": "Herbal preset constant aligned to 7:00 (was 5:00 in marketing copy — CONTRADICTION fixed in firmware only)",
-          "gold_label": "superseded",
-          "note": "The 5:00 value as it existed in marketing copy prior to this fix; not independently sourced yet."
-        },
-        {
-          "id": "thp-2",
-          "source_path": "dummy-test/2026-07-01-firmware-changelog.md",
-          "source_type": "text",
-          "date": "2026-07-01",
-          "value": "7:00",
-          "quote": "Herbal preset constant aligned to 7:00 (was 5:00 in marketing copy — CONTRADICTION fixed in firmware only)",
-          "gold_label": "correct",
-          "note": "Current firmware value as of the v0.9.4 changelog entry; the source itself notes the fix has not propagated back to marketing copy."
-        }
-      ],
-      "relations": [
-        {
-          "from": "thp-2",
-          "to": "thp-1",
-          "type": "supersedes"
-        }
-      ]
-    },
-    {
-      "id": "meshsync_relay_battery_drain_root_cause",
-      "domain": "aurora",
-      "subject": "MeshSync relay-mode battery drain root cause (MESH-118)",
-      "description": "A clean, undisputed corroboration chain across three emails: a field report, an engineering confirmation with root cause, and a beta announcement of the fix. Included as a contrast case with no contradictions, so a propagation algorithm is checked against over-penalizing agreement as much as it is checked against under-penalizing disputes.",
-      "claims": [
-        {
-          "id": "mrd-1",
-          "source_path": "emails/2026-06-02-meshsync-battery-report.eml",
+          "id": "dv-3",
+          "source_path": "emails/2026-07-09-re-mitgliederfrage-anteil.eml",
           "source_type": "email",
-          "date": "2026-06-02",
-          "value": "Relay mode drains battery ~30% faster than spec; suspected cause: relay radio not sleeping between hops",
-          "quote": "Batch 4 field units are reporting battery drain roughly 30% faster than spec once MeshSync relay mode is enabled. [...] Suspect the relay radio is staying awake between hops instead of sleeping. Filed as MESH-118.",
-          "gold_label": "correct",
-          "note": "Initial field report; hypothesis, later confirmed."
+          "date": "2026-07-09",
+          "quote": "Die Dividende von 2,0 % für 2025 wurde am 30. Juni 2026 ausgezahlt.",
+          "value": "2.0 % (2025)",
+          "gold_label": "scope_dependent",
+          "note": "Applies to 2025."
         },
         {
-          "id": "mrd-2",
-          "source_path": "emails/2026-06-03-meshsync-battery-reply.eml",
-          "source_type": "email",
-          "date": "2026-06-03",
-          "value": "Confirmed: sleep timer resets on every received packet; fix reduces radio wake time 400ms -> 80ms per hop",
-          "quote": "Confirmed on the bench. The relay radio's sleep timer resets on every received packet, so a busy mesh never lets it sleep. Draft fix in MESH-118 drops radio wake time from 400ms to 80ms per hop.",
-          "gold_label": "correct",
-          "note": "Independent engineering confirmation of mrd-1's hypothesis with root cause and a concrete fix."
-        },
-        {
-          "id": "mrd-3",
-          "source_path": "emails/2026-06-10-nova-widget-beta-invite.eml",
-          "source_type": "email",
-          "date": "2026-06-10",
-          "value": "0.3.9 candidate ships the MESH-118 fix",
-          "quote": "0.3.9 is up for the batch 4 retest — this build addresses the MeshSync relay battery drain reported earlier this week (MESH-118).",
-          "gold_label": "correct",
-          "note": "Corroborates mrd-1/mrd-2 by referencing the same ticket and rolling the fix into a beta build."
+          "id": "dv-4",
+          "source_path": "presentations/2026-06-13-agm-slides.pptx",
+          "source_type": "file",
+          "date": "2026-06-13",
+          "quote": "Target from 2027: 3 %",
+          "value": "3 % (from 2027)",
+          "gold_label": "scope_dependent",
+          "note": "Target from 2027."
         }
       ],
       "relations": [
         {
-          "from": "mrd-2",
-          "to": "mrd-1",
+          "from": "dv-3",
+          "to": "dv-1",
           "type": "corroborates"
         },
         {
-          "from": "mrd-3",
-          "to": "mrd-2",
-          "type": "corroborates"
-        },
-        {
-          "from": "mrd-3",
-          "to": "mrd-1",
-          "type": "corroborates"
-        }
-      ]
-    },
-    {
-      "id": "nova_ip_rating",
-      "domain": "aurora",
-      "subject": "Nova Widget enclosure IP rating (beta vs. GA)",
-      "description": "Every source agrees on the same status: IP54 for beta units, with an IP65 tooled variant planned but blocked on a ~$8k gasket tooling cost, later confirmed deferred. Included as a strongly-corroborating (non-contradictory) claim group to balance the dataset, which otherwise skews toward disputed/superseded cases — this tests that propagation does not manufacture disagreement where sources actually agree, and gives the graph more genuine corroborates edges to propagate over.",
-      "claims": [
-        {
-          "id": "nip-1",
-          "source_path": "articles/2026-05-15-product-spec-draft.md",
-          "source_type": "text",
-          "date": "2026-05-15",
-          "value": "IP54 beta; IP65 planned for GA (~$8k gasket tooling)",
-          "quote": "IP54 for beta units. IP65 planned for GA if gasket tooling budget allows (~$8k).",
-          "gold_label": "correct",
-          "note": "Earliest source; establishes the baseline status other sources corroborate."
-        },
-        {
-          "id": "nip-2",
-          "source_path": "transcripts/2026-05-28-weekly-sync.md",
-          "source_type": "text",
-          "date": "2026-05-28",
-          "value": "IP54 beta; IP65 pending the $8k tool",
-          "quote": "IP54 is fine for beta; IP65 needs the $8k tool Mira mentioned in the spec.",
-          "gold_label": "correct",
-          "note": "Jonah corroborates the spec draft two weeks later."
-        },
-        {
-          "id": "nip-3",
-          "source_path": "notes/2026-06-01-standup-scribbles.txt",
-          "source_type": "text",
-          "date": "2026-06-01",
-          "value": "IP54 ok; IP65 blocked on the $8k tool",
-          "quote": "IP54 ok. IP65 = $8k tool rip",
-          "gold_label": "correct",
-          "note": "Informal standup note, same status as nip-1/nip-2."
-        },
-        {
-          "id": "nip-4",
-          "source_path": "samples/specs/[SAMPLE]-2026-07-03-nova-widget-hardware-rev-C.md",
-          "source_type": "text",
-          "date": "2026-07-03",
-          "value": "IP54 splash; IP65 deferred ($7,850 quote)",
-          "quote": "IP65 tooled variant deferred ($7,850 quote)",
-          "gold_label": "correct",
-          "note": "A more precise tooling quote ($7,850) refining the earlier ~$8k estimate, not a conflicting figure — corroborates rather than contradicts."
-        },
-        {
-          "id": "nip-5",
-          "source_path": "samples/2026-07-04-investor-update-draft.txt",
-          "source_type": "text",
-          "date": "2026-07-04",
-          "value": "IP54 beta shipping; IP65 tooling ($8k) deferred",
-          "quote": "IP65 tooling $8k deferred; shipping IP54 beta with clear splash-resistance language",
-          "gold_label": "correct",
-          "note": "Latest source; confirms the deferred status as of the investor update."
-        }
-      ],
-      "relations": [
-        {
-          "from": "nip-2",
-          "to": "nip-1",
-          "type": "corroborates"
-        },
-        {
-          "from": "nip-3",
-          "to": "nip-1",
-          "type": "corroborates"
-        },
-        {
-          "from": "nip-4",
-          "to": "nip-1",
-          "type": "corroborates"
-        },
-        {
-          "from": "nip-5",
-          "to": "nip-1",
+          "from": "dv-4",
+          "to": "dv-2",
           "type": "corroborates"
         }
       ]

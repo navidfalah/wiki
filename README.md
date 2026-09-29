@@ -12,7 +12,7 @@ Personal knowledge base built on the **[Karpathy LLM Wiki pattern](https://gist.
 > still describe the old Docusaurus/React stack in deep-dive code samples;
 > where they conflict with [documentation/11-wiki-app-and-dashboards.md](./documentation/11-wiki-app-and-dashboards.md), that doc is current.
 
-The sample domain is fictional **Aurora Labs** (open IoT sensors), cross-linked with **TeaBuddy** (BLE tea timers), **Nova Health** (wearables), and **GreenGrid Energy** (home energy mesh). Replace these with your own topic when ready.
+The sample corpus is a fictional citizens' energy cooperative, **BürgerEnergie Eschenbrück eG**, building a rooftop solar plant on the village school: 30 English and German sources in 15 file formats, with facts that change over time and a few deliberately wrong sources ([documentation/18-sample-domain.md](./documentation/18-sample-domain.md)). Replace it with your own topic when ready.
 
 ---
 
@@ -27,7 +27,7 @@ The sample domain is fictional **Aurora Labs** (open IoT sensors), cross-linked 
 7. [API server](#api-server)
 8. [Wiki app and dashboards](#wiki-app-and-dashboards)
 9. [Connect your own database (PostgreSQL)](#connect-your-own-database-postgresql)
-10. [Dummy data generation](#dummy-data-generation)
+10. [Sample data](#sample-data)
 11. [Data layout](#data-layout)
 12. [Configuration](#configuration)
 13. [Deployment (wissensbau.de)](#deployment-wissensbaude)
@@ -162,12 +162,8 @@ wiki/
 │   ├── raw_folders.py           # data/raw/ folder create/delete/move (ported to backend/src/lib/rawFolders.ts)
 │   ├── temp_output/             # Draft pages + index.json (pre-link)
 │   ├── tests/                   # pytest suite (pure logic + fake-LLM pipeline tests)
-│   ├── scripts/dev/generate_dummy_data.py          # Dispatcher CLI for the generators below
-│   ├── scripts/dev/generate_junk_data.py           # 10 Aurora Labs seed files
-│   ├── scripts/dev/generate_bulk_dummy_data.py     # [SAMPLE] + procedural bulk generators
-│   ├── scripts/dev/generate_varied_dummy_data.py   # Large multi-type varied files
-│   ├── scripts/dev/generate_extended_dummy_data.py # Wave-2 curated sample set
-│   ├── scripts/dev/keep_aurora_raw.py              # Archive non-Aurora raw files
+│   ├── scripts/build_sample_corpus.py  # Writes the sample corpus into data/raw/
+│   ├── scripts/seed_pages.py           # Hand-written seed wiki pages for it
 │   └── requirements.txt
 │
 ├── backend/                     # Express + TypeScript API server
@@ -514,168 +510,24 @@ Sample-container credentials are configurable in `.env` (`POSTGRES_DB`, `POSTGRE
 
 ---
 
-## Dummy data generation
+## Sample data
 
-Four Python scripts populate fictional test data for pipeline stress-testing. All write under `data/raw/` (or subdirectories). Files are safe to delete; regenerate with `--overwrite`.
-
-### Markers and naming
-
-| Marker | Meaning | Typical location |
-|--------|---------|------------------|
-| `[SAMPLE]` | Curated narrative samples (Aurora + TeaBuddy storylines) | `data/raw/samples/` |
-| `[DUMMY TEST DATA]` | Procedural or labeled test content | Body text prefix |
-| `[DUMMY-TEST-DATA]` | Procedural filename prefix | `bulk/`, `varied-samples/`, etc. |
-
-### Fictional domains
-
-| Company | Slug | Domain |
-|---------|------|--------|
-| **Aurora Labs** | `aurora` | IoT mesh sensors (Nova Widget, MeshSync) |
-| **TeaBuddy** | `teabuddy` | BLE smart tea puck |
-| **Nova Health** | `nova-health` | Clinical wearables (PulsePatch) |
-| **GreenGrid Energy** | `greengrid` | Home energy mesh (GreenGrid Hub) |
-
-Recurring characters: Mira Chen, Jonah Park, Sam Rivera, Alex Kim, Jamie Lo, and others. Intentional **contradictions** (battery life, read interval, herbal preset timing) exercise cross-linking and audit tools.
-
----
-
-### `scripts/dev/generate_junk_data.py` — seed Aurora Labs junk (10 files)
-
-Original Karpathy-style messy notes: standups, grocery lists, forum scrapes, voice memos.
+`compiler/scripts/build_sample_corpus.py` writes the sample corpus into
+`data/raw/`. Its 30 files cover a fictional energy cooperative's solar
+project in 15 formats: PDF, DOCX, XLSX, PPTX, EML, CSV, TSV, JSON, YAML,
+LOG, HTML, MD, TXT, PNG and ZIP. The output is deterministic, so
+re-running it does not change committed files.
 
 ```bash
 cd compiler
-python scripts/dev/generate_junk_data.py
-python scripts/dev/generate_junk_data.py --overwrite
-python scripts/dev/generate_junk_data.py --output ../data/raw
+python scripts/build_sample_corpus.py [--clean] [--out DIR]
+python scripts/seed_pages.py && python moc_generator.py   # seed wiki pages without an LLM
+python main.py --force                                    # or a real compile (needs an LLM)
 ```
 
-**Output:** `data/raw/notes/`, `transcripts/`, `articles/`, `ideas/` (10 predefined files).
-
----
-
-### `scripts/dev/generate_bulk_dummy_data.py` — bulk [SAMPLE] + procedural files
-
-Unified CLI for three generation modes.
-
-```bash
-cd compiler
-
-# Default: 20 [SAMPLE] files in samples/ + 85 procedural [DUMMY TEST DATA] files
-python scripts/dev/generate_bulk_dummy_data.py
-
-# Only legacy [SAMPLE] narrative set (20 files)
-python scripts/dev/generate_bulk_dummy_data.py --samples-only
-
-# Only procedural [DUMMY TEST DATA] files (default count: 85)
-python scripts/dev/generate_bulk_dummy_data.py --dummy-only
-
-# Procedural count and sequence offset
-python scripts/dev/generate_bulk_dummy_data.py --dummy-only --count 200 --start-seq 100
-
-# Write procedural files only under one subdir
-python scripts/dev/generate_bulk_dummy_data.py --dummy-only --only-subdir bulk --count 50
-
-# Large varied files (delegates to scripts/dev/generate_varied_dummy_data.py)
-python scripts/dev/generate_bulk_dummy_data.py --varied-only
-python scripts/dev/generate_bulk_dummy_data.py --varied-only --count 50 --min-bytes 5000 --max-bytes 20000
-
-# Replace existing files
-python scripts/dev/generate_bulk_dummy_data.py --overwrite
-
-# Custom output root
-python scripts/dev/generate_bulk_dummy_data.py --output /path/to/data/raw
-```
-
-**Flags summary:**
-
-| Flag | Default | Description |
-|------|---------|-------------|
-| `--overwrite` | off | Replace existing files |
-| `--output PATH` | `data/raw/` | Output root |
-| `--count N` | 85 (procedural) / 35 (varied) | Number of files to generate |
-| `--start-seq N` | 1 | First sequence number for procedural filenames |
-| `--samples-only` | off | Only `[SAMPLE]` files under `samples/` |
-| `--dummy-only` | off | Only procedural `[DUMMY TEST DATA]` files |
-| `--varied-only` | off | Only large varied files (see below) |
-| `--only-subdir DIR` | all | Restrict procedural output to one subdir (`bulk`, `notes`, …) |
-| `--min-bytes` | 3000 | Min size for `--varied-only` |
-| `--max-bytes` | 12000 | Max size for `--varied-only` |
-
-**Procedural subdirs:** `bulk/`, `dummy-test/`, `notes/`, `transcripts/`, `specs/`, `emails/`, `samples/bulk/`
-
-**Doc kinds (procedural):** meeting notes, spec drafts, email threads, research dumps, retros, support tickets, partner memos, forum scrapes.
-
----
-
-### `scripts/dev/generate_varied_dummy_data.py` — large multi-type files (10 doc types)
-
-Generates **35 files by default** (3–15 KB each) under `data/raw/varied-samples/{type}/`.
-
-**Document types:**
-
-| Type slug | Extension | Description |
-|-----------|-----------|-------------|
-| `transcript` | `.txt` | Meeting transcript fragments |
-| `prd` | `.md` | Product requirements documents |
-| `email` | `.txt` | Email thread exports |
-| `research` | `.md` | Competitive/technical research |
-| `adr` | `.md` | Architecture decision records |
-| `changelog` | `.md` | Firmware/release changelogs |
-| `faq` | `.md` | Support FAQ pages |
-| `chat-log` | `.txt` | Slack-style chat exports |
-| `interview` | `.txt` | User interview transcripts |
-| `spec` | `.md` | Hardware/firmware spec fragments |
-
-```bash
-cd compiler
-python scripts/dev/generate_varied_dummy_data.py
-python scripts/dev/generate_varied_dummy_data.py --count 50 --overwrite
-python scripts/dev/generate_varied_dummy_data.py --min-bytes 8000 --max-bytes 25000
-python scripts/dev/generate_varied_dummy_data.py --clean --overwrite   # wipe varied-samples/ first
-python scripts/dev/generate_varied_dummy_data.py --stats-only          # print size stats without writing
-```
-
-Also invokable via `scripts/dev/generate_bulk_dummy_data.py --varied-only`.
-
----
-
-### `scripts/dev/generate_extended_dummy_data.py` — wave-2 curated set (42 files)
-
-Hand-authored wave-2 content: firmware changelogs, QA matrices, investor drafts, MQTT schema, legal snippets, social scrapes, and more `[SAMPLE]` files across new categories (`emails/`, `research/`, `specs/`, `legal/`, `social/`).
-
-```bash
-cd compiler
-python scripts/dev/generate_extended_dummy_data.py
-python scripts/dev/generate_extended_dummy_data.py --overwrite
-python scripts/dev/generate_extended_dummy_data.py --output ../data/raw
-```
-
-**Output locations:**
-
-- `data/raw/dummy-test/` — operational docs (changelog, QA matrix, slack dump, …)
-- `data/raw/samples/notes/`, `articles/`, `transcripts/`, `ideas/`, `support/`, `forums/`, `emails/`, `research/`, `specs/`, `legal/`, `social/`
-
----
-
-### Recommended generation workflow
-
-```bash
-# Minimal seed data for first compile
-python compiler/scripts/dev/generate_junk_data.py
-
-# Rich narrative + bulk procedural data
-python compiler/scripts/dev/generate_bulk_dummy_data.py --overwrite
-
-# Wave-2 curated samples
-python compiler/scripts/dev/generate_extended_dummy_data.py --overwrite
-
-# Large files for chunk/linker stress tests
-python compiler/scripts/dev/generate_varied_dummy_data.py --overwrite
-
-# Full recompile
-cd compiler && python main.py --force
-```
+The corpus, its deliberate contradictions and the datasets built on it are
+described in [documentation/18-sample-domain.md](./documentation/18-sample-domain.md)
+and [documentation/09-test-data-generation.md](./documentation/09-test-data-generation.md).
 
 ---
 
@@ -684,20 +536,12 @@ cd compiler && python main.py --force
 ```
 data/
 ├── raw/                         # All compiler input (text, .eml, images, audio, files — recursive)
-│   ├── notes/                   # Standups, scribbles (seed + generated)
-│   ├── transcripts/             # Meeting/support transcripts
-│   ├── articles/                # Spec fragments, blog scrapes
-│   ├── ideas/                   # Brainstorms, backlogs
-│   ├── emails/                  # Email threads
-│   ├── specs/                   # Product/hardware specs
-│   ├── dummy-test/              # Labeled [DUMMY TEST DATA] ops docs
-│   ├── bulk/                    # Procedural bulk generator output
-│   ├── samples/                 # [SAMPLE] curated narrative files
-│   │   ├── notes/, articles/, … # Organized sample categories
-│   │   └── bulk/                # Nested bulk samples
-│   └── varied-samples/          # Large multi-type test files
-│       ├── transcript/, prd/, email/, …
-│       └── (one subdir per doc type)
+│   ├── meetings/, project/      # Minutes, transcript, grant application, plan, survey
+│   ├── finance/, emails/        # Budget workbook, member shares, .eml threads
+│   ├── presentations/, public/  # Slides, flyer, FAQ
+│   ├── press/, survey/          # Newspaper article, member survey
+│   ├── monitoring/              # Production CSV, battery TSV, logger LOG, status JSON, YAML
+│   └── media/, archive/         # Roof layout PNG, invoice ZIP
 │
 ├── state.json                   # Per-file MD5, chunk extractions, run history
 ├── link_overrides.json          # Manual knowledge-graph connections (version 1)
@@ -866,7 +710,7 @@ Run all compiler commands from `compiler/` with the venv activated, or use `buil
 No raw files found under data/raw/
 ```
 
-Ensure at least one `.txt` or `.md` file exists under `data/raw/`. Run `python scripts/dev/generate_junk_data.py` for seed data.
+Ensure at least one source file exists under `data/raw/`. Run `python scripts/build_sample_corpus.py` (from `compiler/`) to restore the sample corpus.
 
 ### YAML front matter errors
 
@@ -925,7 +769,7 @@ Production `baseUrl` is `/<repo>/`. Local dev uses `/`. Broken link warnings in 
 - Generated output lives in `wiki-app/docs/` and `compiler/temp_output/`
 - Do not commit `.env`, `.llm-cache.sqlite`, or local venvs
 
-Replace the Aurora Labs sample domain with your own topic by clearing `data/raw/`, adding your sources, and running `python main.py --force`.
+Replace the sample cooperative domain with your own topic by clearing `data/raw/`, adding your sources, and running `python main.py --force`.
 
 ---
 

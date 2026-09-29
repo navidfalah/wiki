@@ -19,10 +19,10 @@ Run compiler commands from `compiler/` with venv active, or use `build_wiki.sh`.
 No raw files found under data/raw/
 ```
 
-Ensure at least one `.txt` or `.md` exists under `data/raw/`:
+Ensure at least one source file exists under `data/raw/`, or restore the sample corpus:
 
 ```bash
-cd compiler && python scripts/dev/generate_junk_data.py
+cd compiler && python scripts/build_sample_corpus.py
 ```
 
 ## YAML front matter errors

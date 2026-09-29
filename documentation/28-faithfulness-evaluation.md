@@ -158,6 +158,24 @@ mismatch between casual source notes and formal generated prose dominates
 it. `python faithfulness_heuristic.py`'s own output leads with the ranking
 (worst pages first) rather than the aggregate percentage for this reason.
 
+## Offline groundedness on the current corpus (2026-09-29)
+
+Two fixes changed what `check_corpus_groundedness()` measures:
+
+1. **Sources are read the way the pipeline reads them.** It used to call
+   `read_text()` on every cited source, so a page built from a PDF, DOCX,
+   XLSX or PPTX source was compared with raw bytes and could never count as
+   grounded. It now uses `source_text.read_source_text()` (the extracted
+   text, and the parsed body for `.eml`).
+2. **HTML comments are not page content.** The compiler's AUTO-GENERATED
+   banner was being scored as two unsupported sentences on every page.
+
+On the 26 seed pages (doc 18) and their sources: **199 checkable
+sentences, 94.5 % supported**. Most unsupported sentences are English
+summaries of German sources (the general assembly minutes, the roof lease),
+which a word-overlap check cannot match. The seed pages were written by
+hand, so this number measures the heuristic, not the compiler.
+
 ## Next
 
 - [24-extraction-critic.md](./24-extraction-critic.md) — the same "requires a live model to measure, mechanism-tested without one" pattern applied to wiki synthesis instead of chat

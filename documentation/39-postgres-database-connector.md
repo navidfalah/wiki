@@ -93,16 +93,21 @@ Same posture as IMAP in 34-external-connectors.md, adapted for SQL:
 
 `docker compose up` (no profile flag needed) also starts a `postgres`
 service (`postgres:16-alpine`) seeded once via
-`docker/postgres/init.sql` — a small fictional Aurora Labs internal
-knowledge base, reusing the same sample domain as
-`scripts/dev/generate_junk_data.py`:
+`docker/postgres/init.sql` — a small internal knowledge base for the same
+fictional energy cooperative as the sample corpus in `data/raw/` (see
+[18-sample-domain.md](./18-sample-domain.md)):
 
 | Table | Contents |
 |-------|----------|
-| `departments` | 3 rows — Hardware Engineering, Firmware, Customer Success |
-| `employees` | 5 rows — name, title, department, bio |
-| `projects` | 4 rows — Nova Widget, MeshSync v3, Field Diagnostics App, Solar Harvester Module |
-| `kb_articles` | 4 rows — troubleshooting/FAQ/architecture/runbook articles about the Nova Widget sensor mesh |
+| `departments` | 3 rows — the working groups Technik, Finanzen, Mitgliederservice |
+| `employees` | 5 rows — board members and volunteers: name, role, group, bio |
+| `projects` | 4 rows — Bürgerhaus PV, Feuerwehrhaus PV, Sonnendach Lindenhof, Freibad heat pump |
+| `kb_articles` | 4 rows — member FAQs and an inverter-warning runbook |
+
+The table names and the default credentials (`aurora_kb` and friends) are
+kept from the earlier sample domain so existing local volumes keep working;
+Postgres only runs `init.sql` on an empty volume
+(`docker compose down -v` to re-seed).
 
 This container is entirely optional scaffolding for trying the feature
 end to end — the connector itself works against *any* reachable Postgres

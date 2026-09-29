@@ -1,0 +1,10 @@
+2026-09-14T04:30:02Z INFO  logger started, firmware 2.8.1, 3 inverters configured
+2026-09-14T05:41:17Z INFO  WR-1 feed-in started
+2026-09-14T05:41:40Z INFO  WR-2 feed-in started
+2026-09-14T05:44:03Z WARN  WR-3 ISO-217 isolation resistance low on string 7 (180 kOhm)
+2026-09-14T06:12:55Z INFO  WR-3 ISO-217 cleared, feed-in started
+2026-09-14T09:00:00Z INFO  battery SoC 41 %, charging 22.4 kW
+2026-09-14T12:00:00Z INFO  plant output 121.8 kW, school load 38.1 kW
+2026-09-14T15:00:00Z INFO  battery SoC 100 %, charging stopped
+2026-09-14T18:59:31Z INFO  all inverters in night mode
+2026-09-14T19:00:00Z INFO  daily yield 772 kWh

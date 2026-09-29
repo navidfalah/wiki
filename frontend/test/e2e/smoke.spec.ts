@@ -87,20 +87,20 @@ test('raw file previews are served with nosniff', async ({ page }) => {
 
 test('page history records an edit, shows the diff, and restores it', async ({ page }) => {
   await logIn(page);
-  const docUrl = '/api/docs/aurora-labs.md';
+  const docUrl = '/api/docs/buergerenergie-eschenbrueck.md';
   const original: string = (await (await page.request.get(docUrl)).json()).body;
   const marker = 'E2E history marker line';
   try {
     const edit = await page.request.put(docUrl, { data: { body: `${original}\n\n${marker}\n` } });
     expect(edit.ok()).toBe(true);
 
-    await page.goto('/wiki/aurora-labs/history');
+    await page.goto('/wiki/buergerenergie-eschenbrueck/history');
     await expect(page.locator('table tbody tr').first()).toContainText(/Before edit/);
     await expect(page.locator('.bg-green-50', { hasText: marker })).toHaveCount(1);
 
     page.once('dialog', (dialog) => dialog.accept());
     await page.click('#history-restore-btn');
-    await expect(page).toHaveURL(/\/wiki\/aurora-labs$/);
+    await expect(page).toHaveURL(/\/wiki\/buergerenergie-eschenbrueck$/);
     const restored: string = (await (await page.request.get(docUrl)).json()).body;
     expect(restored).not.toContain(marker);
   } finally {
@@ -111,7 +111,7 @@ test('page history records an edit, shows the diff, and restores it', async ({ p
 
 test('search answers a typed question and deep-links resource and email hits', async ({ page }) => {
   await logIn(page);
-  await page.goto('/search?q=' + encodeURIComponent('What battery cell does the Nova Widget use?'));
+  await page.goto('/search?q=' + encodeURIComponent('How large is the battery storage in the school basement?'));
   await expect(page.locator('#search-count')).toHaveText(/\d+ results?/);
 
   await page.click('.search-filter[data-filter="resource"]');
@@ -122,13 +122,13 @@ test('search answers a typed question and deep-links resource and email hits', a
   // The modal wrapper has no box of its own (its child is position: fixed), so check its heading.
   await expect(page.locator('#preview-modal h2')).toHaveText(resourcePath);
 
-  await page.goto('/search?q=' + encodeURIComponent('MESH-118 relay radio sleep timer'));
+  await page.goto('/search?q=' + encodeURIComponent('Helion module delivery delay Nordlicht'));
   await page.click('.search-filter[data-filter="email"]');
   const emailHit = page.locator('#search-results a[href^="/resources?tab=emails&open="]').first();
   await expect(emailHit).toBeVisible();
   await emailHit.click();
   await expect(page.locator('#email-modal h2')).toBeVisible();
-  await expect(page.locator('#email-body')).toContainText(/sleep timer/i);
+  await expect(page.locator('#email-body')).toContainText(/14 weeks/i);
 });
 
 test('admin can create, download, restore and delete a backup', async ({ page }) => {
@@ -154,7 +154,7 @@ test('admin can create, download, restore and delete a backup', async ({ page })
     made.push(...after.filter((n) => n.includes('pre-restore') && !before.includes(n)));
 
     // Restoring the backup we just took leaves the wiki as it was.
-    const res = await page.goto('/wiki/aurora-labs');
+    const res = await page.goto('/wiki/buergerenergie-eschenbrueck');
     expect(res?.status()).toBe(200);
   } finally {
     for (const name of made) await page.request.delete(`/api/admin/backups/${encodeURIComponent(name)}`);
@@ -181,7 +181,7 @@ test('dashboard: status cards link out, "/" focuses search, Ask opens a new chat
   await expect(page.locator('#dashboard-q')).toBeFocused();
 
   const before: string[] = (await (await page.request.get('/api/chat/sessions')).json()).sessions.map((s: { id: string }) => s.id);
-  const question = 'E2E dashboard question about Aurora Labs';
+  const question = 'E2E dashboard question about the Sonnendach Lindenhof';
   try {
     await page.keyboard.type(question);
     await page.click('button[formaction="/chat"]');

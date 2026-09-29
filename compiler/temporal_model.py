@@ -84,9 +84,25 @@ def build_group_timeline(group: ClaimGroup) -> dict[str, TemporalFact]:
     being current exactly when B's valid_from begins. If a superseding
     claim's own date can't be parsed, the superseded claim is left with
     valid_until=None (still counted current) rather than guessed at —
-    consistent with never inventing a date this module wasn't given."""
+    consistent with never inventing a date this module wasn't given.
+
+    Supersession then carries across `corroborates` edges: corroborating
+    claims assert the same value, so when one of them is replaced, an
+    earlier claim repeating that value is replaced at the same moment.
+    Without this, only the one claim an annotator drew the supersedes edge
+    to stopped being current, and every other source still repeating the
+    old value (a flyer, a grant application) counted as a present-day
+    answer. A corroborating claim dated on or after the replacement is a
+    fresh assertion, not a stale copy, and is left alone."""
     valid_from = {claim.id: parse_valid_time(claim.date) for claim in group.claims}
     valid_until: dict[str, date | None] = {claim.id: None for claim in group.claims}
+
+    def end_validity(claim_id: str, until: date) -> bool:
+        current = valid_until.get(claim_id)
+        if current is None or until < current:
+            valid_until[claim_id] = until
+            return True
+        return False
 
     for relation in group.relations:
         if relation.type != "supersedes":
@@ -94,9 +110,19 @@ def build_group_timeline(group: ClaimGroup) -> dict[str, TemporalFact]:
         superseder_from = valid_from.get(relation.from_id)
         if superseder_from is None:
             continue
-        current = valid_until.get(relation.to_id)
-        if current is None or superseder_from < current:
-            valid_until[relation.to_id] = superseder_from
+        end_validity(relation.to_id, superseder_from)
+
+    corroborations = [(r.from_id, r.to_id) for r in group.relations if r.type == "corroborates"]
+    changed = True
+    while changed:
+        changed = False
+        for a, b in corroborations:
+            for source, target in ((a, b), (b, a)):
+                until = valid_until.get(source)
+                start = valid_from.get(target)
+                if until is None or start is None or start >= until:
+                    continue
+                changed |= end_validity(target, until)
 
     return {
         claim.id: TemporalFact(

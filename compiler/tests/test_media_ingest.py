@@ -388,3 +388,41 @@ def test_build_file_chunks_zip_falls_back_to_opaque_on_corrupt_archive(tmp_path:
     assert len(chunks) == 1
     assert chunks[0]["source_type"] == "file"
     assert "could not read archive contents" in chunks[0]["text"]
+
+
+def test_zip_extraction_includes_small_text_members(tmp_path: Path):
+    import zipfile
+
+    zip_path = tmp_path / "invoices.zip"
+    with zipfile.ZipFile(zip_path, "w", zipfile.ZIP_DEFLATED) as archive:
+        archive.writestr("invoice-1.txt", "Deposit: 44,036.40 EUR")
+        archive.writestr("payments.csv", "date,amount\n2026-06-02,44036.40\n")
+        archive.writestr("photo.png", b"\x89PNG not text")
+        archive.writestr("big.txt", "x" * (media_ingest._ZIP_TEXT_MEMBER_MAX_BYTES + 1))
+
+    text = media_ingest.extract_text(zip_path)
+
+    assert "invoice-1.txt" in text and "photo.png" in text  # the manifest is still there
+    assert "Deposit: 44,036.40 EUR" in text
+    assert "2026-06-02,44036.40" in text
+    assert "PNG not text" not in text  # binary members are listed, not read
+    assert "xxxx" not in text  # members over the size cap are skipped
+
+
+def test_zip_member_read_is_capped_even_when_the_header_lies(tmp_path: Path):
+    """A zip bomb can claim a small file_size; the read itself must be capped."""
+    import zipfile
+
+    zip_path = tmp_path / "bomb.zip"
+    with zipfile.ZipFile(zip_path, "w", zipfile.ZIP_DEFLATED) as archive:
+        archive.writestr("bomb.txt", "A" * (5 * media_ingest._ZIP_TEXT_MEMBER_MAX_BYTES))
+    # Rewrite the central directory's uncompressed size to understate it.
+    data = bytearray(zip_path.read_bytes())
+    real = (5 * media_ingest._ZIP_TEXT_MEMBER_MAX_BYTES).to_bytes(4, "little")
+    fake = (100).to_bytes(4, "little")
+    index = data.rfind(real)
+    data[index : index + 4] = fake
+    zip_path.write_bytes(bytes(data))
+
+    text = media_ingest.extract_text(zip_path) or ""
+    assert "AAAA" not in text

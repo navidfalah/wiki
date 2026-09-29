@@ -88,6 +88,38 @@ Gold labels (`compiler/trust_eval_dataset.py:GOLD_LABELS`):
    so the eventual write-up can name it explicitly rather than have it
    surface as an unexplained wrong answer.
 
+## Current dataset (v2, 2026-09-29)
+
+The dataset was rebuilt when the sample corpus changed to the energy
+cooperative (doc 18). v2 has **8 claim groups, 57 claims and 49 relations**
+(33 corroborates, 10 supersedes, 6 contradicts). By label: 29 correct,
+22 superseded, 2 incorrect, 4 scope-dependent.
+
+| Group | Question | Final value |
+|---|---|---|
+| `pv_capacity` | plant peak power | 171.6 kWp (was 198, then ~165) |
+| `commissioning_date` | commissioning date | 19 August 2026 (was June … 1 August) |
+| `battery_capacity` | battery size | 100 kWh (was 150; the FAQ is *incorrect*) |
+| `share_price` | price of a share | 250 euros (the flyer's 200 is *incorrect*) |
+| `member_count` | member count | 419 (was 388, then 412) |
+| `module_type` | solar module | Nordlicht NL-430 (was Helion H-440) |
+| `heat_pump_pilot` | heat pump pilot timing | spring 2027 (was autumn 2026) |
+| `dividend` | dividend rate | 2.0 % for 2025 and 3 % from 2027 — *scope-dependent*, no conflict |
+
+Quotes from PDF, DOCX, XLSX, PPTX and EML sources are matched against the
+text the pipeline extracts (`compiler/source_text.py`): 39 of the 57
+claims come from non-Markdown/non-text formats, and 24 of the quotes are in
+German.
+
+**Relation semantics.** `corroborates` means *asserts the same value*. A
+source that is based on another claim but states a different value (the
+grid operator's "from 1 August at the earliest" vs the board's "target
+1 August") is not a corroboration. The temporal model (doc 27) relies on
+this: supersession carries across corroboration.
+
+The section below describes v1, the dataset over the earlier Aurora Labs
+corpus (still in git history).
+
 ## Current stats (v1)
 
 6 claim groups, 29 claims, 29 relations, spanning the Aurora Labs and

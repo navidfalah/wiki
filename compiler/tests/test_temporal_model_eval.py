@@ -18,26 +18,25 @@ def test_recall_is_perfect_in_every_group():
             assert report.recall == 1.0, report.group_id
 
 
-def test_precision_is_perfect_where_explicit_supersedes_edges_exist():
-    """nova_read_interval and teabuddy_herbal_preset_timing both record
-    their corrections as explicit supersedes edges (unlike
-    nova_battery_cell_type's nbc-3, a known annotation gap documented in
-    documentation/27-temporal-modeling.md) — precision should be perfect
-    in both."""
+def test_precision_is_perfect_where_every_bad_claim_is_superseded():
+    """Where every outdated claim is reachable from a supersedes edge
+    (directly or through a claim it corroborates), nothing outdated is
+    left as a current answer."""
     dataset = load_trust_eval_dataset()
     reports = {r.group_id: r for r in tme.evaluate_dataset(dataset)}
-    assert reports["nova_read_interval"].precision == 1.0
-    assert reports["teabuddy_herbal_preset_timing"].precision == 1.0
+    for group_id in ("pv_capacity", "commissioning_date", "member_count", "module_type", "heat_pump_pilot"):
+        assert reports[group_id].precision == 1.0, group_id
 
 
-def test_battery_cell_type_precision_reflects_the_known_annotation_gap():
-    """A regression guard for the documented finding itself: if this ever
-    changes, either temporal_model.py's logic changed or
-    data/trust_eval_dataset.json's nova_battery_cell_type relations were
-    edited — either way, documentation/27-temporal-modeling.md needs a
-    matching update, so this failing is a useful tripwire, not noise."""
+def test_incorrect_claims_are_a_known_gap():
+    """A regression guard for the documented limitation: the temporal model
+    only knows *when* a value was replaced. A claim that was wrong when it
+    was written (the March flyer's 200-euro share price, the July FAQ's
+    150 kWh battery) is contradicted, not superseded, so it stays
+    "current". If this changes, documentation/27-temporal-modeling.md
+    needs a matching update."""
     dataset = load_trust_eval_dataset()
     reports = {r.group_id: r for r in tme.evaluate_dataset(dataset)}
-    report = reports["nova_battery_cell_type"]
-    assert report.precision is not None and report.precision < 1.0
-    assert "nbc-3" in report.current_ids  # the self-correcting claim, wrongly still "current"
+    assert "sp-3" in reports["share_price"].current_ids
+    assert "bc-6" in reports["battery_capacity"].current_ids
+    assert reports["share_price"].precision < 1.0

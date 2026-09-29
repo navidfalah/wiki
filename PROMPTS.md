@@ -27,10 +27,11 @@ folders created.
 ## Prompt 3 — Ingest a new raw file
 
 ```
-Create a new junk data file at data/raw/notes/my-experiment.md about Aurora
-Labs battery testing (make up plausible data). Then update synthesizer.py or
-run the compiler so it appears in wiki-app/docs/. Add cross-links to existing
-Nova Widget and MeshSync pages.
+Create a new raw file at data/raw/meetings/2026-10-01-board-minutes.md about
+the cooperative's October board meeting (make up plausible data consistent
+with documentation/18-sample-domain.md). Then run the compiler so it appears
+in wiki-app/docs/. Add cross-links to the existing Sonnendach Lindenhof and
+Battery storage pages.
 ```
 
 ---
@@ -48,8 +49,8 @@ heuristic fallback working when no API key is set.
 ## Prompt 5 — Query the compiled wiki
 
 ```
-Read wiki-app/docs/index.md and answer: What is Aurora Labs' battery target
-and where do sources disagree? Cite specific doc paths.
+Read wiki-app/docs/index.md and answer: How big is the Sonnendach Lindenhof
+battery, and where do sources disagree? Cite specific doc paths.
 ```
 
 ---
@@ -58,7 +59,7 @@ and where do sources disagree? Cite specific doc paths.
 
 ```
 Improve compiler/linker.py to avoid double-linking already-linked text and
-to support aliases (e.g. "MeshSync" → concepts/mesh-sync-protocol). Run
+to support aliases (e.g. "NL-430" → solar-modules). Run
 main.py --force and show a before/after example.
 ```
 
@@ -86,7 +87,7 @@ Wire it into main.py as `python main.py --lint`.
 ## Prompt 9 — Repurpose for your domain
 
 ```
-Replace Aurora Labs with [YOUR TOPIC] in data/raw/ sample files, README,
+Replace the sample cooperative with [YOUR TOPIC] in data/raw/ sample files, README,
 and docusaurus.config.js title. Suggest 5 entity types and 5 concept types
 for my domain. Re-run the compiler.
 ```

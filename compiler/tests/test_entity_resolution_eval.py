@@ -49,9 +49,13 @@ def test_pairwise_evaluate_penalizes_a_missed_merge():
     assert report.gold_pairs == 1
 
 
-def test_run_eval_on_the_real_dataset_scores_perfectly_with_heuristic_tier_alone():
+def test_run_eval_on_the_real_dataset_heuristic_tier_never_merges_a_hard_negative():
+    """The heuristic tier makes no false merges on the real dataset (its
+    shared-name hard negatives stay apart: precision 1.0), but it cannot
+    link the hard positives -- "BEE" for the cooperative, "Frau Aydın" for
+    Selin Aydın -- so recall stays below 1.0. Those pairs are what the
+    embedding/LLM tiers exist for."""
     report = run_eval()
     assert report.precision == 1.0
-    assert report.recall == 1.0
-    assert report.f1 == 1.0
+    assert 0.5 <= report.recall < 1.0
     assert report.gold_pairs > 0

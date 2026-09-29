@@ -100,6 +100,24 @@ like "Bob" for "Robert") would be needed to actually exercise and evaluate
 the embedding and LLM tiers — a direct, named follow-up rather than
 something this pilot's perfect score should be read as covering.
 
+### Current results (dataset v2, 2026-09-29)
+
+The eval set was rebuilt from the energy-cooperative corpus: 24 mentions,
+18 gold pairs. Heuristic tier only: **precision 1.00, recall 0.67, F1 0.80**
+(12 of 12 predicted pairs correct).
+
+- Every hard negative stays apart: the cooperative, the municipality and
+  the pool all contain "Eschenbrück"; the school and the solar project both
+  contain "Lindenhof"; the two module types appear side by side in the same
+  emails.
+- The missed pairs are the hard positives the heuristic isn't meant to
+  solve: the abbreviation "BEE" for the cooperative, "Frau Aydın" for Selin
+  Aydın, and first names that are not the email local part. Those are what
+  the embedding and LLM tiers are for.
+
+The paragraphs above describe v1 (the earlier corpus), where the heuristic
+tier alone scored 1.00 on every metric.
+
 ## Wired up: a real entity graph
 
 `compiler/entity_graph.py` closes the gap this doc originally left open —

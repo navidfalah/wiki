@@ -6,11 +6,11 @@
 -- directory, so editing this file after the container has started once
 -- has no effect until the volume is removed (`docker compose down -v`).
 --
--- This is fictional data for the same "Aurora Labs" sample domain the
--- rest of this project's dummy-data generators use (see
--- scripts/dev/generate_junk_data.py) -- a small internal knowledge base:
--- who's on which team, what they're building, and a handful of support
--- FAQs. It exists purely so the /database page's "Fill the form with the
+-- This is fictional data for the same sample domain as data/raw/ -- the
+-- citizens' energy cooperative BürgerEnergie Eschenbrück eG (see
+-- documentation/18-sample-domain.md) -- a small internal knowledge base:
+-- its working groups, who is in them, its projects, and a handful of
+-- member FAQs. It exists purely so the /database page's "Fill the form with the
 -- sample database's values" button has a real database to connect to and
 -- something meaningful to import.
 
@@ -46,29 +46,29 @@ CREATE TABLE IF NOT EXISTS kb_articles (
 );
 
 INSERT INTO departments (name, mission) VALUES
-    ('Hardware Engineering', 'Design and validate the sensor boards and radio modules behind every Aurora Labs product.'),
-    ('Firmware', 'Own the MeshSync protocol stack and over-the-air update pipeline running on every deployed node.'),
-    ('Customer Success', 'Help field teams commission, monitor, and troubleshoot Aurora Labs sensor mesh deployments.')
+    ('Technik', 'Plan, build and operate the cooperative''s solar plants: Bürgerhaus, Feuerwehrhaus and Sonnendach Lindenhof.'),
+    ('Finanzen', 'Keep the books, manage member shares and loans, and prepare the annual accounts for the general assembly.'),
+    ('Mitgliederservice', 'Answer member questions, run information evenings and keep the website, flyer and FAQ up to date.')
 ON CONFLICT DO NOTHING;
 
 INSERT INTO employees (name, title, department_id, email, bio) VALUES
-    ('Priya Natarajan', 'Principal Hardware Engineer', 1, 'priya.natarajan@auroralabs.example', 'Leads antenna and power-budget design for the Nova Widget sensor line; previously built low-power radios for agricultural IoT.'),
-    ('Marcus Webb', 'Firmware Lead', 2, 'marcus.webb@auroralabs.example', 'Owns the MeshSync mesh-networking stack end to end, from the radio driver up through the OTA update client.'),
-    ('Elena Sokolova', 'Customer Success Engineer', 3, 'elena.sokolova@auroralabs.example', 'Front-line support for field deployments; writes most of the troubleshooting runbooks other engineers copy.'),
-    ('Devon Ashworth', 'Hardware Engineer II', 1, 'devon.ashworth@auroralabs.example', 'Works on enclosure design and environmental sealing for outdoor-rated sensor nodes.'),
-    ('Grace Kim', 'Firmware Engineer', 2, 'grace.kim@auroralabs.example', 'Maintains the mesh-routing simulator used to test MeshSync topology changes before they ship.')
+    ('Selin Aydın', 'Board member, technology', 1, 'selin.aydin@eschenbrueck-energie.example', 'Technical lead of the Sonnendach Lindenhof project; coordinates the installer, the structural engineer and the grid operator.'),
+    ('Tobias Brandt', 'Board member, finance', 2, 'tobias.brandt@eschenbrueck-energie.example', 'Manages member shares, the loan with the Raiffeisenkasse Talgrund and the project budget.'),
+    ('Mara Lenz', 'Volunteer, member service', 3, 'mara.lenz@eschenbrueck-energie.example', 'Answers the info@ mailbox and organises the information evenings in the school hall.'),
+    ('Jakob Wendt', 'Volunteer, plant monitoring', 1, 'jakob.wendt@eschenbrueck-energie.example', 'Checks the daily production reports and opens a service ticket when an inverter reports a warning.'),
+    ('Dr. Hanna Vogt', 'Chair of the board', 2, 'hanna.vogt@eschenbrueck-energie.example', 'Represents the cooperative towards the municipality and signs contracts together with a second board member.')
 ON CONFLICT DO NOTHING;
 
 INSERT INTO projects (name, status, department_id, summary) VALUES
-    ('Nova Widget', 'shipping', 1, 'Aurora Labs'' flagship environmental sensor node -- temperature, humidity, and particulate sensing over a MeshSync radio link.'),
-    ('MeshSync v3', 'in_progress', 2, 'Next-generation mesh networking protocol adding sub-second failover and encrypted OTA firmware delivery.'),
-    ('Field Diagnostics App', 'in_progress', 3, 'Mobile app for field technicians to commission new nodes and pull live diagnostics off a mesh without a laptop.'),
-    ('Solar Harvester Module', 'planned', 1, 'Add-on solar charging board for Nova Widget deployments in areas without easy battery-swap access.')
+    ('Bürgerhaus PV', 'operating', 1, 'The cooperative''s first plant, on the roof of the Bürgerhaus, in operation since 2020.'),
+    ('Feuerwehrhaus PV', 'operating', 1, 'Rooftop plant on the fire station, in operation since 2022.'),
+    ('Sonnendach Lindenhof', 'operating', 1, '171.6 kWp and a 100 kWh battery on the Grundschule am Lindenhof and the Sporthalle Nord, commissioned on 19 August 2026.'),
+    ('Freibad heat pump', 'planned', 1, '60 kW heat pump pilot for the outdoor pool, postponed to spring 2027 because the pool''s electrical connection needs an upgrade.')
 ON CONFLICT DO NOTHING;
 
 INSERT INTO kb_articles (title, category, body, updated_at) VALUES
-    ('Nova Widget will not join the mesh', 'troubleshooting', 'Confirm the node is within range of an existing MeshSync gateway (check the blue LED -- solid means joined, blinking means searching). If it stays in search mode for more than 5 minutes, re-run the commissioning QR scan from the Field Diagnostics App and verify the mesh network key matches the gateway''s.', '2025-11-02'),
-    ('Battery life expectations for Nova Widget', 'faq', 'A Nova Widget on the standard 2xAA pack reports readings every 5 minutes and should run 9-12 months depending on radio hop count. Increasing the reporting interval to 15 minutes roughly doubles battery life; the Solar Harvester Module removes the limit entirely for outdoor deployments.', '2025-10-14'),
-    ('How MeshSync handles a gateway outage', 'architecture', 'Every node keeps a rolling buffer of the last 500 readings. If the gateway it reports to goes offline, MeshSync v3 fails over to the next-strongest neighbor gateway within 3 mesh heartbeats (about 45 seconds) and replays the buffered readings once reconnected, so a gateway restart does not lose data.', '2025-12-01'),
-    ('Firmware update rollout process', 'runbook', 'OTA updates are staged: 5% of a deployment''s nodes first, held for 24 hours while Firmware monitors crash-free rate, then the remaining 95% in one batch. A failed stage automatically halts the rollout and pages the on-call Firmware engineer.', '2025-09-20')
+    ('How do I become a member?', 'faq', 'Fill in the membership form and buy at least one share. A share costs 250 euros; each member can hold up to 40 shares. The board confirms the membership within two weeks.', '2026-07-20'),
+    ('When is the dividend paid?', 'faq', 'The general assembly decides the dividend each June. The dividend for 2025 was 2.0 % and was paid on 30 June 2026; from 2027 the cooperative aims for 3 %.', '2026-07-09'),
+    ('An inverter reports a warning', 'runbook', 'Check the monitoring portal for the warning code. ISO warnings (low isolation resistance) that clear by themselves after sunrise are usually moisture in a connector: open a service ticket and ask the installer to inspect the string. Warnings that do not clear need a site visit the same week.', '2026-09-05'),
+    ('Who buys the electricity?', 'faq', 'Each plant sells its power to the building it sits on: the school buys the Sonnendach Lindenhof power at 19.5 ct/kWh for 20 years. Surplus power is fed into the grid of Netze Mittelland.', '2026-07-20')
 ON CONFLICT DO NOTHING;

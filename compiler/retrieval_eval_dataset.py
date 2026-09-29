@@ -8,8 +8,8 @@ so this retrieval benchmark inherits that guarantee for free. What's new
 here is a *different* kind of annotation over the same text — QUERIES, each
 hand-labeled with which claim ids are topically relevant to it. Topical
 relevance for retrieval is not the same judgment as trust for propagation:
-a query about "the read interval controversy" is relevant to both the
-correct claims AND the superseded "hourly" claim (nri-1) — a retrieval
+a query about the plant size is relevant to both the correct 171.6 kWp
+claims AND the superseded 198 kWp ones (pvc-1..pvc-3) — a retrieval
 system's job is to find everything on-topic, not to pre-judge what's true.
 """
 
@@ -30,44 +30,49 @@ class RetrievalQuery:
 
 QUERIES: list[RetrievalQuery] = [
     RetrievalQuery(
-        "q-read-interval",
-        "What is the default sensor read interval for the Nova Widget?",
-        frozenset({"nri-1", "nri-2", "nri-3", "nri-4", "nri-5", "nri-6", "nri-7", "nri-8"}),
+        "q-plant-size",
+        "How many kWp does the Sonnendach Lindenhof solar plant have?",
+        frozenset({"pvc-1", "pvc-2", "pvc-3", "pvc-4", "pvc-5", "pvc-6", "pvc-7", "pvc-8", "pvc-9"}),
     ),
     RetrievalQuery(
-        "q-battery-cell",
-        "What battery cell type does the Nova Widget use?",
-        frozenset({"nbc-1", "nbc-2", "nbc-3", "nbc-4", "nbc-5", "nbc-6"}),
+        "q-commissioning",
+        "When was the plant commissioned and energised?",
+        frozenset({"cd-1", "cd-2", "cd-3", "cd-4", "cd-5", "cd-6", "cd-7", "cd-8", "cd-9", "cd-10"}),
     ),
     RetrievalQuery(
-        "q-battery-life",
-        "How long does the Nova Widget's battery last?",
-        frozenset({"nbl-1", "nbl-2", "nbl-3", "nbl-4", "nbl-5"}),
+        "q-battery",
+        "How big is the battery storage in the school basement?",
+        frozenset({"bc-1", "bc-2", "bc-3", "bc-4", "bc-5", "bc-6", "bc-7", "bc-8"}),
     ),
     RetrievalQuery(
-        "q-herbal-preset",
-        "When does the TeaBuddy herbal steep preset trigger?",
-        frozenset({"thp-1", "thp-2"}),
+        "q-share-price",
+        "What does one cooperative share cost?",
+        frozenset({"sp-1", "sp-2", "sp-3", "sp-4", "sp-5", "sp-6", "sp-7"}),
     ),
     RetrievalQuery(
-        "q-relay-drain",
-        "Why does MeshSync relay mode drain the battery faster than expected?",
-        frozenset({"mrd-1", "mrd-2", "mrd-3"}),
+        "q-members",
+        "How many members does the cooperative have?",
+        frozenset({"mc-1", "mc-2", "mc-3", "mc-4", "mc-5", "mc-6", "mc-7"}),
     ),
     RetrievalQuery(
-        "q-cr2450-mixup",
-        "There was a mixup where a blog post said the wrong battery type — what happened?",
-        frozenset({"nbc-3", "nbc-4", "nbc-6"}),
+        "q-module-switch",
+        "Why were the Helion modules replaced by Nordlicht NL-430 modules?",
+        frozenset({"mt-1", "mt-2", "mt-3", "mt-4", "mt-5", "mt-6"}),
     ),
     RetrievalQuery(
-        "q-hourly-vs-15min",
-        "Was the read interval ever hourly instead of 15 minutes?",
-        frozenset({"nri-1", "nri-2", "nri-3", "nri-5", "nri-7"}),
+        "q-heat-pump",
+        "When will the heat pump pilot for the Freibad start?",
+        frozenset({"hp-1", "hp-2", "hp-3", "hp-4", "hp-5", "hp-6"}),
     ),
     RetrievalQuery(
-        "q-relay-sleep-timer-fix",
-        "What was the technical root cause and fix for the relay radio not sleeping?",
-        frozenset({"mrd-1", "mrd-2"}),
+        "q-dividend",
+        "What dividend does the cooperative pay?",
+        frozenset({"dv-1", "dv-2", "dv-3", "dv-4"}),
+    ),
+    RetrievalQuery(
+        "q-flyer-error",
+        "The flyer said a share costs 200 euros - is that right?",
+        frozenset({"sp-3", "sp-5", "sp-6"}),
     ),
 ]
 

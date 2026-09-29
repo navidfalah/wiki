@@ -105,6 +105,41 @@ worse for the project's honesty than documenting the gap here and treating
 `thp-1`/`thp-2` pattern, then re-run tasks #2/#3's evaluations against the
 corrected graph" as a named follow-up.
 
+## Current results (dataset v2, 2026-09-29)
+
+| Group | precision | recall |
+|---|---|---|
+| `pv_capacity` | 1.00 | 1.00 |
+| `commissioning_date` | 1.00 | 1.00 |
+| `battery_capacity` | 0.83 | 1.00 |
+| `share_price` | 0.86 | 1.00 |
+| `member_count` | 1.00 | 1.00 |
+| `module_type` | 1.00 | 1.00 |
+| `heat_pump_pilot` | 1.00 | 1.00 |
+| `dividend` | 1.00 | 1.00 |
+
+Mean precision 0.96, mean recall 1.00.
+
+**Change: supersession carries across corroboration.** On the new dataset,
+only the claim an annotator drew a `supersedes` edge to stopped being
+current; every other source repeating the old value (the grant application,
+the flyer) still counted as a present-day answer, and precision fell to
+0.40–0.86 in most groups. Corroborating claims assert the same value, so
+`build_group_timeline()` now ends a claim's validity when a claim it
+corroborates (in either direction) is superseded, provided the claim is
+dated before the replacement. A copy dated after the replacement is a fresh
+assertion and stays current. Unit tests cover both cases.
+
+**Known gap: claims that were wrong when written.** The two remaining
+misses are `sp-3` (the flyer's 200-euro share price) and `bc-6` (the July
+FAQ's 150 kWh battery). They are *contradicted*, not superseded — there is
+no date at which they "stopped being true" — so a purely temporal model
+keeps them current. That is trust propagation's job (doc 23), which scores
+both claims lowest in their groups. `tests/test_temporal_model_eval.py`
+keeps this as a tripwire.
+
+The worked example and table above are from v1 (the earlier corpus).
+
 ## Limitations
 
 - **Transaction time isn't actually modeled yet.** `recorded_at` mirrors

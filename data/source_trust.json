@@ -8,14 +8,24 @@
   },
   "rules": [
     {
-      "pattern": "samples/**",
-      "level": "unverified",
-      "reason": "Hand-authored fictional demo content, not a real source"
+      "pattern": "meetings/*minutes*",
+      "level": "high",
+      "reason": "Official board minutes"
     },
     {
-      "pattern": "dummy-test/**",
-      "level": "unverified",
-      "reason": "Procedurally generated test data"
+      "pattern": "meetings/*protokoll*",
+      "level": "high",
+      "reason": "Official general assembly minutes"
+    },
+    {
+      "pattern": "monitoring/**",
+      "level": "high",
+      "reason": "Machine-generated measurement data from the plant"
+    },
+    {
+      "pattern": "public/**",
+      "level": "low",
+      "reason": "Public marketing material, not kept up to date"
     }
   ]
 }

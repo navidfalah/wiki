@@ -39,14 +39,12 @@ compiler/server.py   FastAPI on port 8000 — dashboards, live compile SSE
 
 ## Sample domain
 
-The repo ships with fictional IoT companies used as pipeline stress tests:
-
-| Company | Focus |
-|---------|-------|
-| **Aurora Labs** | Open mesh sensors (Nova Widget, MeshSync) |
-| **TeaBuddy** | BLE smart tea puck |
-| **Nova Health** | Clinical wearables (PulsePatch) |
-| **GreenGrid Energy** | Home energy mesh (GreenGrid Hub) |
+The repo ships with a fictional sample corpus: **BürgerEnergie Eschenbrück
+eG**, a citizens' energy cooperative that builds a rooftop solar plant on the
+village school in 2026. It has 30 English and German sources in 15 file formats
+(PDF, DOCX, XLSX, PPTX, EML, CSV, JSON, HTML, ZIP and more), with facts that
+change over time and a few deliberately wrong sources. See
+[18-sample-domain.md](./18-sample-domain.md).
 
 Replace `data/raw/` with your own topic when ready. The sample data is disposable.
 

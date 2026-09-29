@@ -312,29 +312,54 @@ def _extract_pptx_text(path: Path) -> str | None:
     return text or None
 
 
+_ZIP_TEXT_MEMBER_EXTENSIONS = {".txt", ".md", ".csv", ".tsv", ".json", ".log"}
+_ZIP_TEXT_MEMBER_MAX_BYTES = 64 * 1024
+
+
 def _extract_zip_manifest(path: Path, *, max_entries: int = 200) -> str | None:
-    """List a ZIP archive's contents (name + size) as a lightweight manifest.
+    """List a ZIP archive's contents (name + size), followed by the text of
+    its small plain-text members (.txt/.md/.csv/.tsv/.json/.log).
 
     Deliberately not full recursive extraction -- ingesting an archive's
-    contents as first-class raw sources would need real sandboxing against
-    zip bombs and path traversal, plus its own place in the incremental
-    state/dedup model, which is a bigger feature than "make an archive
-    searchable." A manifest is enough to know what's inside without
-    downloading it, and is still a real improvement over a bare download
-    link with zero information about what's in the archive.
+    members as first-class raw sources would need its own place in the
+    incremental state/dedup model. Reading the text members is safe
+    without that: nothing is written to disk (so no path traversal), each
+    member is read through a hard byte cap no matter what its header
+    claims (so a zip bomb costs at most 64 KB per member), and the total
+    is cut at FILE_CONTENT_MAX_CHARS like every other extractor. Without
+    the text, an archive of invoices was searchable only by file name.
     """
     import zipfile
 
     try:
         with zipfile.ZipFile(path) as archive:
             infos = [info for info in archive.infolist() if not info.is_dir()]
+            lines = [f"{info.filename} ({info.file_size / 1024:.1f} KB)" for info in infos[:max_entries]]
+            remaining = len(infos) - max_entries
+            if remaining > 0:
+                lines.append(f"… ({remaining} more {'entry' if remaining == 1 else 'entries'} not shown)")
+
+            budget = FILE_CONTENT_MAX_CHARS
+            for info in infos[:max_entries]:
+                if budget <= 0:
+                    break
+                if Path(info.filename).suffix.lower() not in _ZIP_TEXT_MEMBER_EXTENSIONS:
+                    continue
+                if info.file_size > _ZIP_TEXT_MEMBER_MAX_BYTES:
+                    continue
+                try:
+                    with archive.open(info) as member:
+                        raw = member.read(_ZIP_TEXT_MEMBER_MAX_BYTES + 1)
+                except (zipfile.BadZipFile, OSError, RuntimeError, NotImplementedError):
+                    continue  # encrypted, corrupt or an unsupported compression method
+                if len(raw) > _ZIP_TEXT_MEMBER_MAX_BYTES:
+                    continue  # header understated the size
+                content = raw.decode("utf-8", errors="replace").strip()[:budget]
+                if content:
+                    lines.append(f"\n### {info.filename}\n\n{content}")
+                    budget -= len(content)
     except (zipfile.BadZipFile, OSError):
         return None
-
-    lines = [f"{info.filename} ({info.file_size / 1024:.1f} KB)" for info in infos[:max_entries]]
-    remaining = len(infos) - max_entries
-    if remaining > 0:
-        lines.append(f"… ({remaining} more {'entry' if remaining == 1 else 'entries'} not shown)")
 
     text = "\n".join(lines).strip()
     return text or None
@@ -383,19 +408,12 @@ def _opaque_file_chunk(path: Path, rel_source: str, static_dir: Path | None, not
     return {"chunk_index": 0, "text": text, "source_type": "file", "media_link": link}
 
 
-def build_file_chunks(path: Path, rel_source: str, static_dir: Path | None = None) -> list[dict]:
-    """Build chunk dict(s) for a generic file attachment.
-
-    Everything in TEXT_EXTRACTABLE_FILE_EXTENSIONS (PDF, DOCX, XLSX, PPTX,
-    CSV, TSV, JSON, XML, HTML, YAML, log, ZIP) gets its text (or, for ZIP, its
-    file listing) extracted and chunked like any raw text source; everything
-    else in FILE_EXTENSIONS becomes a single metadata + download-link chunk
-    with no content extraction. A PDF/DOCX/XLSX/PPTX whose parsing library
-    isn't installed, or whose file fails to parse, degrades to that same
-    opaque fallback rather than crashing the compile.
-    """
+def extract_text(path: Path) -> str | None:
+    """The text the pipeline extracts from a PDF/CSV/TSV/JSON/XML/HTML/YAML/
+    log/DOCX/XLSX/PPTX file (for ZIP: its file listing), or None for any
+    other type or a file that fails to parse. No side effects -- unlike
+    build_file_chunks(), nothing is copied into the static media folder."""
     suffix = path.suffix.lower()
-
     extracted: str | None = None
     if suffix == ".pdf":
         extracted = _extract_pdf_text(path)
@@ -415,6 +433,23 @@ def build_file_chunks(path: Path, rel_source: str, static_dir: Path | None = Non
         extracted = _extract_pptx_text(path)
     elif suffix == ".zip":
         extracted = _extract_zip_manifest(path)
+
+    return extracted
+
+
+def build_file_chunks(path: Path, rel_source: str, static_dir: Path | None = None) -> list[dict]:
+    """Build chunk dict(s) for a generic file attachment.
+
+    Everything in TEXT_EXTRACTABLE_FILE_EXTENSIONS (PDF, DOCX, XLSX, PPTX,
+    CSV, TSV, JSON, XML, HTML, YAML, log, ZIP) gets its text (or, for ZIP, its
+    file listing) extracted and chunked like any raw text source; everything
+    else in FILE_EXTENSIONS becomes a single metadata + download-link chunk
+    with no content extraction. A PDF/DOCX/XLSX/PPTX whose parsing library
+    isn't installed, or whose file fails to parse, degrades to that same
+    opaque fallback rather than crashing the compile.
+    """
+    suffix = path.suffix.lower()
+    extracted = extract_text(path)
 
     if extracted:
         dest = copy_media_to_static(path, static_dir)

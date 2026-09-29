@@ -1,192 +1,73 @@
 # 09 — Test Data Generation
 
-How fictional sample files are created under `data/raw/`. All generators write **only** to `data/raw/` (or subdirs). They do not run the compiler.
-
-## Four generator scripts
-
-| Script | Default output | Count | Style |
-|--------|----------------|-------|-------|
-| `scripts/dev/generate_junk_data.py` | `notes/`, `transcripts/`, `articles/`, `ideas/` | 10 fixed | Hand-written Karpathy-style junk |
-| `scripts/dev/generate_bulk_dummy_data.py` | `samples/` + procedural subdirs | 20 + 85 | Curated `[SAMPLE]` + templates |
-| `scripts/dev/generate_varied_dummy_data.py` | `varied-samples/{type}/` | 35 | Large multi-format (3–15 KB) |
-| `scripts/dev/generate_extended_dummy_data.py` | `dummy-test/`, `samples/*` | 42 | Wave-2 curated ops docs |
-
-All live in `compiler/scripts/dev/` — dev-only, not imported by the compiler pipeline.
-Run each standalone, or through the `generate_dummy_data.py` dispatcher:
+The sample corpus in `data/raw/` comes from one script,
+`compiler/scripts/build_sample_corpus.py`. It writes 30 files in 15 formats
+about a fictional citizens' energy cooperative (see
+[18-sample-domain.md](./18-sample-domain.md)). It writes only to its output
+folder and never runs the compiler.
 
 ```bash
 cd compiler
-python scripts/dev/generate_junk_data.py [--overwrite] [--output ../data/raw]
-
-# equivalent, via the dispatcher:
-python scripts/dev/generate_dummy_data.py junk [--overwrite] [--output ../data/raw]
+python scripts/build_sample_corpus.py            # (re)write data/raw/
+python scripts/build_sample_corpus.py --clean    # delete everything in data/raw/ first
+python scripts/build_sample_corpus.py --out /tmp/corpus   # somewhere else
 ```
 
-There's also `scripts/dev/keep_aurora_raw.py`, a one-off maintenance script that moves
-non-Aurora-Labs raw files into `data/_archive_non_aurora/` — not a data generator, but
-lives alongside them since it's dev-only tooling too.
+## Deterministic output
 
-## Filename and body markers
+Re-running the script produces byte-identical files, so a regenerate never
+shows up as a change in git:
 
-| Marker | Location | Meaning |
-|--------|----------|---------|
-| `[SAMPLE]` | Filename or body | Hand-authored narrative (safe to study) |
-| `[DUMMY TEST DATA]` or `[DUMMY-TEST-DATA]` | Body or filename | Procedural / labeled test content |
-| `[DUMMY-TEST-DATA]` | Procedural filename prefix | Bulk generator output |
+- DOCX, XLSX, PPTX and ZIP entries get a fixed timestamp
+  (2026-09-15 12:00), and `docProps/core.xml`'s `modified` date is pinned
+  (openpyxl otherwise writes the save time into it).
+- PDFs come from a small built-in writer (Helvetica, WinAnsi encoding) with
+  a fixed creation date; no PDF library is needed. `pypdf`, which the
+  pipeline uses to read them, extracts the German umlauts correctly.
+- The PNG is drawn with Pillow from fixed coordinates.
 
-**Safe to delete:** All generated test files. Regenerate with `--overwrite`.
+## Formats and how the pipeline reads them
 
-## 1. scripts/dev/generate_junk_data.py
+| Format | Example | Extracted by |
+|---|---|---|
+| PDF | grant application, structural survey | `media_ingest._extract_pdf_text` (pypdf) |
+| DOCX | board minutes, project plan | `_extract_docx_text` (python-docx, paragraphs + tables) |
+| XLSX | budget revision (3 sheets) | `_extract_xlsx_text` (openpyxl, one section per sheet) |
+| PPTX | general assembly slides | `_extract_pptx_text` (python-pptx, one section per slide) |
+| EML | eight emails, two reply threads | `email_ingest.parse_eml` |
+| CSV / TSV | production, member shares, battery events | `_extract_delimited_text` |
+| JSON / YAML / LOG / HTML | survey, inverter status, site config, logger, flyer | parsed or read as text |
+| ZIP | invoice archive | manifest plus the text of small `.txt/.md/.csv/.tsv/.json/.log` members |
+| PNG | roof layout | needs an LLM to describe (no text without one) |
+| MD / TXT | minutes, notes, transcript, press, FAQ | read as text |
 
-**Purpose:** Original seed set — messy Aurora Labs notes mimicking real knowledge-work chaos.
+`compiler/source_text.py` returns exactly this text for any raw file. The
+offline evals use it to compare pages and answers with their sources
+(before, they read PDF/DOCX sources as raw bytes).
 
-**Files (10):**
+## Seed wiki pages
 
-| Path | Content type |
-|------|--------------|
-| `notes/2026-06-01-standup-scribbles.txt` | Standup notes |
-| `notes/2026-06-03-grocery-and-ideas.txt` | Grocery list + project ideas |
-| `transcripts/2026-06-05-sync-fragment.txt` | Corrupted meeting transcript |
-| `articles/scraped-forum-thread.txt` | Bad forum scrape |
-| `articles/voice-memo-transcription.txt` | Low-confidence voice memo |
-| `ideas/backlog-shower-thoughts.txt` | Unsorted backlog |
-| `ideas/2026-06-07-product-naming-brainstorm.txt` | Naming brainstorm |
-| `notes/2026-06-08-meeting-no-agenda.txt` | Unstructured meeting |
-| `transcripts/support-email-thread.txt` | Support ticket dump |
-| `notes/2026-06-10-fragmented-research.txt` | Research tab dump |
+`compiler/scripts/seed_pages.py` writes one hand-written page per topic
+into `wiki-app/docs/`, in the compiler's own page format. Run
+`python moc_generator.py` afterwards to rebuild the index. These pages let
+the app, the e2e suite and the evals run without an API key; a real
+compile replaces them.
 
-**Intentional mess:** Typos, incomplete sentences, contradictions (15 min vs hourly), Karpathy wiki references.
+## Changing the corpus
 
-## 2. scripts/dev/generate_bulk_dummy_data.py
+When you change a fact in `build_sample_corpus.py`, also update the
+datasets that quote it:
 
-Unified CLI for curated samples and procedural bulk.
-
-### Curated `[SAMPLE]` files (`BULK_FILES` dict)
-
-20 hand-written files under `data/raw/samples/`:
-
-- Aurora + TeaBuddy standups, retros, spec fragments
-- Broken markdown export (tests MDX sanitizer)
-- Competitor notes (SenseNode SN-400)
-- User interview transcripts
-- Cross-product idea dumps
-
-### Procedural `[DUMMY TEST DATA]` (`generate_procedural_dummy_test_data`)
-
-**Default count:** 85  
-**Template:** `_dummy_body()` — rotates:
-
-| Pool | Values |
-|------|--------|
-| `COMPANIES` | Aurora Labs, TeaBuddy, Nova Health, GreenGrid Energy |
-| `PEOPLE` | Mira Chen, Jonah Park, Sam Rivera, Alex Kim, Jamie Lo, … |
-| `PRODUCTS` | Nova Widget, MeshSync, TeaBuddy Puck, SenseNode SN-400, … |
-| `DOC_KINDS` | meeting-notes, spec-draft, email-thread, research-dump, retro, support-ticket, partner-memo, forum-scrape |
-
-**Filename pattern:**
-
-```
-{subdir}/[DUMMY-TEST-DATA]-{company-slug}-{kind-slug}-{seq:03d}-2026-07-{day:02d}.{ext}
-```
-
-Example: `bulk/[DUMMY-TEST-DATA]-greengrid-forum-scrape-395-2026-07-16.txt`
-
-**Output subdirs:** `bulk/`, `dummy-test/`, `notes/`, `transcripts/`, `specs/`, `emails/`, `samples/bulk/`
-
-### CLI flags
-
-```bash
-python scripts/dev/generate_bulk_dummy_data.py                    # samples + procedural
-python scripts/dev/generate_bulk_dummy_data.py --samples-only
-python scripts/dev/generate_bulk_dummy_data.py --dummy-only
-python scripts/dev/generate_bulk_dummy_data.py --dummy-only --count 200 --start-seq 100
-python scripts/dev/generate_bulk_dummy_data.py --dummy-only --only-subdir bulk --count 50
-python scripts/dev/generate_bulk_dummy_data.py --varied-only      # delegates to varied generator
-python scripts/dev/generate_bulk_dummy_data.py --overwrite
-python scripts/dev/generate_bulk_dummy_data.py --output /path/to/data/raw
-```
-
-| Flag | Default | Description |
-|------|---------|-------------|
-| `--overwrite` | off | Replace existing files |
-| `--output PATH` | `data/raw/` | Output root |
-| `--count N` | 85 / 35 | Procedural or varied count |
-| `--start-seq N` | 1 | First sequence number |
-| `--samples-only` | off | Only `[SAMPLE]` under `samples/` |
-| `--dummy-only` | off | Only procedural files |
-| `--varied-only` | off | Large varied files only |
-| `--only-subdir DIR` | all | Restrict procedural output |
-| `--min-bytes` / `--max-bytes` | 3000 / 12000 | For `--varied-only` |
-
-## 3. scripts/dev/generate_varied_dummy_data.py
-
-**Purpose:** Stress-test chunking and linking with realistic document sizes.
-
-**35 files default**, 3–15 KB each (cycled `SIZE_TARGETS`).
-
-**Document types (`DOC_TYPES`):**
-
-| Slug | Ext | Description |
-|------|-----|-------------|
-| `transcript` | `.txt` | Meeting fragments |
-| `prd` | `.md` | Product requirements |
-| `email` | `.txt` | Email threads |
-| `research` | `.md` | Research dumps |
-| `adr` | `.md` | Architecture decision records |
-| `changelog` | `.md` | Firmware changelogs |
-| `faq` | `.md` | Support FAQ |
-| `chat-log` | `.txt` | Slack-style exports |
-| `interview` | `.txt` | User interviews |
-| `spec` | `.md` | Hardware/firmware specs |
-
-**Output:** `data/raw/varied-samples/{type}/[DUMMY-TEST-DATA]-{type}-{company}-{seq}-....`
-
-**Padding:** `FILLER_PARAGRAPHS` — domain sentences about MeshSync, TeaBuddy, battery contradictions, etc.
-
-```bash
-python scripts/dev/generate_varied_dummy_data.py
-python scripts/dev/generate_varied_dummy_data.py --count 50 --overwrite
-python scripts/dev/generate_varied_dummy_data.py --min-bytes 8000 --max-bytes 25000
-python scripts/dev/generate_varied_dummy_data.py --clean --overwrite   # wipe varied-samples/ first
-python scripts/dev/generate_varied_dummy_data.py --stats-only          # size stats only
-```
-
-## 4. scripts/dev/generate_extended_dummy_data.py
-
-**Purpose:** Wave-2 hand-authored set (42 files).
-
-**Categories:**
-
-- `dummy-test/` — changelogs, QA matrices, release notes, slack dumps
-- `samples/notes/`, `articles/`, `transcripts/`, `ideas/`, `support/`, `forums/`
-- `samples/emails/`, `research/`, `specs/`, `legal/`, `social/`
-
-```bash
-python scripts/dev/generate_extended_dummy_data.py [--overwrite] [--output ../data/raw]
-```
-
-## Recommended full seed workflow
-
-```bash
-python compiler/scripts/dev/generate_junk_data.py
-python compiler/scripts/dev/generate_bulk_dummy_data.py --overwrite
-python compiler/scripts/dev/generate_extended_dummy_data.py --overwrite
-python compiler/scripts/dev/generate_varied_dummy_data.py --overwrite
-cd compiler && python main.py --force
-```
-
-## From test data to wiki (summary)
-
-1. Generators write plain text → `data/raw/`
-2. `python main.py` reads all `.txt`/`.md` recursively
-3. Extraction pulls topics/entities from bold terms, headers, keywords
-4. Many files mention same entities → shared topic pages (e.g. `meshsync.md`)
-5. Linker connects mentions across pages
-6. MOC lists all pages in `index.md`
-
-See [05-compiler-pipeline.md](./05-compiler-pipeline.md) and [06-extraction-and-synthesis.md](./06-extraction-and-synthesis.md).
+1. `data/trust_eval_dataset.json` — every quote is checked verbatim
+   against the extracted text (`trust_eval_dataset.validate_dataset()`).
+2. `data/qa_benchmark.json` — every answer fact must appear in one of its
+   sources (`tests/test_qa_benchmark.py`).
+3. `compiler/entity_resolution_eval_dataset.py` — every mention must
+   appear in its source.
+4. The seed pages, then `python eval_gate.py` and, if the change is
+   intended, `python eval_gate.py --update-baseline`.
 
 ## Next
 
-- [10-data-layout-and-state.md](./10-data-layout-and-state.md)
 - [18-sample-domain.md](./18-sample-domain.md)
+- [10-data-layout-and-state.md](./10-data-layout-and-state.md)

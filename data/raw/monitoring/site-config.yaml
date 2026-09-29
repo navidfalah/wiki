@@ -1,0 +1,28 @@
+# Monitoring configuration - Sonnendach Lindenhof
+plant:
+  name: Sonnendach Lindenhof
+  operator: BürgerEnergie Eschenbrück eG
+  peak_power_kwp: 171.6
+  commissioned: 2026-08-19
+modules:
+  type: Nordlicht NL-430
+  count: 399
+  roofs:
+    school_roof_a: 276
+    sports_hall_roof_b: 123
+inverters:
+  - id: WR-1
+    model: Kestrel K-60
+    roof: school_roof_a
+  - id: WR-2
+    model: Kestrel K-60
+    roof: school_roof_a
+  - id: WR-3
+    model: Kestrel K-60
+    roof: sports_hall_roof_b
+battery:
+  capacity_kwh: 100
+  location: school basement
+alerts:
+  email: technik@eschenbrueck-energie.example
+  isolation_warning_threshold_kohm: 500

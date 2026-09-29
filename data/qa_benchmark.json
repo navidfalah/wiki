@@ -1,1144 +1,974 @@
 {
-  "description": "Gold Q&A benchmark over the fictional sample corpus in data/raw/. Every answer fact appears verbatim (after normalization) in at least one listed source -- enforced by compiler/tests/test_qa_benchmark.py. `facts` is a list of required facts; each fact is a list of acceptable phrasings (lowercase substrings). `keywords` is a short keyword query for the substring search API, which does not handle natural-language questions.",
-  "version": 1,
-  "questions": [
-    {
-      "id": "q01",
-      "category": "fact",
-      "question": "What battery cell does the Nova Widget use?",
-      "answer": "A single CR2032 coin cell.",
-      "facts": [
-        [
-          "cr2032"
-        ]
-      ],
-      "sources": [
-        "articles/2026-05-15-product-spec-draft.md",
-        "samples/specs/[SAMPLE]-2026-07-03-nova-widget-hardware-rev-C.md",
-        "dummy-test/2026-07-08-customer-onboarding-faq.md"
-      ],
-      "keywords": "nova battery cr2032"
-    },
-    {
-      "id": "q02",
-      "category": "fact",
-      "question": "Which microcontroller is the Nova Widget built on?",
-      "answer": "The Nordic nRF52840.",
-      "facts": [
-        [
-          "nrf52840"
-        ]
-      ],
-      "sources": [
-        "articles/2026-05-15-product-spec-draft.md",
-        "notes/2026-05-01-kickoff-notes.md",
-        "samples/specs/[SAMPLE]-2026-07-03-nova-widget-hardware-rev-C.md"
-      ],
-      "keywords": "nova mcu nrf52840"
-    },
-    {
-      "id": "q03",
-      "category": "fact",
-      "question": "What is the Nova Widget's default reading interval?",
-      "answer": "Every 15 minutes.",
-      "facts": [
-        [
-          "15 min",
-          "15-min",
-          "fifteen min"
-        ]
-      ],
-      "sources": [
-        "articles/2026-05-15-product-spec-draft.md",
-        "dummy-test/2026-07-08-customer-onboarding-faq.md",
-        "samples/specs/[SAMPLE]-2026-07-07-meshsync-protocol-header.txt"
-      ],
-      "keywords": "default read interval"
-    },
-    {
-      "id": "q04",
-      "category": "contradiction",
-      "question": "What reading interval did the kickoff meeting originally plan, and what does the spec say now?",
-      "answer": "Kickoff assumed hourly readings; the spec changed the default to 15 minutes.",
-      "facts": [
-        [
-          "hourly"
-        ],
-        [
-          "15 min",
-          "15-min",
-          "fifteen min"
-        ]
-      ],
-      "sources": [
-        "notes/2026-05-01-kickoff-notes.md",
-        "articles/2026-05-15-product-spec-draft.md",
-        "transcripts/2026-05-28-weekly-sync.md"
-      ],
-      "keywords": "hourly 15 minutes kickoff"
-    },
-    {
-      "id": "q05",
-      "category": "fact",
-      "question": "What IP rating do the Nova Widget beta units have?",
-      "answer": "IP54 (splash resistant, not submersible).",
-      "facts": [
-        [
-          "ip54"
-        ]
-      ],
-      "sources": [
-        "articles/2026-05-15-product-spec-draft.md",
-        "samples/specs/[SAMPLE]-2026-07-03-nova-widget-hardware-rev-C.md",
-        "dummy-test/2026-07-08-customer-onboarding-faq.md"
-      ],
-      "keywords": "nova ip54"
-    },
-    {
-      "id": "q06",
-      "category": "fact",
-      "question": "What IP rating does the SenseNode SN-400 have?",
-      "answer": "IP67.",
-      "facts": [
-        [
-          "ip67"
-        ]
-      ],
-      "sources": [
-        "articles/2026-05-20-competitor-teardown-blog.md",
-        "samples/articles/[SAMPLE]-2026-07-09-competitive-landscape-q3.md"
-      ],
-      "keywords": "sensenode ip67"
-    },
-    {
-      "id": "q07",
-      "category": "fact",
-      "question": "How much would the IP65 enclosure tooling cost?",
-      "answer": "About $8k (a later quote says $7,850).",
-      "facts": [
-        [
-          "8k",
-          "8,000",
-          "7,850",
-          "$8 k"
-        ]
-      ],
-      "sources": [
-        "articles/2026-05-15-product-spec-draft.md",
-        "samples/specs/[SAMPLE]-2026-07-03-nova-widget-hardware-rev-C.md",
-        "transcripts/2026-05-28-weekly-sync.md"
-      ],
-      "keywords": "ip65 tooling cost"
-    },
-    {
-      "id": "q08",
-      "category": "multi_source",
-      "question": "Which sensors does the Nova Widget v2 include?",
-      "answer": "Capacitive soil moisture, an SHT41 temperature/humidity sensor and a VEML7700 light sensor.",
-      "facts": [
-        [
-          "soil moisture",
-          "capacitive"
-        ],
-        [
-          "sht41"
-        ],
-        [
-          "veml7700"
-        ]
-      ],
-      "sources": [
-        "articles/2026-05-15-product-spec-draft.md"
-      ],
-      "keywords": "nova sensors sht41 veml7700"
-    },
-    {
-      "id": "q09",
-      "category": "fact",
-      "question": "What is the Nova Widget's target average current including mesh overhead at 10 nodes?",
-      "answer": "Under 85 µA.",
-      "facts": [
-        [
-          "85 ua",
-          "85ua"
-        ]
-      ],
-      "sources": [
-        "articles/2026-05-15-product-spec-draft.md"
-      ],
-      "keywords": "target average current"
-    },
-    {
-      "id": "q10",
-      "category": "fact",
-      "question": "What average current did the Hardware Habit teardown measure on the Nova Widget beta unit?",
-      "answer": "About 92 µA with a 3-node mesh.",
-      "facts": [
-        [
-          "92 ua",
-          "92ua"
-        ]
-      ],
-      "sources": [
-        "articles/2026-05-20-competitor-teardown-blog.md"
-      ],
-      "keywords": "teardown average current"
-    },
-    {
-      "id": "q11",
-      "category": "contradiction",
-      "question": "What battery life do marketing and engineering each claim for the Nova Widget?",
-      "answer": "Marketing says 2 years (24 months); engineering commits to 18 months minimum at 10 nodes.",
-      "facts": [
-        [
-          "2 year",
-          "24 month",
-          "two year",
-          "2yr"
-        ],
-        [
-          "18 month",
-          "eighteen month",
-          "18mo"
-        ]
-      ],
-      "sources": [
-        "articles/2026-05-15-product-spec-draft.md",
-        "dummy-test/2026-07-07-power-budget-spreadsheet-notes.txt",
-        "samples/transcripts/[SAMPLE]-2026-07-02-investor-call-fragment.txt"
-      ],
-      "keywords": "battery life marketing engineering"
-    },
-    {
-      "id": "q12",
-      "category": "contradiction",
-      "question": "Which battery did the teardown blog originally (wrongly) say the Nova Widget used?",
-      "answer": "CR2450, later corrected to CR2032.",
-      "facts": [
-        [
-          "cr2450"
-        ]
-      ],
-      "sources": [
-        "articles/2026-05-20-competitor-teardown-blog.md",
-        "samples/support/[SAMPLE]-2026-07-01-ticket-2201-battery-docs.txt"
-      ],
-      "keywords": "teardown cr2450 correction"
-    },
-    {
-      "id": "q13",
-      "category": "fact",
-      "question": "What wireless technology does the SenseNode SN-400 use?",
-      "answer": "LoRaWAN (not mesh).",
-      "facts": [
-        [
-          "lorawan"
-        ]
-      ],
-      "sources": [
-        "articles/2026-05-20-competitor-teardown-blog.md",
-        "samples/articles/[SAMPLE]-2026-07-09-competitive-landscape-q3.md"
-      ],
-      "keywords": "sensenode lorawan"
-    },
-    {
-      "id": "q14",
-      "category": "fact",
-      "question": "How much does the SenseNode SN-400 cost?",
-      "answer": "$49.",
-      "facts": [
-        [
-          "$49",
-          "49 usd",
-          "49 dollars"
-        ]
-      ],
-      "sources": [
-        "articles/2026-05-20-competitor-teardown-blog.md"
-      ],
-      "keywords": "sensenode price"
-    },
-    {
-      "id": "q15",
-      "category": "fact",
-      "question": "What battery life did the teardown author estimate for the SenseNode SN-400?",
-      "answer": "About 22 months (it claims 3 years).",
-      "facts": [
-        [
-          "22 month",
-          "~22"
-        ]
-      ],
-      "sources": [
-        "articles/2026-05-20-competitor-teardown-blog.md"
-      ],
-      "keywords": "sensenode battery estimate"
-    },
-    {
-      "id": "q16",
-      "category": "fact",
-      "question": "What material are the beta enclosures made of?",
-      "answer": "3D-printed PETG.",
-      "facts": [
-        [
-          "petg"
-        ]
-      ],
-      "sources": [
-        "notes/2026-05-01-kickoff-notes.md",
-        "samples/specs/[SAMPLE]-2026-07-03-nova-widget-hardware-rev-C.md",
-        "articles/voice-memo-transcription.txt"
-      ],
-      "keywords": "enclosure petg"
-    },
-    {
-      "id": "q17",
-      "category": "fact",
-      "question": "Which enclosure shape was chosen for the Nova Widget?",
-      "answer": "A pebble shape (Jonah's proposal).",
-      "facts": [
-        [
-          "pebble"
-        ]
-      ],
-      "sources": [
-        "samples/specs/[SAMPLE]-2026-07-03-nova-widget-hardware-rev-C.md",
-        "samples/notes/[SAMPLE]-2026-06-16-sprint-retro-aurora.txt"
-      ],
-      "keywords": "enclosure pebble shape"
-    },
-    {
-      "id": "q18",
-      "category": "fact",
-      "question": "What is MeshSync's maximum hop count in the spec?",
-      "answer": "4 hops.",
-      "facts": [
-        [
-          "hop count: 4",
-          "4 hops",
-          "four hops"
-        ]
-      ],
-      "sources": [
-        "articles/2026-05-15-product-spec-draft.md"
-      ],
-      "keywords": "meshsync max hop count"
-    },
-    {
-      "id": "q19",
-      "category": "fact",
-      "question": "What is MeshSync's theoretical maximum number of nodes?",
-      "answer": "32 nodes.",
-      "facts": [
-        [
-          "max_nodes 32",
-          "max 32 nodes",
-          "32 nodes"
-        ]
-      ],
-      "sources": [
-        "samples/specs/[SAMPLE]-2026-07-07-meshsync-protocol-header.txt",
-        "samples/articles/[SAMPLE]-2026-06-11-nova-widget-spec-fragment.md"
-      ],
-      "keywords": "meshsync max nodes 32"
-    },
-    {
-      "id": "q20",
-      "category": "fact",
-      "question": "How many nodes are recommended per mesh during the beta?",
-      "answer": "6 nodes, until the rejoin fix lands.",
-      "facts": [
-        [
-          "6 nodes",
-          "six nodes",
-          "safe_nodes 6",
-          "cap at 6",
-          "recommend 6"
-        ]
-      ],
-      "sources": [
-        "dummy-test/2026-07-08-customer-onboarding-faq.md",
-        "samples/specs/[SAMPLE]-2026-07-07-meshsync-protocol-header.txt",
-        "samples/social/[SAMPLE]-2026-07-02-twitter-thread-scrape.txt"
-      ],
-      "keywords": "beta recommended nodes"
-    },
-    {
-      "id": "q21",
-      "category": "fact",
-      "question": "What CR2032 capacity does the power budget assume?",
-      "answer": "220 mAh nominal.",
-      "facts": [
-        [
-          "220mah",
-          "220 mah"
-        ]
-      ],
-      "sources": [
-        "dummy-test/2026-07-07-power-budget-spreadsheet-notes.txt"
-      ],
-      "keywords": "cr2032 capacity mah"
-    },
-    {
-      "id": "q22",
-      "category": "fact",
-      "question": "What total daily consumption and battery life does the power budget estimate?",
-      "answer": "About 0.19 mAh/day, giving roughly 18 months.",
-      "facts": [
-        [
-          "0.19"
-        ],
-        [
-          "18 month"
-        ]
-      ],
-      "sources": [
-        "dummy-test/2026-07-07-power-budget-spreadsheet-notes.txt"
-      ],
-      "keywords": "power budget daily mah"
-    },
-    {
-      "id": "q23",
-      "category": "fact",
-      "question": "What is the Nova Widget's sleep current?",
-      "answer": "4.2 µA.",
-      "facts": [
-        [
-          "4.2 ua",
-          "4.2ua"
-        ]
-      ],
-      "sources": [
-        "dummy-test/2026-07-07-power-budget-spreadsheet-notes.txt",
-        "samples/articles/[SAMPLE]-2026-06-11-nova-widget-spec-fragment.md"
-      ],
-      "keywords": "sleep current"
-    },
-    {
-      "id": "q24",
-      "category": "fact",
-      "question": "By how much did MeshSync 0.3.8 reduce the power spike on rejoin?",
-      "answer": "From 340 µA to 180 µA (target 110 µA).",
-      "facts": [
-        [
-          "340ua",
-          "340 ua"
-        ],
-        [
-          "180ua",
-          "180 ua"
-        ]
-      ],
-      "sources": [
-        "2026-07-02-aurora-meshsync-release-notes.md"
-      ],
-      "keywords": "rejoin power spike 0.3.8"
-    },
-    {
-      "id": "q25",
-      "category": "fact",
-      "question": "When was MeshSync 0.3.8 released?",
-      "answer": "2026-07-02.",
-      "facts": [
-        [
-          "2026-07-02",
-          "july 2"
-        ]
-      ],
-      "sources": [
-        "2026-07-02-aurora-meshsync-release-notes.md"
-      ],
-      "keywords": "meshsync 0.3.8 release date"
-    },
-    {
-      "id": "q26",
-      "category": "fact",
-      "question": "Who owned firmware and QA sign-off for the MeshSync 0.3.8 release?",
-      "answer": "Mira Chen (firmware) and Jonah Park (QA sign-off).",
-      "facts": [
-        [
-          "mira"
-        ],
-        [
-          "jonah"
-        ]
-      ],
-      "sources": [
-        "2026-07-02-aurora-meshsync-release-notes.md"
-      ],
-      "keywords": "0.3.8 owners"
-    },
-    {
-      "id": "q27",
-      "category": "fact",
-      "question": "What is the MQTT topic for Nova Widget telemetry?",
-      "answer": "aurora/{device_id}/telemetry.",
-      "facts": [
-        [
-          "aurora/{device_id}/telemetry",
-          "aurora/+/telemetry"
-        ]
-      ],
-      "sources": [
-        "samples/articles/[SAMPLE]-2026-07-02-mqtt-export-schema.md",
-        "samples/articles/[SAMPLE]-2026-07-08-homelab-integration-guide.md"
-      ],
-      "keywords": "mqtt telemetry topic"
-    },
-    {
-      "id": "q28",
-      "category": "fact",
-      "question": "Which MQTT schema version is required for firmware 0.3.8 and later?",
-      "answer": "Schema v2.",
-      "facts": [
-        [
-          "schema v2",
-          "v2 required"
-        ]
-      ],
-      "sources": [
-        "samples/support/[SAMPLE]-2026-07-04-ticket-2210-mqtt-setup.txt",
-        "2026-07-02-aurora-meshsync-release-notes.md"
-      ],
-      "keywords": "mqtt schema version"
-    },
-    {
-      "id": "q29",
-      "category": "fact",
-      "question": "How do you enable MQTT export before the app supports it?",
-      "answer": "Send the UART command `mqtt on`.",
-      "facts": [
-        [
-          "mqtt on"
-        ]
-      ],
-      "sources": [
-        "samples/articles/[SAMPLE]-2026-07-08-homelab-integration-guide.md"
-      ],
-      "keywords": "enable mqtt export uart"
-    },
-    {
-      "id": "q30",
-      "category": "fact",
-      "question": "What signature scheme is planned for OTA firmware images?",
-      "answer": "ed25519.",
-      "facts": [
-        [
-          "ed25519"
-        ]
-      ],
-      "sources": [
-        "samples/articles/[SAMPLE]-2026-07-04-ota-update-design-sketch.md"
-      ],
-      "keywords": "ota signed firmware"
-    },
-    {
-      "id": "q31",
-      "category": "fact",
-      "question": "Are OTA updates shipping in the beta?",
-      "answer": "No; OTA is not shipping in beta (deferred to v2.1).",
-      "facts": [
-        [
-          "not shipping",
-          "deferred"
-        ]
-      ],
-      "sources": [
-        "samples/articles/[SAMPLE]-2026-07-04-ota-update-design-sketch.md",
-        "articles/2026-05-15-product-spec-draft.md"
-      ],
-      "keywords": "ota beta deferred"
-    },
-    {
-      "id": "q32",
-      "category": "fact",
-      "question": "How much faster did batch 4 units drain their battery with MeshSync relay mode on?",
-      "answer": "Roughly 30% faster than spec.",
-      "facts": [
-        [
-          "30%",
-          "30 %"
-        ]
-      ],
-      "sources": [
-        "emails/2026-06-02-meshsync-battery-report.eml"
-      ],
-      "keywords": "relay mode battery drain"
-    },
-    {
-      "id": "q33",
-      "category": "fact",
-      "question": "Which ticket tracks the MeshSync relay battery drain?",
-      "answer": "MESH-118.",
-      "facts": [
-        [
-          "mesh-118"
-        ]
-      ],
-      "sources": [
-        "emails/2026-06-02-meshsync-battery-report.eml",
-        "emails/2026-06-03-meshsync-battery-reply.eml"
-      ],
-      "keywords": "relay battery drain ticket"
-    },
-    {
-      "id": "q34",
-      "category": "fact",
-      "question": "What was the root cause of MESH-118?",
-      "answer": "The relay radio's sleep timer resets on every received packet, so a busy mesh never lets it sleep.",
-      "facts": [
-        [
-          "sleep timer"
-        ],
-        [
-          "received packet"
-        ]
-      ],
-      "sources": [
-        "emails/2026-06-03-meshsync-battery-reply.eml"
-      ],
-      "keywords": "mesh-118 root cause sleep timer"
-    },
-    {
-      "id": "q35",
-      "category": "fact",
-      "question": "How did the MESH-118 fix change radio wake time per hop?",
-      "answer": "From 400 ms to 80 ms.",
-      "facts": [
-        [
-          "400ms",
-          "400 ms"
-        ],
-        [
-          "80ms",
-          "80 ms"
-        ]
-      ],
-      "sources": [
-        "emails/2026-06-03-meshsync-battery-reply.eml"
-      ],
-      "keywords": "radio wake time per hop"
-    },
-    {
-      "id": "q36",
-      "category": "fact",
-      "question": "Which firmware version contains the MESH-118 fix?",
-      "answer": "0.3.9.",
-      "facts": [
-        [
-          "0.3.9"
-        ]
-      ],
-      "sources": [
-        "emails/2026-06-03-meshsync-battery-reply.eml",
-        "emails/2026-06-10-nova-widget-beta-invite.eml"
-      ],
-      "keywords": "mesh-118 fix version"
-    },
-    {
-      "id": "q37",
-      "category": "fact",
-      "question": "What was ordered on PowerCell order #PC-88213?",
-      "answer": "2,400 CR2477 cells for batch 5.",
-      "facts": [
-        [
-          "2,400",
-          "2400"
-        ],
-        [
-          "cr2477"
-        ]
-      ],
-      "sources": [
-        "emails/2026-06-04-mesh-118-vendor-battery-delay.eml"
-      ],
-      "keywords": "order pc-88213 cells"
-    },
-    {
-      "id": "q38",
-      "category": "fact",
-      "question": "Why was order #PC-88213 delayed, and to when?",
-      "answer": "A customs hold in Shenzhen at the cathode supplier; revised ship date June 18.",
-      "facts": [
-        [
-          "customs"
-        ],
-        [
-          "june 18"
-        ]
-      ],
-      "sources": [
-        "emails/2026-06-04-mesh-118-vendor-battery-delay.eml"
-      ],
-      "keywords": "cell restock delay customs"
-    },
-    {
-      "id": "q39",
-      "category": "fact",
-      "question": "Which shipping option did Mira choose for the delayed cells?",
-      "answer": "The split shipment: 600 cells by air on June 8.",
-      "facts": [
-        [
-          "600 cells"
-        ],
-        [
-          "by air",
-          "air-ship",
-          "air freight"
-        ]
-      ],
-      "sources": [
-        "emails/2026-06-04-mesh-118-vendor-battery-delay-reply.eml"
-      ],
-      "keywords": "split shipment air"
-    },
-    {
-      "id": "q40",
-      "category": "fact",
-      "question": "What is the pass bar for the 0.3.9 MESH-118 retest?",
-      "answer": "Drain within 10% of the 0.3.7 baseline at 6 nodes or fewer.",
-      "facts": [
-        [
-          "10%"
-        ],
-        [
-          "0.3.7"
-        ]
-      ],
-      "sources": [
-        "emails/2026-06-05-mesh-118-qa-standup-notes.eml"
-      ],
-      "keywords": "retest pass bar"
-    },
-    {
-      "id": "q41",
-      "category": "fact",
-      "question": "What problem is tracked as NOVA-59?",
-      "answer": "Wifi credentials/state not surviving an unclean power loss on 0.3.8.",
-      "facts": [
-        [
-          "wifi",
-          "wi-fi"
-        ],
-        [
-          "power loss",
-          "power outage"
-        ]
-      ],
-      "sources": [
-        "emails/2026-06-11-nova-59-support-triage.eml",
-        "emails/2026-06-11-nova-59-customer-wifi-complaint.eml"
-      ],
-      "keywords": "nova-59 wifi power"
-    },
-    {
-      "id": "q42",
-      "category": "fact",
-      "question": "How do you do a soft wifi-only reset on the Nova Widget?",
-      "answer": "Hold the side button for 3 seconds; it keeps sensor history.",
-      "facts": [
-        [
-          "3 seconds"
-        ],
-        [
-          "side button"
-        ]
-      ],
-      "sources": [
-        "emails/2026-06-11-nova-59-support-triage.eml"
-      ],
-      "keywords": "soft wifi reset side button"
-    },
-    {
-      "id": "q43",
-      "category": "fact",
-      "question": "Who is the account manager at PowerCell Supply Co.?",
-      "answer": "Rosa Delgado.",
-      "facts": [
-        [
-          "rosa delgado"
-        ]
-      ],
-      "sources": [
-        "emails/2026-06-04-mesh-118-vendor-battery-delay.eml"
-      ],
-      "keywords": "powercell account manager"
-    },
-    {
-      "id": "q44",
-      "category": "fact",
-      "question": "Where did the Aurora Labs kickoff meeting take place?",
-      "answer": "In Mira's garage workshop in Portland, OR.",
-      "facts": [
-        [
-          "portland"
-        ],
-        [
-          "garage"
-        ]
-      ],
-      "sources": [
-        "notes/2026-05-01-kickoff-notes.md"
-      ],
-      "keywords": "kickoff location"
-    },
-    {
-      "id": "q45",
-      "category": "fact",
-      "question": "Why was the company named Aurora Labs?",
-      "answer": "Jonah wanted something that sounds like dawn, a new beginning.",
-      "facts": [
-        [
-          "dawn"
-        ]
-      ],
-      "sources": [
-        "notes/2026-05-01-kickoff-notes.md"
-      ],
-      "keywords": "aurora labs name"
-    },
-    {
-      "id": "q46",
-      "category": "fact",
-      "question": "What is Aurora Labs' draft mission statement?",
-      "answer": "\"Open sensors for people who own their data.\"",
-      "facts": [
-        [
-          "open sensors for people who own their data"
-        ]
-      ],
-      "sources": [
-        "notes/2026-05-01-kickoff-notes.md",
-        "ideas/2026-06-07-product-naming-brainstorm.txt"
-      ],
-      "keywords": "mission statement open sensors"
-    },
-    {
-      "id": "q47",
-      "category": "fact",
-      "question": "Which proposed rename of MeshSync keeps getting rejected?",
-      "answer": "MeshSink.",
-      "facts": [
-        [
-          "meshsink"
-        ]
-      ],
-      "sources": [
-        "ideas/backlog-shower-thoughts.txt",
-        "samples/notes/[SAMPLE]-2026-07-10-sprint-planning-aurora.txt"
-      ],
-      "keywords": "meshsync rename rejected"
-    },
-    {
-      "id": "q48",
-      "category": "fact",
-      "question": "How many beta testers were on the list at the June 8 meeting, and who were they?",
-      "answer": "12 people: 3 farmers, the rest hobbyists.",
-      "facts": [
-        [
-          "12 people",
-          "12 beta testers",
-          "12 testers"
-        ],
-        [
-          "3 farmers",
-          "three farmers"
-        ]
-      ],
-      "sources": [
-        "notes/2026-06-08-meeting-no-agenda.txt"
-      ],
-      "keywords": "beta tester list farmers"
-    },
-    {
-      "id": "q49",
-      "category": "fact",
-      "question": "How many Nova Widget beta units were in the field per the July investor update?",
-      "answer": "47.",
-      "facts": [
-        [
-          "47 beta",
-          "47 units"
-        ]
-      ],
-      "sources": [
-        "samples/2026-07-04-investor-update-draft.txt"
-      ],
-      "keywords": "beta units in field"
-    },
-    {
-      "id": "q50",
-      "category": "fact",
-      "question": "How much funding does the investor update ask for?",
-      "answer": "A $500k bridge for the injection mold and 2 firmware FTEs.",
-      "facts": [
-        [
-          "500k",
-          "500,000"
-        ]
-      ],
-      "sources": [
-        "samples/2026-07-04-investor-update-draft.txt"
-      ],
-      "keywords": "investor ask bridge"
-    },
-    {
-      "id": "q51",
-      "category": "contradiction",
-      "question": "What is TeaBuddy's herbal preset in firmware versus in the marketing copy?",
-      "answer": "7:00 in firmware; the marketing copy said 5:00.",
-      "facts": [
-        [
-          "7:00",
-          "7 min",
-          "firmware is 7"
-        ],
-        [
-          "5:00",
-          "5 min",
-          "marketing pdf is 5"
-        ]
-      ],
-      "sources": [
-        "dummy-test/2026-07-01-firmware-changelog.md",
-        "dummy-test/2026-07-06-slack-dump-product.txt"
-      ],
-      "keywords": "teabuddy herbal preset"
-    },
-    {
-      "id": "q52",
-      "category": "fact",
-      "question": "What BLE pairing timeout did TeaBuddy v0.9.4 set for iOS 18?",
-      "answer": "45 seconds.",
-      "facts": [
-        [
-          "45s",
-          "45 s",
-          "45 sec"
-        ]
-      ],
-      "sources": [
-        "dummy-test/2026-07-01-firmware-changelog.md"
-      ],
-      "keywords": "teabuddy pairing timeout"
-    },
-    {
-      "id": "q53",
-      "category": "fact",
-      "question": "Does the Nova Widget share an app or codebase with TeaBuddy?",
-      "answer": "No: different product, company and app.",
-      "facts": [
-        [
-          "different product",
-          "different company",
-          "different companies",
-          "not shared codebase"
-        ]
-      ],
-      "sources": [
-        "dummy-test/2026-07-08-customer-onboarding-faq.md",
-        "samples/support/[SAMPLE]-2026-07-01-ticket-2201-battery-docs.txt",
-        "dummy-test/2026-07-01-firmware-changelog.md"
-      ],
-      "keywords": "nova teabuddy same app"
-    },
-    {
-      "id": "q54",
-      "category": "fact",
-      "question": "What was TeaBuddy's raw beta NPS?",
-      "answer": "42.",
-      "facts": [
-        [
-          "nps raw: 42",
-          "nps of 42",
-          "nps 42",
-          "nps: 42"
-        ]
-      ],
-      "sources": [
-        "dummy-test/2026-07-06-slack-dump-product.txt"
-      ],
-      "keywords": "teabuddy nps"
-    },
-    {
-      "id": "q55",
-      "category": "fact",
-      "question": "What caused TeaBuddy ticket #2156?",
-      "answer": "iOS 18 changed the CoreBluetooth permission prompt order.",
-      "facts": [
-        [
-          "ios 18"
-        ],
-        [
-          "permission prompt"
-        ]
-      ],
-      "sources": [
-        "samples/research/[SAMPLE]-2026-07-02-ble-pairing-ios18-notes.md",
-        "dummy-test/2026-07-01-firmware-changelog.md"
-      ],
-      "keywords": "ticket 2156 ios 18"
-    },
-    {
-      "id": "q56",
-      "category": "fact",
-      "question": "Which support ticket covers the rejoin loop after adding an 8th node?",
-      "answer": "Ticket #2099.",
-      "facts": [
-        [
-          "2099"
-        ]
-      ],
-      "sources": [
-        "samples/support/[SAMPLE]-2026-06-27-ticket-2099-mesh-rejoin.txt",
-        "dummy-test/2026-07-08-customer-onboarding-faq.md",
-        "2026-07-02-aurora-meshsync-release-notes.md"
-      ],
-      "keywords": "rejoin loop 8 nodes ticket"
-    },
-    {
-      "id": "q57",
-      "category": "fact",
-      "question": "What was support ticket #2201 about?",
-      "answer": "Battery documentation: the blog said CR2450 but the device uses CR2032.",
-      "facts": [
-        [
-          "cr2450"
-        ],
-        [
-          "cr2032"
-        ]
-      ],
-      "sources": [
-        "samples/support/[SAMPLE]-2026-07-01-ticket-2201-battery-docs.txt"
-      ],
-      "keywords": "ticket 2201 battery docs"
-    },
-    {
-      "id": "q58",
-      "category": "fact",
-      "question": "Which GitHub issue tracks the rejoin storm at 8 nodes?",
-      "answer": "aurora-labs/meshsync #442.",
-      "facts": [
-        [
-          "#442",
-          "issue 442"
-        ]
-      ],
-      "sources": [
-        "samples/forums/[SAMPLE]-2026-07-03-github-issue-meshsync-442.txt"
-      ],
-      "keywords": "github issue rejoin storm"
-    },
-    {
-      "id": "q59",
-      "category": "fact",
-      "question": "Which MCU is being evaluated for the next hardware revision?",
-      "answer": "The nRF5340.",
-      "facts": [
-        [
-          "nrf5340"
-        ]
-      ],
-      "sources": [
-        "samples/notes/[SAMPLE]-2026-06-12-meshsync-debug-scribbles.txt",
-        "samples/notes/[SAMPLE]-2026-07-10-sprint-planning-aurora.txt"
-      ],
-      "keywords": "next rev mcu nrf5340"
-    },
-    {
-      "id": "q60",
-      "category": "fact",
-      "question": "How long do cheap capacitive soil probes last in acidic soil?",
-      "answer": "About 6–9 months.",
-      "facts": [
-        [
-          "6-9 month",
-          "6 to 9 month"
-        ]
-      ],
-      "sources": [
-        "samples/research/[SAMPLE]-2026-07-04-soil-probe-corrosion-study.txt"
-      ],
-      "keywords": "soil probe corrosion acidic"
-    },
-    {
-      "id": "q61",
-      "category": "fact",
-      "question": "How much does a replacement SenseNode probe cost?",
-      "answer": "$12.",
-      "facts": [
-        [
-          "$12"
-        ]
-      ],
-      "sources": [
-        "samples/research/[SAMPLE]-2026-07-04-soil-probe-corrosion-study.txt"
-      ],
-      "keywords": "sensenode probe replacement"
-    },
-    {
-      "id": "q62",
-      "category": "fact",
-      "question": "How much power does an always-on LoRaWAN gateway draw?",
-      "answer": "About 2 W of wall power.",
-      "facts": [
-        [
-          "2w",
-          "2 w"
-        ]
-      ],
-      "sources": [
-        "samples/research/[SAMPLE]-2026-07-06-lorawan-vs-mesh-power.md"
-      ],
-      "keywords": "lorawan gateway power"
-    },
-    {
-      "id": "q63",
-      "category": "fact",
-      "question": "How many points did the Show HN post for the Nova Widget get?",
-      "answer": "142.",
-      "facts": [
-        [
-          "points: 142",
-          "142 points"
-        ]
-      ],
-      "sources": [
-        "samples/forums/[SAMPLE]-2026-07-10-hackernews-thread-scrape.txt"
-      ],
-      "keywords": "show hn points"
-    },
-    {
-      "id": "q64",
-      "category": "fact",
-      "question": "Who presented the local-first IoT lunch-and-learn?",
-      "answer": "Alex Kim from TeaBuddy.",
-      "facts": [
-        [
-          "alex kim"
-        ]
-      ],
-      "sources": [
-        "samples/notes/[SAMPLE]-2026-07-05-lunch-and-learn-notes.txt"
-      ],
-      "keywords": "lunch and learn presenter"
-    },
-    {
-      "id": "q65",
-      "category": "fact",
-      "question": "What minimum logo separation did counsel require for co-marketing?",
-      "answer": "24px.",
-      "facts": [
-        [
-          "24px",
-          "24 px"
-        ]
-      ],
-      "sources": [
-        "samples/emails/[SAMPLE]-2026-07-08-legal-review-trademark.txt"
-      ],
-      "keywords": "co-marketing logo separation"
-    }
-  ]
+ "description": "Gold Q&A benchmark over the fictional sample corpus in data/raw/ (BürgerEnergie Eschenbrück eG, documentation/18-sample-domain.md). Every answer fact appears verbatim (after normalization) in at least one listed source -- enforced by compiler/tests/test_qa_benchmark.py; PDF/DOCX/XLSX/PPTX/EML sources are read through the pipeline's own text extraction. `facts` is a list of required facts; each fact is a list of acceptable phrasings (lowercase substrings). `keywords` is a short keyword query for the substring search API, which does not handle natural-language questions.",
+ "version": 2,
+ "questions": [
+  {
+   "id": "q01",
+   "category": "fact",
+   "question": "What is the peak power of the Sonnendach Lindenhof solar plant?",
+   "answer": "171.6 kWp.",
+   "facts": [
+    [
+     "171.6 kwp",
+     "171,6 kwp",
+     "171.6 kw",
+     "171,6 kilowatt"
+    ]
+   ],
+   "sources": [
+    "emails/2026-05-13-re-modulverzoegerung.eml",
+    "emails/2026-08-19-inbetriebnahme-bericht.eml",
+    "monitoring/site-config.yaml",
+    "press/2026-08-22-eschenbruecker-anzeiger.md"
+   ],
+   "keywords": "sonnendach kwp"
+  },
+  {
+   "id": "q02",
+   "category": "fact",
+   "question": "Which solar modules were installed on the Lindenhof roofs?",
+   "answer": "399 Nordlicht NL-430 modules.",
+   "facts": [
+    [
+     "nordlicht nl-430"
+    ],
+    [
+     "399"
+    ]
+   ],
+   "sources": [
+    "emails/2026-08-19-inbetriebnahme-bericht.eml",
+    "monitoring/site-config.yaml",
+    "meetings/2026-06-13-generalversammlung-protokoll.md"
+   ],
+   "keywords": "nordlicht nl-430 modules"
+  },
+  {
+   "id": "q03",
+   "category": "fact",
+   "question": "How many modules are on the school roof and how many on the sports hall?",
+   "answer": "276 on the school roof, 123 on the sports hall.",
+   "facts": [
+    [
+     "276"
+    ],
+    [
+     "123"
+    ]
+   ],
+   "sources": [
+    "emails/2026-05-12-lichtbau-modulverzoegerung.eml",
+    "monitoring/site-config.yaml",
+    "presentations/2026-06-13-agm-slides.pptx"
+   ],
+   "keywords": "modules school roof sports hall"
+  },
+  {
+   "id": "q04",
+   "category": "fact",
+   "question": "How large is the battery storage?",
+   "answer": "100 kWh.",
+   "facts": [
+    [
+     "100 kwh",
+     "capacity_kwh: 100",
+     "\"capacity_kwh\": 100"
+    ]
+   ],
+   "sources": [
+    "finance/2026-05-18-budget-revision.xlsx",
+    "emails/2026-08-19-inbetriebnahme-bericht.eml",
+    "monitoring/2026-09-15-inverter-status.json",
+    "monitoring/site-config.yaml"
+   ],
+   "keywords": "battery storage kwh"
+  },
+  {
+   "id": "q05",
+   "category": "fact",
+   "question": "Where is the battery installed?",
+   "answer": "In the basement of the school.",
+   "facts": [
+    [
+     "basement",
+     "keller"
+    ]
+   ],
+   "sources": [
+    "monitoring/site-config.yaml",
+    "presentations/2026-06-13-agm-slides.pptx",
+    "project/2026-03-02-project-plan.docx"
+   ],
+   "keywords": "battery basement"
+  },
+  {
+   "id": "q06",
+   "category": "fact",
+   "question": "Which inverters does the plant use?",
+   "answer": "Three Kestrel K-60 inverters, WR-1 to WR-3.",
+   "facts": [
+    [
+     "kestrel k-60"
+    ],
+    [
+     "wr-3"
+    ]
+   ],
+   "sources": [
+    "finance/2026-05-18-budget-revision.xlsx",
+    "monitoring/site-config.yaml",
+    "emails/2026-08-19-inbetriebnahme-bericht.eml"
+   ],
+   "keywords": "inverters kestrel"
+  },
+  {
+   "id": "q07",
+   "category": "fact",
+   "question": "When was the plant commissioned?",
+   "answer": "On 19 August 2026 (energised at 10:42).",
+   "facts": [
+    [
+     "19 august 2026",
+     "2026-08-19",
+     "19. august"
+    ]
+   ],
+   "sources": [
+    "emails/2026-08-19-inbetriebnahme-bericht.eml",
+    "monitoring/site-config.yaml",
+    "press/2026-08-22-eschenbruecker-anzeiger.md"
+   ],
+   "keywords": "commissioned energised august"
+  },
+  {
+   "id": "q08",
+   "category": "fact",
+   "question": "How much did the plant produce on its first day?",
+   "answer": "612 kWh until 17:30.",
+   "facts": [
+    [
+     "612"
+    ]
+   ],
+   "sources": [
+    "emails/2026-08-19-inbetriebnahme-bericht.eml",
+    "monitoring/2026-09-pv-daily-production.csv"
+   ],
+   "keywords": "first day yield"
+  },
+  {
+   "id": "q09",
+   "category": "fact",
+   "question": "What does one cooperative share cost?",
+   "answer": "250 euros.",
+   "facts": [
+    [
+     "250 euro",
+     "250 eur"
+    ]
+   ],
+   "sources": [
+    "meetings/2026-01-20-board-minutes.docx",
+    "public/faq.md",
+    "emails/2026-07-09-re-mitgliederfrage-anteil.eml"
+   ],
+   "keywords": "share price 250"
+  },
+  {
+   "id": "q10",
+   "category": "fact",
+   "question": "How many shares may one member hold at most?",
+   "answer": "40 shares.",
+   "facts": [
+    [
+     "40 shares",
+     "40 anteile"
+    ]
+   ],
+   "sources": [
+    "meetings/2026-01-20-board-minutes.docx",
+    "public/faq.md",
+    "public/2026-03-15-mitglieder-flyer.html"
+   ],
+   "keywords": "maximum shares per member"
+  },
+  {
+   "id": "q11",
+   "category": "fact",
+   "question": "How many members did the cooperative have at the end of 2025?",
+   "answer": "388.",
+   "facts": [
+    [
+     "388"
+    ]
+   ],
+   "sources": [
+    "meetings/2026-01-20-board-minutes.docx",
+    "finance/2026-06-30-member-shares-by-year.csv",
+    "presentations/2026-06-13-agm-slides.pptx"
+   ],
+   "keywords": "members end of 2025"
+  },
+  {
+   "id": "q12",
+   "category": "fact",
+   "question": "What is the total budget of the project after the revision?",
+   "answer": "298,500 euros.",
+   "facts": [
+    [
+     "298,500",
+     "298500",
+     "298.500"
+    ]
+   ],
+   "sources": [
+    "finance/2026-05-18-budget-revision.xlsx",
+    "presentations/2026-06-13-agm-slides.pptx",
+    "meetings/2026-06-13-generalversammlung-protokoll.md"
+   ],
+   "keywords": "budget total 298,500"
+  },
+  {
+   "id": "q13",
+   "category": "fact",
+   "question": "How much is the KlimaKommunal grant?",
+   "answer": "96,000 euros.",
+   "facts": [
+    [
+     "96,000",
+     "96000",
+     "96.000"
+    ]
+   ],
+   "sources": [
+    "finance/2026-05-18-budget-revision.xlsx",
+    "presentations/2026-06-13-agm-slides.pptx",
+    "project/2026-02-10-foerderantrag-klimakommunal.pdf"
+   ],
+   "keywords": "klimakommunal grant"
+  },
+  {
+   "id": "q14",
+   "category": "fact",
+   "question": "Which bank provides the loan, and how much?",
+   "answer": "Raiffeisenkasse Talgrund, 120,000 euros.",
+   "facts": [
+    [
+     "raiffeisenkasse talgrund"
+    ],
+    [
+     "120,000",
+     "120000"
+    ]
+   ],
+   "sources": [
+    "finance/2026-05-18-budget-revision.xlsx",
+    "presentations/2026-06-13-agm-slides.pptx"
+   ],
+   "keywords": "loan bank raiffeisenkasse"
+  },
+  {
+   "id": "q15",
+   "category": "fact",
+   "question": "What interest rate and term does the loan have?",
+   "answer": "3.1 % over 15 years.",
+   "facts": [
+    [
+     "3.1 %"
+    ],
+    [
+     "15 years"
+    ]
+   ],
+   "sources": [
+    "finance/2026-05-18-budget-revision.xlsx"
+   ],
+   "keywords": "loan interest rate term"
+  },
+  {
+   "id": "q16",
+   "category": "fact",
+   "question": "How much money comes from new member shares?",
+   "answer": "82,500 euros (330 shares at 250 euros).",
+   "facts": [
+    [
+     "82,500",
+     "82500"
+    ],
+    [
+     "330"
+    ]
+   ],
+   "sources": [
+    "finance/2026-05-18-budget-revision.xlsx",
+    "presentations/2026-06-13-agm-slides.pptx",
+    "finance/2026-06-30-member-shares-by-year.csv"
+   ],
+   "keywords": "member shares equity"
+  },
+  {
+   "id": "q17",
+   "category": "fact",
+   "question": "What price does the school pay for the solar power?",
+   "answer": "19.5 cents per kWh for 20 years.",
+   "facts": [
+    [
+     "19.5",
+     "19,5"
+    ],
+    [
+     "20 years",
+     "20 jahre"
+    ]
+   ],
+   "sources": [
+    "project/2026-03-02-project-plan.docx",
+    "public/faq.md",
+    "project/2026-03-26-dachnutzungsvertrag-zusammenfassung.txt"
+   ],
+   "keywords": "power purchase price school"
+  },
+  {
+   "id": "q18",
+   "category": "fact",
+   "question": "What rent does the cooperative pay for the roofs?",
+   "answer": "A symbolic 1 euro per year.",
+   "facts": [
+    [
+     "1 euro pro jahr",
+     "symbolischen euro",
+     "symbolic"
+    ]
+   ],
+   "sources": [
+    "project/2026-03-26-dachnutzungsvertrag-zusammenfassung.txt",
+    "press/2026-08-22-eschenbruecker-anzeiger.md",
+    "meetings/2026-01-20-board-minutes.docx"
+   ],
+   "keywords": "roof lease rent"
+  },
+  {
+   "id": "q19",
+   "category": "fact",
+   "question": "When was the roof lease signed and by whom for the municipality?",
+   "answer": "On 26 March 2026, by mayor Petra Lindqvist.",
+   "facts": [
+    [
+     "26. märz 2026",
+     "26 march 2026"
+    ],
+    [
+     "petra lindqvist"
+    ]
+   ],
+   "sources": [
+    "project/2026-03-26-dachnutzungsvertrag-zusammenfassung.txt"
+   ],
+   "keywords": "roof lease signed mayor"
+  },
+  {
+   "id": "q20",
+   "category": "fact",
+   "question": "Who is the chair of the board of the cooperative?",
+   "answer": "Dr. Hanna Vogt.",
+   "facts": [
+    [
+     "hanna vogt"
+    ]
+   ],
+   "sources": [
+    "meetings/2026-01-20-board-minutes.docx",
+    "project/2026-02-10-foerderantrag-klimakommunal.pdf"
+   ],
+   "keywords": "board chair"
+  },
+  {
+   "id": "q21",
+   "category": "fact",
+   "question": "Who is the technical lead of the project?",
+   "answer": "Selin Aydın.",
+   "facts": [
+    [
+     "selin aydın",
+     "selin aydin"
+    ]
+   ],
+   "sources": [
+    "project/2026-03-02-project-plan.docx",
+    "meetings/2026-05-06-site-meeting-transcript.txt"
+   ],
+   "keywords": "technical lead project"
+  },
+  {
+   "id": "q22",
+   "category": "fact",
+   "question": "Which company installed the plant?",
+   "answer": "Lichtbau Solartechnik GmbH (project lead Marco Petrović).",
+   "facts": [
+    [
+     "lichtbau solartechnik"
+    ]
+   ],
+   "sources": [
+    "finance/2026-05-18-budget-revision.xlsx",
+    "public/faq.md",
+    "emails/2026-05-12-lichtbau-modulverzoegerung.eml"
+   ],
+   "keywords": "installer lichtbau"
+  },
+  {
+   "id": "q23",
+   "category": "fact",
+   "question": "Who is the grid operator?",
+   "answer": "Netze Mittelland GmbH.",
+   "facts": [
+    [
+     "netze mittelland"
+    ]
+   ],
+   "sources": [
+    "emails/2026-06-24-netzanschlusszusage.eml",
+    "finance/2026-05-18-budget-revision.xlsx",
+    "project/2026-02-10-foerderantrag-klimakommunal.pdf"
+   ],
+   "keywords": "grid operator netze mittelland"
+  },
+  {
+   "id": "q24",
+   "category": "fact",
+   "question": "How much is the grid construction cost contribution?",
+   "answer": "31,500 euros.",
+   "facts": [
+    [
+     "31,500",
+     "31500",
+     "31.500"
+    ]
+   ],
+   "sources": [
+    "emails/2026-06-24-netzanschlusszusage.eml",
+    "finance/2026-05-18-budget-revision.xlsx",
+    "archive/2026-08-invoices.zip"
+   ],
+   "keywords": "baukostenzuschuss grid contribution"
+  },
+  {
+   "id": "q25",
+   "category": "fact",
+   "question": "What did the structural survey cost?",
+   "answer": "4,380 euros (invoice KP-2026-007).",
+   "facts": [
+    [
+     "4,380",
+     "4380"
+    ]
+   ],
+   "sources": [
+    "project/2026-04-22-structural-survey-summary.pdf",
+    "finance/2026-05-18-budget-revision.xlsx",
+    "archive/2026-08-invoices.zip"
+   ],
+   "keywords": "structural survey fee"
+  },
+  {
+   "id": "q26",
+   "category": "fact",
+   "question": "Who carried out the structural survey?",
+   "answer": "Dr. Ines Kraft, Ingenieurbüro Kraft & Partner.",
+   "facts": [
+    [
+     "ines kraft"
+    ]
+   ],
+   "sources": [
+    "project/2026-04-22-structural-survey-summary.pdf",
+    "meetings/2026-05-06-site-meeting-transcript.txt"
+   ],
+   "keywords": "structural engineer survey"
+  },
+  {
+   "id": "q27",
+   "category": "fact",
+   "question": "What load reserve does the east section of the sports hall roof have?",
+   "answer": "Only 0.12 kN/m2, so it must not carry modules.",
+   "facts": [
+    [
+     "0.12"
+    ]
+   ],
+   "sources": [
+    "project/2026-04-22-structural-survey-summary.pdf"
+   ],
+   "keywords": "sports hall east section load reserve"
+  },
+  {
+   "id": "q28",
+   "category": "fact",
+   "question": "What fire protection does the battery room need?",
+   "answer": "An F90 fire door.",
+   "facts": [
+    [
+     "f90"
+    ]
+   ],
+   "sources": [
+    "project/2026-04-22-structural-survey-summary.pdf",
+    "meetings/2026-05-06-site-meeting-transcript.txt",
+    "project/2026-03-26-dachnutzungsvertrag-zusammenfassung.txt"
+   ],
+   "keywords": "battery room fire door"
+  },
+  {
+   "id": "q29",
+   "category": "fact",
+   "question": "How many members responded to the 2026 member survey?",
+   "answer": "214 of 388 invited members.",
+   "facts": [
+    [
+     "214"
+    ]
+   ],
+   "sources": [
+    "survey/2026-02-member-survey-results.json"
+   ],
+   "keywords": "member survey responses"
+  },
+  {
+   "id": "q30",
+   "category": "fact",
+   "question": "What share of survey respondents supported the heat pump pilot?",
+   "answer": "71 %.",
+   "facts": [
+    [
+     "0.71",
+     "71 %"
+    ]
+   ],
+   "sources": [
+    "survey/2026-02-member-survey-results.json",
+    "presentations/2026-06-13-agm-slides.pptx"
+   ],
+   "keywords": "survey heat pump support"
+  },
+  {
+   "id": "q31",
+   "category": "fact",
+   "question": "What dividend was paid for 2025?",
+   "answer": "2.0 %.",
+   "facts": [
+    [
+     "2,0 %",
+     "2.0 %",
+     "2.0"
+    ]
+   ],
+   "sources": [
+    "meetings/2026-06-13-generalversammlung-protokoll.md",
+    "emails/2026-07-09-re-mitgliederfrage-anteil.eml",
+    "finance/2026-06-30-member-shares-by-year.csv"
+   ],
+   "keywords": "dividend 2025"
+  },
+  {
+   "id": "q32",
+   "category": "fact",
+   "question": "What dividend does the cooperative aim for from 2027?",
+   "answer": "3 %.",
+   "facts": [
+    [
+     "3 %"
+    ]
+   ],
+   "sources": [
+    "meetings/2026-06-13-generalversammlung-protokoll.md",
+    "presentations/2026-06-13-agm-slides.pptx",
+    "emails/2026-07-09-re-mitgliederfrage-anteil.eml"
+   ],
+   "keywords": "dividend target 2027"
+  },
+  {
+   "id": "q33",
+   "category": "fact",
+   "question": "How many members attended the general assembly 2026?",
+   "answer": "97 of 412 members, plus 23 by proxy.",
+   "facts": [
+    [
+     "97"
+    ],
+    [
+     "412"
+    ]
+   ],
+   "sources": [
+    "meetings/2026-06-13-generalversammlung-protokoll.md"
+   ],
+   "keywords": "general assembly attendance"
+  },
+  {
+   "id": "q34",
+   "category": "fact",
+   "question": "What was the best production day so far and how much did the plant produce?",
+   "answer": "27 August 2026 with 1,061 kWh.",
+   "facts": [
+    [
+     "2026-08-27",
+     "27 august 2026"
+    ],
+    [
+     "1061",
+     "1,061"
+    ]
+   ],
+   "sources": [
+    "monitoring/2026-09-pv-daily-production.csv"
+   ],
+   "keywords": "best day production"
+  },
+  {
+   "id": "q35",
+   "category": "fact",
+   "question": "How much energy has the plant produced since commissioning, as of 15 September 2026?",
+   "answer": "21,615 kWh.",
+   "facts": [
+    [
+     "21615",
+     "21,615"
+    ]
+   ],
+   "sources": [
+    "monitoring/2026-09-15-inverter-status.json"
+   ],
+   "keywords": "energy since commissioning"
+  },
+  {
+   "id": "q36",
+   "category": "fact",
+   "question": "Which inverter shows a warning, and what is it?",
+   "answer": "WR-3: ISO-217, low isolation resistance on string 7.",
+   "facts": [
+    [
+     "iso-217"
+    ],
+    [
+     "string 7"
+    ]
+   ],
+   "sources": [
+    "monitoring/2026-09-15-inverter-status.json",
+    "monitoring/2026-09-14-datalogger.log"
+   ],
+   "keywords": "inverter warning isolation"
+  },
+  {
+   "id": "q37",
+   "category": "fact",
+   "question": "What was the deposit on the installer's contract?",
+   "answer": "44,036.40 euros, 20 % of 220,182 euros.",
+   "facts": [
+    [
+     "44,036.40",
+     "44036.40"
+    ]
+   ],
+   "sources": [
+    "archive/2026-08-invoices.zip"
+   ],
+   "keywords": "installer deposit invoice"
+  },
+  {
+   "id": "q38",
+   "category": "fact",
+   "question": "When did the battery start discharging for the first school day?",
+   "answer": "On 7 September 2026 at 07:45.",
+   "facts": [
+    [
+     "2026-09-07t07:45",
+     "07:45"
+    ]
+   ],
+   "sources": [
+    "monitoring/2026-09-battery-events.tsv"
+   ],
+   "keywords": "battery first school day"
+  },
+  {
+   "id": "q39",
+   "category": "fact",
+   "question": "How much would the Freibad's electrical connection upgrade cost?",
+   "answer": "About 18,000 euros.",
+   "facts": [
+    [
+     "18,000"
+    ]
+   ],
+   "sources": [
+    "meetings/2026-07-15-board-minutes.md"
+   ],
+   "keywords": "freibad electrical connection upgrade"
+  },
+  {
+   "id": "q40",
+   "category": "fact",
+   "question": "How big is the planned Freibad heat pump?",
+   "answer": "60 kW.",
+   "facts": [
+    [
+     "60 kw"
+    ]
+   ],
+   "sources": [
+    "presentations/2026-06-13-agm-slides.pptx"
+   ],
+   "keywords": "heat pump size freibad"
+  },
+  {
+   "id": "q41",
+   "category": "fact",
+   "question": "What expected annual yield did the grant application state?",
+   "answer": "190,000 kWh per year.",
+   "facts": [
+    [
+     "190.000",
+     "190,000"
+    ]
+   ],
+   "sources": [
+    "project/2026-02-10-foerderantrag-klimakommunal.pdf",
+    "finance/2026-05-18-budget-revision.xlsx"
+   ],
+   "keywords": "expected yield grant"
+  },
+  {
+   "id": "q42",
+   "category": "contradiction",
+   "question": "The grant application said 198 kWp. Why does the plant have 171.6 kWp?",
+   "answer": "The structural survey limited the sports hall roof, and the switch to lighter Nordlicht NL-430 modules allowed 399 modules = 171.6 kWp.",
+   "facts": [
+    [
+     "198 kwp"
+    ],
+    [
+     "171.6",
+     "171,6"
+    ]
+   ],
+   "sources": [
+    "emails/2026-05-13-re-modulverzoegerung.eml",
+    "finance/2026-05-18-budget-revision.xlsx",
+    "project/2026-02-10-foerderantrag-klimakommunal.pdf"
+   ],
+   "keywords": "198 kwp 171.6 kwp"
+  },
+  {
+   "id": "q43",
+   "category": "contradiction",
+   "question": "Why were the Helion H-440 modules replaced?",
+   "answer": "Helion quoted a delivery time of 14 weeks; Nordlicht NL-430 was available from stock.",
+   "facts": [
+    [
+     "14 weeks",
+     "14-week"
+    ],
+    [
+     "nordlicht"
+    ]
+   ],
+   "sources": [
+    "meetings/2026-05-06-site-meeting-transcript.txt",
+    "emails/2026-05-12-lichtbau-modulverzoegerung.eml",
+    "finance/2026-05-18-budget-revision.xlsx"
+   ],
+   "keywords": "helion delay 14 weeks"
+  },
+  {
+   "id": "q44",
+   "category": "contradiction",
+   "question": "The FAQ says the battery has 150 kWh. Is that right?",
+   "answer": "No: the battery was reduced from 150 kWh to 100 kWh in May 2026; the FAQ is outdated.",
+   "facts": [
+    [
+     "150 kwh"
+    ],
+    [
+     "100 kwh"
+    ]
+   ],
+   "sources": [
+    "emails/2026-05-13-re-modulverzoegerung.eml",
+    "finance/2026-05-18-budget-revision.xlsx",
+    "public/faq.md"
+   ],
+   "keywords": "battery 150 kwh 100 kwh"
+  },
+  {
+   "id": "q45",
+   "category": "contradiction",
+   "question": "The March flyer says a share costs 200 euros. Is that correct?",
+   "answer": "No, it is a printing error; a share costs 250 euros.",
+   "facts": [
+    [
+     "200"
+    ],
+    [
+     "250"
+    ],
+    [
+     "druckfehler",
+     "printing error"
+    ]
+   ],
+   "sources": [
+    "emails/2026-07-09-re-mitgliederfrage-anteil.eml",
+    "meetings/2026-07-15-board-minutes.md"
+   ],
+   "keywords": "flyer 200 euro share price"
+  },
+  {
+   "id": "q46",
+   "category": "contradiction",
+   "question": "The project plan said commissioning on 15 June 2026. Why did it happen later?",
+   "answer": "The module substitution moved it to mid-July, and the grid operator could only connect the plant from 1 August after upgrading the transformer station; it was energised on 19 August 2026.",
+   "facts": [
+    [
+     "15 june 2026"
+    ],
+    [
+     "1. august 2026",
+     "1 august 2026"
+    ],
+    [
+     "19 august 2026",
+     "19. august"
+    ]
+   ],
+   "sources": [
+    "project/2026-03-02-project-plan.docx",
+    "emails/2026-06-24-netzanschlusszusage.eml",
+    "meetings/2026-07-15-board-minutes.md",
+    "emails/2026-08-19-inbetriebnahme-bericht.eml"
+   ],
+   "keywords": "commissioning delay 15 june 1 august"
+  },
+  {
+   "id": "q47",
+   "category": "contradiction",
+   "question": "Will the Freibad heat pump pilot start in autumn 2026?",
+   "answer": "No, the board postponed it to spring 2027.",
+   "facts": [
+    [
+     "spring 2027",
+     "frühjahr 2027"
+    ]
+   ],
+   "sources": [
+    "meetings/2026-07-15-board-minutes.md",
+    "public/faq.md",
+    "press/2026-08-22-eschenbruecker-anzeiger.md"
+   ],
+   "keywords": "heat pump postponed spring 2027"
+  },
+  {
+   "id": "q48",
+   "category": "contradiction",
+   "question": "How many members does the cooperative have now?",
+   "answer": "419 (as of 15 July 2026); 412 at the general assembly, 388 at the end of 2025.",
+   "facts": [
+    [
+     "419"
+    ]
+   ],
+   "sources": [
+    "meetings/2026-07-15-board-minutes.md"
+   ],
+   "keywords": "membership now 419"
+  },
+  {
+   "id": "q49",
+   "category": "contradiction",
+   "question": "How did the total budget change between the grant application and the revision?",
+   "answer": "It went from 312,000 euros down to 298,500 euros.",
+   "facts": [
+    [
+     "312,000",
+     "312.000"
+    ],
+    [
+     "298,500",
+     "298500"
+    ]
+   ],
+   "sources": [
+    "finance/2026-05-18-budget-revision.xlsx",
+    "project/2026-02-10-foerderantrag-klimakommunal.pdf"
+   ],
+   "keywords": "budget 312,000 298,500"
+  },
+  {
+   "id": "q50",
+   "category": "multi_source",
+   "question": "How is the Sonnendach Lindenhof project financed?",
+   "answer": "KlimaKommunal grant 96,000 euros, a 120,000-euro loan from the Raiffeisenkasse Talgrund, and 82,500 euros of new member shares.",
+   "facts": [
+    [
+     "96,000",
+     "96000"
+    ],
+    [
+     "120,000",
+     "120000"
+    ],
+    [
+     "82,500",
+     "82500"
+    ]
+   ],
+   "sources": [
+    "finance/2026-05-18-budget-revision.xlsx",
+    "presentations/2026-06-13-agm-slides.pptx"
+   ],
+   "keywords": "financing grant loan shares"
+  },
+  {
+   "id": "q51",
+   "category": "multi_source",
+   "question": "What happened to string 7 of inverter WR-3?",
+   "answer": "Its string fuse was replaced before commissioning, and since September it reports isolation warning ISO-217.",
+   "facts": [
+    [
+     "string fuse",
+     "string 7"
+    ],
+    [
+     "iso-217"
+    ]
+   ],
+   "sources": [
+    "emails/2026-08-19-inbetriebnahme-bericht.eml",
+    "monitoring/2026-09-15-inverter-status.json",
+    "monitoring/2026-09-14-datalogger.log"
+   ],
+   "keywords": "wr-3 string 7"
+  },
+  {
+   "id": "q52",
+   "category": "multi_source",
+   "question": "Why did school consumption of solar power jump in September 2026?",
+   "answer": "The school year began on 7 September after the holidays, so the school used far more of the power.",
+   "facts": [
+    [
+     "first school day",
+     "school year began"
+    ],
+    [
+     "2026-09-07",
+     "7 september 2026"
+    ]
+   ],
+   "sources": [
+    "monitoring/2026-09-battery-events.tsv",
+    "monitoring/2026-09-pv-daily-production.csv"
+   ],
+   "keywords": "school consumption september"
+  }
+ ]
 }
