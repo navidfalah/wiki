@@ -66,6 +66,35 @@ GET /api/docs                   → each page has stale_sources (number of chang
 GET /api/docs/<page>.md         → stale: {changed: [...], removed: [...]} | null
 ```
 
+## Contradiction inbox
+
+The **Contradictions** tab collects every `> **Contradiction:** ...` callout
+the synthesizer wrote into a page when sources disagreed, so they can be
+settled in one place instead of found by reading pages.
+
+- **Nothing is stored about the contradiction itself.** It is read from the
+  page each time. Only a reviewer's decision is stored, in
+  `data/contradiction_decisions.json` (gitignored runtime state, included in
+  backups), as *resolved* (the sources were checked; the note can say which
+  value is right) or *dismissed* (not a real contradiction), with who and
+  when. No entry means open.
+- **A decision is about a specific text.** Its id is a hash of the page and
+  the callout's wording. If a recompile rewrites the callout, it gets a new
+  id and shows up as open again: an old decision can't hide a claim it was
+  not made about. The same wording on another page is a separate item.
+- **Open ones also appear** in the Attention tab and feed
+  (`open_contradiction`, medium severity, `counts.open_contradictions`).
+- **This does not fix the page.** Resolving records that a person looked; to
+  change what the page says, edit it (doc 45 keeps the history) or correct
+  the source and recompile.
+- This is separate from the *Review Queue* tab, which scores claims in the
+  trust evaluation dataset (doc 29).
+
+```
+GET /api/contradictions?status=all|open|resolved|dismissed → {counts, items:[{id, page, page_title, text, status, note, decided_by, decided_at}]}
+PUT /api/contradictions/<id>  {status: open|resolved|dismissed, note?}   (note ≤ 500 characters; 404 if the callout no longer exists)
+```
+
 ## What this does not change
 
 - **Still scored against the pilot dataset, not a live compiled corpus.**

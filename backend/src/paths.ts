@@ -37,3 +37,4 @@ export const PAGE_HISTORY_DIR = path.join(DATA_ROOT, 'data', 'page_history');
 export const COMPILE_REPORTS_DIR = path.join(DATA_ROOT, 'data', 'compile_reports');
 export const BACKUPS_DIR = path.join(DATA_ROOT, 'data', 'backups');
 export const PYTHON_BIN = process.env.PYTHON_BIN ?? 'python3';
+export const CONTRADICTION_DECISIONS_FILE = path.join(DATA_ROOT, 'data', 'contradiction_decisions.json');

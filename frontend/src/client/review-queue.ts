@@ -1,4 +1,5 @@
-import { apiBase } from './lib/api';
+import { apiBase, apiFetch } from './lib/api';
+import { emptyMessage, renderContradictionList, type Contradiction, type ContradictionStatus } from './lib/contradictionInbox';
 import { escapeHtml } from './lib/dom';
 
 declare global {
@@ -322,6 +323,7 @@ async function loadAttention() {
       statCard(String(c.ungrounded_topics ?? 0), t('review-queue.card.ungrounded'), (c.ungrounded_topics ?? 0) > 0),
       statCard(String(c.unprocessed_files ?? 0), t('review-queue.card.unprocessed'), (c.unprocessed_files ?? 0) > 0),
       statCard(String(c.stale_pages ?? 0), t('review-queue.card.stale'), (c.stale_pages ?? 0) > 0),
+      statCard(String(c.open_contradictions ?? 0), t('review-queue.card.contradictions'), (c.open_contradictions ?? 0) > 0),
       statCard(String(c.review_findings ?? 0), t('review-queue.card.reviewer'), (c.review_findings ?? 0) > 0),
     ].join('');
 
@@ -357,5 +359,67 @@ document.querySelectorAll<HTMLButtonElement>('.attention-filter').forEach((btn) 
 
 document.getElementById('attention-refresh')?.addEventListener('click', loadAttention);
 
+// --- Contradiction inbox ------------------------------------------------
+
+let contradictions: Contradiction[] = [];
+let contraFilter: ContradictionStatus = 'open';
+
+function renderContradictions() {
+  const list = document.getElementById('contra-list')!;
+  const empty = document.getElementById('contra-empty')!;
+  const html = renderContradictionList(contradictions, contraFilter);
+  list.innerHTML = html;
+  empty.classList.toggle('hidden', html !== '');
+  empty.textContent = html ? '' : emptyMessage(contradictions.length, contraFilter);
+}
+
+async function loadContradictions() {
+  try {
+    const data = await apiFetch<{ counts: { open: number }; items: Contradiction[] }>('/api/contradictions');
+    contradictions = data.items;
+    setTabBadge('contradictions', data.counts.open);
+    renderContradictions();
+  } catch {
+    document.getElementById('contra-list')!.innerHTML = `<p class="text-sm text-red-600">${th('common.cannotReachApi')}</p>`;
+  }
+}
+
+document.querySelectorAll<HTMLButtonElement>('.contra-filter').forEach((btn) => {
+  btn.addEventListener('click', () => {
+    contraFilter = (btn.dataset.filter ?? 'open') as ContradictionStatus;
+    document.querySelectorAll('.contra-filter').forEach((b) => {
+      b.classList.remove('bg-gray-900', 'text-white');
+      b.classList.add('border', 'border-gray-300', 'bg-white', 'text-gray-700');
+    });
+    btn.classList.remove('border', 'border-gray-300', 'bg-white', 'text-gray-700');
+    btn.classList.add('bg-gray-900', 'text-white');
+    renderContradictions();
+  });
+});
+
+document.getElementById('contra-list')?.addEventListener('click', async (event) => {
+  const button = (event.target as HTMLElement).closest<HTMLButtonElement>('[data-contra-action]');
+  const row = button?.closest<HTMLElement>('[data-contradiction-id]');
+  if (!button || !row) return;
+  button.disabled = true;
+  try {
+    const note = row.querySelector<HTMLInputElement>('[data-contra-note]')?.value ?? '';
+    const updated = await apiFetch<Contradiction>(`/api/contradictions/${encodeURIComponent(row.dataset.contradictionId!)}`, {
+      method: 'PUT',
+      body: JSON.stringify({ status: button.dataset.contraAction, note }),
+    });
+    contradictions = contradictions.map((c) => (c.id === updated.id ? updated : c));
+    setTabBadge('contradictions', contradictions.filter((c) => c.status === 'open').length);
+    renderContradictions();
+    loadAttention();
+  } catch (err) {
+    button.disabled = false;
+    window.showToast?.(err instanceof Error ? err.message : t('common.requestFailed', { status: '' }), 'error');
+  }
+});
+
+document.getElementById('contra-refresh')?.addEventListener('click', loadContradictions);
+
 loadReview();
 loadAttention();
+loadContradictions();

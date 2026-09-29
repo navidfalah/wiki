@@ -47,3 +47,4 @@ test-results/
 .coverage
 coverage/
 htmlcov/
+data/contradiction_decisions.json

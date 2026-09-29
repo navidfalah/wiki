@@ -217,6 +217,10 @@ DELETE /api/tokens/:id       → {revoked: true, id}
 
 Tokens live in `data/api_tokens.json` (gitignored, included in backups).
 
+## Contradiction inbox
+
+`GET /api/contradictions` lists the contradiction callouts on wiki pages with their status; `PUT /api/contradictions/<id>` records *resolved*, *dismissed* or reopens one. Open ones also show in `GET /api/attention` (`open_contradictions`). See [35-review-queue-ui.md](./35-review-queue-ui.md#contradiction-inbox).
+
 ## Out-of-date pages
 
 `GET /api/docs` adds `stale_sources` to each page (how many of its cited sources changed or vanished since the compile), `GET /api/docs/<page>.md` adds `stale: {changed, removed} | null`, and `GET /api/attention` adds `counts.stale_pages` and `stale_page` items. See [35-review-queue-ui.md](./35-review-queue-ui.md#out-of-date-pages).

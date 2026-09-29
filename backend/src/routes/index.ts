@@ -76,6 +76,7 @@ import { getResourceDetail, listResources, resolveDocPaths } from '../lib/resour
 import { searchCorpusPage, type EmailSummary } from '../lib/searchEngine';
 import { isPageFile, lineDiff, listVersions, readVersion, snapshotPage, withContext } from '../lib/pageHistory';
 import { pageStaleness } from '../lib/stalePages';
+import { decide, listContradictions, MAX_NOTE_LENGTH, UnknownContradictionError } from '../lib/contradictions';
 import { atomicWriteText } from '../lib/atomicWrite';
 import { BackupError, backupPath, createBackup, deleteBackup, listBackups, restoreBackup, validateArchive } from '../lib/backups';
 import { backupSchedule } from '../lib/backupScheduler';
@@ -1077,6 +1078,36 @@ export function registerRoutes(app: Express): void {
     wrap((req, res) => {
       if (!getPipelineRun(req.params.id)) throw new HttpError(404, `Pipeline run not found: ${req.params.id}`);
       res.json({ report: getReport(req.params.id) });
+    }),
+  );
+
+  // Contradiction inbox (lib/contradictions.ts): the "Contradiction" callouts on
+  // wiki pages, with what a reviewer decided about each.
+  app.get(
+    '/api/contradictions',
+    wrap((req, res) => {
+      const wanted = typeof req.query.status === 'string' ? req.query.status : 'all';
+      if (!['all', 'open', 'resolved', 'dismissed'].includes(wanted)) throw new HttpError(400, 'status must be all, open, resolved or dismissed');
+      const all = listContradictions();
+      const counts = { open: 0, resolved: 0, dismissed: 0 };
+      for (const c of all) counts[c.status]++;
+      res.json({ counts, items: wanted === 'all' ? all : all.filter((c) => c.status === wanted) });
+    }),
+  );
+
+  app.put(
+    '/api/contradictions/:id',
+    wrap((req, res) => {
+      const { status, note } = req.body ?? {};
+      if (!['open', 'resolved', 'dismissed'].includes(status)) throw new HttpError(400, 'status must be open, resolved or dismissed');
+      if (note !== undefined && typeof note !== 'string') throw new HttpError(400, 'note must be text');
+      if (typeof note === 'string' && note.length > MAX_NOTE_LENGTH) throw new HttpError(400, `note must be at most ${MAX_NOTE_LENGTH} characters`);
+      try {
+        res.json(decide(req.params.id, status, note ?? '', req.user?.username ?? 'unknown'));
+      } catch (err) {
+        if (err instanceof UnknownContradictionError) throw new HttpError(404, err.message);
+        throw err;
+      }
     }),
   );
 

@@ -269,3 +269,29 @@ test('admin panel: scheduled sync settings save, persist across a reload, and re
   expect(saves).toBe(0);
   expect(problems).toEqual([]);
 });
+
+test('review: settle a contradiction, see it under Resolved, reopen it', async ({ page }) => {
+  const problems = watchForBreakage(page);
+  await logIn(page);
+  await page.goto('/review-queue');
+  await page.click('#tab-btn-contradictions');
+  const openRows = page.locator('#contra-list [data-status="open"]');
+  await expect(openRows.first()).toBeVisible(); // the sample corpus has contradiction callouts
+  const openBefore = await openRows.count();
+  const id = (await openRows.first().getAttribute('data-contradiction-id'))!;
+  try {
+    const row = page.locator(`#contra-list [data-contradiction-id="${id}"]`);
+    await row.locator('[data-contra-note]').fill('E2E: checked against the sources');
+    await row.locator('[data-contra-action="resolved"]').click();
+    await expect(openRows).toHaveCount(openBefore - 1);
+
+    await page.click('.contra-filter[data-filter="resolved"]');
+    const settled = page.locator(`#contra-list [data-contradiction-id="${id}"]`);
+    await expect(settled).toContainText('E2E: checked against the sources');
+    await settled.locator('[data-contra-action="open"]').click();
+    await expect(settled).toHaveCount(0);
+  } finally {
+    await page.request.put(`/api/contradictions/${id}`, { data: { status: 'open' } });
+  }
+  expect(problems).toEqual([]);
+});
