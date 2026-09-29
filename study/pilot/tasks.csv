@@ -1,0 +1,13 @@
+task_id,set,category,question
+q07,A,fact,When was the plant commissioned?
+q28,A,fact,What fire protection does the battery room need?
+q35,A,fact,"How much energy has the plant produced since commissioning, as of 15 September 2026?"
+q46,A,contradiction,The project plan said commissioning on 15 June 2026. Why did it happen later?
+q48,A,contradiction,How many members does the cooperative have now?
+q50,A,multi_source,How is the Sonnendach Lindenhof project financed?
+q01,B,fact,What is the peak power of the Sonnendach Lindenhof solar plant?
+q14,B,fact,"Which bank provides the loan, and how much?"
+q21,B,fact,Who is the technical lead of the project?
+q42,B,contradiction,The grant application said 198 kWp. Why does the plant have 171.6 kWp?
+q44,B,contradiction,The FAQ says the battery has 150 kWh. Is that right?
+q51,B,multi_source,What happened to string 7 of inverter WR-3?

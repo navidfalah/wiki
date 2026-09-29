@@ -19,6 +19,13 @@ timing data for testing arithmetic, never a study result.
 | Tests (mechanism only — no real data exists) | `compiler/tests/test_user_study.py` |
 | Results, once collected | `data/user_study_results.json` (gitignored) |
 
+> **Update:** for the pilot, use the crossed design in
+> [51-user-study-pilot.md](./51-user-study-pilot.md). The design below has
+> every participant do each task under both conditions, so the second attempt
+> is contaminated by having already seen the answer. The tasks below
+> (`STUDY_TASKS`) are the eight retrieval-evaluation queries; the pilot draws
+> twelve from the 65-question benchmark instead.
+
 ## Research question
 
 Does the wiki+chat system (tasks [#5](./25-hybrid-retrieval.md)/[#8](./28-faithfulness-evaluation.md))

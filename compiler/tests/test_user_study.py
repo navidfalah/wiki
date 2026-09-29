@@ -137,3 +137,148 @@ def test_summarize_ignores_unpaired_trials_in_win_count():
     summary = summarize(trials)
     assert summary.paired_duration_wins == {WIKI_CHAT: 0, PLAIN_SEARCH: 0}
     assert summary.by_condition[WIKI_CHAT].n == 1
+
+
+# --- crossed design (the pilot) --------------------------------------------------
+
+import user_study  # noqa: E402
+from user_study import (  # noqa: E402
+    generate_crossed_design,
+    paired_participant_wins,
+    parse_trials_csv,
+    participant_condition_means,
+    split_matched_sets,
+)
+
+
+def _tasks(n_per_group=4, groups=("fact", "contradiction")):
+    tasks, group_of, difficulty = [], {}, {}
+    for g in groups:
+        for i in range(n_per_group):
+            t = user_study.StudyTask(f"{g[0]}{i}", f"question {g} {i}")
+            tasks.append(t)
+            group_of[t.id] = g
+            difficulty[t.id] = i
+    return tasks, group_of, difficulty
+
+
+def test_matched_sets_are_disjoint_complete_and_balanced_per_group():
+    tasks, group_of, difficulty = _tasks(4)
+    a, b = split_matched_sets(tasks, group_of, difficulty)
+    assert {t.id for t in a}.isdisjoint({t.id for t in b})
+    assert {t.id for t in a} | {t.id for t in b} == {t.id for t in tasks}
+    for g in ("fact", "contradiction"):
+        assert sum(group_of[t.id] == g for t in a) == sum(group_of[t.id] == g for t in b) == 2
+    # A B B A: the two sets have equal total difficulty
+    assert sum(difficulty[t.id] for t in a) == sum(difficulty[t.id] for t in b)
+
+
+def test_crossed_design_gives_each_participant_each_task_exactly_once():
+    tasks, group_of, difficulty = _tasks(4)
+    a, b = split_matched_sets(tasks, group_of, difficulty)
+    design = generate_crossed_design(["p1", "p2", "p3", "p4"], a, b)
+    for pid in ["p1", "p2", "p3", "p4"]:
+        rows = [x for x in design if x.participant_id == pid]
+        assert sorted(x.task_id for x in rows) == sorted(t.id for t in tasks)  # once each, never twice
+        assert [x.block_order for x in rows] == list(range(len(tasks)))
+        for cond in CONDITIONS:
+            assert len({x.task_set for x in rows if x.condition == cond}) == 1  # one set per condition
+
+
+def test_crossed_design_counterbalances_condition_order_and_set_over_four_participants():
+    tasks, group_of, difficulty = _tasks(4)
+    a, b = split_matched_sets(tasks, group_of, difficulty)
+    design = generate_crossed_design(["p1", "p2", "p3", "p4"], a, b)
+    combos = set()
+    for pid in ["p1", "p2", "p3", "p4"]:
+        rows = [x for x in design if x.participant_id == pid]
+        first = rows[0].condition
+        wiki_set = next(x.task_set for x in rows if x.condition == WIKI_CHAT)
+        combos.add((first, wiki_set))
+    assert combos == {(WIKI_CHAT, "A"), (PLAIN_SEARCH, "A"), (WIKI_CHAT, "B"), (PLAIN_SEARCH, "B")}
+
+
+def test_crossed_design_is_deterministic():
+    tasks, group_of, difficulty = _tasks(4)
+    a, b = split_matched_sets(tasks, group_of, difficulty)
+    assert generate_crossed_design(["p1", "p2"], a, b, seed=3) == generate_crossed_design(["p1", "p2"], a, b, seed=3)
+
+
+HEADER = "participant_id,task_id,condition,duration_seconds,correct,confidence\n"
+
+
+def test_parse_trials_csv_reads_rows():
+    trials = parse_trials_csv(HEADER + "P01,q1,wiki_chat,42.5,yes,4\nP01,q2,plain_search,120,no,2\nP02,q1,plain_search,60,1,5\n")
+    assert [(t.participant_id, t.condition, t.duration_seconds, t.correct, t.confidence) for t in trials] == [
+        ("P01", "wiki_chat", 42.5, True, 4),
+        ("P01", "plain_search", 120.0, False, 2),
+        ("P02", "plain_search", 60.0, True, 5),
+    ]
+
+
+@pytest.mark.parametrize(
+    "row, message",
+    [
+        ("P01,q1,wiki_chat,42,maybe,4", "line 2: correct must be yes/no"),
+        ("P01,q1,wiki_chat,fast,yes,4", "line 2"),
+        ("P01,q1,wiki_chat,42,yes,9", "line 2: confidence"),
+        ("P01,q1,google,42,yes,3", "line 2: Unknown condition"),
+        ("P01,q1,wiki_chat,-1,yes,3", "line 2: duration_seconds cannot be negative"),
+        (",q1,wiki_chat,42,yes,3", "line 2: participant_id is empty"),
+        ("P01,q1,wiki_chat,42,yes,", "line 2"),
+    ],
+)
+def test_parse_trials_csv_is_strict_and_names_the_line(row, message):
+    with pytest.raises(ValueError, match=message):
+        parse_trials_csv(HEADER + row + "\n")
+
+
+def test_parse_trials_csv_rejects_missing_columns_and_duplicates():
+    with pytest.raises(ValueError, match="missing column"):
+        parse_trials_csv("participant_id,task_id\nP01,q1\n")
+    with pytest.raises(ValueError, match="duplicate trial"):
+        parse_trials_csv(HEADER + "P01,q1,wiki_chat,42,yes,3\nP01,q1,wiki_chat,50,no,2\n")
+
+
+def _trial(pid, task, cond, seconds, correct=True):
+    return TrialResult(pid, task, cond, seconds, correct, 3)
+
+
+def test_participant_means_and_wins_compare_within_the_person():
+    # synthetic timing data, for testing arithmetic only; not a study result
+    results = [
+        _trial("p1", "a", WIKI_CHAT, 30), _trial("p1", "b", WIKI_CHAT, 50), _trial("p1", "c", PLAIN_SEARCH, 100, False),
+        _trial("p2", "a", PLAIN_SEARCH, 20), _trial("p2", "c", WIKI_CHAT, 90),
+        _trial("p3", "a", WIKI_CHAT, 10),  # only one condition: not compared
+    ]
+    means = participant_condition_means(results)
+    assert means["p1"][WIKI_CHAT] == {"n": 2, "mean_duration_seconds": 40.0, "accuracy": 1.0}
+    assert means["p1"][PLAIN_SEARCH]["accuracy"] == 0.0
+    assert paired_participant_wins(results) == {WIKI_CHAT: 1, PLAIN_SEARCH: 1}
+    assert paired_participant_wins([_trial("p", "a", WIKI_CHAT, 5), _trial("p", "b", PLAIN_SEARCH, 5)]) == {WIKI_CHAT: 0, PLAIN_SEARCH: 0}
+
+
+def test_cli_import_is_all_or_nothing_and_refuses_repeats(tmp_path, monkeypatch, capsys):
+    monkeypatch.setattr(user_study, "RESULTS_PATH", tmp_path / "results.json")
+    good = tmp_path / "good.csv"
+    good.write_text(HEADER + "P01,q1,wiki_chat,42,yes,4\nP01,q2,plain_search,60,no,3\n")
+    bad = tmp_path / "bad.csv"
+    bad.write_text(HEADER + "P02,q1,wiki_chat,42,yes,4\nP02,q2,plain_search,oops,no,3\n")
+    assert user_study.main(["import", str(bad)]) == 1
+    assert not (tmp_path / "results.json").exists()  # the good first row was not kept
+    assert user_study.main(["import", str(good)]) == 0
+    assert len(load_results(tmp_path / "results.json")) == 2
+    assert user_study.main(["import", str(good)]) == 1  # already recorded
+    assert len(load_results(tmp_path / "results.json")) == 2
+    assert "already recorded" in capsys.readouterr().out
+
+
+def test_cli_summarize(tmp_path, monkeypatch, capsys):
+    monkeypatch.setattr(user_study, "RESULTS_PATH", tmp_path / "results.json")
+    assert user_study.main(["summarize"]) == 0
+    assert "no trials recorded yet" in capsys.readouterr().out
+    save_result(_trial("p1", "a", WIKI_CHAT, 30))
+    save_result(_trial("p1", "b", PLAIN_SEARCH, 90, False))
+    assert user_study.main(["summarize"]) == 0
+    out = capsys.readouterr().out
+    assert "wiki_chat: n=1" in out and "plain_search: n=1" in out and "pilot" in out
