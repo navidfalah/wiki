@@ -125,3 +125,25 @@ describe('requireAdmin', () => {
     expect(res.status).not.toHaveBeenCalled();
   });
 });
+
+describe('isReadTokenDenied', () => {
+  it.each([
+    ['/api/admin/backups', true],
+    ['/api/admin', true],
+    ['/api/admin/', true],
+    ['/API/ADMIN/backups', true],
+    ['/api/%41dmin/backups', true],
+    ['/api//admin//backups', true],
+    ['/api/build/stream', true],
+    ['/api/chat/sessions/abc/stream', true],
+    ['/api/%zz', true], // undecodable: refuse
+    ['/api/administrators', false],
+    ['/api/build/status', false],
+    ['/api/chat/sessions/abc', false],
+    ['/api/chat/sessions/abc/def/stream', false],
+    ['/api/docs/admin.md', false],
+  ])('%s -> %s', async (route, expected) => {
+    const { isReadTokenDenied } = await import('./authMiddleware');
+    expect(isReadTokenDenied(route)).toBe(expected);
+  });
+});

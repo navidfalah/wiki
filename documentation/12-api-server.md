@@ -194,8 +194,18 @@ Every `/api/*` route except `/api/health` and `/api/auth/login` needs
 
 | Token scope | Allowed | Notes |
 |---|---|---|
-| `read` (default) | `GET`/`HEAD` only | search, pages, sources, graph; writes get `403` |
+| `read` (default) | `GET`/`HEAD` only, minus the GET routes that are not reads (below) | search, pages, sources, graph; writes get `403` |
 | `write` | everything the owner can do | |
+
+A read token is also refused (`403`) on three groups of `GET` routes,
+because a GET there is not a read: **`/api/admin/*`** (the backup download
+contains `data/sessions.json`, with login session tokens in the clear, so a
+read token owned by an admin could otherwise be traded for a full session),
+**`/api/build/stream`** (starts a compile) and
+**`/api/chat/sessions/:id/stream`** (writes chat history and calls the LLM).
+The check normalizes the path the way Express routes it (case, `//`,
+trailing slash, `%xx`), so `/API/admin` and `/api/%61dmin` don't get
+around it. Write tokens and sessions are not restricted here.
 
 A token always acts with its owner's *current* role (no snapshot), stops
 working when it expires or its owner is deleted, and can't create, list or

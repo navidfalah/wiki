@@ -50,6 +50,57 @@ describe('personal API tokens', () => {
     expect(res.body.detail).toBe('This API token is read-only');
   });
 
+  describe('a read token cannot reach GET routes that are not reads', () => {
+    let reader: string;
+    let writer: string;
+    beforeAll(async () => {
+      reader = (await createToken(admin, { name: 'restricted reader' })).body.token;
+      writer = (await createToken(admin, { name: 'unrestricted writer', scope: 'write' })).body.token;
+    });
+
+    const denied = [
+      '/api/admin/backups',
+      '/api/admin/backups/anything.tar.gz',
+      '/api/admin/sync',
+      '/api/admin/auth-events',
+      '/api/build/stream',
+      '/api/chat/sessions/abc/stream?message=hi',
+      // the same routes spelled the way Express still routes them
+      '/API/admin/backups',
+      '/api/Admin/backups',
+      '/api/%61dmin/backups',
+      '/api//admin/backups',
+      '/api/admin/backups/',
+      '/api/build/stream/',
+      '/api/BUILD/stream',
+    ];
+
+    it.each(denied)('refuses %s with 403 and does nothing', async (route) => {
+      const res = await h.json('GET', route, { token: reader });
+      expect(res.status).toBe(403);
+      expect(res.body.detail).toBe('This API token is read-only');
+    });
+
+    it('does not start a compile', async () => {
+      await h.json('GET', '/api/build/stream', { token: reader });
+      expect((await h.json('GET', '/api/build/status', { token: reader })).body.running).toBe(false);
+    });
+
+    it('still reads everything else', async () => {
+      for (const route of ['/api/docs', '/api/search?q=battery', '/api/attention', '/api/contradictions', '/api/build/status']) {
+        expect((await h.json('GET', route, { token: reader })).status, route).toBe(200);
+      }
+    });
+
+    it('does not restrict a write token, which can do what its owner can', async () => {
+      expect((await h.json('GET', '/api/admin/backups', { token: writer })).status).toBe(200);
+    });
+
+    it('does not restrict a login session', async () => {
+      expect((await h.json('GET', '/api/admin/backups', { token: admin })).status).toBe(200);
+    });
+  });
+
   it('a write token can write', async () => {
     const { body } = await createToken(admin, { name: 'writer', scope: 'write' });
     const res = await h.json('POST', '/api/chat/sessions', { token: body.token, body: {} });

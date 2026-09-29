@@ -6,7 +6,7 @@ wiki**. It runs on your machine over stdio and talks to the wiki's HTTP API
 with a personal API token ([doc 12](./12-api-server.md#authentication)), so
 it works against a deployed site (`https://wissensbau.de`) and a local
 `./wiki dev` alike. It is read-only: it only sends `GET` requests, so a
-read-scoped token is enough, and a leaked token can't change anything.
+read-scoped token is enough, and a leaked read token can't change anything (read tokens are also refused on the admin, build and chat-stream routes, doc 12).
 
 ## Tools
 
