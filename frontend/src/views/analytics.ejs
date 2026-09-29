@@ -22,4 +22,11 @@
   </section>
 </div>
 
+<section class="mt-6 rounded-xl border border-gray-200 bg-white shadow-card">
+  <div class="border-b border-gray-100 px-5 py-3">
+    <h2 class="text-sm font-semibold text-gray-900"><%= t('analytics.coverage.title') %></h2>
+  </div>
+  <div id="fact-coverage" class="p-4"><p class="text-sm text-gray-400"><%= t('analytics.coverage.loading') %></p></div>
+</section>
+
 <%- include('partials/foot', { clientScript }) %>

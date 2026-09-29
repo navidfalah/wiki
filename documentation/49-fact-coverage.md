@@ -14,6 +14,24 @@ python fact_coverage.py --json     # everything
 python cli.py fact-coverage        # the same JSON, for the backend
 ```
 
+## In the app
+
+The **Analytics** page has a *Fact coverage* panel: the headline rates,
+sources no page cites, and the cited sources with figures missing from every
+page (the missing values themselves, each source linked to the resource
+viewer and its citing pages linked to the wiki).
+
+```
+GET /api/fact-coverage → {report: <the --json report>, computed_at, cached}
+```
+
+The check reads every source, so it takes seconds; the backend
+(`backend/src/lib/factCoverage.ts`) caches the result until a wiki page or a
+raw source is added, removed or rewritten (a hash of every such file's path,
+size and modification time: only `stat()` calls). Requests during a
+computation share it; a failure is never cached. The panel loads separately
+so the rest of the page doesn't wait.
+
 ## What counts as a fact
 
 Only what can be checked mechanically:
@@ -60,3 +78,5 @@ a *change*, so it is a gated metric (`factcoverage.recall_cited`, tolerance
 
 - `compiler/fact_coverage.py`, `compiler/tests/test_fact_coverage.py`
 - `compiler/eval_gate.py` (metric), `compiler/cli.py` (`fact-coverage`)
+- `backend/src/lib/factCoverage.ts` (cache), `GET /api/fact-coverage`
+- `frontend/src/client/lib/factCoverage.ts` (panel), `views/analytics.ejs`

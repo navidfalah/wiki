@@ -33,6 +33,19 @@ function handle(command, input) {
     case 'source-text':
       if (input && input.path === 'project/grant.pdf') return { code: 0, payload: { path: input.path, text: 'Grant application: 198 kWp.', chars: 27, truncated: false } };
       return { code: 1, payload: { error: `Raw file not found: ${input && input.path}`, error_type: 'not_found' } };
+    case 'fact-coverage':
+      if (process.env.FAKE_FACT_COVERAGE_FAIL) return { code: 1, payload: { error: 'extraction failed' } };
+      return {
+        code: 0,
+        payload: {
+          pages: 2, sources_with_facts: 2, recall_cited: 0.5, recall_any_page: 0.75, facts_in_cited_sources: 4,
+          uncited_sources: [{ source: 'notes/orphan.txt', facts: 1 }],
+          sources: [
+            { source: 'notes/kickoff.txt', facts: 4, covered: 2, elsewhere: 1, recall: 0.5, cited_by: ['aurora-labs.md'], missing: ['19 August 2026'] },
+            { source: 'notes/orphan.txt', facts: 1, covered: 0, elsewhere: 0, recall: 0, cited_by: [], missing: ['5000 EUR'] },
+          ],
+        },
+      };
     case 'review-queue':
       return { code: 0, payload: { candidates: [], verdicts: ['correct', 'incorrect', 'unsure'] } };
     case 'entity-graph':

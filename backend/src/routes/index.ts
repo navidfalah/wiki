@@ -76,6 +76,7 @@ import { getResourceDetail, listResources, resolveDocPaths } from '../lib/resour
 import { searchCorpusPage, type EmailSummary } from '../lib/searchEngine';
 import { isPageFile, lineDiff, listVersions, readVersion, snapshotPage, withContext } from '../lib/pageHistory';
 import { pageStaleness } from '../lib/stalePages';
+import { getFactCoverage } from '../lib/factCoverage';
 import { decide, listContradictions, MAX_NOTE_LENGTH, UnknownContradictionError } from '../lib/contradictions';
 import { atomicWriteText } from '../lib/atomicWrite';
 import { BackupError, backupPath, createBackup, deleteBackup, listBackups, restoreBackup, validateArchive } from '../lib/backups';
@@ -1188,6 +1189,15 @@ export function registerRoutes(app: Express): void {
   app.get(
     '/api/analytics',
     wrap((_req, res) => res.json(buildAnalytics(OUTPUT_DIR))),
+  );
+
+  // Source-to-wiki fact coverage (compiler/fact_coverage.py, doc 49), cached
+  // until a page or a raw source changes.
+  app.get(
+    '/api/fact-coverage',
+    wrap(async (_req, res) => {
+      res.json(await getFactCoverage());
+    }),
   );
 
   app.get(

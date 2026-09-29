@@ -227,6 +227,10 @@ DELETE /api/tokens/:id       → {revoked: true, id}
 
 Tokens live in `data/api_tokens.json` (gitignored, included in backups).
 
+## Fact coverage
+
+`GET /api/fact-coverage` returns the source-to-wiki fact coverage report (`compiler/fact_coverage.py`), cached until a page or raw source changes: `{report, computed_at, cached}`. See [49-fact-coverage.md](./49-fact-coverage.md).
+
 ## Contradiction inbox
 
 `GET /api/contradictions` lists the contradiction callouts on wiki pages with their status; `PUT /api/contradictions/<id>` records *resolved*, *dismissed* or reopens one. Open ones also show in `GET /api/attention` (`open_contradictions`). See [35-review-queue-ui.md](./35-review-queue-ui.md#contradiction-inbox).

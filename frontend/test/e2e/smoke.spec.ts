@@ -308,3 +308,14 @@ test('dashboard: the open-contradictions row opens the Contradictions tab', asyn
   await expect(page.locator('#contra-list [data-status="open"]').first()).toBeVisible();
   expect(problems).toEqual([]);
 });
+
+test('analytics: fact coverage runs the real check and lists sources with missing figures', async ({ page }) => {
+  const problems = watchForBreakage(page);
+  await logIn(page);
+  await page.goto('/analytics');
+  await expect(page.locator('#fact-coverage [data-recall]')).toHaveText(/^\d+(\.\d)? %$/, { timeout: 30_000 });
+  const first = page.locator('#fact-coverage [data-coverage-source]').first();
+  await expect(first).toBeVisible();
+  await expect(first.locator('a').first()).toHaveAttribute('href', /^\/resources\?tab=files&open=/);
+  expect(problems).toEqual([]);
+});

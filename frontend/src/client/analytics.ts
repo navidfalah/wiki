@@ -1,6 +1,7 @@
 import { th, t } from './lib/i18n';
 import { apiFetch } from './lib/api';
 import { escapeHtml } from './lib/dom';
+import { renderFactCoverage, type FactCoverageResponse } from './lib/factCoverage';
 
 function statCard(value: string, label: string, warn = false): string {
   return `<div class="rounded-xl border border-gray-200 bg-white px-4 py-3 shadow-card">
@@ -50,4 +51,16 @@ async function load() {
   }
 }
 
+// Separate from load(): the first computation can take seconds, and the
+// rest of the page should not wait for it.
+async function loadFactCoverage() {
+  const target = document.getElementById('fact-coverage')!;
+  try {
+    target.innerHTML = renderFactCoverage(await apiFetch<FactCoverageResponse>('/api/fact-coverage'));
+  } catch (err: any) {
+    target.innerHTML = renderFactCoverage(null, err?.message);
+  }
+}
+
 load();
+loadFactCoverage();
