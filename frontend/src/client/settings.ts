@@ -1,5 +1,7 @@
 import { t, th } from './lib/i18n';
-import { apiBase } from './lib/api';
+import { apiBase, apiFetch } from './lib/api';
+import { renderTokens, type ApiToken } from './lib/apiTokens';
+import { initCopyButtons } from './lib/copy';
 import { escapeHtml } from './lib/dom';
 
 const UNCHANGED = '__unchanged__';
@@ -336,7 +338,7 @@ async function save() {
     });
     if (!res.ok) {
       const err = await res.json().catch(() => ({}));
-      throw new Error(err.error || t('common.requestFailed', { status: res.status }));
+      throw new Error(err.detail || t('common.requestFailed', { status: res.status }));
     }
     state = await res.json();
     editedKeys = {};
@@ -354,5 +356,69 @@ async function save() {
 document.getElementById('add-profile-btn')?.addEventListener('click', addProfile);
 document.getElementById('save-settings-btn')?.addEventListener('click', save);
 
+// --- Personal API tokens ------------------------------------------------------
+
+async function loadTokens(): Promise<void> {
+  const list = document.getElementById('tokens-list');
+  if (!list) return;
+  try {
+    const { tokens } = await apiFetch<{ tokens: ApiToken[] }>('/api/tokens');
+    list.innerHTML = renderTokens(tokens);
+  } catch {
+    list.innerHTML = renderTokens(null);
+  }
+}
+
+async function createToken(event: Event): Promise<void> {
+  event.preventDefault();
+  const form = event.target as HTMLFormElement;
+  const data = new FormData(form);
+  const days = String(data.get('expires_in_days') ?? '');
+  const button = form.querySelector('button[type="submit"]') as HTMLButtonElement;
+  button.disabled = true;
+  try {
+    const created = await apiFetch<{ token: string; record: ApiToken }>('/api/tokens', {
+      method: 'POST',
+      body: JSON.stringify({ name: data.get('name'), scope: data.get('scope'), expires_in_days: days ? Number(days) : undefined }),
+    });
+    const box = document.getElementById('token-created');
+    const value = document.getElementById('token-created-value');
+    if (box && value) {
+      value.textContent = created.token;
+      box.classList.remove('hidden');
+    }
+    form.reset();
+    await loadTokens();
+  } catch (err: any) {
+    (window as any).showToast?.(err.message || t('settings.tokens.createFailed'), 'error');
+  } finally {
+    button.disabled = false;
+  }
+}
+
+async function revokeToken(id: string): Promise<void> {
+  if (!confirm(t('settings.tokens.revokeConfirm'))) return;
+  try {
+    await apiFetch(`/api/tokens/${encodeURIComponent(id)}`, { method: 'DELETE' });
+    (window as any).showToast?.(t('settings.tokens.revoked'));
+    await loadTokens();
+  } catch (err: any) {
+    (window as any).showToast?.(err.message || t('settings.tokens.revokeFailed'), 'error');
+  }
+}
+
+document.getElementById('token-form')?.addEventListener('submit', createToken);
+document.getElementById('tokens-list')?.addEventListener('click', (event) => {
+  const button = (event.target as HTMLElement).closest<HTMLElement>('[data-revoke]');
+  if (button?.dataset.revoke) revokeToken(button.dataset.revoke);
+});
+document.getElementById('token-created-dismiss')?.addEventListener('click', () => {
+  document.getElementById('token-created')?.classList.add('hidden');
+  const value = document.getElementById('token-created-value');
+  if (value) value.textContent = '';
+});
+
+initCopyButtons();
 ensureModelDatalists();
 load();
+loadTokens();

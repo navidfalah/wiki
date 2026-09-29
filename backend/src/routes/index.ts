@@ -24,7 +24,8 @@ import {
 import { listEvents, logEvent } from '../lib/activityLog';
 import { listConnectorEvents, logConnectorEvent } from '../lib/connectorActivity';
 import { describeLlmBackend } from '../lib/llmBackend';
-import { requireAdmin, requireAuth } from '../lib/authMiddleware';
+import { ApiTokenError, createApiToken, listApiTokens, revokeApiToken, revokeApiTokensForUser } from '../lib/apiTokens';
+import { requireAdmin, requireAuth, requireSession } from '../lib/authMiddleware';
 import { countActiveSessionsByUser, createSession, deleteSession, deleteSessionsForUser } from '../lib/sessions';
 import {
   createUser,
@@ -171,8 +172,45 @@ export function registerRoutes(app: Express): void {
   );
 
   app.get('/api/auth/me', (req, res) => {
-    res.json({ user: req.user });
+    const auth = req.auth?.method === 'token' ? { method: 'token', scope: req.auth.scope } : { method: 'session' };
+    res.json({ user: req.user, auth });
   });
+
+  // --- Personal API tokens (own tokens only; sessions only, see apiTokens.ts) --
+
+  app.get(
+    '/api/tokens',
+    requireSession,
+    wrap((req, res) => {
+      res.json({ tokens: listApiTokens(req.user!.id) });
+    }),
+  );
+
+  app.post(
+    '/api/tokens',
+    requireSession,
+    wrap((req, res) => {
+      try {
+        const body = req.body ?? {};
+        const created = createApiToken(req.user!.id, { name: body.name, scope: body.scope, expiresInDays: body.expires_in_days });
+        logEvent(req.user?.username, `Created API token "${created.record.name}" (${created.record.scope})`, undefined, { category: 'auth' });
+        res.status(201).json(created);
+      } catch (err) {
+        if (err instanceof ApiTokenError) throw new HttpError(400, err.message);
+        throw err;
+      }
+    }),
+  );
+
+  app.delete(
+    '/api/tokens/:id',
+    requireSession,
+    wrap((req, res) => {
+      if (!revokeApiToken(req.user!.id, req.params.id)) throw new HttpError(404, 'API token not found');
+      logEvent(req.user?.username, 'Revoked an API token', undefined, { category: 'auth' });
+      res.json({ revoked: true, id: req.params.id });
+    }),
+  );
 
   // --- User management (admin only) -----------------------------------------
 
@@ -366,6 +404,7 @@ export function registerRoutes(app: Express): void {
       try {
         deleteUser(req.params.id, req.user!.id);
         deleteSessionsForUser(req.params.id);
+        revokeApiTokensForUser(req.params.id);
         logEvent(req.user?.username, `Deleted user ${req.params.id}`);
         res.json({ removed: true, id: req.params.id });
       } catch (err) {

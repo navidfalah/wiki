@@ -52,6 +52,12 @@ const DE_EXACT: Record<string, string> = {
   'index.json has no topics. Run the compiler pipeline first.': 'index.json enthält keine Themen. Führen Sie zuerst die Compiler-Pipeline aus.',
   'Not authenticated': 'Nicht angemeldet',
   'Admin access required': 'Administratorrechte erforderlich',
+  'This API token is read-only': 'Dieses API-Token darf nur lesen',
+  'Sign in to manage API tokens': 'Melden Sie sich an, um API-Tokens zu verwalten',
+  'A token needs a name': 'Ein Token braucht einen Namen',
+  "Scope must be 'read' or 'write'": "Der Umfang muss 'read' oder 'write' sein",
+  'Expiry must be between 1 and 3650 days': 'Die Gültigkeit muss zwischen 1 und 3650 Tagen liegen',
+  'API token not found': 'API-Token nicht gefunden',
   'Internal server error': 'Interner Serverfehler',
 };
 
@@ -80,6 +86,8 @@ const DE_PATTERNS: Array<[RegExp, string]> = [
   [/^Unsupported file type "(.*)" for (.+)$/, 'Nicht unterstützter Dateityp „$1“ für $2'],
   [/^User not found: (.+)$/, 'Nutzer nicht gefunden: $1'],
   [/^Username already taken: (.+)$/, 'Der Benutzername ist bereits vergeben: $1'],
+  [/^Token names are limited to (\d+) characters$/, 'Token-Namen sind auf $1 Zeichen begrenzt'],
+  [/^At most (\d+) tokens per user; revoke one first$/, 'Höchstens $1 Tokens pro Nutzer; widerrufen Sie zuerst eines'],
   [/^Too many failed sign-in attempts\. Try again in (\d+) min\.$/, 'Zu viele fehlgeschlagene Anmeldeversuche. Bitte in $1 Min. erneut versuchen.'],
 ];
 

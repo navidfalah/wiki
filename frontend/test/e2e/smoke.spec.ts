@@ -200,3 +200,35 @@ test('dashboard: status cards link out, "/" focuses search, Ask opens a new chat
   await expect(page).toHaveURL(/\/search\?q=battery/);
   expect(problems).toEqual([]);
 });
+
+test('settings: create an API token, use it through the proxy, revoke it', async ({ page, playwright }) => {
+  const problems = watchForBreakage(page);
+  await logIn(page);
+  await page.goto('/settings');
+  const name = `E2E token ${Date.now()}`;
+  await page.fill('#token-form input[name="name"]', name);
+  await page.click('#token-form button[type="submit"]');
+  const value = page.locator('#token-created-value');
+  await expect(value).toHaveText(/^wsb_/);
+  const token = (await value.textContent())!;
+  const row = page.locator('#tokens-list li', { hasText: name });
+  await expect(row).toContainText(/Read only/);
+
+  // A client without the session cookie, as the MCP server would be.
+  const api = await playwright.request.newContext({ baseURL: 'http://localhost:3000' });
+  try {
+    const me = await api.get('/api/auth/me', { headers: { Authorization: `Bearer ${token}` } });
+    expect(me.ok()).toBe(true);
+    expect((await me.json()).auth).toEqual({ method: 'token', scope: 'read' });
+    const write = await api.post('/api/chat/sessions', { headers: { Authorization: `Bearer ${token}` }, data: {} });
+    expect(write.status()).toBe(403);
+
+    page.once('dialog', (dialog) => dialog.accept());
+    await row.locator('[data-revoke]').click();
+    await expect(page.locator('#tokens-list li', { hasText: name })).toHaveCount(0);
+    expect((await api.get('/api/auth/me', { headers: { Authorization: `Bearer ${token}` } })).status()).toBe(401);
+  } finally {
+    await api.dispose();
+  }
+  expect(problems).toEqual([]);
+});

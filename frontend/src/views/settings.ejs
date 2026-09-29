@@ -53,6 +53,50 @@
   </div>
 </div>
 
+<section class="mt-6 rounded-xl border border-gray-200 bg-white shadow-card" aria-labelledby="tokens-heading">
+  <div class="border-b border-gray-100 px-5 py-4">
+    <h2 id="tokens-heading" class="text-base font-semibold text-gray-900"><%= t('settings.tokens.title') %></h2>
+    <p class="mt-0.5 max-w-3xl text-xs text-gray-500"><%- t('settings.tokens.hintHtml') %></p>
+  </div>
+  <form id="token-form" class="flex flex-wrap items-end gap-3 border-b border-gray-100 px-5 py-4">
+    <label class="flex min-w-[12rem] flex-1 flex-col gap-1">
+      <span class="text-xs font-medium text-gray-600"><%= t('settings.tokens.name') %></span>
+      <input name="name" type="text" required maxlength="80" placeholder="<%= t('settings.tokens.namePlaceholder') %>" class="rounded-lg border border-gray-300 px-2.5 py-1.5 text-sm focus:border-accent focus:outline-none focus:ring-2 focus:ring-accent/20" />
+    </label>
+    <label class="flex flex-col gap-1">
+      <span class="text-xs font-medium text-gray-600"><%= t('settings.tokens.scope') %></span>
+      <select name="scope" class="rounded-lg border border-gray-300 px-2 py-1.5 text-sm focus:border-accent focus:outline-none focus:ring-2 focus:ring-accent/20">
+        <option value="read"><%= t('settings.tokens.scopeRead') %></option>
+        <option value="write"><%= t('settings.tokens.scopeWrite') %></option>
+      </select>
+    </label>
+    <label class="flex flex-col gap-1">
+      <span class="text-xs font-medium text-gray-600"><%= t('settings.tokens.expiry') %></span>
+      <select name="expires_in_days" class="rounded-lg border border-gray-300 px-2 py-1.5 text-sm focus:border-accent focus:outline-none focus:ring-2 focus:ring-accent/20">
+        <option value="30"><%= t('settings.tokens.days30') %></option>
+        <option value="90" selected><%= t('settings.tokens.days90') %></option>
+        <option value="365"><%= t('settings.tokens.days365') %></option>
+        <option value=""><%= t('settings.tokens.never') %></option>
+      </select>
+    </label>
+    <button type="submit" class="rounded-lg bg-gray-900 px-3 py-1.5 text-sm font-medium text-white hover:bg-gray-700"><%= t('settings.tokens.create') %></button>
+  </form>
+  <div id="token-created" class="hidden border-b border-amber-100 bg-amber-50 px-5 py-4" role="status">
+    <p class="text-sm font-medium text-amber-900"><%= t('settings.tokens.createdTitle') %></p>
+    <p class="mt-0.5 text-xs text-amber-800"><%= t('settings.tokens.createdHint') %></p>
+    <div class="copy-wrap mt-2 flex items-center gap-2 rounded-lg border border-amber-200 bg-white px-3 py-2">
+      <code id="token-created-value" class="copy-source min-w-0 flex-1 break-all text-xs text-gray-900"></code>
+      <button type="button" class="copy-btn inline-flex shrink-0 items-center justify-center rounded p-1 text-gray-600 hover:text-gray-900" title="<%= t('common.copy') %>" aria-label="<%= t('common.copy') %>">
+        <svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg>
+      </button>
+    </div>
+    <button id="token-created-dismiss" type="button" class="mt-2 text-xs font-medium text-amber-900 underline"><%= t('settings.tokens.dismiss') %></button>
+  </div>
+  <div id="tokens-list">
+    <p class="p-5 text-sm text-gray-500"><%= t('common.loading') %></p>
+  </div>
+</section>
+
 <template id="profile-row-template">
   <div class="profile-row px-5 py-4" data-id="">
     <div class="flex flex-wrap items-center gap-2">

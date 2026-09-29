@@ -178,11 +178,53 @@ GET /api/review-report
 
 Contents of `compiler/review_report.txt` if `reviewer.py` was run. Otherwise `exists: false`.
 
+## Authentication
+
+Every `/api/*` route except `/api/health` and `/api/auth/login` needs
+`Authorization: Bearer <token>`, where the token is either:
+
+- **a login session** — `POST /api/auth/login {username, password}` →
+  `{token, user}`. The browser never sees it: the frontend keeps it in an
+  HttpOnly cookie and its `/api` proxy adds the header. Sessions last 30
+  days and are revoked on logout, password reset, role change and user
+  deletion.
+- **a personal API token** (`wsb_…`) — for scripts and tools such as the
+  MCP server (`mcp/`). Created on the Settings page or with the endpoints
+  below; only its SHA-256 is stored, and the value is shown once.
+
+| Token scope | Allowed | Notes |
+|---|---|---|
+| `read` (default) | `GET`/`HEAD` only | search, pages, sources, graph; writes get `403` |
+| `write` | everything the owner can do | |
+
+A token always acts with its owner's *current* role (no snapshot), stops
+working when it expires or its owner is deleted, and can't create, list or
+revoke tokens (those routes need a login session, so a leaked token can't
+mint more). In production the backend is not published; clients use the
+public site's `/api` proxy, which passes a client's own `Authorization`
+header through when there is no session cookie:
+
+```bash
+curl -H "Authorization: Bearer wsb_…" https://wissensbau.de/api/search?q=battery
+```
+
+```
+GET    /api/auth/me          → {user, auth: {method: "session"} | {method: "token", scope}}
+GET    /api/tokens           → {tokens: [{id, name, scope, prefix, created_at, expires_at, last_used_at, expired}]}
+POST   /api/tokens           {name, scope?: "read"|"write", expires_in_days?: 1-3650} → 201 {token, record}
+DELETE /api/tokens/:id       → {revoked: true, id}
+```
+
+Tokens live in `data/api_tokens.json` (gitignored, included in backups).
+
 ## Security notes
 
-- Local dev server binds `0.0.0.0:8000` — not hardened for public exposure
-- Path parameters validated to stay within `RAW_DIR` and `OUTPUT_DIR`
-- No authentication — intended for localhost only
+- Path parameters are validated to stay within `RAW_DIR` and `OUTPUT_DIR`.
+- Login attempts are throttled per client IP and per username.
+- Admin-only routes (user management, backups) check the role on every
+  request.
+- In production the backend container only `expose`s port 8000 to the
+  frontend; it is not reachable from outside.
 
 ## Next
 
