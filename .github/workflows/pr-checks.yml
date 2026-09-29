@@ -25,6 +25,11 @@ permissions:
 # The actions below are the Node 24 majors (Node 20 actions are deprecated on
 # GitHub-hosted runners). Every job has a timeout: a hung server or browser
 # would otherwise hold the runner for GitHub's 6-hour default.
+#
+# One run per commit: a branch in this repository is already checked by its
+# push run, whose checks show on the PR's head commit, so each job skips the
+# duplicate pull_request run for it. PRs from forks (no push run here) still
+# run on pull_request.
 
 concurrency:
   group: checks-${{ github.event_name }}-${{ github.ref }}
@@ -32,6 +37,7 @@ concurrency:
 
 jobs:
   compiler:
+    if: github.event_name != 'pull_request' || github.event.pull_request.head.repo.full_name != github.repository
     runs-on: ubuntu-latest
     timeout-minutes: 15
     strategy:
@@ -59,6 +65,7 @@ jobs:
         run: ./wiki ci --only compiler
 
   backend:
+    if: github.event_name != 'pull_request' || github.event.pull_request.head.repo.full_name != github.repository
     runs-on: ubuntu-latest
     timeout-minutes: 15
 
@@ -80,6 +87,7 @@ jobs:
         run: ./wiki ci --only backend
 
   frontend:
+    if: github.event_name != 'pull_request' || github.event.pull_request.head.repo.full_name != github.repository
     runs-on: ubuntu-latest
     timeout-minutes: 15
 
@@ -103,6 +111,7 @@ jobs:
   e2e:
     # Real backend + frontend in Chromium: every page loads without a script
     # error or CSP violation; search, history, backups and the dashboard work.
+    if: github.event_name != 'pull_request' || github.event.pull_request.head.repo.full_name != github.repository
     runs-on: ubuntu-latest
     timeout-minutes: 20
     steps:
@@ -148,6 +157,7 @@ jobs:
 
   docker:
     # Guards the production images and compose file against silent breakage.
+    if: github.event_name != 'pull_request' || github.event.pull_request.head.repo.full_name != github.repository
     runs-on: ubuntu-latest
     timeout-minutes: 30
     steps:

@@ -24,6 +24,7 @@ counts as a failure. Python 3.10+, standard library only.
 from __future__ import annotations
 
 import argparse
+import importlib.util
 import json
 import os
 import shutil
@@ -179,7 +180,14 @@ def e2e_steps(extra: list[str]) -> list[Step]:
 
 
 def audit_steps(packages: list[str]) -> list[Step]:
-    return [Step("audit", p, npm("audit", "--omit=dev"), pkg_dir(p)) for p in ("backend", "frontend") if p in packages]
+    steps = []
+    if "compiler" in packages:
+        # pip-audit isn't a compiler dependency; the scheduled audit workflow
+        # installs it. Locally the step is skipped until you `pip install pip-audit`.
+        cmd = [PYTHON, "-m", "pip_audit", "-r", "requirements.txt", "--progress-spinner", "off"]
+        steps.append(Step("audit", "compiler", cmd, pkg_dir("compiler"), requires="python:pip_audit"))
+    steps += [Step("audit", p, npm("audit", "--omit=dev"), pkg_dir(p)) for p in ("backend", "frontend") if p in packages]
+    return steps
 
 
 def docker_steps() -> list[Step]:
@@ -216,6 +224,10 @@ def _skip_reason(step: Step) -> str | None:
         return f"{step.package}/node_modules missing -- run ./wiki setup"
     if step.requires == "docker" and not shutil.which("docker"):
         return "docker not installed"
+    if step.requires and step.requires.startswith("python:"):
+        module = step.requires.split(":", 1)[1]
+        if importlib.util.find_spec(module) is None:
+            return f"python module {module} not installed (pip install {module.replace('_', '-')})"
     if step.cmd[0] in ("npm", "npx") and not shutil.which(step.cmd[0]):
         return f"{step.cmd[0]} not found"
     return None

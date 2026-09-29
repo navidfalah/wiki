@@ -107,6 +107,15 @@ class TestRunning:
         r = cli.run_step(step(["npm", "run", "lint"], cwd=tmp_path, requires="node_modules"), stream=False)
         assert r.status == "skip" and "node_modules" in r.note
 
+    def test_missing_python_module_is_a_skip(self):
+        r = cli.run_step(step([sys.executable, "-m", "no_such_module_xyz"], requires="python:no_such_module_xyz"), stream=False)
+        assert r.status == "skip" and "no_such_module_xyz" in r.note
+
+    def test_audit_covers_python_dependencies_too(self):
+        steps = cli.audit_steps(list(cli.PACKAGES))
+        assert [s.package for s in steps] == ["compiler", "backend", "frontend"]
+        assert steps[0].cmd[1:3] == ["-m", "pip_audit"] and steps[0].requires == "python:pip_audit"
+
     def test_fail_fast_stops_after_the_first_failure(self):
         steps = [step([sys.executable, "-c", "raise SystemExit(1)"]), step([sys.executable, "-c", "pass"])]
         assert len(cli.run_all(steps, stream=False, fail_fast=True, parallel=False)) == 1

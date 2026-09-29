@@ -16,9 +16,6 @@ data/sources.json
 data/.llm-cache.sqlite
 data/.llm-cache.sqlite-shm
 data/.llm-cache.sqlite-wal
-# Per-install runtime state, like users/sessions above.
-data/chat_sessions/
-data/chat_history.json
 data/review_corrections.json
 data/user_study_results.json
 data/last-compile.log

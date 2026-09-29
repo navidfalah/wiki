@@ -1,0 +1,47 @@
+{
+  "version": 1,
+  "messages": [
+    {
+      "role": "user",
+      "content": "what is this company about",
+      "at": "2026-09-01T20:51:19.060Z"
+    },
+    {
+      "role": "assistant",
+      "content": "Based on the provided wiki excerpts, Aurora Labs is a company whose focus includes:\n\n* **Core technology and products:** Mesh data retention on local area networks (LAN), manufacturing the Aurora Nova Widget (a local mesh soil sensor developed in a LAN-first architecture), and developing the MeshSync firmware and Aurora v1 [2, 3, 4, 5]. \n* **Business needs:** Actively pursuing capital and fundraising to support its hardware production and software scaling needs [1]. \n* **Leadership:** Headed by CEO and firmware owner Mira Chen [1, 4].",
+      "sources": [
+        {
+          "doc_path": "fundraising.md",
+          "title": "Fundraising",
+          "heading": "Overview",
+          "score": 5
+        },
+        {
+          "doc_path": "podcast-planning.md",
+          "title": "Podcast Planning",
+          "heading": "Related Entities",
+          "score": 4
+        },
+        {
+          "doc_path": "aurora-nova-widget.md",
+          "title": "Aurora Nova Widget",
+          "heading": "Related Entities",
+          "score": 3
+        },
+        {
+          "doc_path": "release-notes.md",
+          "title": "Release Notes",
+          "heading": "Related Entities",
+          "score": 2
+        },
+        {
+          "doc_path": "show-hn.md",
+          "title": "Show HN",
+          "heading": "Overview",
+          "score": 1
+        }
+      ],
+      "at": "2026-09-01T20:51:19.060Z"
+    }
+  ]
+}

@@ -1,0 +1,121 @@
+name: Deploy
+
+# Continuous deployment to the production server (wissensbau.de), after the
+# Checks workflow passes on main. Off until configured: without the
+# DEPLOY_* secrets below the job only prints a notice and succeeds.
+#
+# It deploys exactly the commit Checks tested: if main has moved on since,
+# this run skips and the newer commit's own Checks run deploys it. On the
+# server it runs the same script as a manual deploy, `deploy/deploy.sh
+# --pull` (git pull --ff-only, build, restart). That pull refuses to run
+# when tracked files were changed on the server, so a server with local
+# edits fails the deploy instead of losing them.
+#
+# Repository secrets (Settings -> Secrets and variables -> Actions):
+#   DEPLOY_HOST          server host name or IP
+#   DEPLOY_USER          SSH user that owns the checkout
+#   DEPLOY_SSH_KEY       private key for that user (add the public key to
+#                        ~/.ssh/authorized_keys on the server)
+#   DEPLOY_KNOWN_HOSTS   output of `ssh-keyscan -t ed25519 <host>`; the
+#                        host key is verified, never trusted on first use
+#   DEPLOY_PATH          absolute path of the repository checkout on the server
+# Optional repository variables:
+#   DEPLOY_PORT          SSH port (default 22)
+#   DEPLOY_FLAGS         extra deploy.sh flags, e.g. --caddy
+#   DEPLOY_URL           public URL for the health check (default https://wissensbau.de)
+#
+# The job runs in the `production` environment, so required reviewers or a
+# wait timer can be added under Settings -> Environments.
+
+on:
+  workflow_run:
+    workflows: [Checks]
+    types: [completed]
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: deploy-production
+  cancel-in-progress: false
+
+jobs:
+  deploy:
+    if: >-
+      github.event_name == 'workflow_dispatch' ||
+      (github.event.workflow_run.conclusion == 'success' && github.event.workflow_run.event == 'push')
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    environment: production
+    env:
+      DEPLOY_HOST: ${{ secrets.DEPLOY_HOST }}
+      DEPLOY_USER: ${{ secrets.DEPLOY_USER }}
+      DEPLOY_SSH_KEY: ${{ secrets.DEPLOY_SSH_KEY }}
+      DEPLOY_KNOWN_HOSTS: ${{ secrets.DEPLOY_KNOWN_HOSTS }}
+      DEPLOY_PATH: ${{ secrets.DEPLOY_PATH }}
+      DEPLOY_PORT: ${{ vars.DEPLOY_PORT || '22' }}
+      DEPLOY_FLAGS: ${{ vars.DEPLOY_FLAGS }}
+      DEPLOY_URL: ${{ vars.DEPLOY_URL || 'https://wissensbau.de' }}
+      TESTED_SHA: ${{ github.event.workflow_run.head_sha || github.sha }}
+    steps:
+      - name: Check the deploy configuration
+        id: config
+        run: |
+          missing=""
+          for name in DEPLOY_HOST DEPLOY_USER DEPLOY_SSH_KEY DEPLOY_KNOWN_HOSTS DEPLOY_PATH; do
+            [ -n "${!name}" ] || missing="$missing $name"
+          done
+          if [ -n "$missing" ]; then
+            echo "::notice::Deployment is not configured (missing secrets:$missing); nothing deployed. See the header of .github/workflows/deploy.yml."
+            echo "enabled=false" >> "$GITHUB_OUTPUT"
+          else
+            echo "enabled=true" >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: Set up SSH
+        if: steps.config.outputs.enabled == 'true'
+        run: |
+          install -m 700 -d ~/.ssh
+          printf '%s\n' "$DEPLOY_SSH_KEY" > ~/.ssh/deploy_key
+          chmod 600 ~/.ssh/deploy_key
+          printf '%s\n' "$DEPLOY_KNOWN_HOSTS" > ~/.ssh/known_hosts
+          chmod 644 ~/.ssh/known_hosts
+
+      - name: Deploy the tested commit
+        id: deploy
+        if: steps.config.outputs.enabled == 'true'
+        run: |
+          # $TESTED_SHA and $DEPLOY_FLAGS are expanded here; everything
+          # escaped with \$ runs on the server.
+          ssh -i ~/.ssh/deploy_key -p "$DEPLOY_PORT" \
+            -o StrictHostKeyChecking=yes -o BatchMode=yes \
+            "$DEPLOY_USER@$DEPLOY_HOST" bash -s <<EOF
+          set -euo pipefail
+          cd '$DEPLOY_PATH'
+          git fetch --quiet origin main
+          if [ "\$(git rev-parse origin/main)" != "$TESTED_SHA" ]; then
+            echo "main has moved past $TESTED_SHA; its own Checks run will deploy it. Skipping."
+            exit 0
+          fi
+          ./deploy/deploy.sh --pull $DEPLOY_FLAGS
+          echo "Deployed \$(git rev-parse --short HEAD)"
+          EOF
+
+      - name: Health check
+        if: steps.config.outputs.enabled == 'true'
+        run: |
+          for attempt in $(seq 1 20); do
+            if curl -fsS --max-time 10 "$DEPLOY_URL/healthz" > /dev/null; then
+              echo "$DEPLOY_URL is healthy"
+              exit 0
+            fi
+            sleep 15
+          done
+          echo "::error::$DEPLOY_URL/healthz did not respond after 5 minutes"
+          exit 1
+
+      - name: Remove the SSH key
+        if: always()
+        run: rm -f ~/.ssh/deploy_key

@@ -15,7 +15,7 @@ green `./wiki ci` locally means a green CI job.
 | `./wiki check [--changed]` | The fast pre-push check: lint, typecheck and unit tests. |
 | `./wiki test [PKG] [-k EXPR]` | Unit tests. `-k` is a pytest `-k` expression for the compiler, a file filter for vitest. |
 | `./wiki coverage [PKG]` | Tests with coverage, failing below the floors (see below). |
-| `./wiki lint` / `typecheck` / `build` / `audit` | One stage across the selected packages. |
+| `./wiki lint` / `typecheck` / `build` / `audit` | One stage across the selected packages. `audit` is `npm audit --omit=dev` plus `pip-audit` for the compiler (skipped locally until `pip install pip-audit`). |
 | `./wiki eval [--update-baseline]` | Offline eval regression gate (`compiler/eval_gate.py`, doc 14). |
 | `./wiki bench` | Q&A retrieval benchmark (doc 44) and the search benchmark. |
 | `./wiki e2e [-- ARGS]` | Builds the frontend and runs the Playwright suite. It reuses servers already on :8000/:3000, or starts both. Pass `E2E_PASSWORD` for an existing admin. |

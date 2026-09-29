@@ -634,7 +634,7 @@ Then point Cloudflare Tunnel (`cloudflared`, recommended — no open port needed
 
 ## CI/CD
 
-Workflow: `.github/workflows/pr-checks.yml`. It runs on every push to every branch and on pull requests to `main`. Each job calls the repository's `./wiki` CLI, so CI runs exactly what you run locally:
+Workflow: `.github/workflows/pr-checks.yml`. It runs on every push to every branch and on pull requests to `main` (from forks; a branch in this repository is covered by its push run). Each job calls the repository's `./wiki` CLI, so CI runs exactly what you run locally:
 
 | Job | Runs |
 |-----|------|
@@ -653,7 +653,13 @@ Workflow: `.github/workflows/pr-checks.yml`. It runs on every push to every bran
 
 Details: [documentation/46-cli-and-testing.md](./documentation/46-cli-and-testing.md).
 
-The former GitHub Pages workflow (Docusaurus) was removed: the site is served by the Express frontend at [wissensbau.de](https://wissensbau.de) instead.
+Also in `.github/`:
+
+- `workflows/deploy.yml` deploys the tested commit to the production server after Checks passes on `main` (off until the `DEPLOY_*` secrets are set);
+- `workflows/audit.yml` runs `./wiki audit` (npm audit + pip-audit) weekly;
+- `dependabot.yml` opens weekly dependency update PRs.
+
+See [documentation/15-ci-cd-and-deployment.md](./documentation/15-ci-cd-and-deployment.md).
 
 ---
 
