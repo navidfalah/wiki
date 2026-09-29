@@ -78,10 +78,13 @@ The floors live in `COVERAGE_FLOORS` in `./wiki`. They sit a little below
 the measured value, so a PR that deletes tests or adds untested code fails.
 Raise them when coverage goes up.
 
-Frontend coverage looks low overall (about 16%) because it counts the page
-scripts in `frontend/src/client/*.ts`. These are DOM-heavy and exercised
-by the Playwright suite in a real browser, not by unit tests. The server
-code and the shared client libraries are at 90–100%.
+Frontend coverage looks low overall (about 22%, floor 20) because it counts
+the page scripts in `frontend/src/client/*.ts`. Most are DOM-heavy and
+exercised by the Playwright suite in a real browser, not by unit tests. The
+server code and the shared client libraries are at 90–100%. Two page
+scripts also have DOM-level unit tests: the search page, and the Review page
+(`review-queue-page.test.ts`), which renders the real EJS view with a
+stubbed API, so a renamed element id breaks a test rather than the page.
 
 ## What is tested where
 
@@ -89,6 +92,6 @@ code and the shared client libraries are at 90–100%.
 |---|---|---|
 | compiler | `compiler/tests/` (pytest) | Pipeline stages, linker, ingest formats, connectors, eval gate, and the CLI itself (`test_wiki_cli.py`). **`test_pipeline_e2e.py`** compiles a tiny raw folder end to end with a scripted LLM, with every data path redirected to `tmp_path`. It covers pages, References, cross-links, the index and state, then checks that an unchanged re-run does no LLM work, an edited file is the only one re-extracted, and a provider failure marks the run failed. `test_cli_commands.py` covers every `cli.py` bridge command's validation and error types. Tests that start `cli.py`/`main.py` as subprocesses are measured too (`[tool.coverage.run] patch = ["subprocess"]`). A session guard in `conftest.py` fails the run if any test changes the real `data/`, `wiki-app/docs/` or `temp_output/`. |
 | backend | `backend/src/**/*.test.ts` (vitest) | Library units, plus **route integration tests** (`src/routes/*.routes.test.ts`). These boot the real Express app from `createApp()` against a throwaway data root (`WIKI_DATA_ROOT`), with a fake Python bridge (`__fixtures__/fakePython.cjs`) standing in for `compiler/cli.py`. They cover auth and roles, docs/history/search, files and uploads (path traversal, sandbox headers), settings masking, backups, and the SSE compile and chat streams. |
-| frontend | `frontend/test/unit/` (vitest; happy-dom, server tests in node) | **Server** (`server.test.ts`): the real app from `createApp()` in front of a stub backend. Covers security headers and per-request CSP nonces on every inline script, the login gate and `?next=` open-redirect guard, login/throttle/logout, admin-only pages, wiki list/page/edit/history/download with escaped bodies, generic 500s that leak no internals, the `/api` proxy (cookie → bearer, spoofed `X-Client-IP` overwritten, SSE streaming), language switching, and script-context escaping of URL values. **Client** libraries: i18n, `apiFetch`, `escapeHtml` (attribute-safe), cache and offline banner, server-text mapping, modal a11y, copy buttons, the search page (escaping, links, filters, debounce), and the dashboard home renderers. |
+| frontend | `frontend/test/unit/` (vitest; happy-dom, server tests in node) | **Server** (`server.test.ts`): the real app from `createApp()` in front of a stub backend. Covers security headers and per-request CSP nonces on every inline script, the login gate and `?next=` open-redirect guard, login/throttle/logout, admin-only pages, wiki list/page/edit/history/download with escaped bodies, generic 500s that leak no internals, the `/api` proxy (cookie → bearer, spoofed `X-Client-IP` overwritten, SSE streaming), language switching, and script-context escaping of URL values. **Client** libraries: i18n, `apiFetch`, `escapeHtml` (attribute-safe), cache and offline banner, server-text mapping, modal a11y, copy buttons, the search page (escaping, links, filters, debounce), the Review page (tabs, `#contradictions`, filters, resolve/dismiss with note, failures, German detail text), and the dashboard home renderers. |
 | mcp | `mcp/src/**/*.test.ts` (vitest) | The tools tested through a real MCP client over the SDK's in-memory transport against a stubbed wiki API: tool list and schemas, read-only annotations, GET-only requests with the bearer token, result formatting and truncation, and error results (rejected token, 404 advice, unreachable host without leaking the token). |
 | end to end | `frontend/test/e2e/smoke.spec.ts` (Playwright) | Every page loads without script errors or CSP violations. Also covers search deep links, page history edit/diff/restore, backups, and the dashboard (status cards, the `/` shortcut, Ask → new chat). |
