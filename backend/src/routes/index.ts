@@ -57,6 +57,7 @@ import {
   saveLinkOverrides,
   validateConnections,
 } from '../lib/linkOverrides';
+import { deleteReport, getReport, reportTotals } from '../lib/compileReport';
 import { deletePipelineRun, getPipelineRun, listPipelineRuns } from '../lib/pipelineRuns';
 import { computeUsageSummary } from '../lib/tokenUsage';
 import { getCurrentRunId, isBuildRunning, runCli, stopBuild, streamChat, streamCompilerBuild } from '../lib/pythonBridge';
@@ -1050,7 +1051,8 @@ export function registerRoutes(app: Express): void {
   app.get(
     '/api/pipelines',
     wrap((_req, res) => {
-      res.json({ runs: listPipelineRuns(), llm_backend: describeLlmBackend() });
+      const totals = reportTotals();
+      res.json({ runs: listPipelineRuns().map((run) => ({ ...run, changes: totals[run.id] ?? null })), llm_backend: describeLlmBackend() });
     }),
   );
 
@@ -1060,6 +1062,16 @@ export function registerRoutes(app: Express): void {
       const run = getPipelineRun(req.params.id);
       if (!run) throw new HttpError(404, `Pipeline run not found: ${req.params.id}`);
       res.json({ ...run, llm_backend: describeLlmBackend() });
+    }),
+  );
+
+  // The pages this run added, changed and removed (compileReport.ts). null
+  // for runs from before reports existed, or whose report was pruned.
+  app.get(
+    '/api/pipelines/:id/changes',
+    wrap((req, res) => {
+      if (!getPipelineRun(req.params.id)) throw new HttpError(404, `Pipeline run not found: ${req.params.id}`);
+      res.json({ report: getReport(req.params.id) });
     }),
   );
 
@@ -1080,6 +1092,7 @@ export function registerRoutes(app: Express): void {
       }
       const result = deletePipelineRun(req.params.id);
       if (!result.removed) throw new HttpError(404, `Pipeline run not found: ${req.params.id}`);
+      deleteReport(req.params.id);
       logEvent(req.user?.username, 'Deleted pipeline run', req.params.id);
       res.json({ removed: true, id: req.params.id, stopped: wasRunning });
     }),

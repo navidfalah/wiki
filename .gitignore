@@ -30,6 +30,7 @@ data/sessions.json
 data/api_tokens.json
 data/sync_settings.json
 data/sync_state.json
+data/compile_reports/
 data/activity_log.json
 data/connector_activity.json
 data/sample.sqlite

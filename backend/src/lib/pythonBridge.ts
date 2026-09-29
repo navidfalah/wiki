@@ -9,6 +9,7 @@ import type { Response } from 'express';
 import { COMPILER_DIR, PYTHON_BIN } from '../paths';
 import { envOverridesForSpawn } from './llmSettings';
 import { logSystemEvent } from './activityLog';
+import { buildReport, saveReport, snapshotManifest } from './compileReport';
 import { markRunAbandoned } from './pipelineRuns';
 import { Semaphore } from './semaphore';
 import { PythonWorkerPool } from './pythonWorker';
@@ -226,6 +227,16 @@ function runBuildNow(res: Response, options: CompilerBuildOptions): void {
   ];
   sseEvent(res, 'start', { message: 'Starting compiler pipeline…', command: `${PYTHON_BIN} ${args.join(' ')}` });
 
+  // What the wiki looked like before this build, so its "what changed" report
+  // (compileReport.ts) can say which pages it added, changed and removed.
+  const startedAt = new Date();
+  let manifest: ReturnType<typeof snapshotManifest> | null = null;
+  try {
+    manifest = snapshotManifest();
+  } catch {
+    /* no report for this run; the build itself is unaffected */
+  }
+
   const child = spawn(PYTHON_BIN, args, {
     cwd: COMPILER_DIR,
     env: {
@@ -282,6 +293,13 @@ function runBuildNow(res: Response, options: CompilerBuildOptions): void {
     // own status immediately instead of leaving it stuck on "running"
     // until the next backend restart's reconcileOrphanedPipelineRuns().
     // A no-op if Python's own run.finish() already wrote success/error.
+    if (runId && manifest) {
+      try {
+        saveReport(buildReport({ runId, startedAt, before: manifest }));
+      } catch (err: any) {
+        logSystemEvent('Could not write the compile report', err.message, 'warn');
+      }
+    }
     if (runId) {
       markRunAbandoned(
         runId,

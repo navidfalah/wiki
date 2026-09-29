@@ -34,5 +34,6 @@ export const REVIEW_REPORT_PATH = path.join(DATA_ROOT, 'compiler', 'review_repor
 export const PIPELINE_RUNS_DIR = path.join(DATA_ROOT, 'data', 'pipeline_runs');
 export const PIPELINE_RUNS_INDEX = path.join(PIPELINE_RUNS_DIR, 'index.json');
 export const PAGE_HISTORY_DIR = path.join(DATA_ROOT, 'data', 'page_history');
+export const COMPILE_REPORTS_DIR = path.join(DATA_ROOT, 'data', 'compile_reports');
 export const BACKUPS_DIR = path.join(DATA_ROOT, 'data', 'backups');
 export const PYTHON_BIN = process.env.PYTHON_BIN ?? 'python3';

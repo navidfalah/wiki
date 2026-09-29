@@ -217,6 +217,15 @@ DELETE /api/tokens/:id       → {revoked: true, id}
 
 Tokens live in `data/api_tokens.json` (gitignored, included in backups).
 
+## Compile reports
+
+```
+GET /api/pipelines              → each run has `changes` (page totals) or null
+GET /api/pipelines/:id/changes  → {report: {totals, pages: [{path, title, status, lines_added, lines_removed}], truncated} | null}
+```
+
+See [45-page-version-history.md](./45-page-version-history.md#what-changed-in-each-compile).
+
 ## Scheduled sync (admin)
 
 ```

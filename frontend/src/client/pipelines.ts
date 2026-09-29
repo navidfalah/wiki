@@ -3,6 +3,7 @@ import { formatDateTime, formatNumber, t, th } from './lib/i18n';
 import { buildMessage, runMessage, statusLabel, stepName } from './lib/serverText';
 import { apiBase } from './lib/api';
 import { escapeHtml } from './lib/dom';
+import { renderChangesBadge, renderChangesSection, type ChangeTotals, type CompileReport } from './lib/compileChanges';
 
 interface RunSettings {
   default?: { model: string; base_url: string; available: boolean };
@@ -17,6 +18,8 @@ interface RunSummary {
   status: 'running' | 'success' | 'error' | 'stopped';
   force: boolean;
   settings?: RunSettings;
+  /** Pages this run added/changed/removed; null for runs without a report. */
+  changes?: ChangeTotals | null;
 }
 
 interface RunStep {
@@ -116,6 +119,7 @@ function renderList() {
             <span class="truncate font-mono">${escapeHtml(run.id)}${run.settings?.default?.model ? ` · ${escapeHtml(run.settings.default.model)}` : ''}</span>
             <span class="shrink-0">${escapeHtml(formatDuration(run.started_at, run.finished_at))}</span>
           </div>
+          ${renderChangesBadge(run.changes)}
         </button>
         <button
           type="button"
@@ -319,7 +323,7 @@ function renderSettingsHtml(settings: RunSettings | undefined): string {
     </div>`;
 }
 
-function renderDetail(run: RunDetail) {
+function renderDetail(run: RunDetail, report: CompileReport | null) {
   const container = document.getElementById('pipeline-run-detail')!;
 
   const stepsHtml = run.steps
@@ -404,6 +408,7 @@ function renderDetail(run: RunDetail) {
         : ''
     }
     <div class="mt-4 flex flex-col gap-2">${stepsHtml}</div>
+    ${renderChangesSection(report, run.status)}
     <h3 class="mt-5 text-sm font-semibold text-gray-900">${th('pipelines.tokenUsage')}</h3>
     ${usageHtml}
   `;
@@ -446,7 +451,12 @@ async function loadDetail() {
     const res = await fetch(`${apiBase}/api/pipelines/${encodeURIComponent(selectedId)}`);
     if (!res.ok) throw new Error(t('common.requestFailed', { status: res.status }));
     const run: RunDetail = await res.json();
-    renderDetail(run);
+    // The report is a nice-to-have: a failure here must not hide the run itself.
+    const report = await fetch(`${apiBase}/api/pipelines/${encodeURIComponent(selectedId)}/changes`)
+      .then((r) => (r.ok ? r.json() : null))
+      .then((body) => (body?.report as CompileReport | null) ?? null)
+      .catch(() => null);
+    renderDetail(run, report);
   } catch {
     container.innerHTML = `<p class="text-sm text-red-600">${th('pipelines.couldNotLoad')}</p>`;
   }

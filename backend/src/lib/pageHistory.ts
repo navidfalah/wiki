@@ -32,7 +32,8 @@ export function isPageFile(name: string): boolean {
   return PAGE_FILE_RE.test(name) && !name.includes('..');
 }
 
-function comparable(text: string): string {
+/** The page text without its volatile timestamp lines -- what "changed" is judged on. */
+export function comparable(text: string): string {
   return text.replace(VOLATILE_LINE_RE, '');
 }
 
