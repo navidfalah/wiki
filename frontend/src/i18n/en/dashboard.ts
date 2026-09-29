@@ -133,4 +133,6 @@ export const dashboard = {
   'dashboard.home.activity.unavailable': 'Activity is not available.',
   'dashboard.home.activity.system': 'System',
   'dashboard.home.workspace': 'Compiler workspace',
+  "dashboard.home.att.stale": "Out-of-date pages",
+  "dashboard.home.att.staleHint": "Built from sources that changed since the last compile",
 } as const;

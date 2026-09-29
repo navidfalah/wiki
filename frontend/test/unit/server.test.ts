@@ -12,9 +12,10 @@ import { afterAll, beforeAll, beforeEach, describe, expect, it, vi } from 'vites
 const USER_TOKEN = 'user-token';
 const ADMIN_TOKEN = 'admin-token';
 
-const DOCS: Record<string, { title: string; body: string; tags: string[]; links: { text: string; href: string }[] }> = {
+const DOCS: Record<string, { title: string; body: string; tags: string[]; links: { text: string; href: string }[]; stale?: { changed: string[]; removed: string[] } | null }> = {
   'aurora-labs.md': { title: 'Aurora Labs', body: '# Aurora Labs\n\n<script>alert("x")</script> makes the Nova Widget.', tags: ['company'], links: [] },
   'nova-widget.md': { title: 'Nova Widget', body: 'A sensor.', tags: [], links: [] },
+  'stale-page.md': { title: 'Stale Page', body: 'Old claims.', tags: [], links: [], stale: { changed: ['notes/a.txt', '<b>b</b>.md'], removed: ['gone.pdf'] } },
 };
 
 interface Seen {
@@ -59,7 +60,8 @@ function startStubBackend(): Promise<string> {
     if (failDocList) return res.status(503).send('upstream db at 10.0.0.7 is down');
     res.json({
       pages: [
-        { path: 'nova-widget.md', title: 'Nova Widget', category: 'Products' },
+        { path: 'nova-widget.md', title: 'Nova Widget', category: 'Products', stale_sources: 0 },
+        { path: 'stale-page.md', title: 'Stale Page', category: 'Products', stale_sources: 3 },
         { path: 'aurora-labs.md', title: 'Aurora Labs', category: null },
       ],
     });
@@ -250,6 +252,24 @@ describe('wiki pages', () => {
     expect(html).toContain('Aurora Labs');
     expect(html).toContain('Products');
     expect(html).toContain('General Reference');
+  });
+
+  it('marks only the pages whose sources changed since they were compiled', async () => {
+    const html = await (await get('/wiki', { token: USER_TOKEN })).text();
+    const tile = (slug: string) => html.split('<div').find((chunk) => chunk.includes(`data-slug="${slug}"`) && chunk.includes('wiki-file-tile')) ?? '';
+    expect(tile('stale-page')).toContain('data-stale');
+    expect(tile('nova-widget')).not.toContain('data-stale');
+    expect(tile('aurora-labs')).not.toContain('data-stale');
+  });
+
+  it('shows a banner naming the changed and removed sources, escaped, on a stale page only', async () => {
+    const html = await (await get('/wiki/stale-page', { token: USER_TOKEN })).text();
+    expect(html).toContain('data-stale-banner');
+    expect(html).toContain('This page may be out of date');
+    expect(html).toContain('Sources changed since it was compiled: notes/a.txt, &lt;b&gt;b&lt;/b&gt;.md.');
+    expect(html).toContain('Sources no longer in the raw data: gone.pdf.');
+    expect(html).not.toContain('<b>b</b>');
+    expect(await (await get('/wiki/nova-widget', { token: USER_TOKEN })).text()).not.toContain('data-stale-banner');
   });
 
   it('renders a page with its body escaped', async () => {

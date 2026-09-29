@@ -67,4 +67,7 @@ export const reviewQueue: Record<keyof typeof en, string> = {
   'review-queue.detail.neverProcessed': 'Noch nie verarbeitet – starten Sie den Compiler, um sie einzulesen.',
   'review-queue.detail.reviewer': 'Vom LLM-Prüfer markiert – Einzelheiten im vollständigen Bericht.',
   'review-queue.detail.brokenLink': 'Defekter Link in {where} – die Zieldatei existiert nicht.',
+  "review-queue.att.stale": "Veraltete Seiten",
+  "review-queue.card.stale": "Veraltete Seiten",
+  "review-queue.kind.stale_page": "Veraltete Seite",
 };

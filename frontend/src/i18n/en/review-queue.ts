@@ -65,4 +65,7 @@ export const reviewQueue = {
   'review-queue.detail.neverProcessed': 'Never processed -- run the compiler to bring it in.',
   'review-queue.detail.reviewer': 'Flagged by the LLM reviewer -- see the full report for details.',
   'review-queue.detail.brokenLink': 'Broken link in {where} -- target file does not exist.',
+  "review-queue.att.stale": "Out-of-date pages",
+  "review-queue.card.stale": "Out-of-date pages",
+  "review-queue.kind.stale_page": "Out-of-date page",
 } as const;

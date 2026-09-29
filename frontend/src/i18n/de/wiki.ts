@@ -60,4 +60,9 @@ export const wiki: Record<keyof typeof en, string> = {
   'wiki.history.restoreFailed': 'Wiederherstellen fehlgeschlagen ({status})',
   'wiki.history.back': 'Zurück zur Seite',
   'wiki.history.missingPage': 'Diese Seite existiert derzeit nicht. Das Wiederherstellen einer Version legt sie neu an.',
+  "wiki.stale.badge": "Quellen seit dem Compile dieser Seite geändert",
+  "wiki.stale.title": "Diese Seite ist möglicherweise veraltet",
+  "wiki.stale.changed": "Quellen seit dem Compile geändert: {sources}.",
+  "wiki.stale.removed": "Quellen nicht mehr in den Rohdaten: {sources}.",
+  "wiki.stale.hint": "Ihre Aussagen stimmen womöglich nicht mehr mit diesen Quellen überein. Compilieren Sie neu, um sie zu aktualisieren.",
 };

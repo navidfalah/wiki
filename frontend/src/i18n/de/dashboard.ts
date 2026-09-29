@@ -135,4 +135,6 @@ export const dashboard: Record<keyof typeof en, string> = {
   'dashboard.home.activity.unavailable': 'Aktivität ist nicht verfügbar.',
   'dashboard.home.activity.system': 'System',
   'dashboard.home.workspace': 'Compiler-Arbeitsbereich',
+  "dashboard.home.att.stale": "Veraltete Seiten",
+  "dashboard.home.att.staleHint": "Aus Quellen erstellt, die sich seit dem letzten Compile geändert haben",
 };

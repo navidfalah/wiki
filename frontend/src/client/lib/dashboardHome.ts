@@ -163,6 +163,7 @@ export interface AttentionCounts {
   dead_links?: number;
   ungrounded_topics?: number;
   unprocessed_files?: number;
+  stale_pages?: number;
   review_findings?: number;
   total?: number;
 }
@@ -202,6 +203,14 @@ export function renderAttentionSummary(counts: AttentionCounts | null | undefine
       href: '#compile',
       cta: t('dashboard.home.att.compile'),
       tone: 'accent',
+    },
+    {
+      n: counts.stale_pages ?? 0,
+      label: t('dashboard.home.att.stale'),
+      hint: t('dashboard.home.att.staleHint'),
+      href: '#compile',
+      cta: t('dashboard.home.att.compile'),
+      tone: 'warn',
     },
     {
       n: counts.orphan_or_dead_end_topics ?? 0,

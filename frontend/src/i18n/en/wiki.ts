@@ -58,4 +58,9 @@ export const wiki = {
   'wiki.history.restoreFailed': 'Restore failed ({status})',
   'wiki.history.back': 'Back to page',
   'wiki.history.missingPage': 'This page does not exist right now. Restoring a version recreates it.',
+  "wiki.stale.badge": "Sources changed since this page was compiled",
+  "wiki.stale.title": "This page may be out of date",
+  "wiki.stale.changed": "Sources changed since it was compiled: {sources}.",
+  "wiki.stale.removed": "Sources no longer in the raw data: {sources}.",
+  "wiki.stale.hint": "Its claims may not match those sources any more. Recompile to bring it up to date.",
 } as const;

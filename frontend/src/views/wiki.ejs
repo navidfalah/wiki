@@ -76,6 +76,9 @@
       data-category="<%= page.category %>"
       data-slug="<%= page.slug %>">
 
+      <% if (page.stale) { %>
+        <span class="absolute left-2 top-2 h-2.5 w-2.5 rounded-full bg-amber-400 ring-2 ring-white" role="img" data-stale title="<%= t('wiki.stale.badge') %>" aria-label="<%= t('wiki.stale.badge') %>"></span>
+      <% } %>
       <div class="absolute right-2 top-2 flex gap-1 opacity-0 transition-opacity group-hover:opacity-100 group-focus-within:opacity-100">
         <a href="/wiki/<%= page.slug %>"
            title="<%= t('wiki.view') %>"

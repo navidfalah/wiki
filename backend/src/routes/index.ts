@@ -75,6 +75,7 @@ import {
 import { getResourceDetail, listResources, resolveDocPaths } from '../lib/resourcesEngine';
 import { searchCorpusPage, type EmailSummary } from '../lib/searchEngine';
 import { isPageFile, lineDiff, listVersions, readVersion, snapshotPage, withContext } from '../lib/pageHistory';
+import { pageStaleness } from '../lib/stalePages';
 import { atomicWriteText } from '../lib/atomicWrite';
 import { BackupError, backupPath, createBackup, deleteBackup, listBackups, restoreBackup, validateArchive } from '../lib/backups';
 import { backupSchedule } from '../lib/backupScheduler';
@@ -779,6 +780,7 @@ export function registerRoutes(app: Express): void {
     '/api/docs',
     wrap((_req, res) => {
       if (!fs.existsSync(OUTPUT_DIR)) throw new HttpError(404, `Docs directory not found: ${OUTPUT_DIR}`);
+      const state = loadState();
       const pages = fs
         .readdirSync(OUTPUT_DIR)
         .filter((f) => f.endsWith('.md'))
@@ -800,6 +802,9 @@ export function registerRoutes(app: Express): void {
             size_bytes: stat.size,
             modified_at: stat.mtime.toISOString(),
             tags: meta.tags_list ?? [],
+            // How many of the sources this page was built from changed or
+            // vanished since it was compiled (stalePages.ts); 0 = up to date.
+            stale_sources: ((s) => (s ? s.changed.length + s.removed.length : 0))(pageStaleness(raw, state)),
           };
         });
       const categories = categorizePages(pages);
@@ -857,7 +862,7 @@ export function registerRoutes(app: Express): void {
       if (!fs.existsSync(docPath) || !fs.statSync(docPath).isFile()) {
         throw new HttpError(404, `Doc not found: ${relPath}`);
       }
-      res.json(readDocPayload(docPath));
+      res.json({ ...readDocPayload(docPath), stale: pageStaleness(fs.readFileSync(docPath, 'utf-8')) });
     }),
   );
 

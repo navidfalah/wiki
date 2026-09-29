@@ -9,12 +9,14 @@ interface DocListItem {
   path: string;
   title: string;
   category: string | null;
+  /** Cited sources that changed or vanished since the page was compiled. */
+  stale_sources?: number;
 }
 
 async function loadPageList(token?: string) {
   const data = await apiGet<{ pages: DocListItem[] }>('/api/docs', token);
   return data.pages
-    .map((p) => ({ title: p.title, slug: p.path.replace(/\.md$/, ''), category: p.category || 'General Reference' }))
+    .map((p) => ({ title: p.title, slug: p.path.replace(/\.md$/, ''), category: p.category || 'General Reference', stale: (p.stale_sources ?? 0) > 0 }))
     .sort((a, b) => a.title.localeCompare(b.title));
 }
 
@@ -136,7 +138,7 @@ router.get('/:slug(*)/history', async (req, res, next) => {
 router.get('/:slug(*)', async (req, res, next) => {
   try {
     const slug = req.params.slug;
-    const doc = await apiGet<{ title: string; body: string; tags: string[]; links: { text: string; href: string }[] }>(
+    const doc = await apiGet<{ title: string; body: string; tags: string[]; links: { text: string; href: string }[]; stale?: { changed: string[]; removed: string[] } | null }>(
       `/api/docs/${slug}.md`,
       getToken(req),
     );

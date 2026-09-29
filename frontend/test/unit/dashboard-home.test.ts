@@ -120,6 +120,16 @@ describe('needs attention', () => {
     expect(rows[1].getAttribute('href')).toBe('#compile');
   });
 
+  it('lists out-of-date pages with the compile action, between unprocessed files and unreachable pages', () => {
+    const root = dom(home.renderAttentionSummary({ unprocessed_files: 2, stale_pages: 5, orphan_or_dead_end_topics: 1, total: 8 }, []));
+    const rows = [...root.querySelectorAll('li > a')].map((a) => a.textContent ?? '');
+    expect(rows).toHaveLength(3);
+    expect(rows[1]).toContain('5');
+    expect(rows[1]).toContain('Out-of-date pages');
+    expect([...root.querySelectorAll('li > a')][1].getAttribute('href')).toBe('#compile');
+    expect(rows[2]).toContain('1');
+  });
+
   it('"Fix" on broken links jumps straight to the first affected page', () => {
     const items = [{ kind: 'dead_link', severity: 'high', title: '[X] → x.md', detail: '', doc_path: 'api.md' }];
     const root = dom(home.renderAttentionSummary({ dead_links: 1, total: 1 }, items));

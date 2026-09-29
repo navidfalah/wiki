@@ -35,6 +35,37 @@ inline, and `--use-corrections` on the next compile turns it into a
 few-shot example for extraction — the loop doc 29 described is now
 actually closeable by clicking, not just by script.
 
+## Out-of-date pages
+
+A page can go stale without anything looking wrong: it reads fine, but a
+source it was built from has since changed or been deleted, so its claims may
+no longer match. The **needs attention** feed (this page, and the dashboard
+summary) now flags those pages, the wiki list marks them with an amber dot,
+and the page itself shows a banner naming the sources.
+
+- **How a page is judged.** The sources a page was built from are on the
+  page, in its *References & Trust* table (or the older *Sources* list).
+  Each is compared with the checksum the compiler recorded in
+  `data/state.json` when it processed the file:
+  - different checksum → **changed** (severity medium);
+  - file gone from `data/raw/` → **removed** (severity high);
+  - a source the compiler has no record of is skipped: with nothing to
+    compare against, nothing can be said.
+- **Age is not a signal.** A page nothing has contradicted isn't wrong for
+  being old, and "old" would flag the whole wiki after any pause.
+- **The fix is a recompile.** The dashboard row's action is *Compile*.
+  Compiles are incremental, so only pages whose sources changed are redone,
+  and the compile report (doc 45) then lists exactly which ones.
+- **Cost.** Checksums are cached by file size and modification time, so a
+  source is re-read only after it changed on disk; the page list stays cheap
+  for a big corpus. A page can't point the check outside `data/raw/`.
+
+```
+GET /api/attention              → counts.stale_pages, items with kind "stale_page"
+GET /api/docs                   → each page has stale_sources (number of changed + removed)
+GET /api/docs/<page>.md         → stale: {changed: [...], removed: [...]} | null
+```
+
 ## What this does not change
 
 - **Still scored against the pilot dataset, not a live compiled corpus.**

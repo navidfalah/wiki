@@ -46,6 +46,15 @@
   </div>
 </div>
 
+<% if (doc.stale && (doc.stale.changed.length || doc.stale.removed.length)) { %>
+  <div class="mt-4 rounded-xl border border-amber-200 bg-amber-50 px-4 py-3 text-sm text-amber-900" role="status" data-stale-banner>
+    <p class="font-medium"><%= t('wiki.stale.title') %></p>
+    <% if (doc.stale.changed.length) { %><p class="mt-1 text-xs"><%= t('wiki.stale.changed', { sources: doc.stale.changed.join(', ') }) %></p><% } %>
+    <% if (doc.stale.removed.length) { %><p class="mt-1 text-xs"><%= t('wiki.stale.removed', { sources: doc.stale.removed.join(', ') }) %></p><% } %>
+    <p class="mt-1 text-xs text-amber-800"><%= t('wiki.stale.hint') %></p>
+  </div>
+<% } %>
+
 <pre class="mt-6 max-w-none overflow-x-auto whitespace-pre-wrap break-words rounded-xl border border-gray-200 bg-white p-5 text-sm leading-relaxed text-gray-800 shadow-card"><%= doc.body %></pre>
 
 <% if (doc.links && doc.links.length) { %>

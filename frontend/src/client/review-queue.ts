@@ -321,6 +321,7 @@ async function loadAttention() {
       statCard(String(c.dead_links ?? 0), t('review-queue.card.deadLinks'), (c.dead_links ?? 0) > 0),
       statCard(String(c.ungrounded_topics ?? 0), t('review-queue.card.ungrounded'), (c.ungrounded_topics ?? 0) > 0),
       statCard(String(c.unprocessed_files ?? 0), t('review-queue.card.unprocessed'), (c.unprocessed_files ?? 0) > 0),
+      statCard(String(c.stale_pages ?? 0), t('review-queue.card.stale'), (c.stale_pages ?? 0) > 0),
       statCard(String(c.review_findings ?? 0), t('review-queue.card.reviewer'), (c.review_findings ?? 0) > 0),
     ].join('');
 

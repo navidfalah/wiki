@@ -12,11 +12,12 @@ import { findBrokenLinks } from './deadLinkChecker';
 import { buildKnowledgeGraphPayload } from './linkOverrides';
 import { loadTopicIndex, normalizeTopic } from './docUtils';
 import { computeMd5, discoverRawSourceFiles, loadState } from './rawFiles';
+import { describeSources, stalePages } from './stalePages';
 
 export type Severity = 'high' | 'medium' | 'low';
 
 export interface AttentionItem {
-  kind: 'orphan_topic' | 'dead_end_topic' | 'dead_link' | 'ungrounded_topic' | 'unprocessed_file' | 'review_finding';
+  kind: 'orphan_topic' | 'dead_end_topic' | 'dead_link' | 'ungrounded_topic' | 'unprocessed_file' | 'stale_page' | 'review_finding';
   severity: Severity;
   title: string;
   detail: string;
@@ -162,6 +163,24 @@ export function buildAttentionReport(docsDir: string = OUTPUT_DIR) {
     }
   }
 
+  // --- Stale pages: built from sources that have since changed or gone. The
+  // page still reads fine, which is why nothing else would flag it. -------
+  let staleCount = 0;
+  for (const [file, stale] of stalePages(docsDir)) {
+    staleCount++;
+    const parts = [
+      stale.changed.length ? `changed since it was compiled: ${describeSources(stale.changed)}` : '',
+      stale.removed.length ? `no longer in data/raw/: ${describeSources(stale.removed)}` : '',
+    ].filter(Boolean);
+    items.push({
+      kind: 'stale_page',
+      severity: stale.removed.length ? 'high' : 'medium',
+      title: stale.title,
+      detail: `Built from sources that ${parts.join('; and ')}. Recompile to bring the page up to date.`,
+      doc_path: file,
+    });
+  }
+
   // --- Structural/faithfulness issues the LLM reviewer already found,
   // if a review report has been generated. -----------------------------
   let reviewFindings: AttentionItem[] = [];
@@ -183,6 +202,7 @@ export function buildAttentionReport(docsDir: string = OUTPUT_DIR) {
       dead_links: broken.length,
       ungrounded_topics: ungroundedCount,
       unprocessed_files: unprocessedCount,
+      stale_pages: staleCount,
       review_findings: reviewFindings.length,
       total: items.length,
     },
