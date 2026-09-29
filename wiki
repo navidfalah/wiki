@@ -335,7 +335,8 @@ def changed_packages(base: str) -> list[str]:
         return list(PACKAGES)
     files = [f for f in (committed + untracked).splitlines() if f]
     selected = {f.split("/", 1)[0] for f in files if f.split("/", 1)[0] in PACKAGES}
-    if any(f.startswith((".github/", "data/", "wiki")) and f.split("/", 1)[0] not in PACKAGES for f in files):
+    # "wiki" is this CLI; wiki-app/ is not shared by the packages' checks.
+    if any(f == "wiki" or f.startswith((".github/", "data/")) for f in files):
         return list(PACKAGES)
     return [p for p in PACKAGES if p in selected]
 

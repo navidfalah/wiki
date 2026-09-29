@@ -204,6 +204,16 @@ class TestChangedPackages:
         (repo / ".github" / "ci.yml").write_text("x")
         assert cli.changed_packages("main") == ["compiler", "backend", "frontend"]
 
+    def test_the_cli_itself_selects_everything(self, repo):
+        (repo / "wiki").write_text("x")
+        assert cli.changed_packages("main") == ["compiler", "backend", "frontend"]
+
+    def test_wiki_app_is_not_mistaken_for_the_cli(self, repo):
+        (repo / "wiki-app" / "docs").mkdir(parents=True)
+        (repo / "wiki-app" / "docs" / "page.md").write_text("x")
+        (repo / "frontend" / "b.txt").write_text("new")
+        assert cli.changed_packages("main") == ["frontend"]
+
     def test_nothing_changed(self, repo):
         assert cli.changed_packages("main") == []
 
