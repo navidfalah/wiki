@@ -1,0 +1,33 @@
+{
+  "name": "wiki-mcp",
+  "version": "1.0.0",
+  "private": true,
+  "description": "MCP server for the wiki: lets Claude, Cursor and other MCP clients search and read the wiki through its HTTP API with a personal API token.",
+  "type": "commonjs",
+  "main": "dist/index.js",
+  "bin": { "wiki-mcp": "dist/index.js" },
+  "scripts": {
+    "dev": "tsx src/index.ts",
+    "build": "tsc -p tsconfig.json",
+    "start": "node dist/index.js",
+    "test": "vitest run",
+    "typecheck": "tsc --noEmit",
+    "lint": "eslint src"
+  },
+  "dependencies": {
+    "@modelcontextprotocol/sdk": "^1.31.0",
+    "zod": "^3.25.0"
+  },
+  "devDependencies": {
+    "@eslint/js": "^9.39.5",
+    "@types/node": "^22.20.4",
+    "@vitest/coverage-v8": "^5.0.2",
+    "eslint": "^9.39.5",
+    "tsx": "^4.19.2",
+    "typescript": "^5.5.4",
+    "typescript-eslint": "^8.70.0",
+    "vite": "^7.3.6",
+    "vitest": "^5.0.2"
+  },
+  "engines": { "node": ">=22" }
+}

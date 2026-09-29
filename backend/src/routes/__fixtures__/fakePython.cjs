@@ -24,6 +24,9 @@ function handle(command, input) {
       if (input && input.path === EMAIL.path) return { code: 0, payload: { ...EMAIL, body: EMAIL_BODY, to: [], cc: [] } };
       if (input && typeof input.path === 'string' && !input.path.endsWith('.eml')) return { code: 1, payload: { error: 'Not an email source', error_type: 'not_an_email' } };
       return { code: 1, payload: { error: 'Raw file not found', error_type: 'not_found' } };
+    case 'source-text':
+      if (input && input.path === 'project/grant.pdf') return { code: 0, payload: { path: input.path, text: 'Grant application: 198 kWp.', chars: 27, truncated: false } };
+      return { code: 1, payload: { error: `Raw file not found: ${input && input.path}`, error_type: 'not_found' } };
     case 'review-queue':
       return { code: 0, payload: { candidates: [], verdicts: ['correct', 'incorrect', 'unsure'] } };
     case 'entity-graph':

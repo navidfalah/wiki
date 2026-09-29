@@ -24,6 +24,7 @@ Detailed project documentation, split by topic. Start with [01-overview.md](./01
 | [44-qa-benchmark.md](./44-qa-benchmark.md) | 65-question gold benchmark: wiki vs. raw retrieval, synthesis loss, search hit@5 |
 | [45-page-version-history.md](./45-page-version-history.md) | Versions saved before every compile/edit/delete; diff and restore per page |
 | [46-cli-and-testing.md](./46-cli-and-testing.md) | The `./wiki` CLI (check, test, coverage, e2e, ci), what CI runs on every push, coverage floors, what each test suite covers |
+| [47-mcp-server.md](./47-mcp-server.md) | The MCP server: search and read the wiki from Claude, Cursor and other MCP clients with a personal API token |
 | [40-production-deployment.md](./40-production-deployment.md) | Hosting at wissensbau.de: Caddy + Docker Compose, sizing, resource limits, security, backups |
 | [11-wiki-app-and-dashboards.md](./11-wiki-app-and-dashboards.md) | Docusaurus, React pages, components, routes |
 | [12-api-server.md](./12-api-server.md) | FastAPI endpoints, SSE builds, CORS |

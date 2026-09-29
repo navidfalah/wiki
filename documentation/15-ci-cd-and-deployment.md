@@ -25,6 +25,7 @@ and local runs cannot drift apart. Full reference:
 | `compiler` (Python 3.10 and 3.12) | `./wiki ci --only compiler` | `ruff` (pinned; also lints the CLI), `pytest` with a coverage floor, the offline eval regression gate (doc 14, doc 44) | 15 min |
 | `backend` | `./wiki ci --only backend` | eslint, `tsc`, vitest with a coverage floor (units, route integration tests, search benchmark floor), build | 15 min |
 | `frontend` | `./wiki ci --only frontend` | eslint, `tsc` (server, client bundles, tests) with i18n key parity, vitest with a coverage floor, build | 15 min |
+| `mcp` | `./wiki ci --only mcp` | eslint, `tsc`, vitest with a coverage floor (the MCP server, doc 47), build | 15 min |
 | `e2e` | `./wiki e2e` | Starts the real backend and frontend and runs Playwright in Chromium (`frontend/test/e2e`) against the sample corpus. Every page must load without a script error or CSP violation. Also checks search deep links, page history, backups and the dashboard. On failure the HTML report is uploaded. | 20 min |
 | `docker` | `./wiki docker` | Validates the production compose file (with and without the Caddy profile) and the Caddyfile, and builds the images | 30 min |
 

@@ -215,3 +215,41 @@ describe('backups over the API', () => {
     expect(((await res.json()) as any).name).toMatch(/-uploaded\.tar\.gz$/);
   });
 });
+
+describe('source text', () => {
+  const withFile = async (rel: string, run: () => Promise<void>) => {
+    fs.mkdirSync(path.dirname(raw(rel)), { recursive: true });
+    fs.writeFileSync(raw(rel), 'binary stand-in');
+    try {
+      await run();
+    } finally {
+      fs.rmSync(raw(rel), { force: true });
+    }
+  };
+
+  it('returns the text the compiler extracts from a raw file', async () => {
+    await withFile('project/grant.pdf', async () => {
+      const { status, body } = await h.json('GET', '/api/source-text/project/grant.pdf', auth());
+      expect(status).toBe(200);
+      expect(body).toMatchObject({ path: 'project/grant.pdf', text: 'Grant application: 198 kWp.', truncated: false });
+      expect(h.pythonCalls().at(-1)).toEqual({ command: 'source-text', input: { path: 'project/grant.pdf' } });
+    });
+  });
+
+  it('is a 404 for a file that does not exist, without asking Python', async () => {
+    const before = h.pythonCalls().length;
+    expect((await h.json('GET', '/api/source-text/project/missing.pdf', auth())).status).toBe(404);
+    expect(h.pythonCalls().length).toBe(before);
+  });
+
+  it.each(['../../package.json', '..%2F..%2Fpackage.json', '', '.'])('refuses %j', async (rel) => {
+    const before = h.pythonCalls().length;
+    const { status } = await h.json('GET', `/api/source-text/${rel}`, auth());
+    expect([400, 404]).toContain(status);
+    expect(h.pythonCalls().length).toBe(before);
+  });
+
+  it('needs a session', async () => {
+    expect((await h.json('GET', '/api/source-text/notes/kickoff.txt')).status).toBe(401);
+  });
+});

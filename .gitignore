@@ -10,6 +10,7 @@ venv/
 node_modules/
 backend/dist/
 frontend/dist/
+mcp/dist/
 frontend/dist-static/
 data/state.json
 data/sources.json

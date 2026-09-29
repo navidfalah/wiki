@@ -14,7 +14,8 @@
     ./wiki dev                    start backend (:8000) and frontend (:3000)
     ./wiki list                   show every step and the command it runs
 
-Packages: compiler (Python), backend (Express/TS), frontend (Express/EJS/TS).
+Packages: compiler (Python), backend (Express/TS), frontend (Express/EJS/TS),
+mcp (the MCP server, TS).
 Every command prints a timed summary and exits non-zero if any step failed.
 On GitHub Actions each step's log is a collapsible group, the summary is
 written to the job's step summary, and a skipped step (missing prerequisite)
@@ -37,13 +38,15 @@ from dataclasses import dataclass, field
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parent
-PACKAGES = ("compiler", "backend", "frontend")
+PACKAGES = ("compiler", "backend", "frontend", "mcp")
+# The packages with a package.json (npm ci, eslint, tsc, vitest).
+NODE_PACKAGES = ("backend", "frontend", "mcp")
 PYTHON = sys.executable or "python3"
 IN_CI = os.environ.get("GITHUB_ACTIONS") == "true" or os.environ.get("CI") == "true"
 
 # Coverage floors (percent of statements). Raise them as coverage grows; a
 # drop below the floor fails `./wiki coverage` and CI.
-COVERAGE_FLOORS = {"compiler": 86, "backend": 82, "frontend": 15}
+COVERAGE_FLOORS = {"compiler": 86, "backend": 82, "frontend": 15, "mcp": 90}
 
 
 # --- Output -------------------------------------------------------------------
@@ -122,7 +125,7 @@ def lint_steps(packages: list[str]) -> list[Step]:
     if "compiler" in packages:
         # ../wiki is this CLI; lint it with the compiler's ruff settings.
         steps.append(Step("lint", "compiler", [PYTHON, "-m", "ruff", "check", "--config", "pyproject.toml", ".", "../wiki"], pkg_dir("compiler")))
-    for p in ("backend", "frontend"):
+    for p in NODE_PACKAGES:
         if p in packages:
             steps.append(Step("lint", p, npm("run", "lint"), pkg_dir(p), requires="node_modules"))
     return steps
@@ -131,7 +134,7 @@ def lint_steps(packages: list[str]) -> list[Step]:
 def typecheck_steps(packages: list[str]) -> list[Step]:
     return [
         Step("typecheck", p, npm("run", "typecheck"), pkg_dir(p), requires="node_modules")
-        for p in ("backend", "frontend")
+        for p in NODE_PACKAGES
         if p in packages
     ]
 
@@ -145,7 +148,7 @@ def test_steps(packages: list[str], expr: str | None = None, coverage: bool = Fa
         if coverage:
             cmd += ["--cov=.", "--cov-report=term:skip-covered", f"--cov-fail-under={COVERAGE_FLOORS['compiler']}"]
         steps.append(Step("coverage" if coverage else "test", "compiler", cmd, pkg_dir("compiler")))
-    for p in ("backend", "frontend"):
+    for p in NODE_PACKAGES:
         if p in packages:
             cmd = npx("vitest", "run")
             if expr:
@@ -169,7 +172,7 @@ def bench_steps() -> list[Step]:
 
 
 def build_steps(packages: list[str]) -> list[Step]:
-    return [Step("build", p, npm("run", "build"), pkg_dir(p), requires="node_modules") for p in ("backend", "frontend") if p in packages]
+    return [Step("build", p, npm("run", "build"), pkg_dir(p), requires="node_modules") for p in NODE_PACKAGES if p in packages]
 
 
 def e2e_steps(extra: list[str]) -> list[Step]:
@@ -186,7 +189,7 @@ def audit_steps(packages: list[str]) -> list[Step]:
         # installs it. Locally the step is skipped until you `pip install pip-audit`.
         cmd = [PYTHON, "-m", "pip_audit", "-r", "requirements.txt", "--progress-spinner", "off"]
         steps.append(Step("audit", "compiler", cmd, pkg_dir("compiler"), requires="python:pip_audit"))
-    steps += [Step("audit", p, npm("audit", "--omit=dev"), pkg_dir(p)) for p in ("backend", "frontend") if p in packages]
+    steps += [Step("audit", p, npm("audit", "--omit=dev"), pkg_dir(p)) for p in NODE_PACKAGES if p in packages]
     return steps
 
 
@@ -391,7 +394,7 @@ def cmd_doctor(_args: argparse.Namespace) -> int:
             checks.append((f"python module {module}", True, ""))
         except ImportError:
             checks.append((f"python module {module}", False, hint))
-    for p in ("backend", "frontend"):
+    for p in NODE_PACKAGES:
         checks.append((f"{p}/node_modules", (pkg_dir(p) / "node_modules").is_dir(), "./wiki setup"))
     chromium = Path(os.environ.get("PLAYWRIGHT_BROWSERS_PATH", Path.home() / ".cache" / "ms-playwright"))
     has_chromium = chromium.is_dir() and any(d.name.startswith("chromium") for d in chromium.iterdir())
@@ -411,7 +414,7 @@ def cmd_doctor(_args: argparse.Namespace) -> int:
 
 def cmd_setup(args: argparse.Namespace) -> int:
     steps = [Step("pip install", "compiler", [PYTHON, "-m", "pip", "install", "-r", "requirements-dev.txt"], pkg_dir("compiler"))]
-    steps += [Step("npm ci", p, npm("ci"), pkg_dir(p)) for p in ("backend", "frontend")]
+    steps += [Step("npm ci", p, npm("ci"), pkg_dir(p)) for p in NODE_PACKAGES]
     if args.browsers:
         steps.append(Step("playwright install", "frontend", npx("playwright", "install", "chromium"), pkg_dir("frontend")))
     return report(run_all(steps, stream=True, fail_fast=True, parallel=False), "setup", None)
@@ -481,7 +484,7 @@ def build_parser() -> argparse.ArgumentParser:
     common.add_argument("--json", metavar="PATH", help="also write a JSON report")
 
     selection = argparse.ArgumentParser(add_help=False)
-    selection.add_argument("--only", action="append", metavar="PKG", help="compiler, backend, frontend (repeat or comma-separate)")
+    selection.add_argument("--only", action="append", metavar="PKG", help="compiler, backend, frontend, mcp (repeat or comma-separate)")
     selection.add_argument("--changed", action="store_true", help="only packages changed since --base")
     selection.add_argument("--base", default="origin/main", help="base ref for --changed (default origin/main)")
 

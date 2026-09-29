@@ -220,3 +220,48 @@ class TestEntryPoint:
     def test_empty_stdin_means_no_input(self, monkeypatch):
         monkeypatch.setattr(sys, "stdin", io.StringIO("   \n"))
         assert cli._read_stdin_json() == {}
+
+
+class TestSourceText:
+    @pytest.fixture
+    def raw(self, tmp_path, monkeypatch):
+        import models
+
+        root = tmp_path / "raw"
+        (root / "notes").mkdir(parents=True)
+        (root / "notes" / "a.txt").write_text("Plant size 171.6 kWp.", encoding="utf-8")
+        (root / "notes" / "m.eml").write_text(
+            "From: A <a@example.test>\nTo: b@example.test\nSubject: Grid approval\n\nConnection from 1 August.\n",
+            encoding="utf-8",
+        )
+        (tmp_path / "raw_old").mkdir()
+        (tmp_path / "raw_old" / "secret.txt").write_text("outside", encoding="utf-8")
+        monkeypatch.setattr(models, "RAW_DIR", root)
+        return root
+
+    def run(self, monkeypatch, payload):
+        monkeypatch.setattr(sys, "stdin", io.StringIO(json.dumps(payload)))
+        return cli.cmd_source_text()
+
+    def test_returns_the_extracted_text(self, raw, monkeypatch):
+        assert self.run(monkeypatch, {"path": "notes/a.txt"}) == {
+            "path": "notes/a.txt", "text": "Plant size 171.6 kWp.", "chars": 21, "truncated": False,
+        }
+        email = self.run(monkeypatch, {"path": "notes/m.eml"})
+        assert "Grid approval" in email["text"] and "1 August" in email["text"]
+
+    def test_truncates_long_text(self, raw, monkeypatch):
+        (raw / "notes" / "long.txt").write_text("x" * (cli.SOURCE_TEXT_MAX_CHARS + 5), encoding="utf-8")
+        result = self.run(monkeypatch, {"path": "notes/long.txt"})
+        assert result["truncated"] is True and result["chars"] == cli.SOURCE_TEXT_MAX_CHARS + 5
+        assert len(result["text"]) == cli.SOURCE_TEXT_MAX_CHARS
+
+    @pytest.mark.parametrize("path", ["../raw_old/secret.txt", "/etc/passwd", ".", ""])
+    def test_rejects_paths_outside_raw(self, raw, monkeypatch, path):
+        with pytest.raises(ValueError):
+            self.run(monkeypatch, {"path": path})
+
+    def test_missing_file_is_reported_as_not_found(self, raw, monkeypatch):
+        monkeypatch.setattr(sys, "stdin", io.StringIO(json.dumps({"path": "notes/missing.txt"})))
+        payload, code = cli._run_command("source-text")
+        assert code == 1 and payload["error_type"] == "not_found"

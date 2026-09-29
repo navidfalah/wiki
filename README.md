@@ -641,6 +641,7 @@ Workflow: `.github/workflows/pr-checks.yml`. It runs on every push to every bran
 | `compiler` (Python 3.10 + 3.12) | `./wiki ci --only compiler`: ruff, pytest + coverage floor, eval regression gate |
 | `backend` | `./wiki ci --only backend`: eslint, tsc, vitest (units + route integration tests) + coverage floor, build |
 | `frontend` | `./wiki ci --only frontend`: eslint, tsc + i18n parity, vitest + coverage floor, build |
+| `mcp` | `./wiki ci --only mcp`: eslint, tsc, vitest + coverage floor, build (the MCP server, [doc 47](./documentation/47-mcp-server.md)) |
 | `e2e` | `./wiki e2e`: Playwright against the real backend + frontend |
 | `docker` | `./wiki docker`: compose + Caddyfile validation, image build |
 

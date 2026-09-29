@@ -508,6 +508,28 @@ export function registerRoutes(app: Express): void {
     }),
   );
 
+  // The text the pipeline extracts from a raw file (PDF/DOCX/XLSX/PPTX text,
+  // an email's body, a ZIP's listing) -- what /api/raw-files/* only offers
+  // as a download for those formats. Registered before the catch-all below.
+  app.get(
+    '/api/source-text/*',
+    wrap(async (req, res) => {
+      const relPath = (req.params as any)[0] as string;
+      const filePath = safePath(RAW_DIR, relPath);
+      if (filePath === path.resolve(RAW_DIR)) throw new HttpError(400, 'Invalid path');
+      if (!fs.existsSync(filePath) || !fs.statSync(filePath).isFile()) {
+        throw new HttpError(404, `Raw file not found: ${relPath}`);
+      }
+      const rel = path.relative(RAW_DIR, filePath).split(path.sep).join('/');
+      try {
+        res.json(await runCli('source-text', { path: rel }));
+      } catch (err: any) {
+        if (err.errorType === 'not_found') throw new HttpError(404, err.message);
+        throw err;
+      }
+    }),
+  );
+
   app.get(
     '/api/raw-files/*',
     wrap((req, res) => {

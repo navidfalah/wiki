@@ -16,6 +16,7 @@ on:
     paths:
       - backend/package-lock.json
       - frontend/package-lock.json
+      - mcp/package-lock.json
       - compiler/requirements.txt
 
 permissions:

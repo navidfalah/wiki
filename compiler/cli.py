@@ -154,6 +154,38 @@ def cmd_email_delete() -> dict:
     return email_engine.delete_email(file_path)
 
 
+SOURCE_TEXT_MAX_CHARS = 200_000
+
+
+def cmd_source_text() -> dict:
+    """The text of one raw source file as the pipeline extracts it
+    (source_text.read_source_text): parsed .eml body, PDF/DOCX/XLSX/PPTX
+    text, a ZIP's listing and small text members. Input {"path": "<relative
+    to data/raw>"}. Lets API clients such as the MCP server read sources the
+    raw-file endpoint only offers as a download."""
+    from models import RAW_DIR
+    from source_text import read_source_text
+
+    payload = _read_stdin_json()
+    rel = str(payload.get("path", "")).strip()
+    if not rel:
+        raise ValueError("'path' is required")
+    raw_dir = RAW_DIR.resolve()
+    candidate = (raw_dir / rel).resolve()
+    # is_relative_to, not a string prefix: "raw" is a prefix of a sibling "raw_old".
+    if not candidate.is_relative_to(raw_dir) or candidate == raw_dir:
+        raise ValueError("Path escapes data/raw/")
+    if not candidate.is_file():
+        raise FileNotFoundError(f"Raw file not found: {rel}")
+    text = read_source_text(candidate)
+    return {
+        "path": candidate.relative_to(raw_dir).as_posix(),
+        "text": text[:SOURCE_TEXT_MAX_CHARS],
+        "chars": len(text),
+        "truncated": len(text) > SOURCE_TEXT_MAX_CHARS,
+    }
+
+
 def cmd_review_queue() -> dict:
     """Active-learning review queue (active_learning.py, task #9): claims
     trust_propagation.py scored as low-confidence or an unresolved
@@ -346,6 +378,7 @@ COMMANDS = {
     "chat-status": cmd_chat_status,
     "chat-stream": cmd_chat_stream,
     "emails-list": cmd_emails_list,
+    "source-text": cmd_source_text,
     "email-detail": cmd_email_detail,
     "email-create": cmd_email_create,
     "email-update": cmd_email_update,

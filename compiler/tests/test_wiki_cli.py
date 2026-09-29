@@ -41,7 +41,7 @@ def ns(**kw):
 
 class TestPackageSelection:
     def test_defaults_to_everything(self):
-        assert cli.select_packages(ns()) == ["compiler", "backend", "frontend"]
+        assert cli.select_packages(ns()) == list(cli.PACKAGES)
 
     def test_comma_separated_and_repeated(self):
         assert cli.select_packages(ns(only=["compiler,backend"])) == ["compiler", "backend"]
@@ -74,7 +74,7 @@ class TestStepComposition:
         assert "images" in names and "compose-config" in names
 
     def test_coverage_uses_the_floors(self):
-        compiler, backend, _ = cli.test_steps(["compiler", "backend", "frontend"], coverage=True)
+        compiler, backend, *_ = cli.test_steps(["compiler", "backend", "frontend"], coverage=True)
         assert f"--cov-fail-under={cli.COVERAGE_FLOORS['compiler']}" in compiler.cmd
         assert f"--coverage.thresholds.statements={cli.COVERAGE_FLOORS['backend']}" in backend.cmd
 
@@ -113,7 +113,7 @@ class TestRunning:
 
     def test_audit_covers_python_dependencies_too(self):
         steps = cli.audit_steps(list(cli.PACKAGES))
-        assert [s.package for s in steps] == ["compiler", "backend", "frontend"]
+        assert [s.package for s in steps] == ["compiler", "backend", "frontend", "mcp"]
         assert steps[0].cmd[1:3] == ["-m", "pip_audit"] and steps[0].requires == "python:pip_audit"
 
     def test_fail_fast_stops_after_the_first_failure(self):
@@ -196,7 +196,7 @@ class TestChangedPackages:
         self.git(tmp_path, "init", "-q", "-b", "main")
         self.git(tmp_path, "config", "user.email", "t@example.test")
         self.git(tmp_path, "config", "user.name", "t")
-        for pkg in ("compiler", "backend", "frontend"):
+        for pkg in cli.PACKAGES:
             (tmp_path / pkg).mkdir()
             (tmp_path / pkg / "a.txt").write_text("a")
         self.git(tmp_path, "add", ".")
@@ -211,11 +211,11 @@ class TestChangedPackages:
     def test_shared_files_select_everything(self, repo):
         (repo / ".github").mkdir()
         (repo / ".github" / "ci.yml").write_text("x")
-        assert cli.changed_packages("main") == ["compiler", "backend", "frontend"]
+        assert cli.changed_packages("main") == list(cli.PACKAGES)
 
     def test_the_cli_itself_selects_everything(self, repo):
         (repo / "wiki").write_text("x")
-        assert cli.changed_packages("main") == ["compiler", "backend", "frontend"]
+        assert cli.changed_packages("main") == list(cli.PACKAGES)
 
     def test_wiki_app_is_not_mistaken_for_the_cli(self, repo):
         (repo / "wiki-app" / "docs").mkdir(parents=True)
@@ -227,4 +227,4 @@ class TestChangedPackages:
         assert cli.changed_packages("main") == []
 
     def test_bad_base_falls_back_to_everything(self, repo):
-        assert cli.changed_packages("no-such-ref") == ["compiler", "backend", "frontend"]
+        assert cli.changed_packages("no-such-ref") == list(cli.PACKAGES)
