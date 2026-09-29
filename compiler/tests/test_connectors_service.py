@@ -1,3 +1,5 @@
+import os
+
 import pytest
 
 import connectors_service as svc
@@ -273,3 +275,44 @@ def test_disconnect_removes_stored_credentials(isolated_env):
 def test_disconnect_missing_account_is_not_an_error(isolated_env):
     result = svc.disconnect("imap", "nobody@example.com")
     assert result["disconnected"] is False
+
+
+def test_reimporting_an_unchanged_item_leaves_the_file_untouched(monkeypatch, isolated_env):
+    """The header carries an 'Imported at' timestamp; rewriting it would give
+    the file a new checksum and make the compiler re-process it. A scheduled
+    sync depends on this being a no-op."""
+    _configure_gmail_env(monkeypatch)
+    isolated_env.save(ConnectorCredentials(connector_id="gmail", account_label="me@example.com", access_token="tok"))
+    payload = {"payload": {"mimeType": "text/plain", "body": {"data": "aGVsbG8"}}}
+
+    first = svc.import_item("gmail", "me@example.com", "m1", item_title="Kickoff", http_get=FakeHttpGet([payload]))
+    path = svc.IMPORT_DIR.parent / first["raw_path"]
+    os.utime(path, (1_000_000_000, 1_000_000_000))
+    before = path.read_bytes()
+
+    again = svc.import_item("gmail", "me@example.com", "m1", item_title="Kickoff", http_get=FakeHttpGet([payload]))
+
+    assert first["changed"] is True and again["changed"] is False
+    assert again["raw_path"] == first["raw_path"]
+    assert path.read_bytes() == before
+    assert path.stat().st_mtime == 1_000_000_000
+
+
+def test_reimporting_a_changed_item_rewrites_it(monkeypatch, isolated_env):
+    _configure_gmail_env(monkeypatch)
+    isolated_env.save(ConnectorCredentials(connector_id="gmail", account_label="me@example.com", access_token="tok"))
+    old = FakeHttpGet([{"payload": {"mimeType": "text/plain", "body": {"data": "aGVsbG8"}}}])  # "hello"
+    new = FakeHttpGet([{"payload": {"mimeType": "text/plain", "body": {"data": "aGVsbG8gYWdhaW4"}}}])  # "hello again"
+
+    svc.import_item("gmail", "me@example.com", "m1", item_title="Kickoff", http_get=old)
+    result = svc.import_item("gmail", "me@example.com", "m1", item_title="Kickoff", http_get=new)
+
+    assert result["changed"] is True
+    assert "hello again" in (svc.IMPORT_DIR.parent / result["raw_path"]).read_text(encoding="utf-8")
+
+
+def test_import_body_reads_only_files_with_the_import_header():
+    header = "[Imported via Gmail connector]\nAccount: a\n---\n\nbody text"
+    assert svc._import_body(header) == "body text"
+    assert svc._import_body("---\n\nnot an import") is None
+    assert svc._import_body("plain note") is None

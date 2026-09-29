@@ -217,6 +217,16 @@ DELETE /api/tokens/:id       → {revoked: true, id}
 
 Tokens live in `data/api_tokens.json` (gitignored, included in backups).
 
+## Scheduled sync (admin)
+
+```
+GET  /api/admin/sync           → {settings, running, last_run, next_run_at, runs}
+PUT  /api/admin/sync/settings  {enabled, interval_hours, compile_after_sync, connections}
+POST /api/admin/sync/run       → 202 {started: true}
+```
+
+See [48-scheduled-sync.md](./48-scheduled-sync.md).
+
 ## Security notes
 
 - Path parameters are validated to stay within `RAW_DIR` and `OUTPUT_DIR`.

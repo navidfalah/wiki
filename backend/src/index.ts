@@ -3,6 +3,7 @@ import { reconcileOrphanedPipelineRuns } from './lib/pipelineRuns';
 import { runCli } from './lib/pythonBridge';
 import { logSystemEvent } from './lib/activityLog';
 import { startBackupScheduler } from './lib/backupScheduler';
+import { startSyncScheduler } from './lib/syncScheduler';
 import { BACKUPS_DIR, DATA_ROOT } from './paths';
 
 const app = createApp();
@@ -46,6 +47,7 @@ if (process.env.SKIP_DEFAULT_CONNECTIONS === 'true') {
 }
 
 startBackupScheduler({ projectRoot: DATA_ROOT, backupsDir: BACKUPS_DIR });
+startSyncScheduler();
 
 logSystemEvent('Backend started', `pid ${process.pid}, port ${PORT}`);
 

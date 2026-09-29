@@ -77,6 +77,7 @@ import { isPageFile, lineDiff, listVersions, readVersion, snapshotPage, withCont
 import { atomicWriteText } from '../lib/atomicWrite';
 import { BackupError, backupPath, createBackup, deleteBackup, listBackups, restoreBackup, validateArchive } from '../lib/backups';
 import { backupSchedule } from '../lib/backupScheduler';
+import { runSync, saveSyncSettings, SyncBusyError, SyncSettingsError, syncStatus } from '../lib/syncScheduler';
 import { addSource, listSources, removeSource, setEnabled, SourceError, syncSymlinks } from '../lib/sourcesRegistry';
 
 function safePath(root: string, relPath: string): string {
@@ -328,6 +329,48 @@ export function registerRoutes(app: Express): void {
 
   // Recent sign-in / account-management events for the admin panel -- a
   // filtered view of the same activity log the Logs page shows.
+  // --- Scheduled connector sync (admin only; see lib/syncScheduler.ts) -------
+
+  app.get(
+    '/api/admin/sync',
+    requireAdmin,
+    wrap((_req, res) => {
+      res.json(syncStatus());
+    }),
+  );
+
+  app.put(
+    '/api/admin/sync/settings',
+    requireAdmin,
+    wrap((req, res) => {
+      try {
+        const settings = saveSyncSettings(req.body);
+        logEvent(req.user?.username, 'Updated scheduled sync settings', `${settings.enabled ? `every ${settings.interval_hours} h` : 'off'}, ${settings.connections.length} connection(s)`);
+        res.json(syncStatus());
+      } catch (err) {
+        if (err instanceof SyncSettingsError) throw new HttpError(400, err.message);
+        throw err;
+      }
+    }),
+  );
+
+  // Starts a sync in the background and answers at once: an import plus a
+  // compile can take minutes. Poll GET /api/admin/sync for the result.
+  app.post(
+    '/api/admin/sync/run',
+    requireAdmin,
+    wrap((req, res) => {
+      const status = syncStatus();
+      if (status.running) throw new HttpError(409, 'A sync is already running');
+      if (!status.settings.connections.length) throw new HttpError(400, 'Add at least one connection to sync first');
+      logEvent(req.user?.username, 'Started a sync run');
+      runSync('manual', req.user?.username ?? 'admin').catch((err) => {
+        if (!(err instanceof SyncBusyError)) logEvent('system', 'Sync run failed', err.message, { level: 'error', category: 'system' });
+      });
+      res.status(202).json({ started: true });
+    }),
+  );
+
   app.get(
     '/api/admin/auth-events',
     requireAdmin,

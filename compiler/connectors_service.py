@@ -359,10 +359,27 @@ def import_item(connector_id: str, account_label: str, item_id: str, item_title:
         f"Imported at: {time.strftime('%Y-%m-%dT%H:%M:%SZ', time.gmtime())}\n"
         "---\n\n"
     )
-    dest_path.write_text(header + text, encoding="utf-8")
-
     rel_path = dest_path.relative_to(IMPORT_DIR.parent).as_posix()
-    return {"imported": True, "raw_path": rel_path}
+
+    # Re-importing an unchanged item must not touch the file: the header's
+    # "Imported at" line would give it a new checksum, and the compiler would
+    # re-extract and re-synthesize it (LLM calls) for no new information.
+    # This is what makes a scheduled sync cheap.
+    if dest_path.is_file():
+        existing = dest_path.read_text(encoding="utf-8", errors="replace")
+        if _import_body(existing) == text:
+            return {"imported": True, "raw_path": rel_path, "changed": False}
+
+    dest_path.write_text(header + text, encoding="utf-8")
+    return {"imported": True, "raw_path": rel_path, "changed": True}
+
+
+def _import_body(file_text: str) -> str | None:
+    """The fetched item text of a previously imported file: everything after
+    the header block's '---' separator line (None if it has no header)."""
+    marker = "\n---\n\n"
+    head, sep, body = file_text.partition(marker)
+    return body if sep and head.startswith("[Imported via") else None
 
 
 def disconnect(connector_id: str, account_label: str) -> dict:

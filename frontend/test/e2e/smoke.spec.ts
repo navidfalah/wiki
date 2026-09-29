@@ -232,3 +232,40 @@ test('settings: create an API token, use it through the proxy, revoke it', async
   }
   expect(problems).toEqual([]);
 });
+
+test('admin panel: scheduled sync settings save, persist across a reload, and refuse a run with nothing to sync', async ({ page }) => {
+  const problems = watchForBreakage(page);
+  await logIn(page);
+  await page.goto('/users');
+  await expect(page.locator('#sync-status')).toContainText(/Automatic sync is off/);
+  await expect(page.locator('#sync-run')).toBeEnabled();
+
+  try {
+    await page.fill('#sync-form input[name="interval_hours"]', '12');
+    await page.check('#sync-form input[name="enabled"]');
+    await page.uncheck('#sync-form input[name="compile_after_sync"]');
+    await page.click('#sync-form button[type="submit"]');
+    await expect.poll(async () => (await (await page.request.get('/api/admin/sync')).json()).settings.interval_hours).toBe(12);
+
+    await page.reload();
+    await expect(page.locator('#sync-form input[name="interval_hours"]')).toHaveValue('12');
+    await expect(page.locator('#sync-form input[name="enabled"]')).toBeChecked();
+    await expect(page.locator('#sync-form input[name="compile_after_sync"]')).not.toBeChecked();
+    // Enabled, but no account selected: still off, and nothing to run.
+    await expect(page.locator('#sync-status')).toContainText(/Automatic sync is off/);
+    const run = await page.request.post('/api/admin/sync/run');
+    expect(run.status()).toBe(400);
+  } finally {
+    await page.request.put('/api/admin/sync/settings', { data: { enabled: false, interval_hours: 24, compile_after_sync: true, connections: [] } });
+  }
+
+  // Nonsense is stopped by the browser's own validation before any request is sent
+  // (the server rejects it too; see sync.routes.test.ts).
+  let saves = 0;
+  page.on('request', (req) => req.method() === 'PUT' && req.url().includes('/api/admin/sync/settings') && saves++);
+  await page.fill('#sync-form input[name="interval_hours"]', '0');
+  await page.click('#sync-form button[type="submit"]');
+  expect(await page.locator('#sync-form input[name="interval_hours"]').evaluate((el: HTMLInputElement) => el.validity.rangeUnderflow)).toBe(true);
+  expect(saves).toBe(0);
+  expect(problems).toEqual([]);
+});

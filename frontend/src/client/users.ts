@@ -1,6 +1,7 @@
 import { formatDateTime, t, th, tnh } from './lib/i18n';
 import { apiBase, apiFetch } from './lib/api';
 import { el, escapeHtml } from './lib/dom';
+import { accountsFromCatalog, readSyncForm, renderSyncConnections, renderSyncRuns, syncStatusLine, type AvailableAccount, type SyncStatus } from './lib/syncPanel';
 
 interface PublicUser {
   id: string;
@@ -347,7 +348,68 @@ function initBackups() {
   });
 }
 
+// --- Scheduled sync -----------------------------------------------------------
+
+let syncAccounts: AvailableAccount[] = [];
+let syncPoll: ReturnType<typeof setTimeout> | null = null;
+
+function renderSync(status: SyncStatus, { fillForm }: { fillForm: boolean }) {
+  el('sync-status').textContent = syncStatusLine(status);
+  el('sync-runs').innerHTML = renderSyncRuns(status.runs);
+  (el('sync-run') as HTMLButtonElement).disabled = status.running;
+  if (fillForm) {
+    const form = el('sync-form') as HTMLFormElement;
+    (form.elements.namedItem('enabled') as HTMLInputElement).checked = status.settings.enabled;
+    (form.elements.namedItem('interval_hours') as HTMLInputElement).value = String(status.settings.interval_hours);
+    (form.elements.namedItem('compile_after_sync') as HTMLInputElement).checked = status.settings.compile_after_sync;
+    el('sync-connections').innerHTML = renderSyncConnections(syncAccounts, status.settings.connections);
+  }
+  // A run can take minutes: keep polling until it is over.
+  if (syncPoll) clearTimeout(syncPoll);
+  syncPoll = status.running ? setTimeout(() => loadSync(false), 3000) : null;
+}
+
+async function loadSync(fillForm: boolean) {
+  try {
+    if (fillForm) {
+      const catalog = await apiFetch<{ connectors: { id: string; display_name: string; connected_accounts?: string[] }[] }>('/api/connectors').catch(() => null);
+      syncAccounts = accountsFromCatalog(catalog?.connectors);
+    }
+    renderSync(await apiFetch<SyncStatus>('/api/admin/sync'), { fillForm });
+  } catch (err: any) {
+    el('sync-status').textContent = err.message || t('users.sync.loadFailed');
+  }
+}
+
+function initSync() {
+  const form = el('sync-form') as HTMLFormElement;
+  form.addEventListener('submit', async (event) => {
+    event.preventDefault();
+    try {
+      const status = await apiFetch<SyncStatus>('/api/admin/sync/settings', { method: 'PUT', body: JSON.stringify(readSyncForm(form)) });
+      toast(t('users.sync.saved'));
+      renderSync(status, { fillForm: true });
+    } catch (err: any) {
+      toast(err.message, 'error');
+    }
+  });
+  const runBtn = el('sync-run') as HTMLButtonElement;
+  runBtn.addEventListener('click', async () => {
+    runBtn.disabled = true;
+    try {
+      await apiFetch('/api/admin/sync/run', { method: 'POST' });
+      toast(t('users.sync.started'));
+      await loadSync(false);
+    } catch (err: any) {
+      toast(err.message, 'error');
+      runBtn.disabled = false;
+    }
+  });
+}
+
 initAddUserForm();
 initBackups();
+initSync();
 load();
 loadBackups();
+loadSync(true);

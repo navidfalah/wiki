@@ -162,6 +162,10 @@ Two design points worth calling out:
   trade-off is a wasted expiry check on every call rather than a stale
   token, which is the cheap direction to be wrong in.
 
+## Scheduled sync
+
+Imports no longer have to be clicked: an admin can have selected accounts imported on a schedule, followed by an incremental compile (off by default). Re-importing an unchanged item leaves its file untouched, so a sync costs nothing when nothing changed. See [48-scheduled-sync.md](./48-scheduled-sync.md).
+
 ## Next
 
 - [12-api-server.md](./12-api-server.md) — the Node backend's route conventions this follows

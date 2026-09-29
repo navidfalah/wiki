@@ -24,6 +24,12 @@ function handle(command, input) {
       if (input && input.path === EMAIL.path) return { code: 0, payload: { ...EMAIL, body: EMAIL_BODY, to: [], cc: [] } };
       if (input && typeof input.path === 'string' && !input.path.endsWith('.eml')) return { code: 1, payload: { error: 'Not an email source', error_type: 'not_an_email' } };
       return { code: 1, payload: { error: 'Raw file not found', error_type: 'not_found' } };
+    case 'connectors-items-list':
+      if (input && input.account_label === 'broken') return { code: 1, payload: { error: 'Token expired', error_type: 'not_connected' } };
+      return { code: 0, payload: { items: [{ id: 'new-1', title: 'New one' }, { id: 'seen-1', title: 'Seen' }, { id: 'bad-1', title: 'Bad' }] } };
+    case 'connectors-item-import':
+      if (input && input.item_id === 'bad-1') return { code: 1, payload: { error: 'Item vanished' } };
+      return { code: 0, payload: { imported: true, raw_path: `connectors/${input.connector_id}/${input.item_id}.txt`, changed: input.item_id !== 'seen-1' } };
     case 'source-text':
       if (input && input.path === 'project/grant.pdf') return { code: 0, payload: { path: input.path, text: 'Grant application: 198 kWp.', chars: 27, truncated: false } };
       return { code: 1, payload: { error: `Raw file not found: ${input && input.path}`, error_type: 'not_found' } };

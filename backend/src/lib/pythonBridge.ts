@@ -115,6 +115,68 @@ export function streamCompilerBuild(res: Response, options: CompilerBuildOptions
   runBuildNow(res, options);
 }
 
+export interface HeadlessBuildResult {
+  success: boolean;
+  stopped: boolean;
+  runId: string | null;
+  message: string;
+}
+
+/**
+ * Runs a compiler build without an HTTP client (the scheduled sync) and
+ * resolves when it finishes. It drives the same machinery as the SSE route
+ * -- run tracking, abandoned-run repair, the shared "one build at a time"
+ * state -- by handing streamCompilerBuild() an in-memory stand-in for the
+ * response. Callers should check isBuildRunning() first: this never waits
+ * behind another build, it reports the conflict instead.
+ */
+export function runBuildHeadless(options: CompilerBuildOptions): Promise<HeadlessBuildResult> {
+  return new Promise((resolve) => {
+    let runId: string | null = null;
+    let done: { success: boolean; stopped: boolean; message: string } | null = null;
+    let settled = false;
+    const settle = (result: HeadlessBuildResult) => {
+      if (settled) return;
+      settled = true;
+      resolve(result);
+    };
+    const res: any = {
+      headersSent: false,
+      writeHead() {
+        res.headersSent = true;
+        return res;
+      },
+      write(chunk: string) {
+        for (const block of String(chunk).split('\n\n')) {
+          if (!block.startsWith('data: ')) continue;
+          try {
+            const event = JSON.parse(block.slice('data: '.length));
+            if (event.type === 'run_id') runId = event.run_id;
+            else if (event.type === 'done') done = { success: Boolean(event.success), stopped: Boolean(event.stopped), message: String(event.message ?? '') };
+          } catch {
+            /* not one of ours */
+          }
+        }
+        return true;
+      },
+      end() {
+        settle({ success: done?.success ?? false, stopped: done?.stopped ?? false, runId, message: done?.message ?? 'Build ended without a result.' });
+      },
+      on() {
+        return res;
+      },
+      // streamCompilerBuild answers 409 this way when a build is running and another is queued.
+      status() {
+        return res;
+      },
+      json(body: { detail?: string }) {
+        settle({ success: false, stopped: false, runId: null, message: body?.detail ?? 'Could not start the build.' });
+      },
+    };
+    streamCompilerBuild(res as Response, options);
+  });
+}
+
 function runQueuedBuildIfAny(): void {
   if (!queuedBuild) return;
   const next = queuedBuild;
