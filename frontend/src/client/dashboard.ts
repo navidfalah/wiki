@@ -1,28 +1,18 @@
 import { saveCache, loadCache, showOfflineBanner, hideOfflineBanner, onReconnect } from './lib/cache';
 import { copyButtonHtml, initCopyButtons } from './lib/copy';
-import { t, th, tn, tnh } from './lib/i18n';
+import { t, th, tnh } from './lib/i18n';
 import { buildMessage, runMessage, stepName } from './lib/serverText';
 import { apiBase, apiFetch } from './lib/api';
 import { el, escapeHtml } from './lib/dom';
-import { wireModalA11y } from './lib/modal';
-
-const IMAGE_EXTS = new Set(['png', 'jpg', 'jpeg', 'gif', 'webp', 'bmp']);
-const AUDIO_EXTS = new Set(['mp3', 'wav', 'm4a', 'ogg', 'flac', 'aac']);
-const VIDEO_EXTS = new Set(['mp4', 'mov', 'avi', 'mkv', 'm4v']);
-const ARCHIVE_EXTS = new Set(['zip', 'rar', '7z', 'tar', 'gz', 'tgz']);
-const SPREADSHEET_EXTS = new Set(['xlsx', 'csv', 'tsv', 'ods']);
-
-function iconForFile(filePath: string): string {
-  const ext = filePath.includes('.') ? filePath.split('.').pop()!.toLowerCase() : '';
-  if (ext === 'pdf') return '📕';
-  if (IMAGE_EXTS.has(ext)) return '🖼';
-  if (AUDIO_EXTS.has(ext)) return '🎵';
-  if (VIDEO_EXTS.has(ext)) return '🎬';
-  if (ARCHIVE_EXTS.has(ext)) return '🗜';
-  if (SPREADSHEET_EXTS.has(ext)) return '📊';
-  if (ext === 'eml') return '✉️';
-  return '📄';
-}
+import {
+  type ActivityEvent,
+  type DocSummary,
+  latestRun,
+  renderActivity,
+  renderAttentionSummary,
+  renderRecentPages,
+  renderStatusCards,
+} from './lib/dashboardHome';
 
 // --- Offline / cached-data banner ----------------------------------------
 
@@ -41,50 +31,66 @@ function markOnline() {
   if (offlineFailures === 0) hideOfflineBanner();
 }
 
-// --- Stat cards --------------------------------------------------------
+// --- Home: status cards, attention, recent pages, activity -----------------
 
-const STAT_CACHE_KEY = 'dashboard:analytics';
+const HOME_CACHE_KEY = 'dashboard:home';
 
-function renderStatCards(data: any) {
-  const m = data.metrics;
-  el('stat-cards').innerHTML = `
-    ${statCard('source', `${m.raw_files_processed} / ${m.raw_files_total}`, t('dashboard.stat.rawFiles'))}
-    ${statCard('generated', String(m.wiki_pages_created), t('dashboard.stat.wikiPages'))}
-    ${statCard('neutral', String(m.cross_links_established), t('dashboard.stat.crossLinks'))}
-    ${statCard(m.dead_links ? 'warn' : 'neutral', String(m.dead_links), t('dashboard.stat.deadLinks'))}
-  `;
+interface HomeData {
+  analytics: any | null;
+  attention: any | null;
+  docs: DocSummary[] | null;
+  runs: any[] | null;
+  activity: ActivityEvent[] | null;
 }
 
-async function loadStatCards() {
-  const cached = loadCache<any>(STAT_CACHE_KEY);
-  if (cached) renderStatCards(cached.data);
+function renderHome(data: HomeData) {
+  const m = data.analytics?.metrics;
+  el('status-cards').innerHTML = renderStatusCards({
+    pages: data.docs ? recentPagesTotal(data.docs) : (m?.wiki_pages_created ?? null),
+    crossLinks: m?.cross_links_established ?? null,
+    rawProcessed: m?.raw_files_processed ?? null,
+    rawTotal: m?.raw_files_total ?? null,
+    attentionTotal: data.attention?.counts?.total ?? null,
+    deadLinks: data.attention?.counts?.dead_links ?? m?.dead_links ?? null,
+    lastRun: data.runs ? latestRun(data.runs) : undefined,
+  });
+  el('attention-summary').innerHTML = renderAttentionSummary(data.attention?.counts, data.attention?.items ?? []);
+  el('recent-pages').innerHTML = renderRecentPages(data.docs);
+  el('recent-activity').innerHTML = renderActivity(data.activity);
+}
 
-  try {
-    const data = await apiFetch('/api/analytics');
-    saveCache(STAT_CACHE_KEY, data);
-    markOnline();
-    renderStatCards(data);
-  } catch {
+function recentPagesTotal(docs: DocSummary[]): number {
+  return docs.filter((d) => d.path !== 'index.md' && d.path !== 'log.md').length;
+}
+
+async function loadHome() {
+  const cached = loadCache<HomeData>(HOME_CACHE_KEY);
+  if (cached) renderHome(cached.data);
+
+  // Each panel degrades on its own: a failing endpoint blanks one card, not the page.
+  const get = (url: string) => apiFetch(url).catch(() => null);
+  const [analytics, attention, docs, runs, activity] = await Promise.all([
+    get('/api/analytics'),
+    get('/api/attention'),
+    get('/api/docs'),
+    get('/api/pipelines'),
+    get('/api/activity?limit=40'),
+  ]);
+  if (!analytics && !docs && !attention) {
     if (cached) markOffline(cached.savedAt);
-    else el('stat-cards').innerHTML = '';
+    else renderHome({ analytics: null, attention: null, docs: null, runs: null, activity: null });
+    return;
   }
-}
-
-function statCard(tone: string, value: string, label: string): string {
-  const tones: Record<string, string> = {
-    source: 'bg-source-bg text-source',
-    generated: 'bg-generated-bg text-generated',
-    neutral: 'bg-gray-100 text-gray-600',
-    warn: 'bg-red-50 text-red-600',
+  const data: HomeData = {
+    analytics,
+    attention,
+    docs: docs?.pages ?? null,
+    runs: runs?.runs ?? null,
+    activity: activity?.events ?? null,
   };
-  return `
-    <div class="flex items-center gap-3 rounded-xl border border-gray-200 bg-white px-4 py-3 shadow-card">
-      <span class="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg ${tones[tone]}">●</span>
-      <div>
-        <p class="text-lg font-semibold leading-none text-gray-900">${escapeHtml(value)}</p>
-        <p class="mt-1 text-xs text-gray-500">${escapeHtml(label)}</p>
-      </div>
-    </div>`;
+  saveCache(HOME_CACHE_KEY, data);
+  markOnline();
+  renderHome(data);
 }
 
 // --- Build / run compiler -----------------------------------------------
@@ -528,7 +534,7 @@ function initBuild() {
         stopButton.classList.add('hidden');
         source.close();
         if (payload.success) {
-          loadStatCards();
+          loadHome();
           loadFiles();
         }
       }
@@ -587,7 +593,7 @@ async function attachToRunningBuildIfAny(runButton: HTMLButtonElement, stopButto
       runButton.disabled = false;
       stopButton.classList.add('hidden');
       if (run.status === 'success') {
-        loadStatCards();
+        loadHome();
         loadFiles();
       }
     };
@@ -732,27 +738,11 @@ function initSources() {
   });
 }
 
-// --- File explorer --------------------------------------------------------
+// --- Raw folder listing (feeds the "Sources to include" picker) -------------
 
 let filesCache: any[] = [];
 let foldersCache: string[] = [];
 let managedFolders: string[] = [];
-let currentPath = '';
-
-function parentOf(p: string): string {
-  const idx = p.lastIndexOf('/');
-  return idx === -1 ? '' : p.slice(0, idx);
-}
-function nameOf(p: string): string {
-  const idx = p.lastIndexOf('/');
-  return idx === -1 ? p : p.slice(idx + 1);
-}
-function topSegment(p: string): string {
-  return p.split('/')[0];
-}
-function isManaged(p: string): boolean {
-  return managedFolders.includes(topSegment(p));
-}
 
 const FILES_CACHE_KEY = 'dashboard:files';
 
@@ -760,7 +750,6 @@ function applyFilesData(data: any) {
   filesCache = data.files;
   foldersCache = data.folders;
   managedFolders = data.managed_folders;
-  renderExplorer();
   renderSourcesPicker();
 }
 
@@ -775,311 +764,7 @@ async function loadFiles() {
     applyFilesData(data);
   } catch {
     if (cached) markOffline(cached.savedAt);
-    else el('file-grid').innerHTML = `<p class="col-span-full py-8 text-center text-sm text-red-600">${th('common.cannotReachApi')}</p>`;
   }
-}
-
-function renderBreadcrumbs() {
-  const parts = currentPath ? currentPath.split('/') : [];
-  let acc = '';
-  const crumbs = parts.map((part) => {
-    acc = acc ? `${acc}/${part}` : part;
-    const path = acc;
-    return `<span class="text-gray-300">/</span><button data-path="${escapeHtml(path)}" class="crumb rounded-md px-1.5 py-0.5 hover:bg-gray-100 ${
-      path === currentPath ? 'font-medium text-gray-900' : 'text-gray-500'
-    }">${escapeHtml(part)}</button>`;
-  });
-  el('breadcrumbs').innerHTML = `<button data-path="" class="crumb flex items-center gap-1 rounded-md px-1.5 py-0.5 hover:bg-gray-100 ${
-    currentPath === '' ? 'font-medium text-gray-900' : 'text-gray-500'
-  }">🏠 data/raw</button>${crumbs.join('')}`;
-  el('breadcrumbs')
-    .querySelectorAll<HTMLButtonElement>('.crumb')
-    .forEach((btn) => btn.addEventListener('click', () => navigateTo(btn.dataset.path ?? '')));
-}
-
-function navigateTo(path: string) {
-  currentPath = path;
-  renderExplorer();
-}
-
-function folderOptionsHtml(excludePath: string): string {
-  const options = [{ path: '', label: t('dashboard.files.dataRoot') }, ...foldersCache.filter((f) => !isManaged(f)).map((f) => ({ path: f, label: f }))];
-  return options
-    .map((o) => `<option value="${escapeHtml(o.path)}" ${o.path === excludePath ? 'disabled' : ''}>${escapeHtml(o.label)}</option>`)
-    .join('');
-}
-
-function renderExplorer() {
-  renderBreadcrumbs();
-  const childFolders = foldersCache.filter((f) => parentOf(f) === currentPath);
-  const childFiles = filesCache.filter((f) => parentOf(f.path) === currentPath);
-  const searchValue = (el('file-search') as HTMLInputElement).value.trim().toLowerCase();
-  const visibleFiles = searchValue ? childFiles.filter((f) => nameOf(f.path).toLowerCase().includes(searchValue)) : childFiles;
-
-  const folderTiles = childFolders
-    .map((path) => {
-      const managed = isManaged(path);
-      const itemCount =
-        filesCache.filter((f) => parentOf(f.path) === path).length + foldersCache.filter((f) => parentOf(f) === path).length;
-      return `
-      <div class="group relative flex flex-col items-center gap-1.5 rounded-lg p-3 text-center hover:bg-gray-50">
-        <button data-open="${escapeHtml(path)}" class="flex flex-col items-center gap-1.5">
-          <span class="flex h-12 w-12 items-center justify-center rounded-xl ${managed ? 'bg-source-bg text-source' : 'bg-amber-50 text-amber-600'} text-xl">📁</span>
-          <span class="line-clamp-2 w-24 text-xs font-medium text-gray-800">${escapeHtml(nameOf(path))}</span>
-          <span class="text-[11px] text-gray-400">${tnh('dashboard.files.items', itemCount)}</span>
-        </button>
-        ${
-          managed
-            ? ''
-            : `<button data-delete-folder="${escapeHtml(path)}" class="absolute right-1 top-1 h-7 w-7 rounded-lg text-gray-400 opacity-0 hover:bg-red-50 hover:text-red-600 group-hover:opacity-100">🗑</button>`
-        }
-      </div>`;
-    })
-    .join('');
-
-  const fileTiles = visibleFiles
-    .map((file) => {
-      const managed = isManaged(file.path);
-      const ext = file.path.includes('.') ? file.path.split('.').pop().toUpperCase() : '';
-      const processed = file.status === 'Processed';
-      return `
-      <div class="group relative flex flex-col items-center gap-1.5 rounded-lg p-3 text-center hover:bg-gray-50">
-        <button data-preview="${escapeHtml(file.path)}" class="flex flex-col items-center gap-1.5">
-          <span class="relative flex h-12 w-12 items-center justify-center rounded-xl bg-gray-100 text-gray-500 text-xl">${iconForFile(file.path)}
-            <span class="absolute -bottom-1 -right-1 h-3 w-3 rounded-full border-2 border-white ${processed ? 'bg-emerald-500' : 'bg-amber-500'}" title="${processed ? 'Processed' : 'Not yet processed'}" role="img" aria-label="${processed ? 'Processed' : 'Not yet processed'}"></span>
-          </span>
-          <span class="line-clamp-2 w-24 text-xs font-medium text-gray-800">${escapeHtml(nameOf(file.path))}</span>
-          ${ext ? `<span class="text-[10px] font-medium tracking-wide text-gray-400">${escapeHtml(ext)}</span>` : ''}
-          ${file.source ? `<span class="inline-flex items-center rounded-full border border-source-border bg-source-bg px-1.5 py-0 text-[10px] font-medium text-source">${escapeHtml(file.source)}</span>` : ''}
-        </button>
-        ${
-          managed
-            ? ''
-            : `<div class="absolute right-0 top-0 flex items-center gap-0.5 opacity-0 group-hover:opacity-100">
-                <select data-move="${escapeHtml(file.path)}" class="w-6" title="${th('dashboard.files.moveTo')}">
-                  <option value="">⋯</option>
-                  ${folderOptionsHtml(parentOf(file.path))}
-                </select>
-                <button data-delete-file="${escapeHtml(file.path)}" class="h-6 w-6 rounded-lg text-gray-400 hover:bg-red-50 hover:text-red-600" title="${th('dashboard.files.deleteFile')}">🗑</button>
-              </div>`
-        }
-      </div>`;
-    })
-    .join('');
-
-  el('file-grid').innerHTML = folderTiles + fileTiles || `<p class="col-span-full py-10 text-center text-sm text-gray-400">${th('dashboard.files.empty')}</p>`;
-
-  el('file-grid')
-    .querySelectorAll<HTMLButtonElement>('[data-open]')
-    .forEach((btn) => btn.addEventListener('click', () => navigateTo(btn.dataset.open ?? '')));
-  el('file-grid')
-    .querySelectorAll<HTMLButtonElement>('[data-delete-folder]')
-    .forEach((btn) =>
-      btn.addEventListener('click', async (event) => {
-        event.stopPropagation();
-        try {
-          await apiFetch(`/api/raw-files/folders/${encodeURIComponent(btn.dataset.deleteFolder ?? '')}`, { method: 'DELETE' });
-          await loadFiles();
-        } catch (err: any) {
-          alert(err.message);
-        }
-      }),
-    );
-  el('file-grid')
-    .querySelectorAll<HTMLButtonElement>('[data-preview]')
-    .forEach((btn) => btn.addEventListener('click', () => openPreview(btn.dataset.preview ?? '')));
-  el('file-grid')
-    .querySelectorAll<HTMLButtonElement>('[data-delete-file]')
-    .forEach((btn) =>
-      btn.addEventListener('click', async (event) => {
-        event.stopPropagation();
-        const filePath = btn.dataset.deleteFile ?? '';
-        if (!confirm(t('dashboard.files.confirmDelete', { name: nameOf(filePath) }))) return;
-        try {
-          await apiFetch(`/api/raw-files/${filePath.split('/').map(encodeURIComponent).join('/')}`, { method: 'DELETE' });
-          await loadFiles();
-        } catch (err: any) {
-          alert(err.message);
-        }
-      }),
-    );
-  el('file-grid')
-    .querySelectorAll<HTMLSelectElement>('[data-move]')
-    .forEach((select) =>
-      select.addEventListener('change', async () => {
-        if (!select.value && select.selectedIndex === 0) return;
-        try {
-          await apiFetch('/api/raw-files/move', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ path: select.dataset.move, destination: select.value }),
-          });
-          await loadFiles();
-        } catch (err: any) {
-          alert(err.message);
-        }
-      }),
-    );
-}
-
-async function openPreview(filePath: string) {
-  const modal = el('preview-modal');
-  modal.classList.remove('hidden');
-  modal.innerHTML = `
-    <div class="fixed inset-0 z-50 flex items-center justify-center bg-gray-900/40 p-4">
-      <div class="flex max-h-[90vh] w-full max-w-5xl flex-col overflow-hidden rounded-xl bg-white shadow-panel">
-        <div class="flex items-center justify-between border-b border-gray-100 px-5 py-3">
-          <h2 class="truncate text-sm font-medium text-gray-900">${escapeHtml(filePath)}</h2>
-          <button id="close-preview" class="rounded-lg p-1.5 text-gray-500 hover:bg-gray-100">✕</button>
-        </div>
-        <div class="flex-1 overflow-auto p-5" id="preview-body">
-          <p class="py-10 text-center text-sm text-gray-500">${th('common.loading')}</p>
-        </div>
-      </div>
-    </div>`;
-  const close = wireModalA11y(modal, () => {
-    modal.classList.add('hidden');
-    modal.innerHTML = '';
-  });
-  el('close-preview').addEventListener('click', close);
-
-  try {
-    const detail = await apiFetch(`/api/raw-files/${filePath.split('/').map(encodeURIComponent).join('/')}`);
-    const page = detail.synthesized_pages?.[0];
-    const rawUrl = `${apiBase}${detail.raw_url}`;
-
-    let sourcePanel: string;
-    if (detail.is_pdf) {
-      sourcePanel = `<embed src="${escapeHtml(rawUrl)}" type="application/pdf" class="h-[65vh] w-full bg-gray-50" />`;
-    } else if (detail.is_image) {
-      sourcePanel = `<div class="flex h-[65vh] items-center justify-center bg-gray-50 p-2"><img src="${escapeHtml(
-        rawUrl,
-      )}" alt="${escapeHtml(filePath)}" class="max-h-full max-w-full object-contain" /></div>`;
-    } else if (detail.is_audio) {
-      sourcePanel = `<div class="flex h-40 items-center justify-center bg-gray-50 p-4"><audio controls src="${escapeHtml(
-        rawUrl,
-      )}" class="w-full max-w-md"></audio></div>`;
-    } else if (detail.is_text) {
-      sourcePanel = `<pre class="max-h-[65vh] overflow-auto p-3 font-mono text-xs text-gray-800 whitespace-pre-wrap">${escapeHtml(detail.content ?? '')}</pre>`;
-    } else {
-      sourcePanel = `
-        <div class="flex h-40 flex-col items-center justify-center gap-2 p-4 text-center">
-          <p class="text-sm text-gray-500">${th('dashboard.preview.noInline', { mime: detail.mime ?? t('dashboard.preview.unknown') })}</p>
-          <a href="${escapeHtml(rawUrl)}" target="_blank" rel="noopener" class="rounded-lg bg-accent px-3 py-1.5 text-sm font-medium text-white hover:bg-accent-dark">${th('dashboard.preview.open')}</a>
-        </div>`;
-    }
-
-    document.getElementById('preview-body')!.innerHTML = `
-      <p class="mb-4 text-sm text-gray-500">${escapeHtml(t(`dashboard.preview.status.${detail.status}`) === `dashboard.preview.status.${detail.status}` ? detail.status : t(`dashboard.preview.status.${detail.status}`))} · ${tnh('dashboard.preview.wikiPages', detail.synthesized_pages.length)}</p>
-      <div class="grid gap-4 lg:grid-cols-2">
-        <div class="overflow-hidden rounded-xl border border-source-border">
-          <div class="flex items-center justify-between border-b border-source-border bg-source-bg px-3 py-2 text-sm font-medium text-source">
-            <span>${th('dashboard.preview.source')}</span>
-            <a href="${escapeHtml(rawUrl)}" target="_blank" rel="noopener" class="text-xs font-normal text-source hover:underline">${th('dashboard.preview.newTab')}</a>
-          </div>
-          ${sourcePanel}
-        </div>
-        <div class="overflow-hidden rounded-xl border border-generated-border">
-          <div class="border-b border-generated-border bg-generated-bg px-3 py-2 text-sm font-medium text-generated">${page ? escapeHtml(page.title) : th('dashboard.preview.generated')}</div>
-          ${page ? `<pre class="max-h-[65vh] overflow-auto p-3 text-xs text-gray-800 whitespace-pre-wrap">${escapeHtml(page.body)}</pre>` : `<p class="p-4 text-sm text-gray-500">${th('dashboard.preview.noPage')}</p>`}
-        </div>
-      </div>`;
-  } catch (err: any) {
-    document.getElementById('preview-body')!.innerHTML = `<p class="text-sm text-red-600">${escapeHtml(err.message)}</p>`;
-  }
-}
-
-async function uploadFilesToCurrentFolder(fileList: FileList | File[]) {
-  const files = Array.from(fileList);
-  if (!files.length) return;
-  const status = el('upload-status');
-  status.classList.remove('hidden');
-  status.textContent = tn('dashboard.upload.uploading', files.length);
-  const form = new FormData();
-  form.set('parent', currentPath);
-  files.forEach((f) => form.append('files', f));
-  try {
-    const res = await fetch(`${apiBase}/api/raw-files/upload`, { method: 'POST', body: form });
-    if (!res.ok) {
-      let message = await res.text();
-      try {
-        message = JSON.parse(message).detail ?? message;
-      } catch {
-        /* plain text */
-      }
-      throw new Error(message || t('dashboard.upload.failedStatus', { status: res.status }));
-    }
-    status.textContent = tn('dashboard.upload.done', files.length);
-    await loadFiles();
-    setTimeout(() => status.classList.add('hidden'), 2500);
-  } catch (err: any) {
-    status.textContent = t('dashboard.upload.failed', { error: err.message });
-  }
-}
-
-function initUpload() {
-  const toggle = el('upload-files-toggle');
-  const input = el('upload-files-input') as HTMLInputElement;
-  toggle.addEventListener('click', () => input.click());
-  input.addEventListener('change', () => {
-    if (input.files) uploadFilesToCurrentFolder(input.files);
-    input.value = '';
-  });
-
-  const dropzone = el('file-grid');
-  let dragDepth = 0;
-  dropzone.addEventListener('dragover', (event) => {
-    event.preventDefault();
-  });
-  dropzone.addEventListener('dragenter', (event) => {
-    event.preventDefault();
-    dragDepth += 1;
-    dropzone.classList.add('bg-source-bg/60', 'ring-2', 'ring-source-border');
-  });
-  dropzone.addEventListener('dragleave', () => {
-    dragDepth = Math.max(0, dragDepth - 1);
-    if (dragDepth === 0) dropzone.classList.remove('bg-source-bg/60', 'ring-2', 'ring-source-border');
-  });
-  dropzone.addEventListener('drop', (event) => {
-    event.preventDefault();
-    dragDepth = 0;
-    dropzone.classList.remove('bg-source-bg/60', 'ring-2', 'ring-source-border');
-    if (event.dataTransfer?.files?.length) uploadFilesToCurrentFolder(event.dataTransfer.files);
-  });
-}
-
-function initExplorer() {
-  el('file-search').addEventListener('input', renderExplorer);
-
-  const toggle = el('new-folder-toggle');
-  const form = el('new-folder-form');
-  toggle.addEventListener('click', () => {
-    form.classList.toggle('hidden');
-    toggle.setAttribute('aria-expanded', String(!form.classList.contains('hidden')));
-    if (!form.classList.contains('hidden')) {
-      form.innerHTML = `
-        <form id="new-folder-real-form" class="flex flex-wrap items-center gap-2">
-          <input name="name" type="text" placeholder="${th('dashboard.folder.namePh')}" class="min-w-0 flex-1 rounded-md border border-gray-300 bg-white px-2 py-1 text-sm" />
-          <span id="new-folder-error" class="text-xs text-red-600"></span>
-          <button type="submit" class="rounded-lg bg-accent px-3 py-1 text-xs font-medium text-white hover:bg-accent-dark">${th('dashboard.folder.create')}</button>
-        </form>`;
-      form.querySelector('form')!.addEventListener('submit', async (event) => {
-        event.preventDefault();
-        const data = new FormData(event.target as HTMLFormElement);
-        try {
-          await apiFetch('/api/raw-files/folders', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ parent: currentPath, name: data.get('name') }),
-          });
-          form.classList.add('hidden');
-          await loadFiles();
-        } catch (err: any) {
-          document.getElementById('new-folder-error')!.textContent = err.message;
-        }
-      });
-    }
-  });
 }
 
 initBuild();
@@ -1087,13 +772,11 @@ initCopyButtons();
 initSourcesPicker();
 initRunOptions();
 initSources();
-initExplorer();
-initUpload();
 onReconnect(() => {
-  loadStatCards();
+  loadHome();
   loadSources();
   loadFiles();
 });
-loadStatCards();
+loadHome();
 loadSources();
 loadFiles();

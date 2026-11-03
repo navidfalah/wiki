@@ -2,47 +2,35 @@
 
 ## GitHub Actions
 
-**Workflow:** `.github/workflows/wiki-build.yml`  
-**Trigger:** push to `main`
+**Workflow:** `.github/workflows/pr-checks.yml`
+**Triggers:** every push to every branch, pull requests to `main`, manual dispatch
 
-### Build job
+Every job installs its dependencies and then runs the repository's
+`./wiki` CLI. The CLI is the same command developers run locally, so CI
+and local runs cannot drift apart. Full reference:
+[46-cli-and-testing.md](./46-cli-and-testing.md).
 
-1. Checkout
-2. Python 3.12 — `pip install -r compiler/requirements.txt`
-3. `python compiler/main.py` (incremental; requires the `OPENAI_API_KEY` secret — see below)
-4. Node 20 — `npm ci` in `wiki-app/`
-5. `npm run build` with:
-   - `GITHUB_PAGES=true`
-   - `GITHUB_ORG` = repository owner
-   - `GITHUB_REPO` = repository name
-6. Upload `wiki-app/build` as Pages artifact
+| Job | Runs | What it checks |
+|---|---|---|
+| `compiler` (Python 3.10 and 3.12) | `./wiki ci --only compiler` | `ruff` (pinned; also lints the CLI), `pytest` with a coverage floor, the offline eval regression gate (doc 14, doc 44) |
+| `backend` | `./wiki ci --only backend` | eslint, `tsc`, vitest with a coverage floor (units, route integration tests, search benchmark floor), build |
+| `frontend` | `./wiki ci --only frontend` | eslint, `tsc` (server, client bundles, tests) with i18n key parity, vitest with a coverage floor, build |
+| `e2e` | `./wiki e2e` | Starts the real backend and frontend and runs Playwright in Chromium (`frontend/test/e2e`). Every page must load without a script error or CSP violation. Also checks search deep links, page history, backups and the dashboard. On failure the HTML report is uploaded. |
+| `docker` | `./wiki docker` | Validates the production compose file (with and without the Caddy profile) and the Caddyfile, and builds the images |
 
-### Deploy job
+On CI, a step whose prerequisite is missing fails instead of being skipped.
+Each job writes a results table to the run's summary page.
 
-- `actions/deploy-pages@v4`
-- Environment: `github-pages`
-- Concurrency group: `pages` (no cancel-in-progress)
+Run the same checks locally:
 
-### Enable GitHub Pages
-
-Repository Settings → Pages → Source: **GitHub Actions**
-
-Site URL pattern: `https://<org>.github.io/<repo>/`
-
-### LLM in CI
-
-The compiler is LLM-only, so the `OPENAI_API_KEY` repository secret is **required** —
-without it the "Run compiler pipeline" step fails and the build does not deploy. Add it
-under Settings → Secrets and variables → Actions, then pass it to the workflow step:
-
-```yaml
-- name: Run compiler pipeline
-  run: python compiler/main.py
-  env:
-    OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
+```bash
+./wiki ci --parallel            # compiler + backend + frontend, as CI does
+E2E_PASSWORD=<your admin password> ./wiki e2e   # reuses running servers if present
 ```
 
-**Note:** API server and dashboards are **not** deployed — static site only.
+The old GitHub Pages workflow (`wiki-build.yml`, a static Docusaurus deploy)
+was removed. Production runs the Docker stack described in
+[40-production-deployment.md](./40-production-deployment.md).
 
 ## Local production build
 

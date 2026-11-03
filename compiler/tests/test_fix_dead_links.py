@@ -128,3 +128,36 @@ def test_fix_doc_run_against_corpus_leaves_no_broken_links(tmp_path: Path):
         fix_doc(path, docs_dir, dry_run=False)
 
     assert find_broken_links(docs_dir) == []
+
+
+def _run_main(monkeypatch, capsys, *args):
+    import sys
+
+    import fix_dead_links
+
+    monkeypatch.setattr(sys, "argv", ["fix_dead_links.py", *args])
+    code = fix_dead_links.main()
+    return code, capsys.readouterr()
+
+
+def test_main_unlinks_across_the_tree_and_reports(tmp_path: Path, monkeypatch, capsys):
+    (tmp_path / "sub").mkdir()
+    (tmp_path / "a.md").write_text("---\ntitle: A\n---\nSee [B](./b.md) and [Gone](./gone.md).\n", encoding="utf-8")
+    (tmp_path / "b.md").write_text("---\ntitle: B\n---\nNo links.\n", encoding="utf-8")
+    (tmp_path / "sub" / "c.md").write_text("---\ntitle: C\n---\n[x](../nope.md) [y](./nope2.md)\n", encoding="utf-8")
+
+    code, out = _run_main(monkeypatch, capsys, "--docs-dir", str(tmp_path), "--dry-run")
+    assert code == 0
+    assert "would unlink 3 broken link(s) in 2 file(s)" in out.out
+    assert "[Gone](./gone.md)" in (tmp_path / "a.md").read_text()
+
+    code, out = _run_main(monkeypatch, capsys, "--docs-dir", str(tmp_path))
+    assert "unlinked 3 broken link(s) in 2 file(s)" in out.out
+    assert "sub/c.md: unlinked 2 broken link(s)" in out.out
+    assert (tmp_path / "a.md").read_text().endswith("See [B](./b.md) and Gone.\n")
+
+
+def test_main_refuses_a_missing_directory(tmp_path: Path, monkeypatch, capsys):
+    code, out = _run_main(monkeypatch, capsys, "--docs-dir", str(tmp_path / "missing"))
+    assert code == 1
+    assert "Not a directory" in out.err

@@ -1,6 +1,5 @@
-from models import RAW_DIR
-
 from entity_resolution_eval_dataset import GOLD_MENTIONS
+from models import RAW_DIR
 
 
 def test_every_mention_source_path_exists_and_contains_the_mention():

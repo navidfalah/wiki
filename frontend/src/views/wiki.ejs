@@ -114,7 +114,7 @@
 
 <p id="wiki-empty-state" class="col-span-full hidden py-10 text-center text-sm text-gray-400"><%= t('wiki.noMatch') %></p>
 
-<script>
+<script nonce="<%= cspNonce %>">
   (function () {
     var STORAGE_KEY = 'wiki-view-mode';
     var folderGrid = document.getElementById('wiki-folder-grid');

@@ -1,23 +1,40 @@
-name: PR Checks
+name: Checks
+
+# Every job runs the same ./wiki CLI a developer runs locally, so "green on
+# my machine" and "green in CI" mean the same thing:
+#   ./wiki ci --only <pkg>   lint, typecheck, coverage (with floors), eval gate, build
+#   ./wiki e2e               Playwright against the real backend + frontend
+#   ./wiki docker            compose/Caddyfile validation + image build
+# On CI a step whose prerequisite is missing fails instead of being skipped,
+# and each job writes its results table to the run's summary page.
 
 on:
+  # Every push to every branch, so a broken commit is caught before a PR
+  # exists (main went red once from commits that never passed through one).
+  push:
+    branches:
+      - "**"
   pull_request:
     branches:
       - main
+  workflow_dispatch:
 
 permissions:
   contents: read
 
 concurrency:
-  group: pr-checks-${{ github.ref }}
+  group: checks-${{ github.event_name }}-${{ github.ref }}
   cancel-in-progress: true
 
 jobs:
   compiler:
     runs-on: ubuntu-latest
-    defaults:
-      run:
-        working-directory: compiler
+    strategy:
+      fail-fast: false
+      matrix:
+        # 3.12 is what the Docker images run; 3.10 is the oldest interpreter
+        # the compiler supports outside Docker (it broke there twice before).
+        python-version: ["3.10", "3.12"]
 
     steps:
       - name: Checkout repository
@@ -26,24 +43,18 @@ jobs:
       - name: Set up Python
         uses: actions/setup-python@v5
         with:
-          python-version: "3.12"
+          python-version: ${{ matrix.python-version }}
           cache: pip
           cache-dependency-path: compiler/requirements-dev.txt
 
       - name: Install Python dependencies
-        run: pip install -r requirements-dev.txt
+        run: pip install -r compiler/requirements-dev.txt
 
-      - name: Lint (ruff)
-        run: ruff check .
-
-      - name: Test (pytest)
-        run: python -m pytest -q
+      - name: ./wiki ci --only compiler (ruff, pytest + coverage floor, eval gate)
+        run: ./wiki ci --only compiler
 
   backend:
     runs-on: ubuntu-latest
-    defaults:
-      run:
-        working-directory: backend
 
     steps:
       - name: Checkout repository
@@ -57,25 +68,13 @@ jobs:
           cache-dependency-path: backend/package-lock.json
 
       - name: Install Node dependencies
-        run: npm ci
+        run: npm ci --prefix backend
 
-      - name: Lint (eslint)
-        run: npm run lint
-
-      - name: Typecheck
-        run: npm run typecheck
-
-      - name: Test (vitest)
-        run: npm test
-
-      - name: Build
-        run: npm run build
+      - name: ./wiki ci --only backend (eslint, typecheck, vitest + coverage floor, build)
+        run: ./wiki ci --only backend
 
   frontend:
     runs-on: ubuntu-latest
-    defaults:
-      run:
-        working-directory: frontend
 
     steps:
       - name: Checkout repository
@@ -89,18 +88,55 @@ jobs:
           cache-dependency-path: frontend/package-lock.json
 
       - name: Install Node dependencies
-        run: npm ci
+        run: npm ci --prefix frontend
 
-      - name: Lint (eslint)
-        run: npm run lint
+      - name: ./wiki ci --only frontend (eslint, typecheck + i18n, vitest + coverage floor, build)
+        run: ./wiki ci --only frontend
 
-      - name: Typecheck
-        # Also covers the client bundle typecheck and the i18n key check --
-        # see frontend/package.json's "typecheck" script.
-        run: npm run typecheck
+  e2e:
+    # Real backend + frontend in Chromium: every page loads without a script
+    # error or CSP violation; search, history, backups and the dashboard work.
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
 
-      - name: Build (fonts + Tailwind + client bundles + server)
-        run: npm run build
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+          cache: npm
+          cache-dependency-path: |
+            backend/package-lock.json
+            frontend/package-lock.json
+
+      - name: Set up Python (the backend shells out to compiler/cli.py)
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          cache: pip
+          cache-dependency-path: compiler/requirements.txt
+
+      - name: Install dependencies
+        run: |
+          pip install -r compiler/requirements.txt
+          npm ci --prefix backend
+          npm ci --prefix frontend
+
+      - name: Install Chromium
+        working-directory: frontend
+        run: npx playwright install --with-deps chromium
+
+      - name: ./wiki e2e (build frontend, Playwright smoke suite)
+        run: ./wiki e2e
+
+      - name: Upload Playwright report
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: playwright-report
+          path: frontend/playwright-report
+          retention-days: 7
 
   docker:
     # Guards the production images and compose file against silent breakage.
@@ -109,20 +145,5 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v4
 
-      - name: Validate production compose file
-        env:
-          ADMIN_PASSWORD: ci-placeholder
-        run: docker compose -f docker-compose.prod.yml config -q
-
-      - name: Validate production compose file with the --caddy profile
-        env:
-          ADMIN_PASSWORD: ci-placeholder
-        run: docker compose -f docker-compose.prod.yml --profile caddy config -q
-
-      - name: Validate Caddyfile
-        run: docker run --rm -v "$PWD/deploy/Caddyfile:/etc/caddy/Caddyfile:ro" caddy:2-alpine caddy validate --config /etc/caddy/Caddyfile
-
-      - name: Build images
-        env:
-          ADMIN_PASSWORD: ci-placeholder
-        run: docker compose -f docker-compose.prod.yml build
+      - name: ./wiki docker (compose config, Caddyfile, image build)
+        run: ./wiki docker

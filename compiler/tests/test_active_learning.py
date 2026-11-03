@@ -1,6 +1,5 @@
 import pytest
 
-from synthesizer import RawChunk, extract_chunk_topics
 from active_learning import (
     Correction,
     ReviewCandidate,
@@ -11,6 +10,7 @@ from active_learning import (
     select_review_candidates,
     select_review_candidates_for_dataset,
 )
+from synthesizer import RawChunk, extract_chunk_topics
 from trust_eval_dataset import Claim, ClaimGroup, Relation, load_trust_eval_dataset
 from trust_propagation import ClaimTrust
 

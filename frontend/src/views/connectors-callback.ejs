@@ -15,8 +15,8 @@
   <button type="submit" class="rounded-lg bg-gray-900 px-3 py-2 text-sm font-medium text-white hover:bg-gray-800"><%= t('connectors-callback.submit') %></button>
 </form>
 
-<script>
-  window.__connectorId = <%- JSON.stringify(connectorId) %>;
+<script nonce="<%= cspNonce %>">
+  window.__connectorId = <%- JSON.stringify(connectorId).replace(/</g, "\\u003c") %>;
 </script>
 
 <%- include('partials/foot', { clientScript }) %>

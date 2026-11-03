@@ -1,0 +1,109 @@
+<%- include('partials/head', { title, apiBase, active }) %>
+
+<nav class="text-sm text-gray-500">
+  <a href="/wiki" class="text-gray-500 no-underline hover:text-accent"><%= t('wiki.title') %></a>
+  <span class="mx-1">/</span>
+  <a href="/wiki/<%= slug %>" class="text-gray-500 no-underline hover:text-accent"><%= pageTitle %></a>
+  <span class="mx-1">/</span>
+  <span class="text-gray-700"><%= t('wiki.history') %></span>
+</nav>
+
+<h1 class="mt-2 text-2xl font-semibold tracking-tight text-gray-900"><%= title %></h1>
+<p class="mt-1 max-w-2xl text-sm text-gray-600"><%= t('wiki.history.intro') %></p>
+
+<% var reasonLabel = {
+  compile: t('wiki.history.reason.compile'),
+  edit: t('wiki.history.reason.edit'),
+  delete: t('wiki.history.reason.delete'),
+  restore: t('wiki.history.reason.restore'),
+}; %>
+<% if (!versions.length) { %>
+  <div class="mt-6 rounded-xl border border-gray-200 bg-white p-8 text-center text-sm text-gray-500"><%= t('wiki.history.empty') %></div>
+<% } else { %>
+  <% if (selected && !selected.current_exists) { %>
+    <p class="mt-4 rounded-lg border border-amber-200 bg-amber-50 px-3 py-2 text-sm text-amber-800"><%= t('wiki.history.missingPage') %></p>
+  <% } %>
+
+  <div class="mt-4 overflow-hidden rounded-xl border border-gray-200 bg-white shadow-card">
+    <table class="w-full text-left text-sm">
+      <thead class="border-b border-gray-100 bg-gray-50 text-xs text-gray-500">
+        <tr>
+          <th class="px-4 py-2.5 font-medium"><%= t('wiki.history.th.when') %></th>
+          <th class="px-4 py-2.5 font-medium"><%= t('wiki.history.th.reason') %></th>
+          <th class="px-4 py-2.5 font-medium"><%= t('wiki.history.th.size') %></th>
+          <th class="px-4 py-2.5"></th>
+        </tr>
+      </thead>
+      <tbody class="divide-y divide-gray-100">
+        <% versions.forEach(function(v) { %>
+          <tr class="<%= v.id === selectedId ? 'bg-accent/5' : '' %>">
+            <td class="whitespace-nowrap px-4 py-2 text-gray-800"><time datetime="<%= v.at %>"><%= new Date(v.at).toLocaleString(lang === 'de' ? 'de-DE' : 'en-GB', { timeZone: 'UTC' }) %> UTC</time></td>
+            <td class="px-4 py-2 text-gray-600"><%= reasonLabel[v.reason] || v.reason %></td>
+            <td class="whitespace-nowrap px-4 py-2 text-gray-500"><%= (v.size_bytes / 1024).toFixed(1) %> KB</td>
+            <td class="whitespace-nowrap px-4 py-2 text-right">
+              <% if (v.id === selectedId) { %>
+                <span class="text-xs font-medium text-accent"><%= t('wiki.history.selected') %></span>
+              <% } else { %>
+                <a class="text-xs font-medium text-accent no-underline hover:underline" href="/wiki/<%= slug %>/history?v=<%= encodeURIComponent(v.id) %>"><%= t('wiki.history.compare') %></a>
+              <% } %>
+            </td>
+          </tr>
+        <% }); %>
+      </tbody>
+    </table>
+  </div>
+
+  <% if (selected) { %>
+    <div class="mt-6 flex flex-wrap items-center justify-between gap-3">
+      <div>
+        <h2 class="text-sm font-semibold text-gray-800"><%= t('wiki.history.diffTitle') %></h2>
+        <p class="text-xs text-gray-500"><%= t('wiki.history.legend') %></p>
+      </div>
+      <button type="button" id="history-restore-btn" data-page="<%= page %>" data-version="<%= selectedId %>" data-slug="<%= slug %>"
+        class="rounded-lg border border-gray-300 bg-white px-3 py-1.5 text-sm font-medium text-gray-700 hover:bg-gray-50"><%= t('wiki.history.restore') %></button>
+    </div>
+    <% var changed = selected.diff.some(function(l) { return l.op !== ' '; }); %>
+    <% if (!changed) { %>
+      <p class="mt-3 text-sm text-gray-500"><%= t('wiki.history.noChanges') %></p>
+    <% } else { %>
+      <div class="mt-3 overflow-x-auto rounded-xl border border-gray-200 bg-white font-mono text-xs leading-relaxed shadow-card">
+        <% selected.diff.forEach(function(line) { %>
+          <% if (line.gap) { %>
+            <div class="border-y border-gray-100 bg-gray-50 px-4 py-1 text-gray-400">⋯ <%= tn('wiki.history.gap', line.gap) %></div>
+          <% } else { %>
+            <div class="whitespace-pre-wrap break-words px-4 <%= line.op === '-' ? 'bg-red-50 text-red-800' : line.op === '+' ? 'bg-green-50 text-green-800' : 'text-gray-600' %>"><span class="select-none text-gray-400"><%= line.op %> </span><%= line.text %></div>
+          <% } %>
+        <% }); %>
+      </div>
+    <% } %>
+  <% } %>
+<% } %>
+
+<p class="mt-6"><a href="/wiki/<%= slug %>" class="text-sm text-accent no-underline hover:underline">← <%= t('wiki.history.back') %></a></p>
+
+<script nonce="<%= cspNonce %>">
+  (function () {
+    var btn = document.getElementById('history-restore-btn');
+    if (!btn) return;
+    var apiBase = document.querySelector('meta[name="api-base"]')?.getAttribute('content') ?? '';
+    btn.addEventListener('click', async function () {
+      if (!confirm(<%- JSON.stringify(t('wiki.history.confirmRestore')).replace(/</g, '\\u003c') %>)) return;
+      btn.disabled = true;
+      try {
+        var res = await fetch(apiBase + '/api/doc-history/' + encodeURIComponent(btn.dataset.page), {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ version: btn.dataset.version }),
+        });
+        if (!res.ok) throw new Error(<%- JSON.stringify(t('wiki.history.restoreFailed', { status: '{status}' })).replace(/</g, '\\u003c') %>.replace('{status}', res.status));
+        window.queueToast(<%- JSON.stringify(t('wiki.history.restored')).replace(/</g, '\\u003c') %>, 'success');
+        window.location.href = '/wiki/' + btn.dataset.slug;
+      } catch (err) {
+        window.showToast(err.message, 'error');
+        btn.disabled = false;
+      }
+    });
+  })();
+</script>
+
+<%- include('partials/foot', { clientScript: null }) %>

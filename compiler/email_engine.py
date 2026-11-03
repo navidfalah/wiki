@@ -30,7 +30,8 @@ class NotAnEmailError(ValueError):
 
 def _resolve_raw_path(raw_dir: Path, file_path: str) -> Path:
     candidate = (raw_dir / file_path).resolve()
-    if not str(candidate).startswith(str(raw_dir.resolve())):
+    # is_relative_to, not a string prefix: "raw" is a prefix of a sibling "raw_old".
+    if not candidate.is_relative_to(raw_dir.resolve()):
         raise NotAnEmailError(f"Invalid raw file path: {file_path}")
     return candidate
 
@@ -86,8 +87,9 @@ def _summary(parsed: ParsedEmail, rel: str) -> dict[str, Any]:
     }
 
 
-def list_emails(raw_dir: Path | None = None) -> dict[str, Any]:
-    """Every ingested .eml source with parsed headers and pipeline status."""
+def list_emails(raw_dir: Path | None = None, *, include_body: bool = False) -> dict[str, Any]:
+    """Every ingested .eml source with parsed headers and pipeline status;
+    with include_body, also each email's full body text."""
     raw_dir = raw_dir or RAW_DIR
     state = load_state()
     emails: list[dict[str, Any]] = []
@@ -113,6 +115,8 @@ def list_emails(raw_dir: Path | None = None) -> dict[str, Any]:
                 "body_preview": parsed.body_text.strip()[:220],
             }
         )
+        if include_body:
+            summary["body"] = parsed.body_text.strip()
         emails.append(summary)
 
     emails.sort(key=lambda item: item["date"] or "", reverse=True)

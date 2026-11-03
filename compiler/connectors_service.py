@@ -33,9 +33,9 @@ from connectors.credentials import ConnectorCredentials
 from connectors.imap_email import ImapConnector
 from connectors.oauth2 import OAuth2Connector
 from connectors.postgres_db import PostgresConnector
+from connectors.registry import CONNECTOR_DISPLAY_NAMES, CONNECTOR_IDS, CONNECTOR_REQUIRES_OAUTH
 from connectors.sample_data import seed_sample_sqlite_db
 from connectors.sqlite_db import SqliteConnector
-from connectors.registry import CONNECTOR_DISPLAY_NAMES, CONNECTOR_IDS, CONNECTOR_REQUIRES_OAUTH
 from models import PROJECT_ROOT
 
 PENDING_DIR = PROJECT_ROOT / "data" / "connectors" / "_pending"

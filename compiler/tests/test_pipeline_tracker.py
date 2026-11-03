@@ -218,7 +218,8 @@ def test_update_index_recovers_from_corrupt_index_file(tmp_path, monkeypatch):
     assert index[0]["id"] == run.id
 
 
-def test_to_dict_shape():
+def test_to_dict_shape(tmp_path, monkeypatch):
+    _use_tmp_runs_dir(tmp_path, monkeypatch)  # start_step() saves to disk
     run = PipelineRun("run-x", force=True)
     run.start_step("extract")
 

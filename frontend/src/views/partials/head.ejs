@@ -35,6 +35,7 @@
         users: svg('<path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path><circle cx="9" cy="7" r="4"></circle><path d="M23 21v-2a4 4 0 0 0-3-3.87"></path><path d="M16 3.13a4 4 0 0 1 0 7.75"></path>'),
         company: svg('<path d="M3 21h18"></path><path d="M5 21V7l7-4 7 4v14"></path><path d="M9 21v-6h6v6"></path><path d="M9 10h.01"></path><path d="M15 10h.01"></path><path d="M9 14h.01"></path><path d="M15 14h.01"></path>'),
         usage: svg('<circle cx="12" cy="12" r="10"></circle><path d="M12 6v6l4 2"></path>'),
+        search: svg('<circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line>'),
       };
       const isAdmin = typeof currentUser !== 'undefined' && currentUser?.role === 'admin';
       // Grouped instead of one flat 20-item list -- same pages, but
@@ -45,6 +46,7 @@
         { items: [{href: '/dashboard', id: 'Dashboard', label: t('nav.dashboard'), icon: icons.dashboard}] },
         { section: t('nav.section.knowledge'), items: [
           {href: '/wiki', id: 'Wiki', label: t('nav.wiki'), icon: icons.wiki},
+          {href: '/search', id: 'Search', label: t('nav.search'), icon: icons.search},
           {href: '/resources', id: 'Resources', label: t('nav.resources'), icon: icons.link},
           {href: '/graph', id: 'Graph', label: t('nav.graph'), icon: icons.graph},
           {href: '/entities', id: 'Entities', label: t('nav.entities'), icon: icons.entities},
@@ -80,6 +82,15 @@
           <%= t('common.brand') %>
         </a>
       </div>
+      <form action="/search" method="get" role="search" class="hidden shrink-0 px-3 pt-3 md:block">
+        <label for="sidebar-search" class="sr-only"><%= t('common.searchWiki') %></label>
+        <div class="relative">
+          <svg class="pointer-events-none absolute left-2.5 top-1/2 -translate-y-1/2 text-gray-400" viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
+          <input id="sidebar-search" name="q" type="search" required autocomplete="off" placeholder="<%= t('common.searchWiki') %>"
+                 class="w-full rounded-lg border border-gray-200 bg-gray-50 py-1.5 pl-8 pr-7 text-sm text-gray-900 placeholder:text-gray-400 focus:border-accent focus:bg-white focus:outline-none focus:ring-2 focus:ring-accent/20" />
+          <kbd class="pointer-events-none absolute right-2 top-1/2 -translate-y-1/2 rounded border border-gray-200 bg-white px-1 font-sans text-[10px] leading-4 text-gray-400" aria-hidden="true">/</kbd>
+        </div>
+      </form>
       <nav
         class="flex gap-1 overflow-x-auto px-2 py-2 text-sm md:min-h-0 md:flex-1 md:flex-col md:gap-4 md:overflow-y-auto md:px-3 md:py-4"
         aria-label="<%= t('common.skip') %>">

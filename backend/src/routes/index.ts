@@ -3,7 +3,7 @@ import path from 'node:path';
 import type { Express } from 'express';
 import multer from 'multer';
 
-import { INDEX_JSON, OUTPUT_DIR, RAW_DIR, REVIEW_REPORT_PATH, STATE_FILE, STATIC_MEDIA_DIR, TEMP_OUTPUT_DIR } from '../paths';
+import { BACKUPS_DIR, DATA_ROOT, INDEX_JSON, OUTPUT_DIR, RAW_DIR, REVIEW_REPORT_PATH, STATE_FILE, STATIC_MEDIA_DIR, TEMP_OUTPUT_DIR } from '../paths';
 import { HttpError, wrap } from '../lib/httpError';
 import { LoginThrottle } from '../lib/loginThrottle';
 import { buildAnalytics, getTagDetail } from '../lib/analytics';
@@ -67,9 +67,15 @@ import {
   IMAGE_PREVIEW_EXTENSIONS,
   loadState,
   mimeTypeFor,
+  rawFileSecurityHeaders,
   TEXT_PREVIEW_EXTENSIONS,
 } from '../lib/rawFiles';
 import { getResourceDetail, listResources, resolveDocPaths } from '../lib/resourcesEngine';
+import { searchCorpusPage, type EmailSummary } from '../lib/searchEngine';
+import { isPageFile, lineDiff, listVersions, readVersion, snapshotPage, withContext } from '../lib/pageHistory';
+import { atomicWriteText } from '../lib/atomicWrite';
+import { BackupError, backupPath, createBackup, deleteBackup, listBackups, restoreBackup, validateArchive } from '../lib/backups';
+import { backupSchedule } from '../lib/backupScheduler';
 import { addSource, listSources, removeSource, setEnabled, SourceError, syncSymlinks } from '../lib/sourcesRegistry';
 
 function safePath(root: string, relPath: string): string {
@@ -176,6 +182,109 @@ export function registerRoutes(app: Express): void {
     wrap((_req, res) => {
       const sessionCounts = countActiveSessionsByUser();
       res.json({ users: listUsers().map((u) => ({ ...u, active_sessions: sessionCounts[u.id] ?? 0 })) });
+    }),
+  );
+
+  // --- Backups (admin only; see lib/backups.ts) ------------------------------
+
+  const backupRoots = { projectRoot: DATA_ROOT, backupsDir: BACKUPS_DIR };
+  const backupUpload = multer({
+    storage: multer.diskStorage({
+      destination: (_req, _file, cb) => {
+        fs.mkdirSync(BACKUPS_DIR, { recursive: true });
+        cb(null, BACKUPS_DIR);
+      },
+      filename: (_req, _file, cb) => cb(null, `upload-${Date.now()}.partial`),
+    }),
+    limits: { fileSize: Number(process.env.BACKUP_MAX_UPLOAD_MB || 1024) * 1024 * 1024, files: 1 },
+  });
+
+  function backupError(err: unknown): never {
+    if (err instanceof BackupError) throw new HttpError(/not found/i.test(err.message) ? 404 : 400, err.message);
+    throw err;
+  }
+
+  app.get(
+    '/api/admin/backups',
+    requireAdmin,
+    wrap((_req, res) => {
+      res.json({ backups: listBackups(backupRoots), schedule: backupSchedule() });
+    }),
+  );
+
+  app.post(
+    '/api/admin/backups',
+    requireAdmin,
+    wrap(async (req, res) => {
+      const info = await createBackup(backupRoots, 'manual').catch(backupError);
+      logEvent(req.user?.username, 'Created backup', info.name);
+      res.status(201).json(info);
+    }),
+  );
+
+  app.post(
+    '/api/admin/backups/upload',
+    requireAdmin,
+    backupUpload.single('file'),
+    wrap(async (req, res) => {
+      const file = (req as any).file as Express.Multer.File | undefined;
+      if (!file) throw new HttpError(400, 'file is required');
+      try {
+        await validateArchive(file.path);
+      } catch (err) {
+        fs.rmSync(file.path, { force: true });
+        backupError(err);
+      }
+      const name = `wissensbau-${new Date().toISOString().replace(/[-:]/g, '').replace(/\.\d{3}Z$/, 'Z')}-uploaded.tar.gz`;
+      fs.renameSync(file.path, path.join(BACKUPS_DIR, name));
+      logEvent(req.user?.username, 'Uploaded backup', name);
+      res.status(201).json(listBackups(backupRoots).find((b) => b.name === name));
+    }),
+  );
+
+  app.get(
+    '/api/admin/backups/:name',
+    requireAdmin,
+    wrap((req, res) => {
+      let file: string;
+      try {
+        file = backupPath(backupRoots, req.params.name);
+      } catch (err) {
+        backupError(err);
+      }
+      res.download(file!, req.params.name);
+    }),
+  );
+
+  app.delete(
+    '/api/admin/backups/:name',
+    requireAdmin,
+    wrap((req, res) => {
+      try {
+        deleteBackup(backupRoots, req.params.name);
+      } catch (err) {
+        backupError(err);
+      }
+      logEvent(req.user?.username, 'Deleted backup', req.params.name);
+      res.json({ deleted: req.params.name });
+    }),
+  );
+
+  app.post(
+    '/api/admin/backups/:name/restore',
+    requireAdmin,
+    wrap(async (req, res) => {
+      if (isBuildRunning()) throw new HttpError(409, 'A compile is running -- restore after it finishes.');
+      let archive: string;
+      try {
+        archive = backupPath(backupRoots, req.params.name);
+      } catch (err) {
+        backupError(err);
+      }
+      const result = await restoreBackup(backupRoots, archive!).catch(backupError);
+      syncSymlinks();
+      logEvent(req.user?.username, 'Restored backup', `${req.params.name} (safety copy: ${result.safetyBackup})`);
+      res.json({ restored: req.params.name, ...result });
     }),
   );
 
@@ -352,7 +461,9 @@ export function registerRoutes(app: Express): void {
       if (!fs.existsSync(filePath) || !fs.statSync(filePath).isFile()) {
         throw new HttpError(404, `Raw file not found: ${relPath}`);
       }
-      res.setHeader('Content-Type', mimeTypeFor(filePath));
+      const mimeType = mimeTypeFor(filePath);
+      res.setHeader('Content-Type', mimeType);
+      for (const [name, value] of Object.entries(rawFileSecurityHeaders(mimeType))) res.setHeader(name, value);
       res.setHeader('Content-Disposition', `inline; filename="${encodeURIComponent(path.basename(filePath))}"`);
       fs.createReadStream(filePath).pipe(res);
     }),
@@ -570,6 +681,7 @@ export function registerRoutes(app: Express): void {
         .map((name) => {
           const filePath = path.join(OUTPUT_DIR, name);
           const raw = fs.readFileSync(filePath, 'utf-8');
+          const stat = fs.statSync(filePath);
           const meta = parseFrontmatter(raw);
           const stem = path.basename(name, '.md');
           const title =
@@ -580,7 +692,8 @@ export function registerRoutes(app: Express): void {
             title,
             id: meta.id ?? null,
             slug: meta.slug ?? null,
-            size_bytes: fs.statSync(filePath).size,
+            size_bytes: stat.size,
+            modified_at: stat.mtime.toISOString(),
             tags: meta.tags_list ?? [],
           };
         });
@@ -602,6 +715,7 @@ export function registerRoutes(app: Express): void {
       if (fs.existsSync(OUTPUT_DIR)) {
         for (const name of fs.readdirSync(OUTPUT_DIR)) {
           if (!name.endsWith('.md')) continue;
+          if (isPageFile(name)) snapshotPage(path.join(OUTPUT_DIR, name), 'delete');
           fs.unlinkSync(path.join(OUTPUT_DIR, name));
           pagesDeleted += 1;
         }
@@ -662,6 +776,7 @@ export function registerRoutes(app: Express): void {
           next = raw.slice(0, second + 3) + '\n\n' + body.replace(/^\n+/, '');
         }
       }
+      snapshotPage(docPath, 'edit', next);
       fs.writeFileSync(docPath, next, 'utf-8');
       logEvent(req.user?.username, 'Edited wiki page', relPath);
       res.json(readDocPayload(docPath));
@@ -676,9 +791,57 @@ export function registerRoutes(app: Express): void {
       if (!fs.existsSync(docPath) || !fs.statSync(docPath).isFile()) {
         throw new HttpError(404, `Doc not found: ${relPath}`);
       }
+      snapshotPage(docPath, 'delete');
       fs.unlinkSync(docPath);
       logEvent(req.user?.username, 'Deleted wiki page', relPath);
       res.json({ deleted: relPath });
+    }),
+  );
+
+  // --- Page version history (see lib/pageHistory.ts) ------------------------
+
+  function historyPage(req: any): string {
+    const page = (req.params as any)[0] as string;
+    if (!isPageFile(page)) throw new HttpError(400, `Invalid page: ${page}`);
+    return page;
+  }
+
+  app.get(
+    '/api/doc-history/*',
+    wrap((req, res) => {
+      const page = historyPage(req);
+      const versions = listVersions(page);
+      const versionId = typeof req.query.version === 'string' ? req.query.version : undefined;
+      if (!versionId) {
+        res.json({ page, versions });
+        return;
+      }
+      const content = readVersion(page, versionId);
+      if (content === null) throw new HttpError(404, `Version not found: ${versionId}`);
+      const docPath = safePath(OUTPUT_DIR, page);
+      const current = fs.existsSync(docPath) ? fs.readFileSync(docPath, 'utf-8') : '';
+      res.json({
+        page,
+        version: versions.find((v) => v.id === versionId),
+        content,
+        current_exists: fs.existsSync(docPath),
+        diff: withContext(lineDiff(content, current)),
+      });
+    }),
+  );
+
+  app.post(
+    '/api/doc-history/*',
+    wrap((req, res) => {
+      const page = historyPage(req);
+      const versionId = (req.body as any)?.version;
+      const content = typeof versionId === 'string' ? readVersion(page, versionId) : null;
+      if (content === null) throw new HttpError(404, `Version not found: ${String(versionId)}`);
+      const docPath = safePath(OUTPUT_DIR, page);
+      snapshotPage(docPath, 'restore', content);
+      atomicWriteText(docPath, content);
+      logEvent(req.user?.username, 'Restored wiki page version', `${page} @ ${versionId}`);
+      res.json({ restored: page, version: versionId });
     }),
   );
 
@@ -907,6 +1070,31 @@ export function registerRoutes(app: Express): void {
       const detail = getResourceDetail(sourcePath, OUTPUT_DIR, RAW_DIR);
       if (!detail) throw new HttpError(404, `Resource not found: ${sourcePath}`);
       res.json(detail);
+    }),
+  );
+
+  // --- Cross-corpus search --------------------------------------------------
+  // One query across wiki pages, resources, and emails -- previously each had
+  // only its own local filter (see documentation/36-feature-roadmap.md).
+
+  app.get(
+    '/api/search',
+    wrap(async (req, res) => {
+      const q = String((req.query as Record<string, string | undefined>).q ?? '').trim();
+      if (!q) {
+        res.json({ query: '', total: 0, results: [] });
+        return;
+      }
+      let emails: EmailSummary[] = [];
+      try {
+        const emailsData = await runCli<{ emails: EmailSummary[] }>('emails-list', { include_body: true });
+        emails = emailsData.emails ?? [];
+      } catch {
+        // Emails are best-effort here -- a broken compiler bridge shouldn't
+        // block search over wiki pages and resources, which are plain fs reads.
+      }
+      const { total, results } = searchCorpusPage(q, emails, OUTPUT_DIR, 100);
+      res.json({ query: q, total, results });
     }),
   );
 

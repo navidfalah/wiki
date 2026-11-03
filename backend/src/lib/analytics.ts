@@ -7,7 +7,7 @@ import path from 'node:path';
 import { OUTPUT_DIR, RAW_DIR } from '../paths';
 import { findBrokenLinks } from './deadLinkChecker';
 import { detectTopicLinks } from './linkOverrides';
-import { loadTopicIndex, parseFrontmatter, slugify } from './docUtils';
+import { loadTopicIndexOrDocs, parseFrontmatter, slugify } from './docUtils';
 import { computeMd5, discoverRawSourceFiles, loadState } from './rawFiles';
 
 interface TagBucket {
@@ -108,7 +108,7 @@ function buildTagRegistry(state: any, topicIndex: Record<string, string>, docsDi
 export function buildAnalytics(docsDir: string = OUTPUT_DIR) {
   const state = loadState();
   const [processed, rawTotal] = countProcessedRawFiles(state);
-  const topicIndex = loadTopicIndex();
+  const topicIndex = loadTopicIndexOrDocs(docsDir);
   const wikiPages = Object.keys(topicIndex).length;
   const crossLinks = wikiPages ? detectTopicLinks(topicIndex, docsDir).length : 0;
 

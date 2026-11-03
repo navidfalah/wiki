@@ -8,10 +8,10 @@
  */
 import fs from 'node:fs';
 import path from 'node:path';
-import { PROJECT_ROOT } from '../paths';
+import { DATA_ROOT } from '../paths';
 import { atomicWriteJson } from './atomicWrite';
 
-export const COMPANY_SETTINGS_FILE = path.join(PROJECT_ROOT, 'data', 'company_settings.json');
+export const COMPANY_SETTINGS_FILE = path.join(DATA_ROOT, 'data', 'company_settings.json');
 
 export interface CompanySettings {
   company_name: string;

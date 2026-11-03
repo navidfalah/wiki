@@ -11,6 +11,7 @@ from dataclasses import dataclass, field
 from datetime import datetime, timezone
 from pathlib import Path
 
+import page_history
 from entity_resolution import Mention
 from link_overrides import (
     apply_connection_overrides,
@@ -457,6 +458,7 @@ def link_and_export_pages(
     for filename in removed_files:
         target = out_dir / filename
         if target.exists():
+            page_history.snapshot(target, "delete")
             target.unlink()
 
     relink_targets = _resolve_relink_targets(
@@ -524,6 +526,7 @@ def link_and_export_pages(
             existing_frontmatter=existing_fm,
         )
         target = out_dir / filename
+        page_history.snapshot(target, "compile", final_md)
         target.write_text(final_md, encoding="utf-8")
         written.append(target)
         if on_progress:

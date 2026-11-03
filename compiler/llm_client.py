@@ -10,9 +10,10 @@ import re
 import sqlite3
 import sys
 import time
+from collections.abc import Iterator
 from datetime import datetime, timezone
 from pathlib import Path
-from typing import Any, Iterator
+from typing import Any
 
 from dotenv import load_dotenv
 
@@ -298,7 +299,7 @@ class LLMClient:
         self.usage_log: list[dict[str, Any]] = []
 
     @classmethod
-    def for_purpose(cls, purpose: str, **kwargs: Any) -> "LLMClient":
+    def for_purpose(cls, purpose: str, **kwargs: Any) -> LLMClient:
         """Build a client for a named purpose (e.g. "thinking", "embedding").
 
         Reads `{PURPOSE}_OPENAI_API_KEY` / `_BASE_URL` / `_MODEL` env vars in

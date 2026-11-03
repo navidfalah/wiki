@@ -1,5 +1,5 @@
 import { formatDateTime, t, th, tnh } from './lib/i18n';
-import { apiFetch } from './lib/api';
+import { apiBase, apiFetch } from './lib/api';
 import { el, escapeHtml } from './lib/dom';
 
 interface PublicUser {
@@ -224,5 +224,130 @@ async function load() {
   }
 }
 
+// --- Backups ------------------------------------------------------------------
+
+interface BackupInfo {
+  name: string;
+  size_bytes: number;
+  created_at: string;
+}
+
+const BACKUP_KIND_KEYS: Record<string, string> = {
+  scheduled: 'users.backups.kind.scheduled',
+  manual: 'users.backups.kind.manual',
+  'pre-restore': 'users.backups.kind.pre-restore',
+  uploaded: 'users.backups.kind.uploaded',
+};
+
+function backupKind(name: string): string {
+  const label = /^wissensbau-\d{8}T\d{6}Z-([a-z-]+?)(?:-\d+)?\.tar\.gz$/.exec(name)?.[1] ?? '';
+  return BACKUP_KIND_KEYS[label] ? t(BACKUP_KIND_KEYS[label]) : label;
+}
+
+function formatSize(bytes: number): string {
+  return bytes >= 1024 * 1024 ? `${(bytes / 1024 / 1024).toFixed(1)} MB` : `${Math.max(1, Math.round(bytes / 1024))} KB`;
+}
+
+async function loadBackups() {
+  const list = el('backups-list');
+  try {
+    const data = await apiFetch<{ backups: BackupInfo[]; schedule: { interval_hours: number; keep: number } }>('/api/admin/backups');
+    el('backup-schedule').textContent =
+      data.schedule.interval_hours > 0
+        ? t('users.backups.schedule', { hours: data.schedule.interval_hours, keep: data.schedule.keep })
+        : t('users.backups.scheduleOff');
+    list.innerHTML = data.backups.length
+      ? data.backups
+          .map(
+            (b) => `
+      <div class="flex flex-wrap items-center justify-between gap-3 px-5 py-3">
+        <div class="min-w-0">
+          <p class="truncate font-mono text-xs text-gray-900">${escapeHtml(b.name)}</p>
+          <p class="text-xs text-gray-500">${escapeHtml(formatDateTime(b.created_at))} · ${escapeHtml(formatSize(b.size_bytes))} · ${escapeHtml(backupKind(b.name))}</p>
+        </div>
+        <div class="flex shrink-0 gap-2 text-sm">
+          <a class="rounded-lg border border-gray-300 px-2.5 py-1 font-medium text-gray-700 no-underline hover:bg-gray-50" href="${apiBase}/api/admin/backups/${encodeURIComponent(b.name)}" download>${th('users.backups.download')}</a>
+          <button type="button" data-restore="${escapeHtml(b.name)}" class="rounded-lg border border-gray-300 px-2.5 py-1 font-medium text-gray-700 hover:bg-gray-50">${th('users.backups.restore')}</button>
+          <button type="button" data-delete="${escapeHtml(b.name)}" class="rounded-lg border border-red-200 px-2.5 py-1 font-medium text-red-600 hover:bg-red-50">${th('users.backups.delete')}</button>
+        </div>
+      </div>`,
+          )
+          .join('')
+      : `<p class="p-5 text-sm text-gray-500">${th('users.backups.none')}</p>`;
+
+    list.querySelectorAll<HTMLButtonElement>('[data-restore]').forEach((btn) =>
+      btn.addEventListener('click', async () => {
+        const name = btn.dataset.restore!;
+        if (!confirm(t('users.backups.confirmRestore', { name }))) return;
+        btn.disabled = true;
+        btn.textContent = t('users.backups.working');
+        try {
+          const result = await apiFetch<{ restoredFiles: number; safetyBackup: string }>(
+            `/api/admin/backups/${encodeURIComponent(name)}/restore`,
+            { method: 'POST' },
+          );
+          toast(t('users.backups.restored', { count: result.restoredFiles, safety: result.safetyBackup }));
+          load();
+          loadBackups();
+        } catch (err: any) {
+          toast(err.message, 'error');
+          loadBackups();
+        }
+      }),
+    );
+    list.querySelectorAll<HTMLButtonElement>('[data-delete]').forEach((btn) =>
+      btn.addEventListener('click', async () => {
+        const name = btn.dataset.delete!;
+        if (!confirm(t('users.backups.confirmDelete', { name }))) return;
+        try {
+          await apiFetch(`/api/admin/backups/${encodeURIComponent(name)}`, { method: 'DELETE' });
+          toast(t('users.backups.deleted'));
+          loadBackups();
+        } catch (err: any) {
+          toast(err.message, 'error');
+        }
+      }),
+    );
+  } catch (err: any) {
+    list.innerHTML = `<p class="p-5 text-sm text-red-600">${escapeHtml(err.message || t('common.cannotReachApi'))}</p>`;
+  }
+}
+
+function initBackups() {
+  const createBtn = el('backup-create') as HTMLButtonElement;
+  createBtn.addEventListener('click', async () => {
+    createBtn.disabled = true;
+    try {
+      await apiFetch('/api/admin/backups', { method: 'POST' });
+      toast(t('users.backups.created'));
+      loadBackups();
+    } catch (err: any) {
+      toast(err.message, 'error');
+    } finally {
+      createBtn.disabled = false;
+    }
+  });
+  const input = el('backup-upload') as HTMLInputElement;
+  input.addEventListener('change', async () => {
+    const file = input.files?.[0];
+    if (!file) return;
+    const body = new FormData();
+    body.append('file', file);
+    try {
+      // Not apiFetch: it forces a JSON content type, and multipart needs the browser's boundary.
+      const res = await fetch(`${apiBase}/api/admin/backups/upload`, { method: 'POST', body });
+      if (!res.ok) throw new Error((await res.json().catch(() => null))?.detail || t('common.requestFailed', { status: res.status }));
+      toast(t('users.backups.uploaded'));
+      loadBackups();
+    } catch (err: any) {
+      toast(err.message, 'error');
+    } finally {
+      input.value = '';
+    }
+  });
+}
+
 initAddUserForm();
+initBackups();
 load();
+loadBackups();

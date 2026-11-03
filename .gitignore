@@ -20,6 +20,8 @@ data/_archive_non_aurora/
 data/last-compile.log
 data/connectors/
 data/pipeline_runs/
+data/page_history/
+data/backups/
 data/llm_settings.json
 data/users.json
 data/sessions.json
@@ -30,3 +32,12 @@ compiler/temp_output/*
 !compiler/temp_output/.gitkeep
 wiki-app/static/media/*
 !wiki-app/static/media/.gitkeep
+
+# Playwright
+playwright-report/
+test-results/
+
+# Coverage output
+.coverage
+coverage/
+htmlcov/

@@ -9,7 +9,7 @@ const { tmpRoot } = vi.hoisted(() => {
   return { tmpRoot: fs.mkdtempSync(path.join(os.tmpdir(), 'pipeline-settings-test-')) };
 });
 
-vi.mock('../paths', () => ({ PROJECT_ROOT: tmpRoot }));
+vi.mock('../paths', () => ({ PROJECT_ROOT: tmpRoot, DATA_ROOT: tmpRoot }));
 
 import { loadPipelineSettings, PipelineSettingsError, savePipelineSettings } from './pipelineSettings';
 

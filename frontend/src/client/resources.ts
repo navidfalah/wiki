@@ -35,6 +35,10 @@ const requestedTab = new URLSearchParams(window.location.search).get('tab');
 if (requestedTab && document.getElementById(`tab-panel-${requestedTab}`)) {
   activateTab(requestedTab);
 }
+// `open=<path>` (from /search results) opens that file's preview, in its
+// folder, or that email, once the data has loaded.
+// Consumed on first use: loadFiles()/loadEmails() also run after uploads and edits.
+let requestedOpen = new URLSearchParams(window.location.search).get('open');
 
 /* ======================================================================
    Files -- data/raw/ file manager
@@ -108,6 +112,12 @@ async function loadFiles() {
     managedFolders = filesData.managed_folders;
     resourceBySource = new Map(resourcesData.resources.map((r: ResourceEntry) => [r.source, r]));
     renderExplorer();
+    if (requestedTab === 'files' && requestedOpen) {
+      const target = requestedOpen;
+      requestedOpen = null;
+      navigateTo(foldersCache.includes(parentOf(target)) ? parentOf(target) : '');
+      if (filesCache.some((f) => f.path === target)) openPreview(target);
+    }
   } catch {
     el('resource-grid').innerHTML = `<p class="col-span-full py-8 text-center text-sm text-red-600">${th('common.cannotReachApi')}</p>`;
   }
@@ -1055,6 +1065,11 @@ async function loadEmails() {
     container.querySelectorAll<HTMLButtonElement>('.email-row').forEach((btn) => {
       btn.addEventListener('click', () => openEmail(btn.dataset.path ?? ''));
     });
+    if (requestedTab === 'emails' && requestedOpen) {
+      const target = requestedOpen;
+      requestedOpen = null;
+      if (data.emails.some((e: any) => e.path === target)) openEmail(target);
+    }
   } catch {
     container.innerHTML = `<p class="text-sm text-red-600">${th('common.cannotReachApi')}</p>`;
   }

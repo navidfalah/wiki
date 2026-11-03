@@ -19,10 +19,10 @@
  */
 import fs from 'node:fs';
 import path from 'node:path';
-import { PROJECT_ROOT } from '../paths';
+import { DATA_ROOT } from '../paths';
 import { atomicWriteJson } from './atomicWrite';
 
-export const RAG_SETTINGS_FILE = path.join(PROJECT_ROOT, 'data', 'rag_settings.json');
+export const RAG_SETTINGS_FILE = path.join(DATA_ROOT, 'data', 'rag_settings.json');
 
 export type Architecture = 'hybrid' | 'naive' | 'hyde' | 'fusion' | 'graph' | 'corrective';
 export type RetrievalMode = 'bm25' | 'hybrid' | 'hybrid_rerank';

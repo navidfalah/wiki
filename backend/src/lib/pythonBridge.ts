@@ -11,6 +11,7 @@ import { envOverridesForSpawn } from './llmSettings';
 import { logSystemEvent } from './activityLog';
 import { markRunAbandoned } from './pipelineRuns';
 import { Semaphore } from './semaphore';
+import { PythonWorkerPool } from './pythonWorker';
 
 /** Caps concurrent short-lived `cli.py` processes (chat, emails, connectors).
  * The compiler build is already serialized separately (buildRunning). */
@@ -373,14 +374,61 @@ export class PythonCliError extends Error {
   errorType?: string;
 }
 
-export function runCli<T = any>(command: string, input?: unknown): Promise<T> {
-  return pythonSlots.acquire().then((releaseSlot) => new Promise<T>((resolve, reject) => {
+function envInt(name: string, fallback: number): number {
+  const value = Number(process.env[name]);
+  return Number.isFinite(value) && value > 0 ? value : fallback;
+}
+
+// Warm `cli.py --serve` workers for runCli (see pythonWorker.ts). PY_WORKER=0
+// falls back to spawning a fresh process per call.
+const workerPool =
+  process.env.PY_WORKER === '0'
+    ? null
+    : new PythonWorkerPool({
+        command: PYTHON_BIN,
+        args: ['cli.py', '--serve'],
+        cwd: COMPILER_DIR,
+        // One warm worker is plenty: calls take ~30 ms once imports are paid,
+        // and each worker holds ~50 MB for as long as it stays warm.
+        size: envInt('PY_WORKER_POOL_SIZE', 1),
+        requestTimeoutMs: envInt('PY_WORKER_TIMEOUT_MS', 10 * 60 * 1000),
+        maxRequestsPerWorker: envInt('PY_WORKER_MAX_REQUESTS', 500),
+        idleMs: envInt('PY_WORKER_IDLE_MS', 5 * 60 * 1000),
+      });
+
+function toResult<T>(command: string, code: number | null, parsed: any): T {
+  if (code !== 0 || parsed?.error) {
+    const err = new PythonCliError(parsed?.error || `cli.py ${command} failed`);
+    err.errorType = parsed?.error_type;
+    throw err;
+  }
+  return parsed as T;
+}
+
+export async function runCli<T = any>(command: string, input?: unknown): Promise<T> {
+  const releaseSlot = await pythonSlots.acquire();
+  try {
+    if (workerPool) {
+      let response;
+      try {
+        response = await workerPool.run(command, input, envOverridesForSpawn());
+      } catch (err: any) {
+        throw new PythonCliError(err.message);
+      }
+      return toResult<T>(command, response.code, response.payload);
+    }
+    return await runCliOnce<T>(command, input);
+  } finally {
+    releaseSlot();
+  }
+}
+
+function runCliOnce<T>(command: string, input?: unknown): Promise<T> {
+  return new Promise<T>((resolve, reject) => {
     const child = spawn(PYTHON_BIN, ['cli.py', command], {
       cwd: COMPILER_DIR,
       env: { ...process.env, ...envOverridesForSpawn() },
     });
-    child.on('close', releaseSlot);
-    child.on('error', releaseSlot);
     let stdout = '';
     let stderr = '';
     child.stdout.on('data', (chunk) => (stdout += chunk));
@@ -393,18 +441,16 @@ export function runCli<T = any>(command: string, input?: unknown): Promise<T> {
         reject(new PythonCliError(stderr || `cli.py ${command} produced no JSON output`));
         return;
       }
-      if (code !== 0 || parsed?.error) {
-        const err = new PythonCliError(parsed?.error || `cli.py ${command} failed`);
-        err.errorType = parsed?.error_type;
+      try {
+        resolve(toResult<T>(command, code, parsed));
+      } catch (err) {
         reject(err);
-        return;
       }
-      resolve(parsed as T);
     });
     child.on('error', (err) => reject(new PythonCliError(err.message)));
     if (input !== undefined) {
       child.stdin.write(JSON.stringify(input));
     }
     child.stdin.end();
-  }));
+  });
 }

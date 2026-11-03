@@ -52,7 +52,7 @@ class PipelineRun:
         self._step_index: dict[str, int] = {}
 
     @classmethod
-    def start(cls, *, force: bool, settings: dict[str, Any] | None = None) -> "PipelineRun":
+    def start(cls, *, force: bool, settings: dict[str, Any] | None = None) -> PipelineRun:
         run_id = f"{datetime.now(timezone.utc).strftime('%Y%m%d-%H%M%S')}-{uuid.uuid4().hex[:6]}"
         run = cls(run_id, force=force, settings=settings)
         run._save()

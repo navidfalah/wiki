@@ -252,7 +252,7 @@ if __name__ == "__main__":
         _print_report(report)
 
     print("\n=== prior_weight sweep ===")
-    for alpha, report in sweep_prior_weight(dataset):
+    for _alpha, report in sweep_prior_weight(dataset):
         _print_report(report)
 
     print("\n=== Mean score by gold label (full_default) ===")

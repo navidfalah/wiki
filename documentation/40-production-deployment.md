@@ -54,9 +54,17 @@ adds a Python process (~100–250 MB).
 - **Hard memory caps** per container (`*_MEM_LIMIT`) and capped Node heaps
   (`*_HEAP_MB`), so a leak or spike is killed and restarted by Docker instead of
   swapping the host to death.
-- **Python concurrency limit** (`PY_MAX_CONCURRENCY`, default 2): chat, email and
-  connector calls each spawn an interpreter; excess requests queue instead of
-  running in parallel.
+- **Python concurrency limit** (`PY_MAX_CONCURRENCY`, default 2): at most this
+  many Python calls run at once (streaming chat, email, connector, review-queue
+  calls); excess requests queue instead of running in parallel.
+- **Warm Python worker** (`PY_WORKER_POOL_SIZE`, default 1): short calls
+  (emails, review queue, connectors, entity graph, ...) go to a long-lived
+  `cli.py --serve` process instead of starting a new interpreter each time.
+  Measured on `/api/emails`: p50 **763 ms → 33 ms**. The worker holds about
+  50 MB while warm and exits after `PY_WORKER_IDLE_MS` (5 min) idle or
+  `PY_WORKER_MAX_REQUESTS` (500) calls. Streaming chat and compiles still get
+  their own processes, so the worst case is one Python process more than
+  `PY_MAX_CONCURRENCY`. Set `PY_WORKER=0` to go back to one process per call.
 - **No boot-time Python spawn** and no sample Postgres (`SKIP_DEFAULT_CONNECTIONS`).
 - **Precompiled bytecode** so each spawned interpreter starts fast.
 - **Asset caching:** CSS/JS are served with a content-versioned URL and a
@@ -169,9 +177,14 @@ All values go in `.env` (see `.env.example`):
 | `FRONTEND_MEM_LIMIT` | `160m` | Frontend container cap |
 | `BACKEND_HEAP_MB` / `FRONTEND_HEAP_MB` | `160` / `96` | Node heap ceilings |
 | `PY_MAX_CONCURRENCY` | `2` | Parallel Python processes (chat/email/connectors) |
+| `PY_WORKER` | `1` | `0` = spawn a fresh `cli.py` per call instead of using the warm worker |
+| `PY_WORKER_POOL_SIZE` | `1` | Warm `cli.py --serve` workers (~50 MB each while warm) |
+| `PY_WORKER_IDLE_MS` / `PY_WORKER_MAX_REQUESTS` / `PY_WORKER_TIMEOUT_MS` | `300000` / `500` / `600000` | Idle shutdown, recycling, per-call kill timeout |
+| `BACKUP_INTERVAL_HOURS` / `BACKUP_KEEP` | `24` / `7` | Automatic backups (`0` = off) and how many scheduled ones to keep |
+| `BACKUP_MAX_UPLOAD_MB` | `1024` | Largest backup archive the admin panel accepts |
 
 Lower `PY_MAX_CONCURRENCY` to `1` and `BACKEND_MEM_LIMIT` to `512m` on a 1 GB
-host; raise both on a bigger one.
+host (or also set `PY_WORKER=0` there); raise both on a bigger one.
 
 ### Local dry run
 
@@ -217,6 +230,15 @@ gzip/zstd compression, and strips the `Server` header.
   SAMEORIGIN`, a referrer policy, and HSTS (`frontend/src/index.ts`) — present
   regardless of what's in front (Cloudflare, the optional Caddy profile, or
   neither in local dev).
+- Every rendered page also carries a `Content-Security-Policy`. Scripts must
+  be same-origin bundles or carry a per-request nonce, so an injected
+  `<script>` won't run. Any new inline `<script>` in a view needs
+  `nonce="<%= cspNonce %>"`. Styles still allow `'unsafe-inline'`, because
+  client code sets style attributes.
+- Raw-file previews (`/api/raw-files/raw/*`) are always `nosniff`. HTML, XML
+  and SVG uploads are additionally served under a `sandbox` CSP, so an
+  uploaded page can render but can't run script as the viewer
+  (`backend/src/lib/rawFiles.ts`).
 - The backend port is not published; the API is only reachable through the
   authenticated frontend proxy.
 - If using Option B (proxied DNS, not Tunnel), firewall `FRONTEND_PORT` to
@@ -228,9 +250,42 @@ gzip/zstd compression, and strips the `Server` header.
 
 ## Backups
 
-State lives in `./data` (users, sessions, chat history, pipeline runs, LLM
-cache, raw sources) and `./wiki-app/docs` (compiled pages). Back up both, e.g.
-`tar czf backup-$(date +%F).tgz data wiki-app/docs`.
+**Admin panel → Backups** (`/users`) creates, downloads, uploads, restores
+and deletes backups. A backup is a `.tar.gz` of:
+
+- `data/`: raw sources, users, sessions, chat, settings, the LLM cache, page
+  history and pipeline runs;
+- `wiki-app/docs/` (compiled pages) and `wiki-app/static/media/`;
+- the topic index `compiler/temp_output/index.json`.
+
+Archives are stored in `data/backups/`
+(`backend/src/lib/backups.ts`, `backupScheduler.ts`).
+
+- **Automatic**: a backup every `BACKUP_INTERVAL_HOURS` (default `24`, `0`
+  turns it off), keeping the newest `BACKUP_KEEP` (default `7`) scheduled
+  ones. Manual, uploaded and pre-restore backups are never pruned
+  automatically.
+- **Off-site copies are your job.** `data/backups/` sits on the same disk as
+  the data. Download backups regularly, or copy the directory off the host
+  (for example with a nightly `rsync` or `rclone` from the host).
+- **Restore** is refused while a compile is running. It first saves the
+  current state as a `pre-restore` backup, replaces `wiki-app/docs/*.md`
+  entirely (pages created since the backup are removed), and overwrites every
+  other file the archive contains. Files not in the archive are left alone.
+  Accounts and sessions come back as they were in the backup, so you may be
+  signed out.
+- **What an archive may contain**: only regular files and directories under
+  the paths above. Archives with links, devices, absolute or `..` paths, or
+  paths outside those trees are rejected, and so are entries that would
+  write through a symlink on disk. That makes uploading an archive from
+  another server safe.
+- **Source-folder mirrors** in `data/raw` are symlinks to folders outside
+  the project. They aren't archived; they are recreated from
+  `data/sources.json` after a restore.
+- Upload size limit: `BACKUP_MAX_UPLOAD_MB` (default `1024`).
+
+The files are ordinary `tar.gz` archives, so a manual restore on the host is
+`tar -xzf wissensbau-<stamp>.tar.gz -C <project dir>` with the stack stopped.
 
 ## Troubleshooting
 

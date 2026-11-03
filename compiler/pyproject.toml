@@ -1,6 +1,9 @@
 [tool.ruff]
 line-length = 100
-target-version = "py312"
+# The compiler also runs outside Docker on Python 3.10 (CI tests 3.10 and
+# 3.12); targeting 3.10 stops ruff from suggesting 3.11+ rewrites such as
+# datetime.UTC or builtin TimeoutError for asyncio timeouts.
+target-version = "py310"
 exclude = ["temp_output", ".venv"]
 
 [tool.ruff.lint]
@@ -16,3 +19,16 @@ ignore = ["E501", "UP040"]
 
 [tool.pytest.ini_options]
 testpaths = ["tests"]
+
+[tool.coverage.run]
+source = ["."]
+# tests/ and scripts/ aren't product code; server.py is the legacy standalone
+# FastAPI server -- production uses the Express backend + cli.py, and its
+# dependencies (requirements-server.txt) aren't installed in CI.
+omit = ["tests/*", "scripts/*", "server.py", "temp_output/*"]
+# Many tests drive cli.py / main.py as real subprocesses (the way the
+# backend does); measure those too instead of under-reporting them.
+patch = ["subprocess"]
+
+[tool.coverage.report]
+exclude_also = ['if __name__ == "__main__":', "raise NotImplementedError"]

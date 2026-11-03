@@ -12,18 +12,48 @@ JSON object to stdout; a non-zero exit code means the stdout body is
 
 from __future__ import annotations
 
+import io
 import json
+import os
 import sys
 from dataclasses import asdict
 
 import active_learning
-import connectors_service
 import email_engine
 import rag_engine
 import synthesizer
 import temporal_model
 import trust_eval_dataset
 from entity_graph import entity_graph_payload
+
+
+class ConnectorsUnavailableError(RuntimeError):
+    pass
+
+
+def _connectors():
+    """Import connectors_service on first use. It pulls in `cryptography`
+    (credential encryption), and a broken native install of that package
+    used to crash cli.py at import time -- taking down every command,
+    including emails, chat and the review queue, not just connectors."""
+    try:
+        import connectors_service
+    except (KeyboardInterrupt, SystemExit):
+        raise
+    except BaseException as exc:  # noqa: BLE001 -- pyo3's PanicException derives from BaseException
+        raise ConnectorsUnavailableError(f"Connectors are unavailable: {type(exc).__name__}: {exc}") from exc
+    return connectors_service
+
+
+def _connector_error_type(exc: BaseException) -> str | None:
+    svc = sys.modules.get("connectors_service")
+    if svc is None:
+        return None
+    if isinstance(exc, svc.ConnectorNotConnectedError):
+        return "not_connected"
+    if isinstance(exc, svc.ConnectorConfigError):
+        return "not_configured"
+    return None
 
 
 def _read_stdin_json() -> dict:
@@ -75,7 +105,10 @@ def cmd_chat_status() -> dict:
 
 
 def cmd_emails_list() -> dict:
-    return email_engine.list_emails()
+    """Optional input {"include_body": true} adds each email's full body
+    text (the cross-corpus search index uses it)."""
+    payload = _read_stdin_json()
+    return email_engine.list_emails(include_body=bool(payload.get("include_body")))
 
 
 def cmd_email_detail() -> dict:
@@ -210,7 +243,7 @@ def cmd_temporal_facts() -> dict:
 
 
 def cmd_connectors_catalog() -> dict:
-    return {"connectors": connectors_service.catalog()}
+    return {"connectors": _connectors().catalog()}
 
 
 def cmd_connectors_oauth_start() -> dict:
@@ -218,7 +251,7 @@ def cmd_connectors_oauth_start() -> dict:
     connector_id = str(payload.get("connector_id", "")).strip()
     if not connector_id:
         raise ValueError("'connector_id' is required")
-    return connectors_service.start_authorization(connector_id)
+    return _connectors().start_authorization(connector_id)
 
 
 def cmd_connectors_oauth_callback() -> dict:
@@ -233,7 +266,7 @@ def cmd_connectors_oauth_callback() -> dict:
         raise ValueError("'code' is required")
     if not state:
         raise ValueError("'state' is required")
-    return connectors_service.complete_authorization(connector_id, code, state, account_label)
+    return _connectors().complete_authorization(connector_id, code, state, account_label)
 
 
 def cmd_connectors_imap_connect() -> dict:
@@ -243,7 +276,7 @@ def cmd_connectors_imap_connect() -> dict:
     password = str(payload.get("password", ""))
     port = int(payload.get("port") or 993)
     mailbox = str(payload.get("mailbox") or "INBOX").strip()
-    return connectors_service.connect_imap(account_label, host, password, port=port, mailbox=mailbox)
+    return _connectors().connect_imap(account_label, host, password, port=port, mailbox=mailbox)
 
 
 def cmd_connectors_postgres_connect() -> dict:
@@ -255,18 +288,18 @@ def cmd_connectors_postgres_connect() -> dict:
     dbname = str(payload.get("dbname", "")).strip()
     user = str(payload.get("user", "")).strip()
     schema = str(payload.get("schema") or "public").strip()
-    return connectors_service.connect_postgres(account_label, host, password, port=port, dbname=dbname, user=user, schema=schema)
+    return _connectors().connect_postgres(account_label, host, password, port=port, dbname=dbname, user=user, schema=schema)
 
 
 def cmd_connectors_sqlite_connect() -> dict:
     payload = _read_stdin_json()
     account_label = str(payload.get("account_label", "")).strip()
     db_path = str(payload.get("db_path", "")).strip()
-    return connectors_service.connect_sqlite(account_label, db_path)
+    return _connectors().connect_sqlite(account_label, db_path)
 
 
 def cmd_connectors_ensure_defaults() -> dict:
-    return connectors_service.ensure_default_connections()
+    return _connectors().ensure_default_connections()
 
 
 def cmd_connectors_items_list() -> dict:
@@ -279,7 +312,7 @@ def cmd_connectors_items_list() -> dict:
         raise ValueError("'connector_id' is required")
     if not account_label:
         raise ValueError("'account_label' is required")
-    return {"items": connectors_service.list_items(connector_id, account_label, query=query, limit=limit)}
+    return {"items": _connectors().list_items(connector_id, account_label, query=query, limit=limit)}
 
 
 def cmd_connectors_item_import() -> dict:
@@ -294,7 +327,7 @@ def cmd_connectors_item_import() -> dict:
         raise ValueError("'account_label' is required")
     if not item_id:
         raise ValueError("'item_id' is required")
-    return connectors_service.import_item(connector_id, account_label, item_id, item_title=item_title)
+    return _connectors().import_item(connector_id, account_label, item_id, item_title=item_title)
 
 
 def cmd_connectors_disconnect() -> dict:
@@ -305,7 +338,7 @@ def cmd_connectors_disconnect() -> dict:
         raise ValueError("'connector_id' is required")
     if not account_label:
         raise ValueError("'account_label' is required")
-    return connectors_service.disconnect(connector_id, account_label)
+    return _connectors().disconnect(connector_id, account_label)
 
 
 COMMANDS = {
@@ -338,31 +371,93 @@ COMMANDS = {
 STREAMING_COMMANDS = {"chat-stream"}
 
 
+def _run_command(command: str) -> tuple[dict, int]:
+    """Run one command; returns (payload, exit code). Shared by the one-shot
+    and --serve modes so both report errors identically."""
+    try:
+        return COMMANDS[command](), 0
+    except email_engine.NotAnEmailError as exc:
+        return {"error": str(exc), "error_type": "not_an_email"}, 1
+    except FileNotFoundError as exc:
+        return {"error": str(exc), "error_type": "not_found"}, 1
+    except Exception as exc:  # noqa: BLE001 -- surface any failure as JSON, not a traceback
+        error_type = _connector_error_type(exc)
+        return {"error": str(exc), **({"error_type": error_type} if error_type else {})}, 1
+
+
+def serve() -> int:
+    """Long-lived worker for backend/src/lib/pythonWorker.ts: one JSON request
+    per stdin line ({"id", "command", "input", "env"}), one JSON response per
+    line ({"id", "code", "payload"}). Saves the ~0.6 s of imports every
+    one-shot `cli.py <command>` pays.
+
+    - `env` holds the backend's per-request LLM settings; they are applied for
+      that request only and then restored.
+    - The response channel is a private duplicate of the original stdout;
+      fd 1 itself is pointed at stderr, so a stray print() or a C extension
+      writing to stdout can't corrupt the protocol.
+    - A BaseException (e.g. pyo3's PanicException) is reported and ends the
+      worker, so the backend restarts a clean process.
+    """
+    protocol = os.fdopen(os.dup(1), "w", buffering=1, encoding="utf-8")
+    os.dup2(2, 1)
+    sys.stdout = sys.stderr
+    requests = sys.stdin
+
+    def respond(request_id, code: int, payload: dict) -> None:
+        try:
+            line = json.dumps({"id": request_id, "code": code, "payload": payload}, ensure_ascii=False)
+        except (TypeError, ValueError) as exc:
+            line = json.dumps({"id": request_id, "code": 1, "payload": {"error": f"Unserializable result: {exc}"}})
+        protocol.write(line + "\n")
+
+    for line in requests:
+        if not line.strip():
+            continue
+        try:
+            request = json.loads(line)
+            request_id = request.get("id")
+            command = request["command"]
+        except (ValueError, KeyError, AttributeError) as exc:
+            respond(None, 1, {"error": f"Bad worker request: {exc}"})
+            continue
+        if command not in COMMANDS or command in STREAMING_COMMANDS:
+            respond(request_id, 1, {"error": f"Unsupported worker command: {command}"})
+            continue
+
+        env = {str(k): str(v) for k, v in (request.get("env") or {}).items()}
+        saved = {k: os.environ.get(k) for k in env}
+        os.environ.update(env)
+        sys.stdin = io.StringIO("" if request.get("input") is None else json.dumps(request["input"]))
+        try:
+            payload, code = _run_command(command)
+        except (KeyboardInterrupt, SystemExit):
+            raise
+        except BaseException as exc:  # noqa: BLE001 -- report, then exit so the backend restarts us clean
+            respond(request_id, 1, {"error": f"Worker crashed: {type(exc).__name__}: {exc}"})
+            return 1
+        finally:
+            sys.stdin = requests
+            for key, value in saved.items():
+                if value is None:
+                    os.environ.pop(key, None)
+                else:
+                    os.environ[key] = value
+        respond(request_id, code, payload)
+    return 0
+
+
 def main() -> int:
+    if sys.argv[1:] == ["--serve"]:
+        return serve()
     if len(sys.argv) != 2 or sys.argv[1] not in COMMANDS:
-        print(json.dumps({"error": f"Usage: cli.py <{'|'.join(COMMANDS)}>"}))
+        print(json.dumps({"error": f"Usage: cli.py <{'|'.join(COMMANDS)}> | --serve"}))
         return 1
     command = sys.argv[1]
-    try:
-        result = COMMANDS[command]()
-    except email_engine.NotAnEmailError as exc:
-        print(json.dumps({"error": str(exc), "error_type": "not_an_email"}))
-        return 1
-    except FileNotFoundError as exc:
-        print(json.dumps({"error": str(exc), "error_type": "not_found"}))
-        return 1
-    except connectors_service.ConnectorNotConnectedError as exc:
-        print(json.dumps({"error": str(exc), "error_type": "not_connected"}))
-        return 1
-    except connectors_service.ConnectorConfigError as exc:
-        print(json.dumps({"error": str(exc), "error_type": "not_configured"}))
-        return 1
-    except Exception as exc:  # noqa: BLE001 -- surface any failure as JSON, not a traceback
-        print(json.dumps({"error": str(exc)}))
-        return 1
-    if command not in STREAMING_COMMANDS:
-        print(json.dumps(result, ensure_ascii=False))
-    return 0
+    payload, code = _run_command(command)
+    if code != 0 or command not in STREAMING_COMMANDS:
+        print(json.dumps(payload, ensure_ascii=False))
+    return code
 
 
 if __name__ == "__main__":

@@ -148,11 +148,8 @@ def test_connectors_catalog_lists_the_known_connectors(tmp_path, monkeypatch):
 
 def test_connectors_oauth_start_requires_connector_id(monkeypatch):
     _stdin(monkeypatch, {})
-    try:
+    with pytest.raises(ValueError, match="connector_id"):
         cli.cmd_connectors_oauth_start()
-        assert False, "expected ValueError"
-    except ValueError as exc:
-        assert "connector_id" in str(exc)
 
 
 def test_connectors_oauth_start_reports_missing_config(tmp_path, monkeypatch):
@@ -160,11 +157,8 @@ def test_connectors_oauth_start_reports_missing_config(tmp_path, monkeypatch):
     for var in ("GMAIL_CLIENT_ID", "GMAIL_CLIENT_SECRET", "GMAIL_REDIRECT_URI"):
         monkeypatch.delenv(var, raising=False)
     _stdin(monkeypatch, {"connector_id": "gmail"})
-    try:
+    with pytest.raises(connectors_service.ConnectorConfigError):
         cli.cmd_connectors_oauth_start()
-        assert False, "expected ConnectorConfigError"
-    except connectors_service.ConnectorConfigError:
-        pass
 
 
 def test_connectors_imap_connect_and_disconnect_round_trip(tmp_path, monkeypatch):
@@ -181,8 +175,125 @@ def test_connectors_imap_connect_and_disconnect_round_trip(tmp_path, monkeypatch
 def test_connectors_items_list_reports_not_connected(tmp_path, monkeypatch):
     _isolate_connectors(tmp_path, monkeypatch)
     _stdin(monkeypatch, {"connector_id": "imap", "account_label": "nobody@example.com"})
-    try:
+    with pytest.raises(connectors_service.ConnectorNotConnectedError):
         cli.cmd_connectors_items_list()
-        assert False, "expected ConnectorNotConnectedError"
-    except connectors_service.ConnectorNotConnectedError:
-        pass
+
+
+_BROKEN_CRYPTOGRAPHY = """
+import sys, runpy
+
+class FakePanic(BaseException):  # mimics pyo3_runtime.PanicException
+    pass
+
+class BrokenCryptography:
+    def find_spec(self, name, path=None, target=None):
+        if name == "cryptography" or name.startswith("cryptography."):
+            raise FakePanic("Python API call failed")
+        return None
+
+sys.meta_path.insert(0, BrokenCryptography())
+sys.argv = ["cli.py", sys.argv[1]]
+runpy.run_path("cli.py", run_name="__main__")
+"""
+
+
+def _run_cli_with_broken_cryptography(command):
+    import subprocess
+    import sys
+    from pathlib import Path
+
+    return subprocess.run(
+        [sys.executable, "-c", _BROKEN_CRYPTOGRAPHY, command],
+        cwd=Path(cli.__file__).parent,
+        capture_output=True,
+        text=True,
+        input="",
+        timeout=60,
+    )
+
+
+def test_non_connector_commands_survive_a_broken_cryptography_install():
+    proc = _run_cli_with_broken_cryptography("emails-list")
+    assert proc.returncode == 0, proc.stderr
+    assert "emails" in json.loads(proc.stdout)
+
+
+def test_connector_commands_report_a_json_error_when_cryptography_is_broken():
+    proc = _run_cli_with_broken_cryptography("connectors-catalog")
+    assert proc.returncode == 1
+    payload = json.loads(proc.stdout)
+    assert "Connectors are unavailable" in payload["error"]
+
+
+_SERVE_WITH_TEST_COMMANDS = """
+import os, sys
+sys.path.insert(0, os.getcwd())
+import cli
+
+class FakePanic(BaseException):
+    pass
+
+def echo():
+    return {"var": os.environ.get("WORKER_TEST_VAR"), "input": cli._read_stdin_json()}
+
+def noisy():
+    print("stray print")
+    os.write(1, b"raw write to fd 1\\n")
+    return {"ok": True}
+
+def panic():
+    raise FakePanic("Python API call failed")
+
+cli.COMMANDS.update({"echo": echo, "noisy": noisy, "panic": panic})
+sys.exit(cli.serve())
+"""
+
+
+def _serve(lines):
+    import subprocess
+    import sys
+    from pathlib import Path
+
+    proc = subprocess.run(
+        [sys.executable, "-c", _SERVE_WITH_TEST_COMMANDS],
+        cwd=Path(cli.__file__).parent,
+        input="".join(json.dumps(line) + "\n" if not isinstance(line, str) else line + "\n" for line in lines),
+        capture_output=True,
+        text=True,
+        timeout=60,
+    )
+    return proc, [json.loads(line) for line in proc.stdout.splitlines()]
+
+
+def test_serve_applies_env_and_input_per_request_then_restores_them():
+    _proc, responses = _serve([
+        {"id": 1, "command": "echo", "input": {"q": "a"}, "env": {"WORKER_TEST_VAR": "set"}},
+        {"id": 2, "command": "echo"},
+    ])
+    assert responses[0] == {"id": 1, "code": 0, "payload": {"var": "set", "input": {"q": "a"}}}
+    assert responses[1] == {"id": 2, "code": 0, "payload": {"var": None, "input": {}}}
+
+
+def test_serve_keeps_stray_stdout_off_the_protocol_channel():
+    proc, responses = _serve([{"id": 1, "command": "noisy"}, {"id": 2, "command": "echo"}])
+    assert [r["id"] for r in responses] == [1, 2]
+    assert "stray print" in proc.stderr and "raw write to fd 1" in proc.stderr
+
+
+def test_serve_survives_bad_requests():
+    _proc, responses = _serve(["not json", {"id": 3, "command": "chat-stream"}, {"id": 4, "command": "echo"}])
+    assert responses[0]["id"] is None and responses[0]["code"] == 1
+    assert responses[1]["code"] == 1 and "Unsupported" in responses[1]["payload"]["error"]
+    assert responses[2]["code"] == 0
+
+
+def test_serve_reports_a_panic_and_exits_so_the_backend_restarts_it():
+    proc, responses = _serve([{"id": 1, "command": "panic"}, {"id": 2, "command": "echo"}])
+    assert proc.returncode == 1
+    assert responses == [{"id": 1, "code": 1, "payload": {"error": "Worker crashed: FakePanic: Python API call failed"}}]
+
+
+def test_serve_maps_error_types_like_one_shot_mode():
+    _proc, responses = _serve([{"id": 1, "command": "email-detail", "input": {"path": "does/not/exist.eml"}}])
+    assert responses[0]["code"] == 1
+    assert responses[0]["payload"]["error_type"] == "not_found"

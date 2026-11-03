@@ -86,6 +86,53 @@ router.get('/:slug(*)/edit', async (req, res, next) => {
   }
 });
 
+interface HistoryVersion {
+  id: string;
+  at: string;
+  reason: string;
+  size_bytes: number;
+}
+
+router.get('/:slug(*)/history', async (req, res, next) => {
+  try {
+    const slug = req.params.slug;
+    const token = getToken(req);
+    const page = `${slug}.md`;
+    const pageParam = encodeURIComponent(page);
+    const list = await apiGet<{ versions: HistoryVersion[] }>(`/api/doc-history/${pageParam}`, token);
+    const selectedId = typeof req.query.v === 'string' ? req.query.v : list.versions[0]?.id;
+    const selected = selectedId
+      ? await apiGet<{ diff: { op: string; text: string; gap?: number }[]; current_exists: boolean }>(
+          `/api/doc-history/${pageParam}?version=${encodeURIComponent(selectedId)}`,
+          token,
+        )
+      : null;
+    let title = slug;
+    try {
+      title = (await apiGet<{ title: string }>(`/api/docs/${pageParam}`, token)).title;
+    } catch {
+      /* page deleted -- its history is still viewable and restorable */
+    }
+    res.render('wiki-history', {
+      apiBase: PUBLIC_API_URL,
+      title: res.locals.t('wiki.history.title', { title }),
+      active: 'Wiki',
+      slug,
+      page,
+      pageTitle: title,
+      versions: list.versions,
+      selectedId,
+      selected,
+    });
+  } catch (err: any) {
+    if (isNotFound(err) || String(err.message).includes('Invalid page')) {
+      res.status(404).send(res.locals.t('common.notFound'));
+      return;
+    }
+    next(err);
+  }
+});
+
 router.get('/:slug(*)', async (req, res, next) => {
   try {
     const slug = req.params.slug;

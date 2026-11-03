@@ -36,7 +36,7 @@ def fix_doc(path: Path, docs_dir: Path, *, dry_run: bool) -> int:
 
     fixed = 0
 
-    def repl(match: "re.Match[str]") -> str:
+    def repl(match: re.Match[str]) -> str:
         nonlocal fixed
         link_text, href = match.group(1), match.group(2).strip()
         resolved = resolve_href(href, path, docs_dir)

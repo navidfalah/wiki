@@ -27,7 +27,7 @@ from datetime import datetime, timezone
 from pathlib import Path
 
 from models import PROJECT_ROOT
-from trust_eval_dataset import Claim, ClaimGroup
+from trust_eval_dataset import ClaimGroup
 from trust_propagation import ClaimTrust, PropagationConfig, propagate_group_trust
 
 CORRECTIONS_PATH = PROJECT_ROOT / "data" / "review_corrections.json"

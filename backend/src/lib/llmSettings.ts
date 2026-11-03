@@ -19,11 +19,11 @@
 import crypto from 'node:crypto';
 import fs from 'node:fs';
 import path from 'node:path';
-import { PROJECT_ROOT } from '../paths';
+import { DATA_ROOT } from '../paths';
 import { atomicWriteJson } from './atomicWrite';
 
-export const LLM_SETTINGS_FILE = path.join(PROJECT_ROOT, 'data', 'llm_settings.json');
-const ENV_FILE = path.join(PROJECT_ROOT, '.env');
+export const LLM_SETTINGS_FILE = path.join(DATA_ROOT, 'data', 'llm_settings.json');
+const ENV_FILE = path.join(DATA_ROOT, '.env');
 
 export type Purpose = 'default' | 'thinking' | 'chat' | 'embedding';
 export const PURPOSES: Purpose[] = ['default', 'thinking', 'chat', 'embedding'];

@@ -94,6 +94,29 @@ export function loadTopicIndex(): Record<string, string> {
   }
 }
 
+/** Pages that are navigation, not topics: the landing index and the change log. */
+const NON_TOPIC_PAGES = new Set(['index.md', 'log.md']);
+
+/**
+ * The topic index, or -- when the compiler's index.json is missing or empty
+ * (a fresh checkout, a restored backup, a cleared temp_output/) -- one
+ * rebuilt from the compiled pages themselves: frontmatter title -> filename.
+ * Without this fallback the dashboard reported "0 pages" next to a full wiki.
+ */
+export function loadTopicIndexOrDocs(docsDir: string = OUTPUT_DIR): Record<string, string> {
+  const fromCompiler = loadTopicIndex();
+  if (Object.keys(fromCompiler).length) return fromCompiler;
+  if (!fs.existsSync(docsDir)) return {};
+  const index: Record<string, string> = {};
+  for (const name of fs.readdirSync(docsDir).sort()) {
+    if (!name.endsWith('.md') || NON_TOPIC_PAGES.has(name)) continue;
+    const meta = parseFrontmatter(fs.readFileSync(path.join(docsDir, name), 'utf-8'));
+    const title = typeof meta.title === 'string' && meta.title.trim() ? meta.title.trim() : path.basename(name, '.md');
+    if (!(title in index)) index[title] = name;
+  }
+  return index;
+}
+
 export function topicFilename(
   topicIndex: Record<string, string>,
   topic: string,

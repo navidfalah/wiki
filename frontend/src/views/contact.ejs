@@ -84,7 +84,7 @@
 
   <%- include('partials/landing-footer') %>
 
-  <script>
+  <script nonce="<%= cspNonce %>">
     (function () {
       var btn = document.getElementById('copy-email');
       var email = document.getElementById('contact-email');

@@ -14,6 +14,7 @@ const pages: { path: string; view: string; titleKey: string; active: string; cli
   },
   { path: '/rag-architecture', view: 'rag-architecture', titleKey: 'rag-architecture.title', active: 'RAG Architecture', clientScript: 'rag-architecture' },
   { path: '/chat', view: 'chat', titleKey: 'chat.title', active: 'Chat', clientScript: 'chat' },
+  { path: '/search', view: 'search', titleKey: 'search.title', active: 'Search', clientScript: 'search' },
   { path: '/resources', view: 'resources', titleKey: 'resources.title', active: 'Resources', clientScript: 'resources' },
   { path: '/graph', view: 'graph', titleKey: 'graph.title', active: 'Graph', clientScript: 'graph' },
   { path: '/entities', view: 'entities', titleKey: 'entities.title', active: 'Entities', clientScript: 'entities' },

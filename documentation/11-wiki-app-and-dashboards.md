@@ -120,9 +120,9 @@ not its request/response shapes.
 
 | Route | Renders | Client bundle |
 |-------|---------|----------------|
-| `/wiki` | every compiled page as a **file tile** in an icon grid (title + `.txt` badge), searchable — no content shown inline, matching the dashboard's file-explorer visual language | inline (search filter only) |
+| `/wiki` | every compiled page as a **file tile** in an icon grid (title + `.txt` badge), searchable — no content shown inline, matching the Resources file-explorer visual language | inline (search filter only) |
 | `/wiki/:slug/download` | streams that page's raw markdown source with `Content-Disposition: attachment` — clicking a tile downloads it as `<slug>.txt`, nothing renders in the browser | — |
-| `/dashboard` | stat cards, run-compiler panel (SSE log), source folders grid, file-explorer grid (same feature set as the previous React `DataWorkspace`/`SourceFolders`: breadcrumbs, create/delete folder, move file, preview-on-demand modal) | `dashboard.ts` |
+| `/dashboard` | home panel: search/Ask box (`Ask` opens `/chat?q=…` as a new conversation), four clickable status cards (pages → `/wiki`, sources compiled → `/resources`, items needing attention → `/review-queue`, last compile → `/pipelines`), quick actions, *Needs your attention* (per-kind counts from `/api/attention` with the action that fixes each), *Recently updated pages* (`modified_at` from `/api/docs`) and *Team activity* (`/api/activity` minus sign-ins and server housekeeping); below it the compiler workspace — run-compiler panel (SSE log) and source folders. Raw files are managed on `/resources` (Files tab), not here. Render functions live in `client/lib/dashboardHome.ts` (unit-tested) | `dashboard.ts` |
 | `/chat` | ask a question, grounded answer + cited pages | `chat.ts` |
 | `/emails` | ingested `.eml` list + detail modal | `emails.ts` |
 | `/resources` | deduped cited-source list, searchable | `resources.ts` |
@@ -135,7 +135,10 @@ One persistent left sidebar (icon + label per section, active one
 highlighted), one layout, included at the top/bottom of every view — this
 is the actual fix for the "dashboard inside a dashboard" complaint:
 `/wiki` and `/dashboard` are two entries in the *same* sidebar nav, not
-two different site frames. Collapses to a horizontally-scrolling bar
+two different site frames. The sidebar opens with a search box
+(`#sidebar-search`, GET `/search`); pressing `/` on any page focuses the
+page's own `[data-primary-search]` box if it has one (dashboard, search),
+else the sidebar box — handled by a small inline script in `foot.ejs`. Collapses to a horizontally-scrolling bar
 above the content on narrow screens (`md:` breakpoint switches from
 `flex-col` to `flex-row` on the outer `<body>` wrapper) rather than a
 hidden hamburger menu — there's only seven items, so it stays usable
@@ -168,7 +171,7 @@ show page content in the browser at all, not even as raw text in a
 `<pre>` block (an intermediate version did that; the user's explicit
 follow-up was "do not show me the text in the file only keep it like the
 files in the directory"). It's a grid of file tiles — the same visual
-language as the dashboard's file explorer — and clicking one downloads
+language as the Resources file explorer — and clicking one downloads
 it; there is no per-page detail view anymore. No `marked` dependency, no
 link rewriting, no heading-anchor TOC, no `not-found.ejs` (nothing left
 to 404 into once there's no per-page route) — all removed along with the

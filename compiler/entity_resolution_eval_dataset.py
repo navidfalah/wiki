@@ -36,7 +36,7 @@ GOLD_MENTIONS: list[tuple[Mention, str]] = [
     (Mention("Alex Kim", "dummy-test/2026-07-01-firmware-changelog.md"), "alex-kim"),
     (Mention("alex.kim@teabuddy.example", "samples/emails/[SAMPLE]-2026-07-08-legal-review-trademark.txt"), "alex-kim"),
     (Mention("Alex Rivera", "articles/2026-05-20-competitor-teardown-blog.md"), "alex-rivera"),
-    (Mention("Sam Rivera", "dummy-test/2026-07-02-aurora-meshsync-release-notes.md"), "sam-rivera"),
+    (Mention("Sam Rivera", "2026-07-02-aurora-meshsync-release-notes.md"), "sam-rivera"),
     (Mention("Sam Rivera", "dummy-test/2026-07-01-firmware-changelog.md"), "sam-rivera"),
     (Mention("Nova Widget", "articles/2026-05-15-product-spec-draft.md"), "nova-widget"),
     (Mention("Nova", "notes/2026-05-01-kickoff-notes.md"), "nova-widget"),

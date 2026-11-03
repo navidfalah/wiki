@@ -75,7 +75,7 @@ class PropagationConfig:
     sigmoid_k: float = 1.0
     iterations: int = 6
 
-    def with_overrides(self, **kwargs: float | int) -> "PropagationConfig":
+    def with_overrides(self, **kwargs: float | int) -> PropagationConfig:
         """Return a copy with only the given fields changed — used by the
         ablation study (task #3) to zero out one term at a time."""
         return PropagationConfig(**{**self.__dict__, **kwargs})
