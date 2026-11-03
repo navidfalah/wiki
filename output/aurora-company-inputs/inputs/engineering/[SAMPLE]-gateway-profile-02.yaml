@@ -1,0 +1,12 @@
+# [SAMPLE] Fictional Aurora Labs company record. Not research findings.
+synthetic: true
+company: Aurora Labs
+project: GH-03
+gateway: GW1-002
+host: gateway-2.aurora.example
+sampling_interval_minutes: 15
+cloud_required: false
+firmware: 0.9.4-rc2
+owner: Mira Chen
+release_status: hold
+open_incident: INC-2026-017

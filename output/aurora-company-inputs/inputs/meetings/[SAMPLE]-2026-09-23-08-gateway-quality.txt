@@ -1,0 +1,14 @@
+[SAMPLE] Fictional Aurora Labs company record. Not research findings.
+Aurora Labs | Gateway quality hold
+Meeting: SYNC-008
+Date: 2026-09-23 10:00 Europe/Berlin
+Participants: Jonah Park, Priya Nair, Elena Voss
+Reference: QC-2026-033
+
+10:00 Priya Nair: Gateway GW1-003 in batch B-2609 passed the Ethernet check. The MeshSync rejoin check remains on hold. The device is not released for shipment.
+10:07 Question: Can this record close the related issue?
+10:09 Chair: The attached quality tag separates checks by outcome. A single PASS beside Ethernet must not be treated as overall approval. INC-2026-017 remains the linked rejoin issue.
+10:15 Action owner: Priya Nair. Keep GW1-003 on the hold shelf. Priya Nair owns disposition, and Mira Chen owns the diagnostic firmware.
+
+Unresolved: A document being received is not evidence that the required action passed.
+Export note: timestamps are fictional meeting times.

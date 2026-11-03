@@ -1,0 +1,41 @@
+From: Tina Okonkwo <tina.okonkwo@aurora.example>
+To: Mira Chen <mira.chen@aurora.example>
+Subject: Re: [SAMPLE] INC-2026-017: MeshSync rejoin incident
+Date: Fri, 18 Sep 2026 12:00:00 +0200
+Message-ID: <sample-thread-2-3@aurora.example>
+In-Reply-To: <sample-thread-2-2@aurora.example>
+References:
+ <sample-thread-2-1@aurora.example> <sample-thread-2-2@aurora.example>
+X-Synthetic-Data: true
+MIME-Version: 1.0
+Content-Type: multipart/mixed; boundary="===============1251051955074116307=="
+
+--===============1251051955074116307==
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: quoted-printable
+
+[SAMPLE] Fictional Aurora Labs company record. Not research findings.
+
+Hello Mira,
+
+Priya Nair will repeat the eight-node case, capture rejoin timing, and attach=
+ the trace. Mira Chen will review the trace before closing INC-2026-017.
+
+Reference: INC-2026-017
+Project: GH-03
+Record owner: Mira Chen
+
+Regards,
+Tina Okonkwo
+Aurora Labs
+
+--===============1251051955074116307==
+Content-Type: text/csv
+Content-Transfer-Encoding: base64
+Content-Disposition: attachment; filename="INC-2026-017-status.csv"
+MIME-Version: 1.0
+
+cmVjb3JkX2lkLHN0YXR1cyxzeW50aGV0aWMKSU5DLTIwMjYtMDE3LHBlbmRpbmdfcmV2aWV3LHRy
+dWUK
+
+--===============1251051955074116307==--

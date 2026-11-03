@@ -1,0 +1,62 @@
+[
+  {
+    "filename": "01-nova-widget-product.png",
+    "mode": "built-in image_gen",
+    "use_case": "product-mockup",
+    "prompt": "Use case: product-mockup\nAsset type: synthetic company source image for a knowledge-ingestion research dataset\nPrimary request: A realistic internal engineering product photo of the fictional Aurora Labs Nova Widget v2, a small pale gray pebble-shaped soil-moisture and temperature sensor with two short metal soil probes and a single dark green status LED, placed beside a ruler on a scratched laboratory workbench. Handwritten inventory card says exactly 'AURORA LABS', 'NOVA WIDGET v2', 'NW2-014', and 'SYNTHETIC'. Natural ordinary workplace lighting, close photograph, sharp details, no advertising polish.\nConstraints: one standalone image only, no collage; clearly fictional sample data; preserve readable identifiers; do not invent claims of scientific results."
+  },
+  {
+    "filename": "02-meshsync-planning-whiteboard.png",
+    "mode": "built-in image_gen",
+    "use_case": "photorealistic-natural",
+    "prompt": "Use case: photorealistic-natural\nAsset type: synthetic company source image for a knowledge-ingestion research dataset\nPrimary request: A realistic photograph of a slightly smudged internal engineering whiteboard in a fictional IoT office, titled exactly 'Aurora Labs - MeshSync'. Drawn network diagram with central 'Gateway GW-01', six circles labeled 'NW2-001' through 'NW2-006'. Short legible notes: '15 min interval', '6 nodes stable', '8+ nodes: rejoin issue', 'Owner: Mira Chen', '2026-09-14', 'SYNTHETIC'. Blue and black dry erase ink, ordinary office wall, framed straight-on so readable.\nConstraints: one standalone image only, no collage; clearly fictional sample data; preserve readable identifiers; do not invent claims of scientific results."
+  },
+  {
+    "filename": "03-greenhouse-pilot-installation.png",
+    "mode": "built-in image_gen",
+    "use_case": "photorealistic-natural",
+    "prompt": "Use case: photorealistic-natural\nAsset type: synthetic company source image for a knowledge-ingestion research dataset\nPrimary request: A documentary workplace photo of an unoccupied fictional greenhouse research pilot: six pots of plants, three small pale gray pebble-shaped soil-moisture sensors with paired metal probes inserted into separate pots, a small black gateway box fixed to a bench. Laminated card readable 'Aurora Labs', 'Pilot GH-03', '2026-09-15', 'SYNTHETIC'. Natural morning greenhouse light, no people, no performance claims.\nConstraints: one standalone image only, no collage; clearly fictional sample data; preserve readable identifiers; do not invent claims of scientific results."
+  },
+  {
+    "filename": "04-packing-slip-scan.png",
+    "mode": "built-in image_gen",
+    "use_case": "productivity-visual",
+    "prompt": "Use case: productivity-visual\nAsset type: synthetic company source image for a knowledge-ingestion research dataset\nPrimary request: A realistic high-resolution straight-on scan of a single slightly creased packing slip, full page visible on white background, for fictional company data-ingestion testing. Exact readable text: 'SYNTHETIC TEST DOCUMENT', 'AURORA LABS', 'PACKING SLIP DN-2026-041', 'Date: 2026-09-16', 'Ship to: Lindenhof Pilot, Site GH-03', 'Order: PO-2026-084', 'Nova Widget v2 | NW2 | Qty 12', 'MeshSync Gateway | GW1 | Qty 2', 'Packed by: Jonah Park', 'Cartons: 2', 'No payment due'. Simple monochrome table, light scan texture, no real logos, no signatures or bank details.\nConstraints: one standalone image only, no collage; clearly fictional sample data; preserve readable identifiers; do not invent claims of scientific results."
+  },
+  {
+    "filename": "05-rejoin-incident-handwritten-note.png",
+    "mode": "built-in image_gen",
+    "use_case": "photorealistic-natural",
+    "prompt": "Use case: photorealistic-natural\nAsset type: synthetic company source image for a knowledge-ingestion research dataset\nPrimary request: A realistic close straight-on photograph of one notebook page containing legible handwritten engineering notes. Exact text: 'SYNTHETIC', 'Aurora Labs - field note', '2026-09-18 / GH-03', 'INC-2026-017', '8 nodes connected', 'Parent swap -> 110-340 uA spike', 'NW2-008 did not rejoin', 'Try MeshSync 0.9.4-rc2', 'Mira: do not close until retest', 'Next: 2026-09-21'. Slightly imperfect handwriting, graph paper, small hand-drawn node sketch, ordinary desk, no real personal information.\nConstraints: one standalone image only, no collage; clearly fictional sample data; preserve readable identifiers; do not invent claims of scientific results."
+  },
+  {
+    "filename": "06-warehouse-inventory-shelf.png",
+    "mode": "built-in image_gen",
+    "use_case": "photorealistic-natural",
+    "prompt": "Use case: photorealistic-natural\nAsset type: synthetic company source image for a knowledge-ingestion research dataset\nPrimary request: A realistic documentary inventory photograph inside a small fictional electronics company storeroom. Three shelves with neatly boxed small sensors, gateway boxes, antistatic component bags. Large simple readable bin labels 'Aurora Labs', 'NW2 - READY', 'GW1 - HOLD', 'QA RETURN', and small label 'SYNTHETIC'. An inventory card reads 'COUNT 2026-09-22'. No people, no famous logos, natural warehouse lighting, enough context for visual inventory classification.\nConstraints: one standalone image only, no collage; clearly fictional sample data; preserve readable identifiers; do not invent claims of scientific results."
+  },
+  {
+    "filename": "07-gateway-qc-tag.png",
+    "mode": "built-in image_gen",
+    "use_case": "product-mockup",
+    "prompt": "Use case: product-mockup\nAsset type: synthetic company source image for a knowledge-ingestion research dataset\nPrimary request: A realistic close inspection photo of a small black gateway electronics enclosure beside an antistatic mat. Fictional attached paper quality tag fully legible: 'SYNTHETIC TEST RECORD', 'AURORA LABS', 'QC-2026-033', 'Device: GW1-003', 'Batch: B-2609', 'Ethernet: PASS', 'Mesh rejoin: HOLD', 'Owner: Priya Nair', '2026-09-23'. Tiny green LED visible. Neutral lab light, no regulatory certification marks, no real logos.\nConstraints: one standalone image only, no collage; clearly fictional sample data; preserve readable identifiers; do not invent claims of scientific results."
+  },
+  {
+    "filename": "08-german-workshop-flipchart.png",
+    "mode": "built-in image_gen",
+    "use_case": "productivity-visual",
+    "prompt": "Use case: productivity-visual\nAsset type: synthetic company source image for a knowledge-ingestion research dataset\nPrimary request: A realistic straight-on photo of an internal German workshop flipchart, large readable handwritten text: 'SYNTHETISCH', 'Aurora Labs - Pilot GH-03', 'Besprechung 24.09.2026', 'Mira: Firmware 0.9.4-rc2 testen', 'Jonah: Gehaeuse pruefen', 'Priya: acht Knoten erneut testen', 'Abtastintervall: 15 Minuten', 'Offen: Wiederanmeldung nach Ausfall'. One small network sketch, office background, mundane meeting artifact, no people.\nConstraints: one standalone image only, no collage; clearly fictional sample data; preserve readable identifiers; do not invent claims of scientific results."
+  },
+  {
+    "filename": "09-enclosure-return-photo.png",
+    "mode": "built-in image_gen",
+    "use_case": "photorealistic-natural",
+    "prompt": "Use case: photorealistic-natural\nAsset type: synthetic company source image for a knowledge-ingestion research dataset\nPrimary request: A realistic macro internal support-ticket photograph of a fictional pale gray pebble-shaped Aurora Labs Nova Widget v2 soil sensor on a plain workbench, enclosure seam with a slight visible gap and a small droplet near the edge, paired metal soil probes. Paper ticket card in frame clearly reads 'SYNTHETIC', 'SUP-2026-026', 'NW2-009', 'GH-03', '2026-09-25', 'Inspect gasket'. Documentary evidence style, sharp focus on seam, no dramatic damage, no performance claims.\nConstraints: one standalone image only, no collage; clearly fictional sample data; preserve readable identifiers; do not invent claims of scientific results."
+  },
+  {
+    "filename": "10-lab-equipment-expense-receipt.png",
+    "mode": "built-in image_gen",
+    "use_case": "productivity-visual",
+    "prompt": "Use case: productivity-visual\nAsset type: synthetic company source image for a knowledge-ingestion research dataset\nPrimary request: A realistic straight-on monochrome scan of a fictional office purchase receipt, full receipt visible, high legibility, clearly marked 'SYNTHETIC - NOT VALID FOR PAYMENT'. Exact text: 'TEST LAB SUPPLIES', 'Receipt RCPT-2026-019', '2026-09-26', 'Aurora Labs', 'Antistatic bags 20 x 0.50 EUR = 10.00', 'Probe cables 4 x 7.50 EUR = 30.00', 'Notebook 1 x 5.00 EUR = 5.00', 'Net 45.00 EUR', 'VAT 19% 8.55 EUR', 'Total 53.55 EUR', 'Project GH-03', 'Paid: test card'. Realistic light wrinkles, no real retailer branding, no real tax ID, no card number.\nConstraints: one standalone image only, no collage; clearly fictional sample data; preserve readable identifiers; do not invent claims of scientific results."
+  }
+]

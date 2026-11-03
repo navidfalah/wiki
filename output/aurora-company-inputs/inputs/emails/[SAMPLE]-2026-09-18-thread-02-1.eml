@@ -1,0 +1,25 @@
+From: Elena Voss <elena.voss@aurora.example>
+To: Marcus Webb <marcus.webb@aurora.example>
+Subject: [SAMPLE] INC-2026-017: MeshSync rejoin incident
+Date: Fri, 18 Sep 2026 10:00:00 +0200
+Message-ID: <sample-thread-2-1@aurora.example>
+X-Synthetic-Data: true
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: quoted-printable
+MIME-Version: 1.0
+
+[SAMPLE] Fictional Aurora Labs company record. Not research findings.
+
+Hello Marcus,
+
+At GH-03, an eight-node run left NW2-008 disconnected after a parent swap. Th=
+e synthetic field note records a transient current range of 110 to 340 microa=
+mps. The six-node baseline does not establish eight-node stability.
+
+Reference: INC-2026-017
+Project: GH-03
+Record owner: Mira Chen
+
+Regards,
+Elena Voss
+Aurora Labs

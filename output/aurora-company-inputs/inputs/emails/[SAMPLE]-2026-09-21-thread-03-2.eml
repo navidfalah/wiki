@@ -1,0 +1,27 @@
+From: Tina Okonkwo <tina.okonkwo@aurora.example>
+To: Mira Chen <mira.chen@aurora.example>
+Subject: Re: [SAMPLE] QA-RETEST-021: Eight node retest status
+Date: Mon, 21 Sep 2026 11:00:00 +0200
+Message-ID: <sample-thread-3-2@aurora.example>
+In-Reply-To: <sample-thread-3-1@aurora.example>
+References: <sample-thread-3-1@aurora.example>
+X-Synthetic-Data: true
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: quoted-printable
+MIME-Version: 1.0
+
+[SAMPLE] Fictional Aurora Labs company record. Not research findings.
+
+Hello Mira,
+
+The six-node run is a separate baseline. Do not generalize it to eight or ten=
+ nodes. The release checklist remains on hold until the missing trace and rep=
+eat run are reviewed.
+
+Reference: QA-RETEST-021
+Project: GH-03
+Record owner: Priya Nair
+
+Regards,
+Tina Okonkwo
+Aurora Labs

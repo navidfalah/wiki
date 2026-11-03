@@ -1,0 +1,14 @@
+[SAMPLE] Fictional Aurora Labs company record. Not research findings.
+Aurora Labs | Enclosure supplier review
+Meeting: SYNC-011
+Date: 2026-09-24 10:00 Europe/Berlin
+Participants: Marcus Webb, Tina Okonkwo, Mira Chen
+Reference: SUPPLIER-REV-09
+
+10:00 Elena Voss: The fictional supplier Harbor Components provides enclosure shells for Nova Widget v2. Lot ENC-2609 is awaiting a gasket fit review linked to SUP-2026-026.
+10:07 Question: Can this record close the related issue?
+10:09 Chair: Delivery punctuality and part acceptance are separate measures. The supplier may deliver on schedule while an enclosure lot remains under inspection. Keep these states distinct in the purchasing record.
+10:15 Action owner: Elena Voss. Jonah Park will inspect three retained shells. Elena Voss will request a replacement quotation only after the inspection identifies the affected quantity.
+
+Unresolved: A document being received is not evidence that the required action passed.
+Export note: timestamps are fictional meeting times.

@@ -1,0 +1,41 @@
+From: Elena Voss <elena.voss@aurora.example>
+To: Marcus Webb <marcus.webb@aurora.example>
+Subject: Re: [SAMPLE] QC-2026-033: Gateway quality hold
+Date: Wed, 23 Sep 2026 12:00:00 +0200
+Message-ID: <sample-thread-6-3@aurora.example>
+In-Reply-To: <sample-thread-6-2@aurora.example>
+References:
+ <sample-thread-6-1@aurora.example> <sample-thread-6-2@aurora.example>
+X-Synthetic-Data: true
+MIME-Version: 1.0
+Content-Type: multipart/mixed; boundary="===============0916817594126982081=="
+
+--===============0916817594126982081==
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: quoted-printable
+
+[SAMPLE] Fictional Aurora Labs company record. Not research findings.
+
+Hello Marcus,
+
+Keep GW1-003 on the hold shelf. Priya Nair owns disposition, and Mira Chen ow=
+ns the diagnostic firmware.
+
+Reference: QC-2026-033
+Project: GH-03
+Record owner: Priya Nair
+
+Regards,
+Elena Voss
+Aurora Labs
+
+--===============0916817594126982081==
+Content-Type: text/csv
+Content-Transfer-Encoding: base64
+Content-Disposition: attachment; filename="QC-2026-033-status.csv"
+MIME-Version: 1.0
+
+cmVjb3JkX2lkLHN0YXR1cyxzeW50aGV0aWMKUUMtMjAyNi0wMzMscGVuZGluZ19yZXZpZXcsdHJ1
+ZQo=
+
+--===============0916817594126982081==--

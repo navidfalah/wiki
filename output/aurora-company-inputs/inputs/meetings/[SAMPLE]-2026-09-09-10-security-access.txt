@@ -1,0 +1,14 @@
+[SAMPLE] Fictional Aurora Labs company record. Not research findings.
+Aurora Labs | Pilot gateway access procedure
+Meeting: SYNC-010
+Date: 2026-09-09 10:00 Europe/Berlin
+Participants: Elena Voss, Marcus Webb, Tina Okonkwo
+Reference: SEC-GW-03
+
+10:00 Mira Chen: Keep the GH-03 gateway on the local pilot network. Use individual accounts for diagnostics and remove temporary access after the inspection window.
+10:07 Question: Can this record close the related issue?
+10:09 Chair: The synthetic configuration uses host names under the reserved .example domain. No password, API key, or production connection is supplied. The local export contains device telemetry only.
+10:15 Action owner: Mira Chen. Document who requested access, its purpose, and its expiry. Ask the firmware owner before changing the gateway logging level during a retest.
+
+Unresolved: A document being received is not evidence that the required action passed.
+Export note: timestamps are fictional meeting times.

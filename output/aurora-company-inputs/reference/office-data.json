@@ -1,0 +1,595 @@
+{
+  "inventory": [
+    [
+      "sku",
+      "item",
+      "received",
+      "issued",
+      "unit",
+      "project",
+      "synthetic"
+    ],
+    [
+      "NW2-001",
+      "Nova Widget v2",
+      1,
+      1,
+      "device",
+      "GH-03",
+      "true"
+    ],
+    [
+      "NW2-002",
+      "Nova Widget v2",
+      1,
+      1,
+      "device",
+      "GH-03",
+      "true"
+    ],
+    [
+      "NW2-003",
+      "Nova Widget v2",
+      1,
+      1,
+      "device",
+      "GH-03",
+      "true"
+    ],
+    [
+      "NW2-004",
+      "Nova Widget v2",
+      1,
+      1,
+      "device",
+      "GH-03",
+      "true"
+    ],
+    [
+      "NW2-005",
+      "Nova Widget v2",
+      1,
+      1,
+      "device",
+      "GH-03",
+      "true"
+    ],
+    [
+      "NW2-006",
+      "Nova Widget v2",
+      1,
+      1,
+      "device",
+      "GH-03",
+      "true"
+    ],
+    [
+      "NW2-007",
+      "Nova Widget v2",
+      1,
+      0,
+      "device",
+      "GH-03",
+      "true"
+    ],
+    [
+      "NW2-008",
+      "Nova Widget v2",
+      1,
+      0,
+      "device",
+      "GH-03",
+      "true"
+    ],
+    [
+      "NW2-009",
+      "Nova Widget v2",
+      1,
+      0,
+      "device",
+      "GH-03",
+      "true"
+    ],
+    [
+      "NW2-010",
+      "Nova Widget v2",
+      1,
+      0,
+      "device",
+      "GH-03",
+      "true"
+    ],
+    [
+      "NW2-011",
+      "Nova Widget v2",
+      1,
+      0,
+      "device",
+      "GH-03",
+      "true"
+    ],
+    [
+      "NW2-012",
+      "Nova Widget v2",
+      1,
+      0,
+      "device",
+      "GH-03",
+      "true"
+    ]
+  ],
+  "bom": [
+    [
+      "part",
+      "description",
+      "quantity_per_unit",
+      "unit_cost_eur",
+      "supplier",
+      "synthetic"
+    ],
+    [
+      "PCB-02",
+      "Sensor PCB",
+      1,
+      7.2,
+      "Harbor Components",
+      "true"
+    ],
+    [
+      "ENC-02",
+      "Enclosure shell",
+      1,
+      3.8,
+      "Harbor Components",
+      "true"
+    ],
+    [
+      "PRB-02",
+      "Soil probe",
+      2,
+      1.1,
+      "Harbor Components",
+      "true"
+    ],
+    [
+      "GSK-02",
+      "Gasket",
+      1,
+      0.65,
+      "Harbor Components",
+      "true"
+    ],
+    [
+      "BAT-01",
+      "Battery assembly",
+      1,
+      2.9,
+      "Harbor Components",
+      "true"
+    ],
+    [
+      "SCR-02",
+      "Fastener",
+      4,
+      0.08,
+      "Harbor Components",
+      "true"
+    ],
+    [
+      "LED-01",
+      "Status LED",
+      1,
+      0.12,
+      "Harbor Components",
+      "true"
+    ],
+    [
+      "LBL-02",
+      "Serial label",
+      1,
+      0.15,
+      "Harbor Components",
+      "true"
+    ]
+  ],
+  "qa": [
+    [
+      "case_id",
+      "nodes",
+      "firmware",
+      "check",
+      "outcome",
+      "owner",
+      "synthetic"
+    ],
+    [
+      "QA-001",
+      4,
+      "0.9.4-rc2",
+      "pairing",
+      "pass",
+      "Priya Nair",
+      "true"
+    ],
+    [
+      "QA-002",
+      6,
+      "0.9.4-rc2",
+      "export",
+      "pass",
+      "Priya Nair",
+      "true"
+    ],
+    [
+      "QA-003",
+      8,
+      "0.9.4-rc2",
+      "parent_swap",
+      "blocked",
+      "Priya Nair",
+      "true"
+    ],
+    [
+      "QA-004",
+      4,
+      "0.9.4-rc2",
+      "pairing",
+      "pass",
+      "Priya Nair",
+      "true"
+    ],
+    [
+      "QA-005",
+      6,
+      "0.9.4-rc2",
+      "export",
+      "pass",
+      "Priya Nair",
+      "true"
+    ],
+    [
+      "QA-006",
+      8,
+      "0.9.4-rc2",
+      "parent_swap",
+      "blocked",
+      "Priya Nair",
+      "true"
+    ],
+    [
+      "QA-007",
+      4,
+      "0.9.4-rc2",
+      "pairing",
+      "pass",
+      "Priya Nair",
+      "true"
+    ],
+    [
+      "QA-008",
+      6,
+      "0.9.4-rc2",
+      "export",
+      "pass",
+      "Priya Nair",
+      "true"
+    ],
+    [
+      "QA-009",
+      8,
+      "0.9.4-rc2",
+      "parent_swap",
+      "blocked",
+      "Priya Nair",
+      "true"
+    ],
+    [
+      "QA-010",
+      4,
+      "0.9.4-rc2",
+      "pairing",
+      "pass",
+      "Priya Nair",
+      "true"
+    ],
+    [
+      "QA-011",
+      6,
+      "0.9.4-rc2",
+      "export",
+      "pass",
+      "Priya Nair",
+      "true"
+    ],
+    [
+      "QA-012",
+      8,
+      "0.9.4-rc2",
+      "parent_swap",
+      "blocked",
+      "Priya Nair",
+      "true"
+    ],
+    [
+      "QA-013",
+      4,
+      "0.9.4-rc2",
+      "pairing",
+      "pass",
+      "Priya Nair",
+      "true"
+    ],
+    [
+      "QA-014",
+      6,
+      "0.9.4-rc2",
+      "export",
+      "pass",
+      "Priya Nair",
+      "true"
+    ],
+    [
+      "QA-015",
+      8,
+      "0.9.4-rc2",
+      "parent_swap",
+      "blocked",
+      "Priya Nair",
+      "true"
+    ],
+    [
+      "QA-016",
+      4,
+      "0.9.4-rc2",
+      "pairing",
+      "pass",
+      "Priya Nair",
+      "true"
+    ],
+    [
+      "QA-017",
+      6,
+      "0.9.4-rc2",
+      "export",
+      "pass",
+      "Priya Nair",
+      "true"
+    ],
+    [
+      "QA-018",
+      8,
+      "0.9.4-rc2",
+      "parent_swap",
+      "blocked",
+      "Priya Nair",
+      "true"
+    ],
+    [
+      "QA-019",
+      4,
+      "0.9.4-rc2",
+      "pairing",
+      "pass",
+      "Priya Nair",
+      "true"
+    ],
+    [
+      "QA-020",
+      6,
+      "0.9.4-rc2",
+      "export",
+      "pass",
+      "Priya Nair",
+      "true"
+    ],
+    [
+      "QA-021",
+      8,
+      "0.9.4-rc2",
+      "parent_swap",
+      "blocked",
+      "Priya Nair",
+      "true"
+    ],
+    [
+      "QA-022",
+      4,
+      "0.9.4-rc2",
+      "pairing",
+      "pass",
+      "Priya Nair",
+      "true"
+    ],
+    [
+      "QA-023",
+      6,
+      "0.9.4-rc2",
+      "export",
+      "pass",
+      "Priya Nair",
+      "true"
+    ],
+    [
+      "QA-024",
+      8,
+      "0.9.4-rc2",
+      "parent_swap",
+      "blocked",
+      "Priya Nair",
+      "true"
+    ]
+  ],
+  "support": [
+    [
+      "ticket_id",
+      "device",
+      "category",
+      "status",
+      "owner",
+      "date",
+      "synthetic"
+    ],
+    [
+      "SUP-2026-010",
+      "NW2-001",
+      "pairing",
+      "open",
+      "Mira Chen",
+      "2026-09-10",
+      "true"
+    ],
+    [
+      "SUP-2026-011",
+      "NW2-002",
+      "enclosure",
+      "awaiting_trace",
+      "Jonah Park",
+      "2026-09-11",
+      "true"
+    ],
+    [
+      "SUP-2026-012",
+      "NW2-003",
+      "export",
+      "resolved",
+      "Priya Nair",
+      "2026-09-12",
+      "true"
+    ],
+    [
+      "SUP-2026-013",
+      "NW2-004",
+      "pairing",
+      "open",
+      "Elena Voss",
+      "2026-09-13",
+      "true"
+    ],
+    [
+      "SUP-2026-014",
+      "NW2-005",
+      "enclosure",
+      "awaiting_trace",
+      "Marcus Webb",
+      "2026-09-14",
+      "true"
+    ],
+    [
+      "SUP-2026-015",
+      "NW2-006",
+      "export",
+      "resolved",
+      "Tina Okonkwo",
+      "2026-09-15",
+      "true"
+    ],
+    [
+      "SUP-2026-016",
+      "NW2-007",
+      "pairing",
+      "open",
+      "Mira Chen",
+      "2026-09-16",
+      "true"
+    ],
+    [
+      "SUP-2026-017",
+      "NW2-008",
+      "enclosure",
+      "awaiting_trace",
+      "Jonah Park",
+      "2026-09-17",
+      "true"
+    ],
+    [
+      "SUP-2026-018",
+      "NW2-009",
+      "export",
+      "resolved",
+      "Priya Nair",
+      "2026-09-18",
+      "true"
+    ],
+    [
+      "SUP-2026-019",
+      "NW2-010",
+      "pairing",
+      "open",
+      "Elena Voss",
+      "2026-09-19",
+      "true"
+    ],
+    [
+      "SUP-2026-020",
+      "NW2-011",
+      "enclosure",
+      "awaiting_trace",
+      "Marcus Webb",
+      "2026-09-20",
+      "true"
+    ],
+    [
+      "SUP-2026-021",
+      "NW2-012",
+      "export",
+      "resolved",
+      "Tina Okonkwo",
+      "2026-09-21",
+      "true"
+    ],
+    [
+      "SUP-2026-022",
+      "NW2-001",
+      "pairing",
+      "open",
+      "Mira Chen",
+      "2026-09-22",
+      "true"
+    ],
+    [
+      "SUP-2026-023",
+      "NW2-002",
+      "enclosure",
+      "awaiting_trace",
+      "Jonah Park",
+      "2026-09-23",
+      "true"
+    ],
+    [
+      "SUP-2026-024",
+      "NW2-003",
+      "export",
+      "resolved",
+      "Priya Nair",
+      "2026-09-24",
+      "true"
+    ],
+    [
+      "SUP-2026-026",
+      "NW2-009",
+      "enclosure",
+      "inspection_pending",
+      "Jonah Park",
+      "2026-09-25",
+      "true"
+    ],
+    [
+      "SUP-2026-028",
+      "NW2-012",
+      "export",
+      "resolved",
+      "Marcus Webb",
+      "2026-09-27",
+      "true"
+    ],
+    [
+      "SUP-2026-027",
+      "NW2-006",
+      "export",
+      "resolved",
+      "Tina Okonkwo",
+      "2026-09-27",
+      "true"
+    ]
+  ]
+}

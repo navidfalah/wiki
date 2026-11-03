@@ -1,0 +1,41 @@
+From: Jonah Park <jonah.park@aurora.example>
+To: Priya Nair <priya.nair@aurora.example>
+Subject: Re: [SAMPLE] DN-2026-041: Pilot equipment receiving record
+Date: Wed, 16 Sep 2026 12:00:00 +0200
+Message-ID: <sample-thread-4-3@aurora.example>
+In-Reply-To: <sample-thread-4-2@aurora.example>
+References:
+ <sample-thread-4-1@aurora.example> <sample-thread-4-2@aurora.example>
+X-Synthetic-Data: true
+MIME-Version: 1.0
+Content-Type: multipart/mixed; boundary="===============0625224070337721087=="
+
+--===============0625224070337721087==
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: quoted-printable
+
+[SAMPLE] Fictional Aurora Labs company record. Not research findings.
+
+Hello Priya,
+
+Match the packing slip to PO-2026-084. Separate ready stock from QA returns. =
+Retain each serial number and any visible enclosure damage.
+
+Reference: DN-2026-041
+Project: GH-03
+Record owner: Elena Voss
+
+Regards,
+Jonah Park
+Aurora Labs
+
+--===============0625224070337721087==
+Content-Type: text/csv
+Content-Transfer-Encoding: base64
+Content-Disposition: attachment; filename="DN-2026-041-status.csv"
+MIME-Version: 1.0
+
+cmVjb3JkX2lkLHN0YXR1cyxzeW50aGV0aWMKRE4tMjAyNi0wNDEscGVuZGluZ19yZXZpZXcsdHJ1
+ZQo=
+
+--===============0625224070337721087==--

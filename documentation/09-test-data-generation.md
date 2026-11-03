@@ -186,6 +186,44 @@ cd compiler && python main.py --force
 
 See [05-compiler-pipeline.md](./05-compiler-pipeline.md) and [06-extraction-and-synthesis.md](./06-extraction-and-synthesis.md).
 
+## Mixed company input pack
+
+The newer Aurora Labs company pack is staged in `output/aurora-company-inputs/`,
+outside the human-owned raw-source tree. Its `inputs/` directory contains 125
+fictional sources in 17 formats: PNG, PDF, DOCX, XLSX, PPTX, EML, CSV, TSV,
+JSON, XML, HTML, YAML, LOG, MD, TXT, RTF, and ZIP. It includes ten generated
+images, six email threads with CSV attachments, and English and German records.
+
+The sources share people, device serials, purchase orders, and incident IDs.
+Historical planning assumptions deliberately differ from later requirements.
+These are synthetic ingestion fixtures, not research findings.
+
+- `manifest.json` and `manifest.csv` list source files, checksums, and expected
+  ingestion behavior.
+- `reference/expected-answers.json` supplies ten evaluation questions with
+  supporting source paths. Keep this reference directory out of ingestion.
+- `reference/image-prompts.json` records the built-in image generation prompts.
+- `output/aurora-company-inputs.zip` contains the full source set.
+- `output/aurora-starter-inputs.zip` contains a smaller selection.
+
+Extract the outer archives before uploading their contents. The current
+compiler lists ZIP entries rather than ingesting them recursively, treats RTF
+as an opaque attachment, and cannot OCR the two image-only PDF scan fixtures.
+The corresponding PNGs separately exercise vision captioning.
+
+`compiler/scripts/dev/generate_company_input_pack.py generate --output PATH`
+creates the text, structured, email, DOCX, and text-PDF sources in a new empty
+directory. It requires the compiler dependencies plus ReportLab and refuses
+destinations within `data/raw/` or its ancestors. It makes no API calls.
+`generate_company_office_files.mjs` creates the four workbooks and two decks
+using the Codex bundled artifact runtime; its header documents the arguments.
+After adding the ten generated PNGs under `inputs/images/`, run the Python
+generator's `finalize` phase against the same output directory to add the
+image-only PDFs, manifests, evaluation questions, and upload archives. Both
+phases avoid replacing existing outputs. The bundled authoring runtime is
+required to recreate the office files; the generators do not regenerate the
+images or run the compiler.
+
 ## Next
 
 - [10-data-layout-and-state.md](./10-data-layout-and-state.md)

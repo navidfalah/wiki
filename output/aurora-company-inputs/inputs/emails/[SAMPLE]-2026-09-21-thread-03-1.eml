@@ -1,0 +1,25 @@
+From: Marcus Webb <marcus.webb@aurora.example>
+To: Tina Okonkwo <tina.okonkwo@aurora.example>
+Subject: [SAMPLE] QA-RETEST-021: Eight node retest status
+Date: Mon, 21 Sep 2026 10:00:00 +0200
+Message-ID: <sample-thread-3-1@aurora.example>
+X-Synthetic-Data: true
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: quoted-printable
+MIME-Version: 1.0
+
+[SAMPLE] Fictional Aurora Labs company record. Not research findings.
+
+Hello Tina,
+
+The eight-node rejoin retest for INC-2026-017 is blocked because the gateway =
+trace is incomplete. No passing result has been recorded for firmware 0.9.4-r=
+c2.
+
+Reference: QA-RETEST-021
+Project: GH-03
+Record owner: Priya Nair
+
+Regards,
+Marcus Webb
+Aurora Labs
