@@ -1,8 +1,9 @@
 import type { chat as en } from '../en/chat';
 
 export const chat: Record<keyof typeof en, string> = {
+  'chat.status.extractive': 'Quellenauszüge; keine Antwortgenerierung',
   'chat.title': 'Chat',
-  'chat.intro': 'Stellen Sie eine Frage und erhalten Sie eine Antwort, die auf den kompilierten Wiki-Seiten beruht und diese als Quellen nennt.',
+  'chat.intro': 'Durchsuchen Sie Ihre Originalquellen und lesen Sie passende Auszüge mit Verweisen. Neue Chats durchsuchen Originaldateien; auch Wiki-Seiten sind durchsuchbar.',
   'chat.newChat': 'Neuer Chat',
   'chat.searchChats': 'Chats durchsuchen …',
   'chat.scope.wikiTitle': 'Die kompilierten Wiki-Seiten durchsuchen',

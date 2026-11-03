@@ -1,5 +1,9 @@
 # 05 — Compiler Pipeline
 
+> Current behavior: linking uses Python only. Chat defaults to local keyword search and source excerpts. See [42 — Minimal AI](./42-minimal-ai.md) for the simplified workflow and migration of older settings.
+
+The build now lives in **`compiler/pipeline/`**, with one module per stage, a runner, reporting, and command-line parsing. See the [compiler guide](../compiler/README.md) for the current module map. `main.py` remains the compatible entry point.
+
 Entry point: `compiler/main.py`  
 Function: `run_pipeline(*, force=False)`
 

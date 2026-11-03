@@ -49,9 +49,9 @@ def test_pairwise_evaluate_penalizes_a_missed_merge():
     assert report.gold_pairs == 1
 
 
-def test_run_eval_on_the_real_dataset_scores_perfectly_with_heuristic_tier_alone():
+def test_exact_identity_policy_exposes_the_recall_tradeoff_on_the_pilot():
     report = run_eval()
-    assert report.precision == 1.0
-    assert report.recall == 1.0
-    assert report.f1 == 1.0
+    assert report.predicted_pairs == 0
+    assert report.correct_pairs == 0
+    assert report.recall == 0.0
     assert report.gold_pairs > 0

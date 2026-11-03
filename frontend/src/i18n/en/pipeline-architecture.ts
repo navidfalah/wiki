@@ -1,8 +1,8 @@
 export const pipelineArchitecture = {
   'pipeline-architecture.title': 'Pipeline Architecture',
-  'pipeline-architecture.introHtml': 'Configure how the compiler processes raw sources into wiki pages. These are saved defaults -- every future run on the <a href="/pipelines" class="text-generated underline">Pipelines</a> page uses them automatically.',
+  'pipeline-architecture.introHtml': 'Choose source folders and privacy settings. AI is used for topic extraction and page writing; links are added by Python.',
   'pipeline-architecture.stages': 'Pipeline stages',
-  'pipeline-architecture.stagesHint': '1. Read → 2. Extract → 3. Synthesize → 4. Index → 5. Cross-link. These toggles change stage 2 (extraction) and stage 3 (synthesis) behavior.',
+  'pipeline-architecture.stagesHint': 'Extra model reviews and automatic correction feedback are not part of the standard build.',
   'pipeline-architecture.critic': 'Critic pass',
   'pipeline-architecture.criticHint': 'After synthesis, run a second LLM pass that strips sentences it can\'t ground in the source chunks. Roughly doubles per-page cost.',
   'pipeline-architecture.criticSamples': 'Critic samples (self-consistency)',

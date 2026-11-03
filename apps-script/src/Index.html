@@ -1,0 +1,33 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <base target="_top">
+  <meta charset="utf-8">
+  <?!= include_('Fonts'); ?>
+  <?!= include_('Styles'); ?>
+</head>
+<body>
+  <div id="app-shell" class="app-shell">
+    <aside class="sidebar">
+      <a class="brand" href="#dashboard" aria-label="Wissensbau"><span class="brand-mark">W</span>Wissensbau</a>
+      <p class="sidebar-caption" data-t="researchProject"></p>
+      <nav id="navigation" data-t-aria="navigation"></nav>
+      <div class="sidebar-bottom">
+        <span class="drive-dot"></span><span data-t="driveStorage"></span>
+        <div class="language-switch" role="group" data-t-aria="language">
+          <button type="button" data-language="en">EN</button><button type="button" data-language="de">DE</button>
+        </div>
+      </div>
+    </aside>
+    <main>
+      <header class="topbar"><span id="breadcrumb"></span><div class="topbar-right"><span id="mode-badge" class="badge"></span><a id="workspace-link" class="text-link" href="#" target="_blank" rel="noopener" data-t="openDrive" hidden></a></div></header>
+      <div id="build-banner" class="build-banner" hidden></div>
+      <div id="content" class="content" aria-live="polite"></div>
+      <footer><span data-t="footer"></span></footer>
+    </main>
+  </div>
+  <div id="toast" role="status" hidden></div>
+  <?!= include_('Translations'); ?>
+  <?!= include_('Client'); ?>
+</body>
+</html>

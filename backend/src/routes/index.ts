@@ -13,7 +13,6 @@ import { registerDocRoutes } from './docs';
 import { registerBuildRoutes } from './builds';
 import { registerKnowledgeRoutes } from './knowledge';
 import { registerSearchRoutes } from './search';
-import { registerReviewRoutes } from './review';
 import { registerChatRoutes } from './chat';
 import { registerSettingsRoutes } from './settings';
 import { registerConnectorRoutes } from './connectors';
@@ -36,7 +35,6 @@ export function registerRoutes(app: Express): void {
   registerBuildRoutes(app);
   registerKnowledgeRoutes(app);
   registerSearchRoutes(app);
-  registerReviewRoutes(app);
   registerChatRoutes(app);
   registerSettingsRoutes(app);
   registerConnectorRoutes(app);

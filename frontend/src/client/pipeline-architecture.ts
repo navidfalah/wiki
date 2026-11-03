@@ -28,16 +28,7 @@ function fillForm(settings: PipelineSettings) {
       el.value = String(settings[key] ?? '');
     }
   });
-  updateCriticSuboptionsVisibility();
   renderFolders(settings.excluded_folders);
-}
-
-function updateCriticSuboptionsVisibility() {
-  const criticPass = document.querySelector<HTMLInputElement>('[data-field="critic_pass"]');
-  const suboptions = document.getElementById('critic-suboptions');
-  if (!criticPass || !suboptions) return;
-  suboptions.classList.toggle('hidden', !criticPass.checked);
-  suboptions.classList.toggle('flex', criticPass.checked);
 }
 
 function renderFolders(excludedFolders: string[]) {
@@ -129,6 +120,5 @@ async function save() {
 }
 
 document.getElementById('save-pipeline-arch-btn')?.addEventListener('click', save);
-document.querySelector('[data-field="critic_pass"]')?.addEventListener('change', updateCriticSuboptionsVisibility);
 
 load();

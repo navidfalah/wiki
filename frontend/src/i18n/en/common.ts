@@ -15,7 +15,7 @@ export const common = {
   'nav.pipelineArchitecture': 'Pipeline Architecture',
   'nav.section.chat': 'Chat',
   'nav.chat': 'Chat',
-  'nav.ragArchitecture': 'RAG Architecture',
+  'nav.ragArchitecture': 'Search settings',
   'nav.section.insights': 'Insights',
   'nav.analytics': 'Analytics',
   'nav.usage': 'Usage',

@@ -41,7 +41,7 @@ def test_load_rag_settings_reads_valid_overrides(tmp_path, monkeypatch):
     )
     monkeypatch.setattr(rag_settings, "RAG_SETTINGS_FILE", settings_file)
     settings = load_rag_settings()
-    assert settings.architecture == "hyde"
+    assert settings.architecture == "hybrid"
     assert settings.retrieval_mode == "bm25"
     assert settings.top_k == 8
     assert settings.bm25_k1 == 1.2
@@ -61,14 +61,14 @@ def test_load_rag_settings_unknown_retrieval_mode_falls_back_to_hybrid_rerank(tm
     settings_file = tmp_path / "rag_settings.json"
     settings_file.write_text(json.dumps({"retrieval_mode": "nonsense"}), encoding="utf-8")
     monkeypatch.setattr(rag_settings, "RAG_SETTINGS_FILE", settings_file)
-    assert load_rag_settings().retrieval_mode == "hybrid_rerank"
+    assert load_rag_settings().retrieval_mode == "bm25"
 
 
 def test_load_rag_settings_unknown_answer_mode_falls_back_to_auto(tmp_path, monkeypatch):
     settings_file = tmp_path / "rag_settings.json"
     settings_file.write_text(json.dumps({"answer_mode": "nonsense"}), encoding="utf-8")
     monkeypatch.setattr(rag_settings, "RAG_SETTINGS_FILE", settings_file)
-    assert load_rag_settings().answer_mode == "auto"
+    assert load_rag_settings().answer_mode == "extractive"
 
 
 def test_load_rag_settings_non_positive_top_k_falls_back_to_default(tmp_path, monkeypatch):
@@ -118,11 +118,11 @@ def test_enable_rerank_only_true_for_hybrid_rerank():
     assert RagSettings(retrieval_mode="bm25").enable_rerank is False
 
 
-def test_default_settings_match_pre_existing_hybrid_rerank_behavior():
+def test_default_settings_make_no_model_calls():
     defaults = RagSettings()
     assert defaults.architecture == "hybrid"
-    assert defaults.retrieval_mode == "hybrid_rerank"
-    assert defaults.enable_embeddings is True
-    assert defaults.enable_rerank is True
+    assert defaults.retrieval_mode == "bm25"
+    assert defaults.enable_embeddings is False
+    assert defaults.enable_rerank is False
     assert defaults.use_vector_store is False
-    assert defaults.answer_mode == "auto"
+    assert defaults.answer_mode == "extractive"

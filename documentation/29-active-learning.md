@@ -1,5 +1,7 @@
 # 29 — Active-Learning Human Review/Correction Loop
 
+> Current behavior: The app review page now displays wiki-health issues only. Pilot claim scoring/corrections and temporal facts are no longer exposed as app endpoints. Research utilities remain available offline. See [42 — Minimal AI](./42-minimal-ai.md).
+
 Every prior task in this series (trust propagation, temporal modeling,
 entity resolution) produces a *judgment* — a score, a cluster, a current/
 superseded call. This task closes the loop on that: it turns

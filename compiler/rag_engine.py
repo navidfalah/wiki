@@ -198,7 +198,18 @@ def build_raw_corpus(raw_dir: Path | None = None) -> list[Passage]:
     passages: list[Passage] = []
     for path in synthesizer.discover_raw_source_files(root):
         try:
-            chunks = synthesizer.read_chunks_for_path(path, root, None)
+            # Passing llm=None to the general image reader would create a
+            # configured client through require_llm(). Raw chat must never
+            # caption images implicitly, even when an API key is present.
+            if path.suffix.lower() in synthesizer.IMAGE_EXTENSIONS:
+                rel = str(path.relative_to(root)).replace("\\", "/")
+                chunks = [synthesizer.RawChunk(
+                    source_path=rel, chunk_index=0,
+                    text=f"[{path.name} — image content is not searched in raw-source mode]",
+                    source_type="image",
+                )]
+            else:
+                chunks = synthesizer.read_chunks_for_path(path, root, None)
         except Exception:
             rel = str(path.relative_to(root)).replace("\\", "/")
             chunks = [synthesizer.RawChunk(source_path=rel, chunk_index=0, text=f"[{path.name} — preview unavailable without an LLM configured]")]
@@ -359,7 +370,7 @@ def _deduped_sources(scored: list[ScoredPassage]) -> list[dict[str, Any]]:
 
 
 def _extractive_answer(scored: list[ScoredPassage], source: str = "wiki") -> str:
-    lines = [f"No LLM is configured, so here are the closest matches from the {_corpus_label(source)}:"]
+    lines = [f"Here are the closest source excerpts from the {_corpus_label(source)}:"]
     for item in scored[:3]:
         passage = item.passage
         snippet = passage.text if len(passage.text) <= 400 else f"{passage.text[:400]}…"
@@ -450,11 +461,15 @@ def _retrieve(
     # independent of the pipeline's "default" so the wiki UI's Chat page can
     # point retrieval + answer generation at the local model or a different
     # cloud API without touching pipeline runs.
-    client = llm or LLMClient.for_purpose("chat")
+    client = llm or (LLMClient.for_purpose("chat") if settings.enable_embeddings else None)
     effective_top_k = top_k if top_k is not None else settings.top_k
     bm25_config = hybrid_retrieval.BM25Config(k1=settings.bm25_k1, b=settings.bm25_b)
 
-    if settings.architecture == "hybrid":
+    if settings.retrieval_mode == "bm25":
+        docs, by_id = index_corpus(corpus)
+        ranked = hybrid_retrieval.bm25_rank(query, docs, top_k=effective_top_k, config=bm25_config)
+        scored = [ScoredPassage(by_id[r.doc_id], r.score) for r in ranked]
+    elif settings.architecture == "hybrid":
         vector_store = VectorStore(VECTOR_STORE_FILE) if settings.use_vector_store else None
         scored = retrieve_hybrid(
             query,
@@ -527,7 +542,7 @@ def answer_question(
     scored, sources, client = retrieval["scored"], retrieval["sources"], retrieval["client"]
     force_extractive = retrieval["settings"].answer_mode == "extractive"
 
-    if client.available and not force_extractive:
+    if not force_extractive and client is not None and client.available:
         prompt = _build_prompt(query.strip(), scored, history, source)
         try:
             answer = client.generate_response(prompt, _system_prompt(source), temperature=0.1).strip()
@@ -578,7 +593,7 @@ def answer_question_stream(
     force_extractive = retrieval["settings"].answer_mode == "extractive"
     yield {"type": "sources", "sources": sources}
 
-    if client.available and not force_extractive:
+    if not force_extractive and client is not None and client.available:
         prompt = _build_prompt(query.strip(), scored, history, source)
         try:
             full_text = ""

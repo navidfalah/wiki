@@ -1,5 +1,7 @@
 # 03 — Architecture
 
+> Current behavior: linking uses Python only. Chat defaults to local keyword search and source excerpts. See [42 — Minimal AI](./42-minimal-ai.md) for the simplified workflow and migration of older settings.
+
 ## System diagram
 
 ```mermaid

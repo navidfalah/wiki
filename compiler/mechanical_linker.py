@@ -1,40 +1,8 @@
-"""Deterministic, offline cross-linking pass.
+"""Deterministic exact-title linking used by the compiler.
 
-linker.py's link_page_with_llm() relies entirely on a model to notice a
-mention of another topic and insert a markdown link — there is no
-mechanical fallback or floor, so a page's cross-linking quality depends
-completely on the model catching every mention, every time, with no way to
-verify it did (see documentation/07-linking-moc-and-pages.md). This module adds a
-cheap, fully deterministic pass applied *before* the LLM pass in
-link_and_export_pages(): scan the page body for an exact (case-insensitive,
-word-boundary, optional possessive) mention of another topic's title and
-wrap its first occurrence in a markdown link.
-
-This does not replace link_page_with_llm() — it can't catch a paraphrased
-or indirect reference ("the widget" instead of "Nova Widget"), which is
-exactly the kind of connection an LLM is actually good at. What it
-guarantees is a floor: every *unambiguous, exact* mention of another page's
-title gets linked regardless of what the model does with it, and running
-the LLM pass afterward only has to find what this pass couldn't — it
-should never *undo* a link this pass already added, since a well-behaved
-LLM has no reason to remove an existing correct link.
-
-Deterministic and idempotent by construction: once a mention is wrapped in
-`[text](./file.md)`, it becomes a protected span (an existing markdown
-link), so running this pass again on its own output links nothing new.
-
-**On the history here, stated plainly rather than glossed over:** a
-similarly-shaped `link_page_heuristic()` existed in `linker.py` once and
-was deliberately deleted (commit `09a7f31`) as part of removing an entire
-parallel no-LLM "heuristic mode" that duplicated extraction, synthesis,
-*and* linking without an API key — two full pipelines to maintain, for a
-project that decided "the compiler is LLM-only" (see README.md). This
-module is not that mode resurrected. The LLM is still required
-(`link_and_export_pages()` still calls `require_llm()` and still runs
-`link_page_with_llm()` on every page, unconditionally) — this only adds a
-narrow, single-purpose pre-pass ahead of it, not an alternative path around
-it. Extraction and synthesis are untouched; nothing here lets the compiler
-run without a key.
+The export path calls auto_link_exact_titles without inferred aliases or an
+LLM pass. Alias helpers below remain for standalone research experiments;
+they are not part of normal page export.
 """
 
 from __future__ import annotations

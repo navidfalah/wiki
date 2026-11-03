@@ -1,5 +1,7 @@
 # 01 — Overview
 
+> Current behavior: The standard app now uses local BM25 retrieval and extractive answers, with new chats searching raw sources. AI remains required for compile-time topic extraction and page synthesis. Linking uses exact titles in Python; semantic retrieval is optional. See [42 — Minimal AI](./42-minimal-ai.md).
+
 ## What LLM Wiki is
 
 **LLM Wiki** is a personal knowledge base that turns unstructured text into a linked, browsable wiki. You add raw notes (`.txt`, `.md`) to `data/raw/`. A Python **compiler** reads them, extracts topics and entities, writes markdown pages, injects cross-links, and exports Docusaurus-ready files to `wiki-app/docs/`. A **Docusaurus 3** site renders those pages in the browser.

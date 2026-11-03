@@ -42,11 +42,8 @@ def test_build_entity_graph_merges_name_and_email_variants_across_sources():
         }
     )
     clusters = build_entity_graph(state)
-    assert len(clusters) == 1
-    cluster = clusters[0]
-    assert cluster.canonical_name == "Mira Chen"
-    assert cluster.aliases == {"Mira Chen", "Mira", "mira.chen@auroralabs.example"}
-    assert cluster.sources == {"notes/a.md", "transcripts/b.txt", "emails/c.eml"}
+    assert len(clusters) == 3
+    assert {c.canonical_name for c in clusters} == {"Mira Chen", "Mira", "mira.chen@auroralabs.example"}
 
 
 def test_build_entity_graph_keeps_hard_negatives_apart():

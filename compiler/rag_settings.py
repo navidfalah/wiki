@@ -1,13 +1,8 @@
-"""User-configurable RAG architecture settings.
+"""App search settings: local BM25 and extractive answers by default.
 
-Read from data/rag_settings.json -- the same file the Node backend writes
-via backend/src/lib/ragSettings.ts's RAG Architecture settings page. This
-module is the compiler-side half of that wiring: rag_engine.py loads a
-RagSettings once per retrieval call and threads it through
-hybrid_retrieval.py's three tiers (see rag_engine.py's module docstring for
-what each tier does). Missing/invalid file -> defaults matching the
-hybrid+rerank behavior rag_engine.py shipped with before this file existed,
-so an unconfigured install behaves exactly as it did before.
+Persisted experimental architectures, reranking and generated answers are
+normalized to the supported app choices. Hybrid embeddings are an explicit
+opt-in. Legacy literals remain available to standalone research utilities.
 """
 
 from __future__ import annotations
@@ -24,23 +19,23 @@ RetrievalMode = Literal["bm25", "hybrid", "hybrid_rerank"]
 AnswerMode = Literal["auto", "extractive"]
 Architecture = Literal["hybrid", "naive", "hyde", "fusion", "graph", "corrective"]
 
-_RETRIEVAL_MODES = ("bm25", "hybrid", "hybrid_rerank")
-_ANSWER_MODES = ("auto", "extractive")
+_RETRIEVAL_MODES = ("bm25", "hybrid")
+_ANSWER_MODES = ("extractive",)
 # "hybrid" is the pre-existing BM25/fusion/rerank stack, tuned by
 # retrieval_mode below; the rest are rag_architectures.py's ARCHITECTURES
 # registry, each a self-contained strategy that ignores retrieval_mode.
-_ARCHITECTURES = ("hybrid", "naive", "hyde", "fusion", "graph", "corrective")
+_ARCHITECTURES = ("hybrid",)
 
 
 @dataclass(frozen=True)
 class RagSettings:
     architecture: Architecture = "hybrid"
-    retrieval_mode: RetrievalMode = "hybrid_rerank"
+    retrieval_mode: RetrievalMode = "bm25"
     top_k: int = 5
     bm25_k1: float = 1.5
     bm25_b: float = 0.75
     use_vector_store: bool = False
-    answer_mode: AnswerMode = "auto"
+    answer_mode: AnswerMode = "extractive"
 
     @property
     def enable_embeddings(self) -> bool:
@@ -74,11 +69,11 @@ def load_rag_settings() -> RagSettings:
 
     retrieval_mode = raw.get("retrieval_mode")
     if retrieval_mode not in _RETRIEVAL_MODES:
-        retrieval_mode = "hybrid_rerank"
+        retrieval_mode = "bm25"
 
     answer_mode = raw.get("answer_mode")
     if answer_mode not in _ANSWER_MODES:
-        answer_mode = "auto"
+        answer_mode = "extractive"
 
     top_k = int(_as_number(raw, "top_k", 5, int))
     if top_k < 1:

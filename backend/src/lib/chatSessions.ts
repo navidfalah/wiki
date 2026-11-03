@@ -160,7 +160,7 @@ export function createChatSession(title?: string): ChatSession {
     created_at: now,
     updated_at: now,
     resource_scope: null,
-    corpus_source: 'wiki',
+    corpus_source: 'raw',
     llm_profile_id: null,
     messages: [],
   };

@@ -1,5 +1,7 @@
 # 34 — RAG Architectures (Naive, HyDE, RAG-Fusion, GraphRAG-lite, Corrective)
 
+> Current behavior: Experimental architectures described below remain research utilities, but are no longer selectable through app settings. Saved experimental choices migrate to keyword search and extractive answers. See [42 — Minimal AI](./42-minimal-ai.md).
+
 `hybrid_retrieval.py` + `rag_engine.retrieve_hybrid()` ([25](./25-hybrid-retrieval.md))
 cover one family of RAG design: retrieve, optionally fuse in embeddings,
 optionally rerank with the chat model. That's the *hybrid retrieve-and-rerank*

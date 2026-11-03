@@ -54,11 +54,11 @@ describe('loadPipelineSettings', () => {
       web_search: true,
     }));
     const settings = loadPipelineSettings();
-    expect(settings.critic_pass).toBe(true);
-    expect(settings.critic_regenerate).toBe(true);
+    expect(settings.critic_pass).toBe(false);
+    expect(settings.critic_regenerate).toBe(false);
     expect(settings.use_corrections).toBe(false);
     expect(settings.redact_pii).toBe(false);
-    expect(settings.web_search).toBe(true);
+    expect(settings.web_search).toBe(false);
   });
 
   it('floors a fractional critic_samples value', () => {
@@ -122,7 +122,7 @@ describe('savePipelineSettings', () => {
 
   it('coerces every boolean field independently of the others', () => {
     const settings = savePipelineSettings({ critic_pass: true, redact_pii: 'yes', web_search: 0 });
-    expect(settings.critic_pass).toBe(true);
+    expect(settings.critic_pass).toBe(false);
     expect(settings.redact_pii).toBe(true);
     expect(settings.web_search).toBe(false);
     expect(settings.critic_regenerate).toBe(false);
@@ -138,7 +138,7 @@ describe('savePipelineSettings', () => {
     const reloaded = loadPipelineSettings();
     expect(reloaded).toEqual({
       ...DEFAULTS,
-      critic_pass: true,
+      critic_pass: false,
       critic_samples: 4,
       excluded_folders: ['drafts'],
       redact_pii: false,

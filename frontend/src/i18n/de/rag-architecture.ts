@@ -1,7 +1,8 @@
 import type { ragArchitecture as en } from '../en/rag-architecture';
 
 export const ragArchitecture: Record<keyof typeof en, string> = {
-  'rag-architecture.title': 'RAG-Architektur',
+  'rag-architecture.simpleIntro': 'Antworten zitieren Quellenabschnitte. Die Stichwortsuche benötigt keine KI-Aufrufe. Die optionale semantische Suche nutzt Embeddings für ähnliche Formulierungen; sie erzeugt keine Antworten.',
+  'rag-architecture.title': 'Sucheinstellungen',
   'rag-architecture.introHtml': 'Legen Sie fest, wie der <a href="/chat" class="text-generated underline">Chat</a> im kompilierten Wiki recherchiert und antwortet. Änderungen gelten ab der nächsten Frage – ein Neuaufbau ist nicht nötig.',
   'rag-architecture.presets': 'Voreinstellungen',
   'rag-architecture.presetsHint': 'Speichern Sie die untenstehende Konfiguration unter einem Namen und wechseln Sie dann zwischen gespeicherten Architekturen, ohne jedes Feld neu einzugeben.',

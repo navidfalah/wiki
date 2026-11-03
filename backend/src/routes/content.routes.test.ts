@@ -171,9 +171,7 @@ describe('resources, graph and analytics', () => {
 describe('bridged to Python', () => {
   it.each([
     ['/api/emails', 'emails'],
-    ['/api/review-queue', 'candidates'],
     ['/api/entity-graph', 'nodes'],
-    ['/api/temporal-facts', 'groups'],
     ['/api/chat/status', 'corpus_pages'],
   ])('%s passes the bridge result through', async (url, key) => {
     const { status, body } = await h.json('GET', url, auth());

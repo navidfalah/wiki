@@ -1,5 +1,9 @@
 # LLM Wiki — Documentation Index
 
+New deployment target: [43 — Drive-native Google Apps Script](./43-google-apps-script.md).
+
+Current application behavior: [42 — Minimal AI operation](./42-minimal-ai.md).
+
 **New to the codebase? Start with the [project map](project-map.md).**
 
 Detailed project documentation, split by topic. Start with [01-overview.md](./01-overview.md), then follow the numbered guides in order or jump to what you need.

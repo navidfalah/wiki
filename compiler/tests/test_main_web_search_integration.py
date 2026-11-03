@@ -1,4 +1,4 @@
-"""Integration check that main.py's step_synthesize() actually wires
+"""Integration check that the synthesis stage actually wires
 --web-search into synthesis: web results only get fetched for dirty
 topics, respect max_topics, and end up in the returned grouped mapping
 (and therefore in what gets synthesized) -- not just that web_search.py's
@@ -6,8 +6,8 @@ own unit tests pass in isolation."""
 
 from pathlib import Path
 
-import main
 import web_search
+from pipeline import synthesis
 
 
 class FakeLLM:
@@ -50,7 +50,7 @@ def _extractions(topic: str = "MeshSync", source: str = "notes/a.md") -> dict:
 
 
 def test_step_synthesize_adds_web_results_to_dirty_topic_only(tmp_path: Path, monkeypatch):
-    monkeypatch.setattr(main, "TEMP_OUTPUT_DIR", tmp_path / "temp_output")
+    monkeypatch.setattr(synthesis, "TEMP_OUTPUT_DIR", tmp_path / "temp_output")
 
     calls = []
 
@@ -60,7 +60,7 @@ def test_step_synthesize_adds_web_results_to_dirty_topic_only(tmp_path: Path, mo
 
     monkeypatch.setattr(web_search, "web_search", fake_web_search)
 
-    result = main.step_synthesize(
+    result = synthesis.step_synthesize(
         _extractions(),
         FakeLLM(),
         force=False,
@@ -76,7 +76,7 @@ def test_step_synthesize_adds_web_results_to_dirty_topic_only(tmp_path: Path, mo
 
 
 def test_step_synthesize_skips_web_search_when_no_changes(tmp_path: Path, monkeypatch):
-    monkeypatch.setattr(main, "TEMP_OUTPUT_DIR", tmp_path / "temp_output")
+    monkeypatch.setattr(synthesis, "TEMP_OUTPUT_DIR", tmp_path / "temp_output")
     (tmp_path / "temp_output").mkdir()
 
     calls = []
@@ -85,14 +85,14 @@ def test_step_synthesize_skips_web_search_when_no_changes(tmp_path: Path, monkey
     extractions = _extractions()
     extractions["incremental"] = {"new": [], "modified": [], "deleted": [], "unchanged": ["notes/a.md"]}
 
-    result = main.step_synthesize(extractions, FakeLLM(), force=False, web_search_enabled=True)
+    result = synthesis.step_synthesize(extractions, FakeLLM(), force=False, web_search_enabled=True)
 
     assert calls == []
     assert result["web_added"] == 0
 
 
 def test_step_synthesize_respects_max_topics(tmp_path: Path, monkeypatch):
-    monkeypatch.setattr(main, "TEMP_OUTPUT_DIR", tmp_path / "temp_output")
+    monkeypatch.setattr(synthesis, "TEMP_OUTPUT_DIR", tmp_path / "temp_output")
 
     extractions = {
         "chunk_count": 2,
@@ -117,18 +117,18 @@ def test_step_synthesize_respects_max_topics(tmp_path: Path, monkeypatch):
 
     monkeypatch.setattr(web_search, "web_search", fake_web_search)
 
-    main.step_synthesize(extractions, FakeLLM(), force=False, web_search_enabled=True, web_search_max_topics=1)
+    synthesis.step_synthesize(extractions, FakeLLM(), force=False, web_search_enabled=True, web_search_max_topics=1)
 
     assert len(calls) == 1
 
 
 def test_step_synthesize_web_search_disabled_by_default(tmp_path: Path, monkeypatch):
-    monkeypatch.setattr(main, "TEMP_OUTPUT_DIR", tmp_path / "temp_output")
+    monkeypatch.setattr(synthesis, "TEMP_OUTPUT_DIR", tmp_path / "temp_output")
 
     calls = []
     monkeypatch.setattr(web_search, "web_search", lambda query, **kwargs: calls.append(query) or [])
 
-    result = main.step_synthesize(_extractions(), FakeLLM(), force=False)
+    result = synthesis.step_synthesize(_extractions(), FakeLLM(), force=False)
 
     assert calls == []
     assert result["web_added"] == 0

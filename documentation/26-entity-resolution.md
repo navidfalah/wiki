@@ -1,5 +1,7 @@
 # 26 — Entity Resolution / Coreference
 
+> Current behavior: Current automatic identity matching only merges normalized exact names. First-name/full-name and email/name inference is no longer automatic. This reduces merge coverage; the earlier pilot scores below do not describe the current default. See [42 — Minimal AI](./42-minimal-ai.md).
+
 `synthesizer.py`'s per-chunk entity extraction returns a name *string* per
 mention with no notion that `"Mira Chen"`, `"Mira"`, and
 `"mira.chen@auroralabs.example"` are the same person — so what `linker.py`

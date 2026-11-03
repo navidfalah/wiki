@@ -131,7 +131,7 @@ def test_build_alias_topic_index_adds_a_bare_first_name_alias():
     ]
     expanded = build_alias_topic_index(topic_index, mentions)
     assert expanded["Mira Chen"] == "mira-chen.md"
-    assert expanded["Mira"] == "mira-chen.md"
+    assert "Mira" not in expanded
 
 
 def test_build_alias_topic_index_never_overrides_an_existing_title():
@@ -227,4 +227,4 @@ def test_auto_link_exact_titles_uses_alias_expanded_index():
 
     body = "Mira reported the read interval is 15 minutes."
     result = auto_link_exact_titles(body, expanded, self_title="X")
-    assert "[Mira](./mira-chen.md)" in result.body
+    assert "[Mira](./mira-chen.md)" not in result.body

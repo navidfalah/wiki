@@ -9,7 +9,7 @@ Browser
   → backend/src/routes/       endpoints grouped by feature
   → backend/src/lib/          application logic and filesystem storage
   → compiler/cli.py           Python engine commands (through pythonBridge.ts)
-    compiler/main.py          compilation pipeline
+    compiler/main.py          compile entry point → pipeline/runner.py
 ```
 
 ## Where to make a change
@@ -23,7 +23,7 @@ Browser
 | API behavior | `backend/src/routes/<feature>.ts` |
 | Storage and application rules | `backend/src/lib/` |
 | Backend data locations | `backend/src/paths.ts` |
-| Compilation stages | `compiler/main.py`, then `synthesizer.py`, `linker.py`, `moc_generator.py` |
+| Compilation stages | `compiler/pipeline/runner.py` and the stage modules; see [compiler guide](../compiler/README.md) |
 | Retrieval and chat | `compiler/rag_engine.py`, `hybrid_retrieval.py`, `rag_settings.py` |
 | External data connectors | `compiler/connectors/`, `connectors_service.py` |
 | Local and production deployment | `docker-compose.yml`, `docker-compose.prod.yml`, `deploy/` |

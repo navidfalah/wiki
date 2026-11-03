@@ -34,8 +34,8 @@ describe('listRagPresets', () => {
 
 describe('saveRagPreset', () => {
   it('rejects a blank name', () => {
-    expect(() => saveRagPreset('', { architecture: 'naive' })).toThrow(RagSettingsError);
-    expect(() => saveRagPreset('   ', { architecture: 'naive' })).toThrow(/name/);
+    expect(() => saveRagPreset('', { architecture: 'hybrid' })).toThrow(RagSettingsError);
+    expect(() => saveRagPreset('   ', { architecture: 'hybrid' })).toThrow(/name/);
   });
 
   it('rejects an invalid settings payload the same way saveRagSettings would', () => {
@@ -43,9 +43,9 @@ describe('saveRagPreset', () => {
   });
 
   it('saves a new preset without touching the active settings file', () => {
-    const preset = saveRagPreset('Fast BM25', { architecture: 'naive', top_k: 3 });
+    const preset = saveRagPreset('Fast BM25', { architecture: 'hybrid', top_k: 3 });
     expect(preset.name).toBe('Fast BM25');
-    expect(preset.settings.architecture).toBe('naive');
+    expect(preset.settings.architecture).toBe('hybrid');
     expect(preset.settings.top_k).toBe(3);
     expect(fs.existsSync(SETTINGS_FILE)).toBe(false);
     expect(listRagPresets()).toHaveLength(1);
@@ -72,9 +72,9 @@ describe('applyRagPreset', () => {
   });
 
   it('writes the preset settings into the active rag_settings.json', () => {
-    const preset = saveRagPreset('Graph', { architecture: 'graph', top_k: 7 });
+    const preset = saveRagPreset('Graph', { architecture: 'hybrid', top_k: 7 });
     const applied = applyRagPreset(preset.id);
-    expect(applied.architecture).toBe('graph');
+    expect(applied.architecture).toBe('hybrid');
     expect(applied.top_k).toBe(7);
     expect(loadRagSettings()).toEqual(applied);
   });
@@ -86,7 +86,7 @@ describe('deleteRagPreset', () => {
   });
 
   it('removes a saved preset', () => {
-    const preset = saveRagPreset('Temp', { architecture: 'naive' });
+    const preset = saveRagPreset('Temp', { architecture: 'hybrid' });
     expect(deleteRagPreset(preset.id)).toEqual({ removed: true });
     expect(listRagPresets()).toEqual([]);
   });

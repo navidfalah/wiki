@@ -107,9 +107,10 @@ describe('chat stream', () => {
     const session = (await h.json('GET', `/api/chat/sessions/${id}`, auth())).body;
     expect(session.messages.map((m: any) => m.role)).toEqual(['user', 'assistant']);
     expect(session.messages[1].content).toBe('Aurora uses a CR2032.');
-    expect(session.messages[1].sources[0]).toMatchObject({ doc_path: 'aurora-labs.md', slug: 'aurora-labs' });
+    expect(session.messages[1].sources[0]).toMatchObject({ doc_path: 'aurora-labs.md' });
+    expect(session.messages[1].sources[0].slug).toBeUndefined();
     const call = h.pythonCalls().filter((c: any) => c.command === 'chat-stream').at(-1) as any;
-    expect(call.input).toMatchObject({ message: 'What battery?', corpus_source: 'wiki' });
+    expect(call.input).toMatchObject({ message: 'What battery?', corpus_source: 'raw' });
   });
 
   it('passes a model error through and saves no answer', async () => {

@@ -103,15 +103,6 @@ export function registerKnowledgeRoutes(app: Express): void {
     }),
   );
 
-  // --- Temporal facts (bridged to temporal_model.py) ------------------------
-
-  app.get(
-    '/api/temporal-facts',
-    wrap(async (_req, res) => {
-      res.json(await runCli('temporal-facts'));
-    }),
-  );
-
   // --- Review report -------------------------------------------------------
 
   app.get(

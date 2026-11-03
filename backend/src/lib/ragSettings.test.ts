@@ -17,12 +17,12 @@ const SETTINGS_FILE = path.join(tmpRoot, 'data', 'rag_settings.json');
 
 const DEFAULTS = {
   architecture: 'hybrid',
-  retrieval_mode: 'hybrid_rerank',
+  retrieval_mode: 'bm25',
   top_k: 5,
   bm25_k1: 1.5,
   bm25_b: 0.75,
   use_vector_store: false,
-  answer_mode: 'auto',
+  answer_mode: 'extractive',
 };
 
 afterEach(() => {
@@ -49,8 +49,8 @@ describe('loadRagSettings', () => {
     fs.writeFileSync(SETTINGS_FILE, JSON.stringify({ architecture: 'bogus', retrieval_mode: 'bogus', answer_mode: 'bogus' }));
     const settings = loadRagSettings();
     expect(settings.architecture).toBe('hybrid');
-    expect(settings.retrieval_mode).toBe('hybrid_rerank');
-    expect(settings.answer_mode).toBe('auto');
+    expect(settings.retrieval_mode).toBe('bm25');
+    expect(settings.answer_mode).toBe('extractive');
   });
 
   it('falls back to defaults for non-numeric-string fields', () => {
@@ -94,7 +94,7 @@ describe('loadRagSettings', () => {
   it('round-trips valid values already on disk', () => {
     fs.mkdirSync(path.dirname(SETTINGS_FILE), { recursive: true });
     fs.writeFileSync(SETTINGS_FILE, JSON.stringify({
-      architecture: 'graph',
+      architecture: 'hybrid',
       retrieval_mode: 'bm25',
       top_k: 12,
       bm25_k1: 2.1,
@@ -103,7 +103,7 @@ describe('loadRagSettings', () => {
       answer_mode: 'extractive',
     }));
     expect(loadRagSettings()).toEqual({
-      architecture: 'graph',
+      architecture: 'hybrid',
       retrieval_mode: 'bm25',
       top_k: 12,
       bm25_k1: 2.1,
@@ -143,17 +143,17 @@ describe('saveRagSettings', () => {
   });
 
   it('persists valid settings and returns them', () => {
-    const saved = saveRagSettings({ architecture: 'naive', top_k: 8 });
-    expect(saved.architecture).toBe('naive');
+    const saved = saveRagSettings({ architecture: 'hybrid', top_k: 8 });
+    expect(saved.architecture).toBe('hybrid');
     expect(saved.top_k).toBe(8);
     expect(fs.existsSync(SETTINGS_FILE)).toBe(true);
     expect(loadRagSettings()).toEqual(saved);
   });
 
   it('preserves existing fields that are not part of the update', () => {
-    saveRagSettings({ architecture: 'fusion', top_k: 3, bm25_k1: 1.9 });
+    saveRagSettings({ architecture: 'hybrid', top_k: 3, bm25_k1: 1.9 });
     const updated = saveRagSettings({ top_k: 9 });
-    expect(updated.architecture).toBe('fusion');
+    expect(updated.architecture).toBe('hybrid');
     expect(updated.bm25_k1).toBe(1.9);
     expect(updated.top_k).toBe(9);
   });
@@ -161,5 +161,19 @@ describe('saveRagSettings', () => {
   it('floors a fractional top_k on save', () => {
     const saved = saveRagSettings({ top_k: 4.6 });
     expect(saved.top_k).toBe(4);
+  });
+});
+
+
+describe('minimal AI migration', () => {
+  it('normalizes old experimental settings instead of silently calling a model', () => {
+    fs.mkdirSync(path.dirname(SETTINGS_FILE), { recursive: true });
+    fs.writeFileSync(SETTINGS_FILE, JSON.stringify({ architecture: 'hyde', retrieval_mode: 'hybrid_rerank', answer_mode: 'auto' }));
+    expect(loadRagSettings()).toMatchObject({ architecture: 'hybrid', retrieval_mode: 'bm25', answer_mode: 'extractive' });
+  });
+  it('rejects removed model operations on settings writes', () => {
+    expect(() => saveRagSettings({ architecture: 'hyde' })).toThrow(RagSettingsError);
+    expect(() => saveRagSettings({ retrieval_mode: 'hybrid_rerank' })).toThrow(RagSettingsError);
+    expect(() => saveRagSettings({ answer_mode: 'auto' })).toThrow(RagSettingsError);
   });
 });

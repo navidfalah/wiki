@@ -16,9 +16,9 @@ from pathlib import Path
 
 import pytest
 
-import main as compiler_main
 import models
 from llm_client import LLMClient
+from pipeline import runner as compiler_main
 
 REAL_ROOT = models.PROJECT_ROOT
 COMPILER_DIR = Path(models.__file__).resolve().parent
@@ -43,7 +43,7 @@ def sandbox(tmp_path, monkeypatch):
 
     for module in list(sys.modules.values()):
         file = getattr(module, "__file__", None)
-        if not file or Path(file).resolve().parent != COMPILER_DIR:
+        if not file or not Path(file).resolve().is_relative_to(COMPILER_DIR):
             continue
         for name, value in list(vars(module).items()):
             if isinstance(value, Path) and (target := moved(value)) is not None:

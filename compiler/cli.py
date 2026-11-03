@@ -68,7 +68,7 @@ def cmd_chat() -> dict:
         raise ValueError("'message' is required")
     history = payload.get("history")
     doc_scope = payload.get("doc_scope")
-    source = str(payload.get("corpus_source") or "wiki")
+    source = str(payload.get("corpus_source") or "raw")
     return rag_engine.answer_question(message, history=history, doc_scope=doc_scope, source=source)
 
 
@@ -83,7 +83,7 @@ def cmd_chat_stream() -> None:
     message = str(payload.get("message", "")).strip()
     history = payload.get("history")
     doc_scope = payload.get("doc_scope")
-    source = str(payload.get("corpus_source") or "wiki")
+    source = str(payload.get("corpus_source") or "raw")
     try:
         if not message:
             raise ValueError("'message' is required")

@@ -109,18 +109,6 @@ interface ResourceEntry {
   citation_count: number;
 }
 
-interface LlmProfile {
-  id: string;
-  label: string;
-  provider: string;
-  model: string;
-}
-
-interface LlmSettings {
-  profiles: LlmProfile[];
-  assignments: Record<string, string>;
-}
-
 type Architecture = 'hybrid' | 'naive' | 'hyde' | 'fusion' | 'graph' | 'corrective';
 type RetrievalMode = 'bm25' | 'hybrid' | 'hybrid_rerank';
 type AnswerMode = 'auto' | 'extractive';
@@ -154,7 +142,6 @@ let sessions: ChatSessionSummary[] = [];
 let activeSession: ChatSession | null = null;
 let resourcesCache: ResourceEntry[] = [];
 let ragSettings: RagSettings | null = null;
-let llmSettings: LlmSettings | null = null;
 let streamingSource: EventSource | null = null;
 let sessionSearch = '';
 let finalizeStreamingBubble: (() => void) | null = null;
@@ -363,7 +350,7 @@ function renderSessionList() {
 }
 
 function renderScopeToggle() {
-  const scope: ChatCorpusSource = activeSession?.corpus_source ?? 'wiki';
+  const scope: ChatCorpusSource = activeSession?.corpus_source ?? 'raw';
   const wikiBtn = el('chat-scope-wiki');
   const rawBtn = el('chat-scope-raw');
   wikiBtn.classList.toggle('bg-accent', scope === 'wiki');
@@ -484,65 +471,6 @@ async function saveRagMode(patch: Partial<Pick<RagSettings, 'retrieval_mode' | '
   renderModePanel();
 }
 
-function renderModelPanel() {
-  const label = el('chat-model-label');
-  const profiles = llmSettings?.profiles ?? [];
-  const selectedId = activeSession?.llm_profile_id ?? null;
-  const chatDefaultId = llmSettings?.assignments?.chat;
-  const chatDefaultProfile = profiles.find((p) => p.id === chatDefaultId);
-
-  const selectedProfile = selectedId ? profiles.find((p) => p.id === selectedId) : null;
-  label.textContent = t('chat.model.label', {
-    name: selectedProfile ? selectedProfile.label : chatDefaultProfile ? t('chat.model.defaultWith', { name: chatDefaultProfile.label }) : t('chat.model.default'),
-  });
-
-  const optionRow = (id: string | null, title: string, subtitle: string) => `
-    <label class="flex items-start gap-2 rounded px-1.5 py-1 hover:bg-gray-50">
-      <input type="radio" name="chat-llm-profile" value="${id ?? ''}" class="mt-0.5 text-accent focus:ring-accent/30" ${
-        selectedId === id ? 'checked' : ''
-      } />
-      <span class="min-w-0 flex-1">
-        <span class="block truncate text-xs font-medium text-gray-900">${escapeHtml(title)}</span>
-        <span class="block truncate text-[11px] text-gray-500">${escapeHtml(subtitle)}</span>
-      </span>
-    </label>`;
-
-  const container = el('chat-model-options');
-  if (!profiles.length) {
-    container.innerHTML = `<p class="px-1.5 py-1 text-xs text-gray-400">${th('chat.model.none')}</p>`;
-    return;
-  }
-  container.innerHTML = [
-    optionRow(null, t('chat.model.default'), chatDefaultProfile ? t('chat.model.defaultHintWith', { name: chatDefaultProfile.label }) : t('chat.model.defaultHint')),
-    ...profiles.map((p) => optionRow(p.id, p.label, p.model)),
-  ].join('');
-
-  container.querySelectorAll<HTMLInputElement>('input[name="chat-llm-profile"]').forEach((input) => {
-    input.addEventListener('change', () => {
-      if (input.checked) updateLlmProfile(input.value || null).catch((err) => window.showToast?.(err.message, 'error'));
-    });
-  });
-}
-
-async function loadLlmSettings() {
-  try {
-    llmSettings = await apiFetch('/api/settings/llm');
-  } catch {
-    llmSettings = null;
-  }
-  renderModelPanel();
-}
-
-async function updateLlmProfile(profileId: string | null) {
-  if (!activeSession) return;
-  activeSession = await apiFetch(`/api/chat/sessions/${activeSession.id}`, {
-    method: 'PATCH',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ llm_profile_id: profileId }),
-  });
-  renderModelPanel();
-}
-
 async function updateResourceScope(scope: string[] | null) {
   if (!activeSession) return;
   activeSession = await apiFetch(`/api/chat/sessions/${activeSession.id}`, {
@@ -590,7 +518,6 @@ async function selectSession(id: string) {
   renderMessages();
   renderResourcesPanel();
   renderScopeToggle();
-  renderModelPanel();
 }
 
 async function createSession() {
@@ -664,24 +591,15 @@ const resourcesToggleBtn = el('chat-resources-toggle');
 const resourcesPanelEl = el('chat-resources-panel');
 const modeToggleBtn = el('chat-mode-toggle');
 const modePanelEl = el('chat-mode-panel');
-const modelToggleBtn = el('chat-model-toggle');
-const modelPanelEl = el('chat-model-panel');
 
 resourcesToggleBtn.addEventListener('click', () => {
   if ((resourcesToggleBtn as HTMLButtonElement).disabled) return;
   setPanelOpen(modeToggleBtn, modePanelEl, false);
-  setPanelOpen(modelToggleBtn, modelPanelEl, false);
   setPanelOpen(resourcesToggleBtn, resourcesPanelEl, resourcesPanelEl.classList.contains('hidden'));
 });
 modeToggleBtn.addEventListener('click', () => {
   setPanelOpen(resourcesToggleBtn, resourcesPanelEl, false);
-  setPanelOpen(modelToggleBtn, modelPanelEl, false);
   setPanelOpen(modeToggleBtn, modePanelEl, modePanelEl.classList.contains('hidden'));
-});
-modelToggleBtn.addEventListener('click', () => {
-  setPanelOpen(resourcesToggleBtn, resourcesPanelEl, false);
-  setPanelOpen(modeToggleBtn, modePanelEl, false);
-  setPanelOpen(modelToggleBtn, modelPanelEl, modelPanelEl.classList.contains('hidden'));
 });
 document.addEventListener('click', (event) => {
   if (!resourcesPanelEl.contains(event.target as Node) && !resourcesToggleBtn.contains(event.target as Node)) {
@@ -690,9 +608,7 @@ document.addEventListener('click', (event) => {
   if (!modePanelEl.contains(event.target as Node) && !modeToggleBtn.contains(event.target as Node)) {
     setPanelOpen(modeToggleBtn, modePanelEl, false);
   }
-  if (!modelPanelEl.contains(event.target as Node) && !modelToggleBtn.contains(event.target as Node)) {
-    setPanelOpen(modelToggleBtn, modelPanelEl, false);
-  }
+
 });
 el('chat-mode-retrieval-options')
   .querySelectorAll<HTMLInputElement>('input[name="chat-retrieval-mode"]')
@@ -733,9 +649,9 @@ async function loadStatus() {
   try {
     const res = await fetch(`${apiBase}/api/chat/status`);
     const data = await res.json();
-    const dotColor = data.llm_available ? 'bg-accent' : 'bg-amber-400';
+    const dotColor = 'bg-accent';
     status.innerHTML = `<span class="h-1.5 w-1.5 rounded-full ${dotColor}"></span> ${th('chat.status.counts', { pages: data.corpus_pages, raw: data.raw_source_files })} · ${
-      data.llm_available ? th('chat.status.llm') : th('chat.status.noLlm')
+      th('chat.status.extractive')
     }`;
   } catch {
     status.innerHTML = `<span class="h-1.5 w-1.5 rounded-full bg-red-400"></span> ${th('common.cannotReachApi')}`;
@@ -951,7 +867,6 @@ async function init() {
   renderMessages();
   loadStatus();
   await loadRagSettings();
-  await loadLlmSettings();
   await loadResources();
   await loadSessions();
   // "Ask" from the dashboard or the sidebar lands here as /chat?q=... --

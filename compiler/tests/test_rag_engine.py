@@ -179,7 +179,8 @@ def test_retrieve_hybrid_degrades_gracefully_when_rerank_fails(tmp_path):
     assert results[0].passage.heading == "Battery"  # fused ranking still returned something sensible
 
 
-def test_answer_question_uses_hybrid_retrieval(tmp_path):
+def test_answer_question_uses_hybrid_retrieval(tmp_path, monkeypatch):
+    monkeypatch.setattr(rag_engine.rag_settings, "load_rag_settings", lambda: rag_engine.rag_settings.RagSettings(retrieval_mode="hybrid_rerank", answer_mode="auto"))
     docs_dir = tmp_path / "docs"
     docs_dir.mkdir()
     _write_page(
@@ -198,7 +199,8 @@ def test_answer_question_uses_hybrid_retrieval(tmp_path):
     assert fake_llm.embed_calls  # hybrid retrieval actually ran, not just BM25
 
 
-def test_answer_question_generated_mode_scores_grounded_answer_as_faithful(tmp_path):
+def test_answer_question_generated_mode_scores_grounded_answer_as_faithful(tmp_path, monkeypatch):
+    monkeypatch.setattr(rag_engine.rag_settings, "load_rag_settings", lambda: rag_engine.rag_settings.RagSettings(retrieval_mode="hybrid_rerank", answer_mode="auto"))
     docs_dir = tmp_path / "docs"
     docs_dir.mkdir()
     _write_page(
@@ -219,7 +221,8 @@ def test_answer_question_generated_mode_scores_grounded_answer_as_faithful(tmp_p
     assert result["faithfulness"]["unsupported_rate"] < 0.5  # answer reuses the source's own vocabulary
 
 
-def test_answer_question_generated_mode_flags_an_unsupported_answer(tmp_path):
+def test_answer_question_generated_mode_flags_an_unsupported_answer(tmp_path, monkeypatch):
+    monkeypatch.setattr(rag_engine.rag_settings, "load_rag_settings", lambda: rag_engine.rag_settings.RagSettings(retrieval_mode="hybrid_rerank", answer_mode="auto"))
     docs_dir = tmp_path / "docs"
     docs_dir.mkdir()
     _write_page(
@@ -299,7 +302,8 @@ class FakeStreamingLLM(FakeHybridLLM):
         yield from self._chunks
 
 
-def test_answer_question_stream_generated_deltas_join_into_final_answer(tmp_path):
+def test_answer_question_stream_generated_deltas_join_into_final_answer(tmp_path, monkeypatch):
+    monkeypatch.setattr(rag_engine.rag_settings, "load_rag_settings", lambda: rag_engine.rag_settings.RagSettings(retrieval_mode="hybrid_rerank", answer_mode="auto"))
     docs_dir = tmp_path / "docs"
     docs_dir.mkdir()
     _write_page(

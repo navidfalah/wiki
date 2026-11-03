@@ -18,9 +18,9 @@ from link_overrides import (
     load_link_overrides,
     override_source_topics,
 )
-from llm_client import LLMClient, require_llm
+from llm_client import LLMClient
 from mdx_sanitize import sanitize_for_mdx
-from mechanical_linker import auto_link_exact_titles, build_alias_topic_index
+from mechanical_linker import auto_link_exact_titles
 from models import OUTPUT_DIR
 from yaml_frontmatter import (
     FINAL_GENERATED_NOTE,
@@ -34,22 +34,6 @@ ProgressCallback = Callable[[int, int, str], None]
 COMPILER_DIR = Path(__file__).resolve().parent
 TEMP_OUTPUT_DIR = COMPILER_DIR / "temp_output"
 INDEX_JSON = TEMP_OUTPUT_DIR / "index.json"
-
-LINKER_SYSTEM_PROMPT = """You are a wiki linker. You receive:
-1. A markdown wiki page draft
-2. A JSON index mapping topic titles to filenames
-
-Your job: inject internal markdown links wherever a known topic from the index
-is mentioned in the page text.
-
-Rules:
-- Link format MUST be: [Topic Title](./filename.md) using the exact title and filename from the index
-- Do NOT link the current page's own title (given separately)
-- Do NOT modify text already inside markdown links or code spans
-- Do NOT add new sections or change factual content — only add links
-- Prefer linking the first meaningful mention of each topic
-- Return ONLY the updated markdown, no commentary"""
-
 
 @dataclass
 class IndexDelta:
@@ -285,22 +269,6 @@ def _parse_index_for_prompt(topic_index: dict[str, str]) -> str:
     return json.dumps(topic_index, indent=2, ensure_ascii=False)
 
 
-def link_page_with_llm(
-    content: str,
-    *,
-    page_title: str,
-    topic_index: dict[str, str],
-    llm: LLMClient,
-) -> str:
-    """Ask the LLM to inject internal markdown links using the topic index."""
-    prompt = (
-        f"Current page title (do not link to itself): {page_title}\n\n"
-        f"Topic index (title → filename):\n{_parse_index_for_prompt(topic_index)}\n\n"
-        f"---\n\nMarkdown page:\n\n{content}"
-    )
-    return llm.generate_response(prompt, LINKER_SYSTEM_PROMPT).strip()
-
-
 def _strip_body_frontmatter(content: str) -> str:
     if content.startswith("---"):
         parts = content.split("---", 2)
@@ -424,22 +392,9 @@ def link_and_export_pages(
     When dirty_filenames / index_delta are provided, only regenerated pages and
     pages whose links may be stale are processed — unchanged pages are kept.
 
-    entity_mentions, when given (see mechanical_linker.mentions_from_extractions()),
-    expands the mechanical pre-pass's candidate list with every alias
-    entity_resolution.py's heuristic tier considers the same entity as an
-    existing topic title (e.g. bare "Mira" linking to the "Mira Chen"
-    page) — the LLM pass still only ever sees the real topic_index, not
-    the alias-expanded one, so this only strengthens the deterministic
-    floor, not what's fed to the model.
-
-    resolve_entities_llm additionally passes the LLM client already
-    required here (see `client` below) into build_alias_topic_index() as
-    both its embed_fn and llm, so entity_resolution.py's embedding and LLM
-    adjudication tiers run on whatever the heuristic tier alone couldn't
-    confidently call (e.g. "Mira" vs. "Mirabelle") instead of leaving
-    those mentions unaliased. Off by default: it adds extra LLM/embedding
-    calls to every linking run, for a strictly-additive alias expansion
-    that most compiles don't need.
+    Linking uses exact topic titles only. Ambiguous extracted aliases are not
+    inferred. Manual connection overrides remain available. The llm and
+    resolve_entities_llm keywords are accepted for compatibility but never used.
     """
     root = temp_dir or TEMP_OUTPUT_DIR
     out_dir = output_dir or OUTPUT_DIR
@@ -447,9 +402,7 @@ def link_and_export_pages(
 
     index = topic_index or load_topic_index(root / "index.json")
     delta = index_delta or IndexDelta()
-    client = require_llm(llm)
-    resolution_kwargs = {"embed_fn": client.embed_text, "llm": client} if resolve_entities_llm else {}
-    mechanical_index = build_alias_topic_index(index, entity_mentions or [], **resolution_kwargs)
+    mechanical_index = index
 
     dirty = dirty_filenames or set()
     removed = removed_filenames or set()
@@ -498,18 +451,7 @@ def link_and_export_pages(
         link_source = strip_generated_banner(link_source)
         link_source = _remove_broken_links(link_source, removed_files)
 
-        # Deterministic floor pass: guarantee every unambiguous, exact
-        # mention of another page's title is linked regardless of what the
-        # LLM catches. Runs before the LLM pass, not instead of it -- see
-        # mechanical_linker.py's module docstring for why both matter.
-        link_source = auto_link_exact_titles(link_source, mechanical_index, self_title=title).body
-
-        linked_body = link_page_with_llm(
-            link_source,
-            page_title=title,
-            topic_index=index,
-            llm=client,
-        )
+        linked_body = auto_link_exact_titles(link_source, mechanical_index, self_title=title).body
 
         linked_body = _remove_broken_links(linked_body, removed_files)
         linked_body = apply_connection_overrides(

@@ -1,6 +1,7 @@
 export const chat = {
+  'chat.status.extractive': 'Source excerpts; no answer generation',
   'chat.title': 'Chat',
-  'chat.intro': 'Ask a question and get an answer grounded in, and cited to, the compiled wiki pages it came from.',
+  'chat.intro': 'Search your original sources and read matching excerpts with references. New chats search original files; you can also search compiled wiki pages.',
   'chat.newChat': 'New chat',
   'chat.searchChats': 'Search chats…',
   'chat.scope.wikiTitle': 'Search the compiled wiki pages',

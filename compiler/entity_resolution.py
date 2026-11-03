@@ -1,26 +1,8 @@
-"""Entity resolution / coreference across raw sources.
+"""Conservative entity grouping: auto-merge normalized exact names only.
 
-The pipeline's per-chunk extraction (synthesizer.py's
-CHUNK_EXTRACTION_SYSTEM_PROMPT) returns entity *mentions* — a name string
-per chunk, with no notion that "Mira Chen", "Mira", and
-"mira.chen@auroralabs.example" (a From: header, a first-name-only mention in
-a transcript, and a full name in a spec) are the same person. That means
-the "topic graph" `linker.py` builds is really a mention graph, not an
-entity graph. This module resolves mentions into clusters.
-
-Same tiered-degradation shape as hybrid_retrieval.py (task #5), for the
-same reason: a dependency-free heuristic tier that always works, an
-optional embedding-similarity tier, and an optional LLM-adjudication tier
-for the pairs the earlier tiers can't confidently call — each tier only
-runs on what the previous one left ambiguous, not on everything.
-
-Deliberately conservative: a hard negative case in this repo's own corpus
-(Alex Kim, Alex Rivera, and Sam Rivera are three *different* people who
-share a first or last name) is exactly why the heuristic tier only
-auto-merges on strong evidence (exact match, subset-of-full-name, or an
-email's local part matching a name) and merely *escalates* — rather than
-merges — anything weaker for a smarter tier or a human to decide, instead
-of guessing from name overlap alone.
+Partial names, email/name pairs and fuzzy matches remain separate by default.
+Optional embedding/model hooks are retained for standalone experiments, not
+used by app graph reads or compiler linking. See documentation/42-minimal-ai.md.
 """
 
 from __future__ import annotations
@@ -76,8 +58,7 @@ Return ONLY JSON: {"same_entity": true|false, "reason": "<one line>"}"""
 
 
 def _normalize(name: str) -> str:
-    name = name.strip().lower()
-    name = re.sub(r"[^a-z0-9@. ]+", "", name)
+    name = name.strip().casefold()
     return re.sub(r"\s+", " ", name).strip()
 
 
@@ -95,23 +76,20 @@ def _canonicalized_for_comparison(name: str) -> str:
 
 
 def heuristic_similarity(a: str, b: str) -> float:
-    """Dependency-free string similarity in [0, 1]. Handles the common
-    cases without any API: exact match, one name's tokens being a subset of
-    the other's (e.g. "Mira" vs "Mira Chen"), and an email's local part
-    matching a plain name (e.g. "mira.chen@auroralabs.example" vs "Mira
-    Chen") — then falls back to a generic character-sequence ratio for
-    everything else, which is deliberately weak (SequenceMatcher on short
-    names rewards accidental overlap), which is why only the
-    strong-evidence cases below reach the auto-merge threshold."""
-    na, nb = _canonicalized_for_comparison(a), _canonicalized_for_comparison(b)
-    if na == nb:
+    """Only exact normalized text clears the automatic merge threshold.
+
+    Partial and fuzzy matches may be examined by explicit research callers,
+    but never establish identity in the default application path.
+    """
+    na, nb = _normalize(a), _normalize(b)
+    if na and na == nb:
         return 1.0
 
     tokens_a, tokens_b = set(na.split()), set(nb.split())
     if tokens_a and tokens_b and (tokens_a <= tokens_b or tokens_b <= tokens_a):
-        return 0.85
+        return 0.70
 
-    return SequenceMatcher(None, na, nb).ratio()
+    return min(0.70, SequenceMatcher(None, na, nb).ratio())
 
 
 class _UnionFind:

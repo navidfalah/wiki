@@ -52,12 +52,12 @@ export function loadPipelineSettings(): PipelineSettings {
   if (!parsed) return { ...DEFAULT_SETTINGS };
   const samples = Number(parsed.critic_samples);
   return {
-    critic_pass: Boolean(parsed.critic_pass),
+    critic_pass: false,
     critic_samples: Number.isFinite(samples) && samples > 0 ? Math.floor(samples) : DEFAULT_SETTINGS.critic_samples,
-    critic_regenerate: Boolean(parsed.critic_regenerate),
-    use_corrections: Boolean(parsed.use_corrections),
+    critic_regenerate: false,
+    use_corrections: false,
     redact_pii: Boolean(parsed.redact_pii),
-    web_search: Boolean(parsed.web_search),
+    web_search: false,
     excluded_folders: Array.isArray(parsed.excluded_folders)
       ? parsed.excluded_folders.filter((f: unknown) => typeof f === 'string' && f.trim()).map((f: string) => f.trim())
       : [],
@@ -79,12 +79,12 @@ export function savePipelineSettings(input: any): PipelineSettings {
   }
 
   const settings: PipelineSettings = {
-    critic_pass: Boolean(input.critic_pass),
+    critic_pass: false,
     critic_samples: Number.isFinite(criticSamples) && criticSamples > 0 ? Math.floor(criticSamples) : DEFAULT_SETTINGS.critic_samples,
-    critic_regenerate: Boolean(input.critic_regenerate),
-    use_corrections: Boolean(input.use_corrections),
+    critic_regenerate: false,
+    use_corrections: false,
     redact_pii: Boolean(input.redact_pii),
-    web_search: Boolean(input.web_search),
+    web_search: false,
     excluded_folders: Array.isArray(input.excluded_folders)
       ? input.excluded_folders.filter((f: unknown) => typeof f === 'string' && f.trim()).map((f: string) => f.trim())
       : [],

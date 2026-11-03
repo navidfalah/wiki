@@ -2,9 +2,9 @@ import type { pipelineArchitecture as en } from '../en/pipeline-architecture';
 
 export const pipelineArchitecture: Record<keyof typeof en, string> = {
   'pipeline-architecture.title': 'Pipeline-Architektur',
-  'pipeline-architecture.introHtml': 'Legen Sie fest, wie der Compiler Rohquellen zu Wiki-Seiten verarbeitet. Dies sind gespeicherte Standardwerte – jeder künftige Lauf auf der Seite <a href="/pipelines" class="text-generated underline">Pipelines</a> verwendet sie automatisch.',
+  'pipeline-architecture.introHtml': 'Wählen Sie Quellordner und Datenschutzeinstellungen. KI extrahiert Themen und schreibt Seiten; Python fügt Links hinzu.',
   'pipeline-architecture.stages': 'Pipeline-Stufen',
-  'pipeline-architecture.stagesHint': '1. Einlesen → 2. Extrahieren → 3. Synthetisieren → 4. Indexieren → 5. Verlinken. Diese Schalter ändern das Verhalten von Stufe 2 (Extraktion) und Stufe 3 (Synthese).',
+  'pipeline-architecture.stagesHint': 'Zusätzliche Modellprüfungen und automatische Korrekturrückmeldungen gehören nicht zum Standardlauf.',
   'pipeline-architecture.critic': 'Kritik-Durchlauf',
   'pipeline-architecture.criticHint': 'Führt nach der Synthese einen zweiten LLM-Durchlauf aus, der Sätze entfernt, die sich nicht in den Quellabschnitten belegen lassen. Verdoppelt die Kosten pro Seite ungefähr.',
   'pipeline-architecture.criticSamples': 'Kritik-Stichproben (Selbstkonsistenz)',

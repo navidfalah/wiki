@@ -1,6 +1,6 @@
 export const reviewQueue = {
-  'review-queue.title': 'Review & Attention',
-  'review-queue.intro': 'Two lists of things worth a human look, in one place: claims trust propagation flagged as low-confidence or an unresolved contradiction, and wiki-health issues (unreachable pages, dead links, ungrounded topics, unprocessed files, reviewer findings).',
+  'review-queue.title': 'Wiki health',
+  'review-queue.intro': 'Inspect broken links, isolated pages and files waiting to be processed.',
   'review-queue.tab.review': 'Review Queue',
   'review-queue.tab.attention': 'Attention',
   'review-queue.filter.all': 'All',

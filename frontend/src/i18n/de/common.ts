@@ -17,7 +17,7 @@ export const common: Record<keyof typeof en, string> = {
   'nav.pipelineArchitecture': 'Pipeline-Architektur',
   'nav.section.chat': 'Chat',
   'nav.chat': 'Chat',
-  'nav.ragArchitecture': 'RAG-Architektur',
+  'nav.ragArchitecture': 'Sucheinstellungen',
   'nav.section.insights': 'Auswertungen',
   'nav.analytics': 'Analysen',
   'nav.usage': 'Nutzung',

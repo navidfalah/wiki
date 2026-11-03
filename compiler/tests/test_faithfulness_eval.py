@@ -132,7 +132,9 @@ class FakeGeneratingJudgeLLM:
         return "The relay radio drains the battery faster than spec."
 
 
-def test_evaluate_generated_faithfulness_end_to_end(tmp_path):
+def test_evaluate_generated_faithfulness_end_to_end(tmp_path, monkeypatch):
+    import rag_settings
+    monkeypatch.setattr(rag_settings, "load_rag_settings", lambda: rag_settings.RagSettings(retrieval_mode="hybrid_rerank", answer_mode="auto"))
     docs_dir = tmp_path / "docs"
     docs_dir.mkdir()
     _write_page(

@@ -1,5 +1,7 @@
 # 07 — Linking, MOC, and Page Format
 
+> Current behavior: Current linking is deterministic: exact topic titles plus manual connection overrides, with no LLM calls or inferred entity aliases. Historical descriptions of the LLM linking pass below are superseded. See [42 — Minimal AI](./42-minimal-ai.md).
+
 How drafts become linked wiki pages and how the table of contents is built.  
 **Modules:** `linker.py`, `moc_generator.py`, `link_overrides.py`
 

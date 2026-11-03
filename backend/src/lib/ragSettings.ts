@@ -28,9 +28,9 @@ export type Architecture = 'hybrid' | 'naive' | 'hyde' | 'fusion' | 'graph' | 'c
 export type RetrievalMode = 'bm25' | 'hybrid' | 'hybrid_rerank';
 export type AnswerMode = 'auto' | 'extractive';
 
-const ARCHITECTURES: Architecture[] = ['hybrid', 'naive', 'hyde', 'fusion', 'graph', 'corrective'];
-const RETRIEVAL_MODES: RetrievalMode[] = ['bm25', 'hybrid', 'hybrid_rerank'];
-const ANSWER_MODES: AnswerMode[] = ['auto', 'extractive'];
+const ARCHITECTURES: Architecture[] = ['hybrid'];
+const RETRIEVAL_MODES: RetrievalMode[] = ['bm25', 'hybrid'];
+const ANSWER_MODES: AnswerMode[] = ['extractive'];
 
 export interface RagSettings {
   architecture: Architecture;
@@ -44,12 +44,12 @@ export interface RagSettings {
 
 const DEFAULT_SETTINGS: RagSettings = {
   architecture: 'hybrid',
-  retrieval_mode: 'hybrid_rerank',
+  retrieval_mode: 'bm25',
   top_k: 5,
   bm25_k1: 1.5,
   bm25_b: 0.75,
   use_vector_store: false,
-  answer_mode: 'auto',
+  answer_mode: 'extractive',
 };
 
 function readJsonSafe(filePath: string): any | null {

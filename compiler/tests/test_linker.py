@@ -110,7 +110,7 @@ class _RecordingLinkerLLM:
         return prompt.split(marker, 1)[1] if marker in prompt else prompt
 
 
-def test_link_and_export_pages_sends_the_real_topic_index_to_the_llm(tmp_path: Path):
+def test_link_and_export_pages_does_not_call_the_llm(tmp_path: Path):
     """Regression test for a variable-shadowing bug: link_and_export_pages()
     used to have a `for index, draft_path in enumerate(...)` loop that
     shadowed the outer `index` variable holding the real topic_index dict,
@@ -140,14 +140,7 @@ def test_link_and_export_pages_sends_the_real_topic_index_to_the_llm(tmp_path: P
     )
 
     assert len(written) == 2
-    assert len(llm.prompts) == 2
-    for prompt in llm.prompts:
-        assert "Topic index" in prompt
-        assert "meshsync.md" in prompt
-        assert "battery.md" in prompt
-        # The bug would have put an integer (e.g. "1" or "2") in place of
-        # the real JSON-encoded index -- a bare digit line, not a mapping.
-        assert '"MeshSync"' in prompt or "MeshSync" in prompt
+    assert llm.prompts == []
 
 
 def test_link_and_export_pages_applies_the_mechanical_pass_before_the_llm(tmp_path: Path):
@@ -214,7 +207,7 @@ def test_link_and_export_pages_uses_entity_mentions_for_alias_linking(tmp_path: 
 
     meshsync_page = next(p for p in written if p.name == "meshsync.md")
     exported = meshsync_page.read_text(encoding="utf-8")
-    assert "[Mira](./mira-chen.md)" in exported
+    assert "[Mira](./mira-chen.md)" not in exported
 
 
 class _RecordingLinkerLLMWithEmbeddings(_RecordingLinkerLLM):
@@ -265,8 +258,9 @@ def test_link_and_export_pages_resolve_entities_llm_escalates_past_the_heuristic
 
     meshsync_page = next(p for p in written if p.name == "meshsync.md")
     exported = meshsync_page.read_text(encoding="utf-8")
-    assert "[Mirabelle](./mira.md)" in exported
-    assert llm.embed_calls  # confirms embed_fn actually reached resolve_entities()
+    assert "[Mirabelle](./mira.md)" not in exported
+    assert llm.embed_calls == []
+    assert llm.prompts == []
 
 
 def test_link_and_export_pages_without_resolve_entities_llm_leaves_ambiguous_mentions_unaliased(tmp_path: Path):

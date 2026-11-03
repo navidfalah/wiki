@@ -1,5 +1,6 @@
 export const ragArchitecture = {
-  'rag-architecture.title': 'RAG Architecture',
+  'rag-architecture.simpleIntro': 'Answers quote source passages. Keyword search makes no AI calls. Optional semantic search uses embeddings to find related wording; it does not generate answers.',
+  'rag-architecture.title': 'Search settings',
   'rag-architecture.introHtml': 'Choose how <a href="/chat" class="text-generated underline">Chat</a> retrieves and answers from the compiled wiki. Changes apply to the next question asked -- no rebuild required.',
   'rag-architecture.presets': 'Presets',
   'rag-architecture.presetsHint': 'Save the configuration below under a name, then switch between saved architectures without re-entering every field.',

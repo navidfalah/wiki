@@ -1,223 +1,35 @@
-import { t, th } from './lib/i18n';
+import { t } from './lib/i18n';
 import { apiBase } from './lib/api';
-import { escapeHtml } from './lib/dom';
 
-type Architecture = 'hybrid' | 'naive' | 'hyde' | 'fusion' | 'graph' | 'corrective';
-type RetrievalMode = 'bm25' | 'hybrid' | 'hybrid_rerank';
-type AnswerMode = 'auto' | 'extractive';
-
-interface RagSettings {
-  architecture: Architecture;
-  retrieval_mode: RetrievalMode;
-  top_k: number;
-  bm25_k1: number;
-  bm25_b: number;
-  use_vector_store: boolean;
-  answer_mode: AnswerMode;
-}
-
-interface RagPreset {
-  id: string;
-  name: string;
-  settings: RagSettings;
-  created_at: string;
-}
-
-let presets: RagPreset[] = [];
-
-function updateRetrievalTuningDisabledState(architecture: Architecture) {
-  const disabled = architecture !== 'hybrid';
-  document.querySelectorAll<HTMLInputElement>('input[name="retrieval_mode"]').forEach((el) => (el.disabled = disabled));
-  document.getElementById('retrieval-mode-section')?.classList.toggle('opacity-50', disabled);
-  document.getElementById('vector-store-hint')?.classList.toggle('hidden', !disabled);
-}
-
-function numberFields(): NodeListOf<HTMLInputElement> {
-  return document.querySelectorAll('[data-field]');
-}
-
-function fillForm(settings: RagSettings) {
-  numberFields().forEach((el) => {
-    const key = el.dataset.field as keyof RagSettings;
-    if (el.type === 'checkbox') {
-      el.checked = Boolean(settings[key]);
-    } else {
-      el.value = String(settings[key] ?? '');
-    }
+const button = document.getElementById('save-rag-arch-btn') as HTMLButtonElement;
+const count = document.getElementById('results-count') as HTMLInputElement;
+const hint = document.getElementById('rag-arch-saved-hint')!;
+function fill(settings: { retrieval_mode: string; top_k: number }) {
+  document.querySelectorAll<HTMLInputElement>('input[name="retrieval_mode"]').forEach((input) => {
+    input.checked = input.value === settings.retrieval_mode;
   });
-  document
-    .querySelectorAll<HTMLInputElement>('input[name="architecture"]')
-    .forEach((el) => (el.checked = el.value === settings.architecture));
-  document
-    .querySelectorAll<HTMLInputElement>('input[name="retrieval_mode"]')
-    .forEach((el) => (el.checked = el.value === settings.retrieval_mode));
-  document
-    .querySelectorAll<HTMLInputElement>('input[name="answer_mode"]')
-    .forEach((el) => (el.checked = el.value === settings.answer_mode));
-  updateRetrievalTuningDisabledState(settings.architecture);
+  count.value = String(settings.top_k);
 }
-
-function readForm(): RagSettings {
-  const result: any = {};
-  numberFields().forEach((el) => {
-    const key = el.dataset.field as keyof RagSettings;
-    result[key] = el.type === 'checkbox' ? el.checked : Number(el.value);
-  });
-  const architectureInput = document.querySelector<HTMLInputElement>('input[name="architecture"]:checked');
-  const retrievalInput = document.querySelector<HTMLInputElement>('input[name="retrieval_mode"]:checked');
-  const answerInput = document.querySelector<HTMLInputElement>('input[name="answer_mode"]:checked');
-  result.architecture = (architectureInput?.value ?? 'hybrid') as Architecture;
-  result.retrieval_mode = (retrievalInput?.value ?? 'hybrid_rerank') as RetrievalMode;
-  result.answer_mode = (answerInput?.value ?? 'auto') as AnswerMode;
-  return result as RagSettings;
-}
-
-function renderPresetSelect() {
-  const select = document.getElementById('rag-preset-select') as HTMLSelectElement;
-  const loadBtn = document.getElementById('rag-preset-load-btn') as HTMLButtonElement;
-  const deleteBtn = document.getElementById('rag-preset-delete-btn') as HTMLButtonElement;
-  const previousValue = select.value;
-  if (!presets.length) {
-    select.innerHTML = `<option value="">${th('rag-architecture.presetNone')}</option>`;
-    loadBtn.disabled = true;
-    deleteBtn.disabled = true;
-    return;
-  }
-  select.innerHTML = presets
-    .map((p) => `<option value="${p.id}">${escapeHtml(p.name)}</option>`)
-    .join('');
-  select.value = presets.some((p) => p.id === previousValue) ? previousValue : presets[0].id;
-  loadBtn.disabled = false;
-  deleteBtn.disabled = false;
-}
-
-async function loadPresets() {
-  try {
-    const res = await fetch(`${apiBase}/api/settings/rag/presets`);
-    if (!res.ok) throw new Error(t('common.requestFailed', { status: res.status }));
-    const data = await res.json();
-    presets = data.presets ?? [];
-  } catch {
-    presets = [];
-  }
-  renderPresetSelect();
-}
-
-async function saveAsPreset() {
-  const nameInput = document.getElementById('rag-preset-name-input') as HTMLInputElement;
-  const hint = document.getElementById('rag-preset-hint') as HTMLElement;
-  const name = nameInput.value.trim();
-  if (!name) {
-    (window as any).showToast?.(t('rag-architecture.giveName'), 'error');
-    return;
-  }
-  try {
-    const res = await fetch(`${apiBase}/api/settings/rag/presets`, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ name, settings: readForm() }),
-    });
-    if (!res.ok) {
-      const err = await res.json().catch(() => ({}));
-      throw new Error(err.error || t('common.requestFailed', { status: res.status }));
-    }
-    const saved: RagPreset = await res.json();
-    nameInput.value = '';
-    await loadPresets();
-    (document.getElementById('rag-preset-select') as HTMLSelectElement).value = saved.id;
-    hint.textContent = t('rag-architecture.presetSavedHint', { name: saved.name });
-    (window as any).showToast?.(t('rag-architecture.presetSaved'));
-  } catch (err: any) {
-    (window as any).showToast?.(err.message || t('rag-architecture.presetSaveFailed'), 'error');
-  }
-}
-
-async function loadSelectedPreset() {
-  const select = document.getElementById('rag-preset-select') as HTMLSelectElement;
-  const hint = document.getElementById('rag-preset-hint') as HTMLElement;
-  if (!select.value) return;
-  try {
-    const res = await fetch(`${apiBase}/api/settings/rag/presets/${encodeURIComponent(select.value)}/apply`, {
-      method: 'POST',
-    });
-    if (!res.ok) {
-      const err = await res.json().catch(() => ({}));
-      throw new Error(err.error || t('common.requestFailed', { status: res.status }));
-    }
-    fillForm(await res.json());
-    const preset = presets.find((p) => p.id === select.value);
-    hint.textContent = preset ? t('rag-architecture.presetLoadedHint', { name: preset.name }) : t('rag-architecture.presetLoaded');
-    (window as any).showToast?.(t('rag-architecture.presetApplied'));
-  } catch (err: any) {
-    (window as any).showToast?.(err.message || t('rag-architecture.presetLoadFailed'), 'error');
-  }
-}
-
-async function deleteSelectedPreset() {
-  const select = document.getElementById('rag-preset-select') as HTMLSelectElement;
-  const hint = document.getElementById('rag-preset-hint') as HTMLElement;
-  if (!select.value) return;
-  const preset = presets.find((p) => p.id === select.value);
-  if (!window.confirm(t('rag-architecture.confirmDelete', { name: preset?.name ?? select.value }))) return;
-  try {
-    const res = await fetch(`${apiBase}/api/settings/rag/presets/${encodeURIComponent(select.value)}`, {
-      method: 'DELETE',
-    });
-    if (!res.ok) {
-      const err = await res.json().catch(() => ({}));
-      throw new Error(err.error || t('common.requestFailed', { status: res.status }));
-    }
-    await loadPresets();
-    hint.textContent = t('rag-architecture.presetDeleted');
-  } catch (err: any) {
-    (window as any).showToast?.(err.message || t('rag-architecture.presetDeleteFailed'), 'error');
-  }
-}
-
 async function load() {
   try {
-    const res = await fetch(`${apiBase}/api/settings/rag`);
-    if (!res.ok) throw new Error(t('common.requestFailed', { status: res.status }));
-    fillForm(await res.json());
-  } catch {
-    (window as any).showToast?.(t('common.cannotReachApi'), 'error');
-  }
+    const response = await fetch(`${apiBase}/api/settings/rag`);
+    if (!response.ok) throw new Error(t('common.requestFailed', { status: response.status }));
+    fill(await response.json());
+  } catch { hint.textContent = t('common.cannotReachApi'); }
 }
-
-async function save() {
-  const btn = document.getElementById('save-rag-arch-btn') as HTMLButtonElement;
-  const hint = document.getElementById('rag-arch-saved-hint') as HTMLElement;
-  btn.disabled = true;
-  btn.textContent = t('rag-architecture.saving');
+button.addEventListener('click', async () => {
+  if (!count.reportValidity()) return;
+  button.disabled = true;
   try {
-    const res = await fetch(`${apiBase}/api/settings/rag`, {
-      method: 'PUT',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(readForm()),
+    const response = await fetch(`${apiBase}/api/settings/rag`, {
+      method: 'PUT', headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ architecture: 'hybrid', answer_mode: 'extractive',
+        retrieval_mode: document.querySelector<HTMLInputElement>('input[name="retrieval_mode"]:checked')?.value ?? 'bm25',
+        top_k: Number(count.value), use_vector_store: true }),
     });
-    if (!res.ok) {
-      const err = await res.json().catch(() => ({}));
-      throw new Error(err.error || t('common.requestFailed', { status: res.status }));
-    }
-    fillForm(await res.json());
-    hint.textContent = t('rag-architecture.savedAt', { time: new Date().toLocaleTimeString(document.documentElement.lang === 'de' ? 'de-DE' : 'en-GB') });
-    (window as any).showToast?.(t('rag-architecture.saved'));
-  } catch (err: any) {
-    (window as any).showToast?.(err.message || t('rag-architecture.saveFailed'), 'error');
-  } finally {
-    btn.disabled = false;
-    btn.textContent = t('common.save');
-  }
-}
-
-document.getElementById('save-rag-arch-btn')?.addEventListener('click', save);
-document
-  .querySelectorAll<HTMLInputElement>('input[name="architecture"]')
-  .forEach((el) => el.addEventListener('change', () => updateRetrievalTuningDisabledState(el.value as Architecture)));
-
-document.getElementById('rag-preset-save-btn')?.addEventListener('click', saveAsPreset);
-document.getElementById('rag-preset-load-btn')?.addEventListener('click', loadSelectedPreset);
-document.getElementById('rag-preset-delete-btn')?.addEventListener('click', deleteSelectedPreset);
-
+    if (!response.ok) throw new Error(t('common.requestFailed', { status: response.status }));
+    fill(await response.json()); hint.textContent = t('rag-architecture.saved');
+  } catch { hint.textContent = t('rag-architecture.saveFailed'); }
+  finally { button.disabled = false; }
+});
 load();
-loadPresets();

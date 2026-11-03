@@ -68,6 +68,7 @@ describe('createChatSession', () => {
     const session = createChatSession();
     expect(session.messages).toEqual([]);
     expect(session.resource_scope).toBeNull();
+    expect(session.corpus_source).toBe('raw');
   });
 
   it('persists the session so it can be loaded back by id', () => {

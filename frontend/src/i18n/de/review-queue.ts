@@ -1,8 +1,8 @@
 import type { reviewQueue as en } from '../en/review-queue';
 
 export const reviewQueue: Record<keyof typeof en, string> = {
-  'review-queue.title': 'Prüfung & Hinweise',
-  'review-queue.intro': 'Zwei Listen mit allem, was einen menschlichen Blick verdient, an einem Ort: Aussagen, die die Vertrauensweitergabe als wenig belastbar oder als ungelösten Widerspruch markiert hat, und Wiki-Gesundheitsprobleme (nicht erreichbare Seiten, tote Links, Themen ohne Quellenbasis, unverarbeitete Dateien, Prüfbefunde).',
+  'review-queue.title': 'Wiki-Prüfung',
+  'review-queue.intro': 'Prüfen Sie defekte Links, isolierte Seiten und noch nicht verarbeitete Dateien.',
   'review-queue.tab.review': 'Prüfliste',
   'review-queue.tab.attention': 'Hinweise',
   'review-queue.filter.all': 'Alle',
