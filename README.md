@@ -1,5 +1,7 @@
 # LLM Wiki — Wissensbau
 
+Start with the **[project map](documentation/project-map.md)** for the current application layers, feature modules, and where to make changes.
+
 > **Non-commercial research project.** Live prototype: **[wissensbau.de](https://wissensbau.de)** (English & German UI, warm amber/stone palette, Sora + Inter typography). Deployment guide: [documentation/40-production-deployment.md](./documentation/40-production-deployment.md).
 
 Personal knowledge base built on the **[Karpathy LLM Wiki pattern](https://gist.github.com/karpathy/442a6bf555914893e9891c11519de94f)**: drop messy raw notes into `data/raw/`, run a Python compiler pipeline, and browse the result through an Express + TypeScript + Tailwind app with a single unified nav (wiki pages and dashboards in one product, not a docs site with a dashboard bolted on).

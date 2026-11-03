@@ -1,5 +1,7 @@
 # 04 — Repository Structure
 
+For the current Express frontend/backend and feature module layout, see the **[project map](project-map.md)**. The detailed tree below includes the older viewer and historical paths.
+
 Complete map of the repository. Paths are relative to repo root (`wiki/`).
 
 ## Top level

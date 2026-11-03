@@ -1,5 +1,7 @@
 # LLM Wiki — Project Guide
 
+Start with the **[project map](documentation/project-map.md)** for the current application layers, feature modules, and where to make changes.
+
 > **This file is a short index.** Detailed documentation lives in **[documentation/](./documentation/README.md)** — split across 18 focused guides with small implementation details.
 
 ## Quick start
