@@ -12,7 +12,7 @@ import { atomicWriteJson } from './atomicWrite';
 const RUN_ID_RE = /^\d{8}-\d{6}-[0-9a-f]{6}$/;
 
 /** Which LLM profile (model/base_url) was active for each purpose when this
- * run started -- see compiler/main.py's _pipeline_settings_snapshot(). Frozen
+ * run started -- see compiler/main.js's _pipeline_settings_snapshot(). Frozen
  * at start time, so it still reflects reality even if the Settings page is
  * changed while the run is in progress or afterward. */
 export interface PipelineRunSettings {

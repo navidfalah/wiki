@@ -4,7 +4,7 @@
  * endpoint) and assign one to each purpose the compiler pipeline
  * recognizes -- "default" (extraction/indexing/linking), "thinking"
  * (synthesis -- the pipeline's one genuinely reasoning-heavy step, see
- * compiler/main.py's step 3), "chat" (interactive RAG Q&A -- see
+ * compiler/main.js's step 3), "chat" (interactive RAG Q&A -- see
  * rag_engine.py's answer_question()/stream_answer(), which already call
  * LLMClient.for_purpose("chat")), and "embedding". Persisted to
  * data/llm_settings.json; also mirrored into the repo's .env so the

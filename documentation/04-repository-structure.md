@@ -62,7 +62,7 @@ Everything else (and dotfiles like `.gitkeep`) is ignored.
 
 ```
 compiler/
-├── main.py                   # Full 5-step pipeline entry point
+├── main.js                   # JavaScript compiler command-line entry point
 ├── synthesizer.py            # Chunking, extraction, synthesis
 ├── text_chunking.py          # Shared paragraph-chunking (text/email/file)
 ├── media_ingest.py           # Images, audio + file attachments → chunks
@@ -72,17 +72,13 @@ compiler/
 ├── moc_generator.py          # Hierarchical index.md
 ├── llm_client.py             # OpenAI client, cache, retries, vision captioning
 ├── link_overrides.py         # require/block connection rules
-├── server.py                 # FastAPI API (:8000)
-├── build_runner.py           # SSE subprocess wrapper for main.py
-├── analytics.py              # Metrics, tags, dead-link audit
 ├── reviewer.py               # LLM quality review → review_report.txt
 ├── dead_link_checker.py      # Broken link detection
 ├── models.py                 # Path constants (RAW_DIR, OUTPUT_DIR, STATE_FILE)
 ├── yaml_frontmatter.py       # Safe YAML quoting
 ├── mdx_sanitize.py           # Sanitize body for Docusaurus MDX
-├── fix_frontmatter.py        # Repair quoted YAML fields in docs
-├── fix_mdx_body.py           # MDX body fixes
-├── run_server.sh             # Start API with venv
+├── fix_frontmatter.js        # Repair quoted YAML fields in docs
+├── fix_mdx_body.js           # MDX body fixes
 ├── requirements.txt
 ├── requirements-dev.txt      # + ruff, pytest
 ├── pyproject.toml            # ruff + pytest config

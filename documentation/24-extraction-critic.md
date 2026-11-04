@@ -13,7 +13,7 @@ isn't in any source at all."
 | Eval fixtures + live-model runner | `compiler/extraction_critic_eval.py` |
 | Tests | `compiler/tests/test_extraction_critic.py`, `test_extraction_critic_eval.py` |
 | Integration point | `synthesizer.synthesize_topic_wiki_pages(..., apply_critic=True)` |
-| Enable it | `python main.py --critic-pass` or `WIKI_CRITIC_PASS=true` |
+| Enable it | `node compiler/main.js --critic-pass` or `WIKI_CRITIC_PASS=true` |
 
 ## The problem
 
@@ -51,7 +51,7 @@ behavior for existing users — same pattern as `--force`.
 ## Self-consistency (optional, off by default)
 
 `review_draft_for_grounding(..., samples=3)` (and `apply_critic_pass(...,
-samples=3)` / `main.py --critic-samples 3`) runs the critic call multiple
+samples=3)` / `main.js --critic-samples 3`) runs the critic call multiple
 times at a non-zero `sample_temperature` instead of once at `temperature=0`,
 and only flags a sentence a **majority** of the independent passes agreed
 on — the standard self-consistency pattern for reducing an LLM judge's
@@ -85,7 +85,7 @@ of its length to stripping can end up with dangling transitions or a
 section that no longer reads coherently.
 
 `synthesize_topic_wiki_pages(..., critic_regenerate=True)` (also
-`main.py --critic-regenerate` / `WIKI_CRITIC_REGENERATE=true`) adds exactly
+`main.js --critic-regenerate` / `WIKI_CRITIC_REGENERATE=true`) adds exactly
 one bounded retry: `extraction_critic.should_regenerate()` checks whether
 stripping removed more than 20% of the draft's length (configurable via
 `critic_regenerate_threshold`); if so,

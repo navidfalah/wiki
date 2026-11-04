@@ -42,8 +42,8 @@ flowchart TB
 
     subgraph backend [Express+TS backend — port 8000]
         NODE["backend/ (Express+TS)<br/>reads/writes data/, wiki-app/docs/"]
-        SSE["SSE build stream<br/>spawns python3 main.py"]
-        BRIDGE["spawns python3 cli.py<br/>for chat + email parsing"]
+        SSE["SSE build stream<br/>runs JavaScript compiler"]
+        BRIDGE["JavaScript chat + email services"]
     end
 
     subgraph frontend [Express+TS+Tailwind frontend — port 3000]
@@ -149,12 +149,11 @@ heuristic/offline code path:
 
 ## Backend + frontend (Node)
 
-The backend does **not** participate in the compile path when you run
-`python main.py` directly — it's a separate always-on service. It:
+The backend owns the compile and API paths. It:
 
 - Reads `data/raw/`, `wiki-app/docs/`, `data/state.json`
-- Spawns `python3 main.py` as a subprocess for `/api/build/stream`
-- Spawns `python3 cli.py` for chat (`rag_engine.py`) and email parsing (`email_engine.py`)
+- Runs the JavaScript compiler for `/api/build/stream`
+- Handles chat and email parsing in JavaScript
 - Aggregates analytics and knowledge-graph data for dashboards
 
 Every page (wiki content and dashboards alike) is server-rendered by the

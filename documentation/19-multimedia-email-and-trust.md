@@ -207,7 +207,7 @@ alongside the existing `generate_response()`:
 - Same retry/backoff behavior as the rest of `LLMClient` (`RETRYABLE_EXCEPTIONS`,
   `max_retries`, `retry_base_delay`).
 
-Note: `main.py`'s Step 1 (`step_read_data`) and Step 2 (extraction) both
+Note: `main.js`'s Step 1 (`step_read_data`) and Step 2 (extraction) both
 build chunks independently — same as the pre-existing behavior for plain
 text — so an image/audio file gets captioned/transcribed up to twice on a
 cold compile. The second call is a cache hit (SQLite-backed, file-based, so

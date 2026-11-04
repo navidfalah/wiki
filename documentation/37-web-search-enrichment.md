@@ -9,7 +9,7 @@ unless someone explicitly turns it on for that run.
 | | |
 |---|---|
 | Module | `compiler/web_search.py` |
-| Pipeline integration | `main.py --web-search` / `WIKI_WEB_SEARCH_ENABLED=true`, wired into step 3 (Synthesis) |
+| Pipeline integration | `main.js --web-search` / `WIKI_WEB_SEARCH_ENABLED=true`, wired into step 3 (Synthesis) |
 | Tests | `tests/test_web_search.py` |
 | Trust default | `source_type="web"` → `"low"` (`trust.py`) |
 | Dashboard toggle | Dashboard → Run options → "Web search enrichment" (per run); Pipeline Architecture → "Web search enrichment" (persisted default) |
@@ -29,7 +29,7 @@ a CLI flag, an equivalent `WIKI_*` env var, and no effect unless enabled.
 
 ## Mechanics
 
-`step_synthesize()` (`main.py`) already groups every raw chunk by topic
+`step_synthesize()` (`main.js`) already groups every raw chunk by topic
 before writing draft pages (`synthesizer.group_chunks_by_topic()`). When
 `--web-search` is on, right after that grouping (and after incremental
 diffing decides which topics are actually dirty this run) it calls:
@@ -87,8 +87,8 @@ fail the whole compile.
 
 ```bash
 # One run only
-python main.py --web-search
-python main.py --web-search --web-search-provider serpapi --web-search-max-results 5
+node compiler/main.js --web-search
+node compiler/main.js --web-search --web-search-provider serpapi --web-search-max-results 5
 
 # Every run, until turned off again
 export WIKI_WEB_SEARCH_ENABLED=true
@@ -104,6 +104,6 @@ isn't touched (`data/pipeline_settings.json`, see
 
 ## Next
 
-- [30-pii-redaction.md](./30-pii-redaction.md) / [24-extraction-critic.md](./24-extraction-critic.md) — the other opt-in `main.py` flags this one follows the shape of
+- [30-pii-redaction.md](./30-pii-redaction.md) / [24-extraction-critic.md](./24-extraction-critic.md) — the other opt-in `main.js` flags this one follows the shape of
 - [19-multimedia-email-and-trust.md](./19-multimedia-email-and-trust.md) — how `source_type` feeds trust scoring and the References table this module's hits show up in
 - [34-external-connectors.md](./34-external-connectors.md) — the account-based connectors this module deliberately isn't part of

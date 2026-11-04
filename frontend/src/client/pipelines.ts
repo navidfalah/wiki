@@ -210,7 +210,7 @@ function renderValueHtml(value: unknown): string {
 // Live per-item activity while a step is still running -- e.g. which
 // chunk Extraction is on right now, out of how many -- instead of a
 // running step just sitting there with no visibility into what it's
-// doing. `recent` is a small rolling window main.py caps at 20 items,
+// doing. `recent` is a small rolling window main.js caps at 20 items,
 // newest last; shown newest-first here since that's what you actually
 // want to watch scroll by.
 // A rough ETA from elapsed-time-so-far × remaining/done items -- not a
@@ -247,7 +247,7 @@ function renderStepProgressHtml(startedAt: string, progress: RunStep['progress']
 }
 
 function renderStepErrorHtml(error: string, stepIndex: number, neutral = false): string {
-  // error is often a full Python traceback (see main.py's exception handler
+  // error is often a full Python traceback (see main.js's exception handler
   // in run_compiler()), not a one-line message -- render it as a scrollable
   // monospace log rather than squashing newlines into an unreadable <p>.
   // `neutral` is set for a deliberately-stopped step: it's still shown
@@ -296,7 +296,7 @@ function renderStepDataHtml(data: Record<string, unknown> | null | undefined, st
 
 /** Which LLM profile (model per purpose) a run started with -- see
  * backend/src/lib/pipelineRuns.ts's PipelineRunSettings, frozen by
- * compiler/main.py at run start so it reflects what the run actually used
+ * compiler/main.js at run start so it reflects what the run actually used
  * even if the Settings page changes afterward. */
 function renderSettingsHtml(settings: RunSettings | undefined): string {
   const rows: Array<[string, string]> = [];

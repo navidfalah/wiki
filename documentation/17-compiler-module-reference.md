@@ -1,20 +1,15 @@
 # 17 — Compiler Module Reference
 
-Every Python module in `compiler/` with responsibilities and key entry points.
+Current JavaScript compiler entry points and key legacy module references.
 
 ## Orchestration
 
-### `main.py`
+### `main.js`
 
 | Symbol | Role |
 |--------|------|
-| `run_pipeline(use_llm, force)` | Full 5-step pipeline + MOC |
-| `step_read_data()` | Step 1 |
-| `step_extract()` | Step 2 |
-| `step_synthesize()` | Step 3 |
-| `step_index()` | Step 4 |
-| `step_link()` | Step 5 |
-| `main()` | CLI argparse |
+| `compile()` | Reads sources, extracts topics, synthesizes pages, links and writes output |
+| CLI options | See `node compiler/main.js --help` |
 
 ## Core pipeline
 
@@ -128,26 +123,19 @@ stdlib-only module so those don't have to import `synthesizer.py`).
 
 ## API and builds
 
-### `server.py`
-
-FastAPI app — all `/api/*` routes. See [12-api-server.md](./12-api-server.md).
-
-### `build_runner.py`
+### `backend/src/lib/buildService.ts`
 
 | Symbol | Role |
 |--------|------|
-| `stream_compiler_build()` | Async SSE generator for `main.py` subprocess |
-| `strip_ansi()` | Remove Rich color codes from logs |
-| `sse_event()` | Format SSE `data:` lines |
+| `streamCompilerBuild()` | Runs the shared JavaScript compiler and streams progress as SSE |
 
 ## Analytics
 
-### `analytics.py`
+### JavaScript analytics
 
 | Symbol | Role |
 |--------|------|
-| `build_analytics()` | Full metrics payload for API |
-| `get_tag_detail()` | Per-tag chunk + page drill-down |
+Analytics API behavior now lives in `backend/src/lib/analytics.js` and Express routes.
 
 ### `dead_link_checker.py`
 
@@ -169,11 +157,11 @@ Path constants: `PROJECT_ROOT`, `RAW_DIR`, `OUTPUT_DIR`, `STATE_FILE`
 
 `sanitize_for_mdx()` — escape/sanitize body for Docusaurus MDX
 
-### `fix_frontmatter.py`
+### `fix_frontmatter.js`
 
 CLI to re-quote broken front matter fields in `wiki-app/docs/`
 
-### `fix_mdx_body.py`
+### `fix_mdx_body.js`
 
 MDX body repair utility
 
@@ -190,12 +178,6 @@ Dev-only — not imported by the compiler pipeline. See
 | `generate_varied_dummy_data.py` | `generate_varied_dummy_data()` |
 | `generate_extended_dummy_data.py` | Extended wave-2 file dict |
 | `keep_aurora_raw.py` | Archive non-Aurora raw files to `data/_archive_non_aurora/` |
-
-## Shell scripts
-
-| Script | Role |
-|--------|------|
-| `run_server.sh` | venv + `python server.py` |
 
 ## Repo root scripts
 

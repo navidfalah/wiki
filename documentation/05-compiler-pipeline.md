@@ -4,7 +4,7 @@
 
 The legacy Python build lives in **`compiler/pipeline/`**, with one module per stage, a runner, reporting, and command-line parsing. See the [JavaScript runtime guide](44-javascript-runtime-migration.md) for the current application compiler.
 
-Entry point: `compiler/main.py`  
+Entry point: `compiler/main.js`  
 Function: `run_pipeline(*, force=False)`
 
 ## Overview
@@ -25,8 +25,8 @@ Terminal output uses the `rich` library: step banners, progress bars, incrementa
 ## CLI
 
 ```bash
-python main.py                   # incremental
-python main.py --force           # ignore MD5 cache
+node compiler/main.js            # incremental
+node compiler/main.js --force    # ignore MD5 cache
 ```
 
 | Flag | Effect |
@@ -76,7 +76,7 @@ See [06-extraction-and-synthesis.md](./06-extraction-and-synthesis.md) for extra
 
 1. Group all chunks by extracted topic name
 2. Determine **dirty topics** — topics whose source files changed (unless `--force`)
-3. If `--web-search` is on: search the internet for each dirty topic (all topics if `--force`) and append the hits as extra `source_type="web"` chunk entries (`main.py`'s `step_synthesize()` → `web_search.augment_grouped_with_web_results()`) — see [37-web-search-enrichment.md](./37-web-search-enrichment.md)
+3. If `--web-search` is on: search the internet for each dirty topic (all topics if `--force`) and append the hits as extra `source_type="web"` chunk entries (`main.js`'s `step_synthesize()` → `web_search.augment_grouped_with_web_results()`) — see [37-web-search-enrichment.md](./37-web-search-enrichment.md)
 4. `cleanup_stale_drafts()` — remove draft `.md` files for topics no longer present
 5. For each dirty topic (or all if `--force`): write `compiler/temp_output/{topic-slug}.md`
 

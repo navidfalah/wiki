@@ -59,7 +59,7 @@ changed block as replaced, to keep them cheap.
 
 ## Not covered
 
-- Pages rewritten by the maintenance scripts (`fix_dead_links.py`,
-  `fix_frontmatter.py`, `fix_mdx_body.py`), and the generated index/MOC pages.
+- Pages rewritten by the maintenance scripts (`fix_dead_links.js`,
+  `fix_frontmatter.js`, `fix_mdx_body.js`), and the generated index/MOC pages.
 - There is no list of deleted pages yet. A deleted page's history is
   reachable only by its URL.

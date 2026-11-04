@@ -31,9 +31,9 @@ The frontend's markdown rendering can choke on titles with `:`, `#`, or special 
 
 ```bash
 cd compiler
-python fix_frontmatter.py
+node compiler/fix_frontmatter.js
 # or
-python main.py --force
+node compiler/main.js --force
 ```
 
 ## Dashboard: "Cannot reach API"
@@ -115,13 +115,13 @@ Only one SSE compile runs at a time, with one waiting request. Wait for completi
 
 ```bash
 rm data/state.json
-cd compiler && python main.py --force
+cd compiler && node compiler/main.js --force
 ```
 
 ## Empty or stale `index.json`
 
 ```bash
-cd compiler && python main.py --force
+cd compiler && node compiler/main.js --force
 ```
 
 `index.json` lives in `compiler/temp_output/`. API knowledge-graph endpoints need it.
@@ -135,7 +135,7 @@ Production uses `baseUrl: /<repo>/`. Local uses `/`. Links in compiler output us
 Compiler runs `mdx_sanitize.py` on export. If manual edits introduce raw `<` or invalid JSX:
 
 - Recompile affected pages
-- Or run `fix_mdx_body.py` if applicable
+- Or run `node compiler/fix_mdx_body.js` if applicable
 
 ## LLM errors
 

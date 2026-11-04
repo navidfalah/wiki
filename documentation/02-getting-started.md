@@ -4,7 +4,6 @@
 
 | Tool | Version | Used for |
 |------|---------|----------|
-| **Python** | 3.12+ recommended | Compiler pipeline, retrieval/chat (rag_engine.py), email parsing (email_engine.py) |
 | **Node.js** | ≥ 18 | Express+TypeScript backend and frontend |
 | **npm** | Bundled with Node | `backend/` and `frontend/` dependencies |
 | **Git** | Any recent | Clone, CI deploy |
@@ -30,48 +29,35 @@ OPENAI_BASE_URL=https://api.openai.com/v1
 OPENAI_MODEL=gpt-4o-mini
 ```
 
-Without a key, `python main.py` exits immediately with an error. See
+Without a key, `node compiler/main.js` exits immediately with an error. See
 [08-llm-and-heuristics.md](./08-llm-and-heuristics.md).
 
-## Python setup (compiler)
+## Build the JavaScript compiler
 
 ```bash
-cd compiler
-python3 -m venv .venv
-source .venv/bin/activate          # Windows: .venv\Scripts\activate
-pip install -r requirements.txt
+npm install --prefix backend
+npm run build --prefix backend
 ```
 
-Dependencies (`requirements.txt`):
-
-- `openai` — LLM client
-- `python-dotenv` — loads `.env` from repo root
-- `pyyaml` — MOC generator
-- `rich` — terminal progress UI in `main.py`
-
-The Python side no longer runs its own API server (`server.py`/FastAPI is
-retired) — the Express+TS backend calls into `compiler/main.py` and
-`compiler/cli.py` as subprocesses instead. See
-[11-wiki-app-and-dashboards.md](./11-wiki-app-and-dashboards.md).
+The compiler and API run on Node.js. The legacy Python entry points have been
+retired.
 
 ## First compile
 
 ```bash
-cd compiler
-source .venv/bin/activate
-python main.py --force
+node compiler/main.js --force
 ```
 
 `--force` reprocesses every file in `data/raw/` regardless of `data/state.json`. Use it on first run or after bulk data changes.
 
-Expected output: Rich terminal panels for Steps 1–5, then Map of Content generation. Final pages land in `wiki-app/docs/` (still the compiler's output directory — see the note in
+Expected output: progress for the compile stages and Map of Content generation. Final pages land in `wiki-app/docs/` (still the compiler's output directory — see the note in
 [11-wiki-app-and-dashboards.md](./11-wiki-app-and-dashboards.md) on why that path didn't change even though Docusaurus is gone).
 
 If you see `No raw files found under data/raw/`:
 
 ```bash
 python scripts/dev/generate_junk_data.py    # from compiler/ — creates 10 seed files
-python main.py --force
+node compiler/main.js --force
 ```
 
 ## Node setup (backend + frontend)
@@ -86,9 +72,8 @@ cd ../frontend && npm install
 ### Terminal 1 — compile when raw data changes
 
 ```bash
-cd compiler && source .venv/bin/activate
-python main.py              # incremental (only changed files)
-python main.py --force      # full rebuild
+node compiler/main.js              # incremental (only changed files)
+node compiler/main.js --force      # full rebuild
 ```
 
 ### Terminal 2 — backend (Express + TypeScript API)
@@ -100,7 +85,7 @@ npm run dev:server
 
 - Runs `src/index.ts` directly via `tsx watch` (auto-restarts on change)
 - Port **8000**
-- Also spawns `python3` for build/chat/email requests — `PYTHON_BIN` env var overrides the interpreter if `python3` isn't on `PATH`
+- Runs API routes and compiler services on Node.js
 
 Verify: `curl http://localhost:8000/api/health` → `{"status":"ok"}`
 
@@ -168,6 +153,7 @@ node compiler/fix_frontmatter.js [--dry-run] [--docs-dir PATH]
 node compiler/fix_dead_links.js [--dry-run] [--docs-dir PATH]
 node compiler/fix_mdx_body.js [--dry-run] [--docs-dir PATH]
 node compiler/dead_link_checker.js [--docs-dir PATH]
+node compiler/moc_generator.js [--docs-dir PATH] [--output PATH]
 node compiler/faithfulness_heuristic.js [--docs PATH] [--raw PATH]
 
 # Backend (from backend/)
@@ -187,7 +173,7 @@ npm start                        # node dist/index.js
 
 1. Open http://localhost:3000/wiki — browse the wiki pages
 2. Open http://localhost:3000/dashboard — search or ask the wiki, see what needs attention, run the compiler and manage source folders (raw files live under Resources → Files)
-3. Add a `.md` file under `data/raw/notes/` and run `python main.py`
+3. Add a `.md` file under `data/raw/notes/` and run `node compiler/main.js`
 4. Read [05-compiler-pipeline.md](./05-compiler-pipeline.md) for pipeline details
 
 ## Next

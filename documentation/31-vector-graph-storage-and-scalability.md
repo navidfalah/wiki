@@ -165,10 +165,10 @@ demonstrated in isolation:
   (`test_propagate_group_trust_from_store_matches_in_memory_exactly_on_real_dataset`).
 
 Neither store's data is populated by the main compile pipeline itself yet
-— `main.py`'s five steps still write `wiki-app/docs/` and
+— `main.js`'s five steps still write `wiki-app/docs/` and
 `data/trust_eval_dataset.json` directly, and nothing calls
 `sync_corpus_to_vector_store()` or `import_claim_group()` during a normal
-`python main.py` run. What's delivered here is the wiring a caller (the
+`node compiler/main.js` run. What's delivered here is the wiring a caller (the
 FastAPI server, a future CLI flag, or a script) can use today — actually
 invoking it as part of the standard compile is a reasonable next step, not
 assumed done by this work.

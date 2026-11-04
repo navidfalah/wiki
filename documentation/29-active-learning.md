@@ -14,7 +14,7 @@ a one-way, read-only report and becomes a feedback signal.
 |---|---|
 | Module | `compiler/active_learning.py` |
 | Correction store | `data/review_corrections.json` (created on first use; same human-editable-JSON pattern as `data/link_overrides.json` / `data/source_trust.json`) |
-| Pipeline integration | `main.py --use-corrections` / `WIKI_USE_CORRECTIONS=true` |
+| Pipeline integration | `main.js --use-corrections` / `WIKI_USE_CORRECTIONS=true` |
 | Dashboard | Two independent UIs on the same module: `/review` — `frontend/src/views/review.ejs` + `frontend/src/client/review.ts`, bridged via `compiler/cli.py`'s `review-candidates`/`review-corrections-list`/`review-correction-save` commands and `backend/src/routes/index.ts`'s `/api/review/*` routes; and `/review-queue` — `frontend/src/views/review-queue.ejs` + `frontend/src/client/review-queue.ts`, bridged via `review-queue`/`review-correct` and `/api/review-queue/*` |
 | Tests | `compiler/tests/test_active_learning.py`, `compiler/tests/test_cli.py` |
 
@@ -80,7 +80,7 @@ Known corrections from human review — apply the same judgment to similar text:
 `synthesizer.extract_chunk_topics()` now accepts `extra_system_context`,
 appended to `CHUNK_EXTRACTION_SYSTEM_PROMPT` when non-empty — this is
 exactly where `render_fewshot_block()`'s output plugs in.
-`main.py --use-corrections` (or `WIKI_USE_CORRECTIONS=true`) loads the
+`main.js --use-corrections` (or `WIKI_USE_CORRECTIONS=true`) loads the
 correction store once per compile and threads it through
 `step_extract` → `extract_topics_from_raw_files` → every
 `extract_chunk_topics` call for that run, same opt-in pattern as

@@ -8,8 +8,8 @@ Day-to-day tasks for humans and Cursor agents.
 
 ```bash
 cd compiler && source .venv/bin/activate
-python main.py              # incremental
-python main.py --force      # full rebuild
+node compiler/main.js              # incremental
+node compiler/main.js --force      # full rebuild
 ```
 
 Then browse:
@@ -25,7 +25,7 @@ Or trigger from Dashboard (`/workspace`) if API is running.
 
 1. Create `data/raw/{any-subfolder}/my-note.md`
 2. Write plain markdown or text — headers and `**bold**` help heuristics
-3. `python main.py`
+3. `node compiler/main.js`
 4. Find new topic pages in `wiki-app/docs/` or via MOC
 
 No filename convention required. Subfolder is for your organization only.
@@ -35,7 +35,7 @@ No filename convention required. Subfolder is for your organization only.
 When you say **"ingest [filename]"** (per `AGENTS.md`):
 
 1. Read `data/raw/[filename]` — do not edit raw unless explicitly adding new source
-2. Run `python main.py --force` OR manually update `wiki-app/docs/`
+2. Run `node compiler/main.js --force` OR manually update `wiki-app/docs/`
 3. Ensure cross-links between related pages
 4. Update `wiki-app/docs/index.md` if MOC not regenerated
 5. Add log entry to `wiki-app/docs/log.md` if that file is in use
@@ -90,7 +90,7 @@ python scripts/dev/generate_junk_data.py --overwrite
 python scripts/dev/generate_bulk_dummy_data.py --overwrite
 python scripts/dev/generate_extended_dummy_data.py --overwrite
 python scripts/dev/generate_varied_dummy_data.py --overwrite
-python main.py --force
+node compiler/main.js --force
 ```
 
 ## Fix front matter
@@ -99,8 +99,8 @@ After manual edits break YAML:
 
 ```bash
 cd compiler
-python fix_frontmatter.py --dry-run   # preview
-python fix_frontmatter.py             # apply
+node compiler/fix_frontmatter.js --dry-run   # preview
+node compiler/fix_frontmatter.js             # apply
 ```
 
 Or recompile with `--force`.
@@ -114,7 +114,7 @@ Edit `data/link_overrides.json` or `PUT /api/knowledge-graph/overrides`. Re-run 
 1. Delete or archive `data/raw/` contents (keep `.gitkeep` if present)
 2. Add your `.txt`/`.md` files
 3. Delete `data/state.json` (optional — forces clean state)
-4. `python main.py --force`
+4. `node compiler/main.js --force`
 5. Update `wiki-app/docusaurus.config.js` title/tagline if desired
 
 ## Production build workflow

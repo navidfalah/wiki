@@ -4,7 +4,7 @@
 
 ## What LLM Wiki is
 
-**LLM Wiki** is a personal knowledge base that turns unstructured text into a linked, browsable wiki. You add raw notes (`.txt`, `.md`) to `data/raw/`. A Python **compiler** reads them, extracts topics and entities, writes markdown pages, injects cross-links, and exports Docusaurus-ready files to `wiki-app/docs/`. A **Docusaurus 3** site renders those pages in the browser.
+**LLM Wiki** is a personal knowledge base that turns unstructured text into a linked, browsable wiki. You add raw notes to `data/raw/`. The compiler currently has JavaScript and Python modules: the Node backend handles the API and migrated compiler tasks, while remaining pipeline steps still run in Python. The compiler writes Docusaurus-ready markdown to `wiki-app/docs/`.
 
 The project implements the [Karpathy LLM Wiki pattern](https://gist.github.com/karpathy/442a6bf555914893e9891c11519de94f):
 
@@ -26,18 +26,14 @@ The project implements the [Karpathy LLM Wiki pattern](https://gist.github.com/k
 ```
 data/raw/          Human input — never auto-edited by agents without intent
      ↓
-compiler/          Python pipeline (main.py)
+compiler/          Mixed JavaScript/Python pipeline (migration in progress)
      ↓
 wiki-app/docs/     Generated markdown (Docusaurus docs)
      ↓
 wiki-app/          Static site + dashboard pages (React)
 ```
 
-Optional:
-
-```
-compiler/server.py   FastAPI on port 8000 — dashboards, live compile SSE
-```
+The Express API lives in `backend/`; the legacy standalone FastAPI server has been removed.
 
 ## Sample domain
 
@@ -69,9 +65,9 @@ re-running the compiler on unchanged input costs no extra API calls. See
 | http://localhost:3000/workspace | Compiler dashboard |
 | http://localhost:3000/graph | Topic graph visualization |
 | http://localhost:3000/analytics | Metrics, tags, dead links |
-| http://localhost:8000/api/health | API health check |
+| http://localhost:3001/api/health | API health check (default backend port) |
 
-Static wiki docs work without the API. Dashboard pages require `compiler/run_server.sh`.
+Static wiki docs work without the API. Dashboard pages use the Express backend.
 
 ## Ownership rules (important)
 
@@ -87,4 +83,4 @@ Static wiki docs work without the API. Dashboard pages require `compiler/run_ser
 
 - [02-getting-started.md](./02-getting-started.md) — install and run
 - [03-architecture.md](./03-architecture.md) — how layers connect
-- [05-compiler-pipeline.md](./05-compiler-pipeline.md) — what `main.py` does step by step
+- [05-compiler-pipeline.md](./05-compiler-pipeline.md) — what the JavaScript compiler does step by step

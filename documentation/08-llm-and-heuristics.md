@@ -10,7 +10,7 @@ cp .env.example .env
 # Set OPENAI_API_KEY=sk-...
 ```
 
-Without a key, `python main.py` exits immediately:
+Without a key, `node compiler/main.js` exits immediately:
 
 ```
 Error: OPENAI_API_KEY is required. Copy .env.example to .env and set your API key.

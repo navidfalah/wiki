@@ -92,8 +92,8 @@ construction. An alias never overrides a real topic_index entry for the
 same string — exact titles always win.
 
 `mentions_from_extractions(extractions)` builds the `Mention` list from
-`main.py`'s existing extraction payload (every entity name each raw
-chunk's extraction step found, attributed to its source file) — `main.py`
+`main.js`'s existing extraction payload (every entity name each raw
+chunk's extraction step found, attributed to its source file) — `main.js`
 already has `extractions` in scope when it calls `step_link()`, so this
 is threaded through as an optional parameter, not a new pipeline stage.
 The alias-expanded index is used **only** for the mechanical pre-pass —
@@ -197,7 +197,7 @@ Applied during `link_and_export_pages()` via `apply_connection_overrides()`.
 matched tag strings hand-picked from this repo's own fictional demo data
 (`"aurora-nova-widget-v2-beta-unit"`, `"standup-june-1-late-again"`, …).
 Two problems with that, checked directly rather than assumed:
-`wiki-app/docs/` has zero subdirectories in practice — `main.py` writes
+`wiki-app/docs/` has zero subdirectories in practice — `main.js` writes
 every page flat — so the folder-based rule above never actually fires,
 meaning category assignment depended *entirely* on those hardcoded
 strings; and even on the exact sample corpus they were tuned for, 25% of
@@ -264,9 +264,9 @@ page_type: source | entity | concept | comparison | synthesis
 - Resolves relative paths against `wiki-app/docs/`
 - Reports broken targets in `/api/analytics` and Analytics dashboard
 
-## fix_dead_links.py
+## JavaScript dead-link repair
 
-Repairs, rather than just reports, the broken links `dead_link_checker.py`
+Repairs, rather than just reports, the broken links `dead_link_checker.js`
 finds: `[Link Text](./missing.md)` → `Link Text`. Frontmatter is left
 untouched; only markdown links whose resolved target file doesn't exist are
 unwrapped. Idempotent (already-plain text is never re-touched).
@@ -288,21 +288,21 @@ pass only ever links to titles that actually resolved to a file), but
 these 1,579 links were already baked into the checked-in sample corpus and
 needed a real repair pass, not a fresh compile (no LLM API key is
 available in this environment to regenerate the corpus from scratch).
-Running `fix_dead_links.py` brought `dead_link_checker.py`'s count on this
+Running `node compiler/fix_dead_links.js` brought `dead_link_checker.js`'s count on this
 corpus to 0.
 
 Flags: `--docs-dir PATH`, `--dry-run`. Safe to run again after any future
-compile if new dead links appear.
+compile if new dead links appear. The command is `node compiler/fix_dead_links.js`.
 
-## fix_frontmatter.py
+## JavaScript frontmatter repair
 
 Repairs YAML scalar fields that break Docusaurus parsing:
 
 - Fields: `title`, `sidebar_label`, `id`, `slug`, `last_updated`, `page_type`
-- Re-quotes values via `yaml_quote()` when needed
+- Re-quotes values via `yamlQuote()` when needed
 - Flags: `--dry-run`, `--docs-dir PATH`
 
-Run after manual edits or if build warns on front matter.
+Run `node compiler/fix_frontmatter.js` after manual edits or if build warns on front matter.
 
 ## Next
 

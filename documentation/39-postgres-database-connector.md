@@ -42,7 +42,7 @@ real database on hand.
   what `connectors_service.import_item()` writes under
   `data/raw/connectors/postgres/<account_label>/<table>__<schema.table>.txt`
   — the same `.txt` file shape every other connector's import produces,
-  picked up by `main.py`'s existing recursive scan of `data/raw/` with no
+  picked up by `main.js`'s existing recursive scan of `data/raw/` with no
   separate ingestion path.
 
 200 rows is a hard cap, not a page size — this is a knowledge-ingestion
@@ -131,7 +131,7 @@ sample database's values" (host `postgres`, port `5432`, database
 `kb_articles` with row/column counts. Select some and **Import selected
 into knowledge base** — each becomes a `.txt` file under
 `data/raw/connectors/postgres/sample/`. Run a compile
-(`/pipelines` → Run, or `python main.py`) to turn those into wiki pages
+(`/pipelines` → Run, or `node compiler/main.js`) to turn those into wiki pages
 like any other raw source.
 
 **Your own database (Docker or not):** same `/database` page, just fill

@@ -10,11 +10,8 @@
 # in the test suite actually exercises the real openai SDK surface and
 # would have caught that jump either way.
 #
-# fastapi/uvicorn are NOT here -- only the legacy standalone FastAPI server
-# (compiler/server.py, run_server.sh, compiler/Dockerfile) needs them; see
-# requirements-server.txt. The Express backend spawns main.py/cli.py
-# directly and never imports them, so production images skip them (saves
-# ~40 MB and idle RAM).
+# The Node.js backend owns the HTTP API. Python dependencies remain only for
+# the compiler modules that have not yet been migrated to JavaScript.
 openai>=1.30.0,<4.0.0
 python-dotenv>=1.0.0,<2.0.0
 pyyaml>=6.0.0,<7.0.0

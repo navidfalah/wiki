@@ -21,7 +21,7 @@ Cloudflare (see [Alternative: built-in HTTPS with Caddy](#alternative-built-in-h
 ## Architecture
 
 ```
-Browser ──https──► Cloudflare ──http──► frontend :3005→3000 ──► backend :8000 ──► python3 cli.py / main.py
+Browser ──https──► Cloudflare ──http──► frontend :3005→3000 ──► backend :8000 (Node.js)
           (visitor never       (Tunnel: outbound-only,           └─ /api/* proxied with the      └─ data/, wiki-app/docs
            touches the          no open port needed --              session cookie → Bearer token    (bind mounts)
            server directly)     see the Tunnel section below)
@@ -42,31 +42,21 @@ on the internal Docker network, same as before.
 | Disk | 10 GB | 20 GB (raw data, LLM cache, images) |
 
 Measured idle footprint: **frontend ~20 MB (160 MB cap), backend ~17 MB (768
-MB cap)** — comfortable on 1 GB RAM. A chat request or a compile temporarily
-adds a Python process (~100–250 MB).
+MB cap)** — comfortable on 1 GB RAM. Chat and compile work run in the Node.js
+backend process.
 
 ### What keeps it small
 
 - **Multi-stage images** without compilers, pip, devDependencies or TypeScript
   sources; frontend on Alpine. Backend image ≈ 640 MB on disk, frontend ≈ 250 MB.
-- **FastAPI/uvicorn dropped from the runtime image** — only the legacy
-  `compiler/server.py` used them (`compiler/requirements-server.txt`).
+- **Express owns the HTTP API**; the legacy standalone FastAPI server and its
+  dedicated dependencies have been removed.
 - **Hard memory caps** per container (`*_MEM_LIMIT`) and capped Node heaps
   (`*_HEAP_MB`), so a leak or spike is killed and restarted by Docker instead of
   swapping the host to death.
-- **Python concurrency limit** (`PY_MAX_CONCURRENCY`, default 2): at most this
-  many Python calls run at once (streaming chat, email, connector, review-queue
-  calls); excess requests queue instead of running in parallel.
-- **Warm Python worker** (`PY_WORKER_POOL_SIZE`, default 1): short calls
-  (emails, review queue, connectors, entity graph, ...) go to a long-lived
-  `cli.py --serve` process instead of starting a new interpreter each time.
-  Measured on `/api/emails`: p50 **763 ms → 33 ms**. The worker holds about
-  50 MB while warm and exits after `PY_WORKER_IDLE_MS` (5 min) idle or
-  `PY_WORKER_MAX_REQUESTS` (500) calls. Streaming chat and compiles still get
-  their own processes, so the worst case is one Python process more than
-  `PY_MAX_CONCURRENCY`. Set `PY_WORKER=0` to go back to one process per call.
-- **No boot-time Python spawn** and no sample Postgres (`SKIP_DEFAULT_CONNECTIONS`).
-- **Precompiled bytecode** so each spawned interpreter starts fast.
+- **Bounded chat concurrency** (`CHAT_MAX_CONCURRENCY`, default 2) prevents
+  concurrent requests from exhausting backend memory.
+- **No boot-time sample Postgres** (`SKIP_DEFAULT_CONNECTIONS`).
 - **Asset caching:** CSS/JS are served with a content-versioned URL and a
   1-year immutable cache. Cloudflare compresses and caches static responses at
   its own edge, so the origin doesn't have to.
@@ -176,10 +166,7 @@ All values go in `.env` (see `.env.example`):
 | `BACKEND_MEM_LIMIT` | `768m` | Backend container cap |
 | `FRONTEND_MEM_LIMIT` | `160m` | Frontend container cap |
 | `BACKEND_HEAP_MB` / `FRONTEND_HEAP_MB` | `160` / `96` | Node heap ceilings |
-| `PY_MAX_CONCURRENCY` | `2` | Parallel Python processes (chat/email/connectors) |
-| `PY_WORKER` | `1` | `0` = spawn a fresh `cli.py` per call instead of using the warm worker |
-| `PY_WORKER_POOL_SIZE` | `1` | Warm `cli.py --serve` workers (~50 MB each while warm) |
-| `PY_WORKER_IDLE_MS` / `PY_WORKER_MAX_REQUESTS` / `PY_WORKER_TIMEOUT_MS` | `300000` / `500` / `600000` | Idle shutdown, recycling, per-call kill timeout |
+| `CHAT_MAX_CONCURRENCY` | `2` | Maximum concurrent chat requests |
 | `BACKUP_INTERVAL_HOURS` / `BACKUP_KEEP` | `24` / `7` | Automatic backups (`0` = off) and how many scheduled ones to keep |
 | `BACKUP_MAX_UPLOAD_MB` | `1024` | Largest backup archive the admin panel accepts |
 

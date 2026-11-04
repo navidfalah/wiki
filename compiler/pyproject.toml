@@ -13,19 +13,13 @@ select = ["E", "F", "I", "UP", "B"]
 # `TypeAlias` form so the compiler still imports on 3.11 runners/venvs.
 ignore = ["E501", "UP040"]
 
-[tool.ruff.lint.per-file-ignores]
-# FastAPI's Depends()/Body() pattern relies on call expressions as defaults.
-"server.py" = ["B008"]
-
 [tool.pytest.ini_options]
 testpaths = ["tests"]
 
 [tool.coverage.run]
 source = ["."]
-# tests/ and scripts/ aren't product code; server.py is the legacy standalone
-# FastAPI server -- production uses the Express backend + cli.py, and its
-# dependencies (requirements-server.txt) aren't installed in CI.
-omit = ["tests/*", "scripts/*", "server.py", "temp_output/*"]
+# tests/ and scripts/ aren't product code.
+omit = ["tests/*", "scripts/*", "temp_output/*"]
 # Many tests drive cli.py / main.py as real subprocesses (the way the
 # backend does); measure those too instead of under-reporting them.
 patch = ["subprocess"]

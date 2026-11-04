@@ -145,7 +145,7 @@ deterministic `## References & Trust` table built from `trust.py` — see
 
 ### Legacy per-file synthesis (removed)
 
-The compiler previously supported a per-raw-file path that wrote `sources/`, `entities/`, and `concepts/` pages. That path has been removed; `main.py` uses **topic-based** synthesis only.
+The compiler previously supported a per-raw-file path that wrote `sources/`, `entities/`, and `concepts/` pages. That path has been removed; `main.js` uses **topic-based** synthesis only.
 
 ## Slugify
 

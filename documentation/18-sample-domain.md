@@ -77,7 +77,7 @@ From procedural forum scrape (example):
 
 1. Remove or archive `data/raw/`
 2. Add your own sources
-3. `python main.py --force`
+3. `node compiler/main.js --force`
 4. Update `wiki-app/docusaurus.config.js` title from "Aurora Labs Wiki"
 
 Keep `AGENTS.md` domain section in sync if agents should know your topic.

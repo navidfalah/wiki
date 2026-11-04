@@ -32,4 +32,3 @@ export const PIPELINE_RUNS_DIR = path.join(DATA_ROOT, 'data', 'pipeline_runs');
 export const PIPELINE_RUNS_INDEX = path.join(PIPELINE_RUNS_DIR, 'index.json');
 export const PAGE_HISTORY_DIR = path.join(DATA_ROOT, 'data', 'page_history');
 export const BACKUPS_DIR = path.join(DATA_ROOT, 'data', 'backups');
-export const PYTHON_BIN = process.env.PYTHON_BIN ?? 'python3';

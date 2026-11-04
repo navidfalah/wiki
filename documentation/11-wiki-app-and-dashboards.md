@@ -19,7 +19,7 @@ backed by a single Express+TypeScript **backend** API — Docusaurus and the
 old React app are gone, not layered under the new stack.
 
 **What did *not* change:** the Python compiler pipeline
-(`compiler/main.py` and every module it calls — extraction, synthesis,
+(`compiler/main.js` and every module it calls — extraction, synthesis,
 linking, MOC generation) is untouched, same code, same tests. Retrieval
 for chat (`rag_engine.py`, hybrid BM25 + embeddings + reranking + LLM
 calls) and `.eml` parsing + trust resolution (`email_engine.py`) also stay
@@ -38,7 +38,7 @@ below).
    ▼
 frontend (Express+TS, :3000)  ──SSR fetch──▶  backend (Express+TS, :8000)
                                                     │
-                                     spawn python3 main.py / cli.py
+                                     spawn node compiler/main.js / cli.py
                                                     ▼
                                           compiler/ (Python, unchanged)
                                                     │

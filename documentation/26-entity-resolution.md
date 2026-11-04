@@ -106,7 +106,7 @@ something this pilot's perfect score should be read as covering.
 
 `compiler/entity_graph.py` closes the gap this doc originally left open —
 `linker.py`'s mention graph feeding into something clustered. It doesn't
-touch `linker.py` or `main.py`'s pipeline itself; instead it's a read-side
+touch `linker.py` or `main.js`'s pipeline itself; instead it's a read-side
 adapter, computed on demand, the same posture `/api/knowledge-graph` and
 `/api/attention` already use for `state.json`/`index.json`-derived data
 rather than adding another persisted output file the pipeline has to know

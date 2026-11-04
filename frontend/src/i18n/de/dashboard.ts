@@ -15,7 +15,7 @@ export const dashboard: Record<keyof typeof en, string> = {
   'dashboard.stop': 'Stopp',
   'dashboard.run': 'Compiler starten',
   'dashboard.pickerHintHtml': 'Nur angehakte Ordner der obersten Ebene unter <code class="rounded bg-white px-1 py-0.5">data/raw/</code> werden in diesen Lauf einbezogen. Nicht angehakte Ordner bleiben unverändert – nichts wird gelöscht, und beim erneuten Anhaken werden ihre Themen ohne erzwungene Neuverarbeitung wieder aufgenommen.',
-  'dashboard.optionsHintHtml': 'Zusätzliche Compiler-Durchläufe. Sie erhöhen die LLM-Kosten pro Lauf ungefähr – siehe die Flags <code class="rounded bg-white px-1 py-0.5">--critic-pass</code>, <code class="rounded bg-white px-1 py-0.5">--use-corrections</code> und <code class="rounded bg-white px-1 py-0.5">--redact-pii</code> in <code class="rounded bg-white px-1 py-0.5">compiler/main.py</code>.',
+  'dashboard.optionsHintHtml': 'Zusätzliche Compiler-Durchläufe. Sie erhöhen die LLM-Kosten pro Lauf ungefähr – siehe die Flags <code class="rounded bg-white px-1 py-0.5">--critic-pass</code>, <code class="rounded bg-white px-1 py-0.5">--use-corrections</code> und <code class="rounded bg-white px-1 py-0.5">--redact-pii</code> in <code class="rounded bg-white px-1 py-0.5">compiler/main.js</code>.',
   'dashboard.opt.critic': 'Kritik-Durchlauf',
   'dashboard.opt.criticTitle': 'Führt einen zweiten LLM-Durchlauf über jede synthetisierte Seite aus und entfernt Sätze, die sich nicht in den Quellabschnitten belegen lassen. Verdoppelt die LLM-Kosten pro Seite ungefähr.',
   'dashboard.opt.samples': 'Stichproben',

@@ -119,8 +119,8 @@ function setMessage(text: string) {
   el('build-message').textContent = text;
 }
 
-// Fixed 5-step sequence main.py always runs, in order -- see
-// _step_banner() calls in compiler/main.py. Hardcoded here so the
+// Fixed 5-step sequence main.js always runs, in order -- see
+// _step_banner() calls in compiler/main.js. Hardcoded here so the
 // dashboard can show all 5 as "pending" placeholders before a run (or
 // before its first step has reported in), not just the ones seen so far.
 const BUILD_STEP_NAMES = ['1. Data Reading', '2. Extraction', '3. Synthesis', '4. Indexing', '5. Cross-linking'];

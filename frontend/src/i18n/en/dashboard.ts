@@ -13,7 +13,7 @@ export const dashboard = {
   'dashboard.stop': 'Stop',
   'dashboard.run': 'Run compiler',
   'dashboard.pickerHintHtml': 'Only checked top-level folders under <code class="rounded bg-white px-1 py-0.5">data/raw/</code> are read into this run. Unchecked folders are left as-is — nothing is deleted, and re-checking them later picks their topics back up without needing a forced rebuild.',
-  'dashboard.optionsHintHtml': 'Extra compiler passes. These roughly increase LLM cost per run — see the <code class="rounded bg-white px-1 py-0.5">--critic-pass</code>, <code class="rounded bg-white px-1 py-0.5">--use-corrections</code>, and <code class="rounded bg-white px-1 py-0.5">--redact-pii</code> flags in <code class="rounded bg-white px-1 py-0.5">compiler/main.py</code>.',
+  'dashboard.optionsHintHtml': 'Extra compiler passes. These roughly increase LLM cost per run — see the <code class="rounded bg-white px-1 py-0.5">--critic-pass</code>, <code class="rounded bg-white px-1 py-0.5">--use-corrections</code>, and <code class="rounded bg-white px-1 py-0.5">--redact-pii</code> flags in <code class="rounded bg-white px-1 py-0.5">compiler/main.js</code>.',
   'dashboard.opt.critic': 'Critic pass',
   'dashboard.opt.criticTitle': 'Run a second LLM pass over each synthesized page, stripping sentences it can\'t ground in the source chunks. Roughly doubles per-page LLM cost.',
   'dashboard.opt.samples': 'Samples',

@@ -172,13 +172,13 @@ python compiler/scripts/dev/generate_junk_data.py
 python compiler/scripts/dev/generate_bulk_dummy_data.py --overwrite
 python compiler/scripts/dev/generate_extended_dummy_data.py --overwrite
 python compiler/scripts/dev/generate_varied_dummy_data.py --overwrite
-cd compiler && python main.py --force
+cd compiler && node compiler/main.js --force
 ```
 
 ## From test data to wiki (summary)
 
 1. Generators write plain text → `data/raw/`
-2. `python main.py` reads all `.txt`/`.md` recursively
+2. `node compiler/main.js` reads all `.txt`/`.md` recursively
 3. Extraction pulls topics/entities from bold terms, headers, keywords
 4. Many files mention same entities → shared topic pages (e.g. `meshsync.md`)
 5. Linker connects mentions across pages

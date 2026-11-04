@@ -32,7 +32,7 @@ Subfolder name does **not** change compiler behavior — only organization for h
 
 1. Create any subfolder under `data/raw/`
 2. Add `.md` or `.txt`
-3. Run `python main.py` from `compiler/`
+3. Run `node compiler/main.js` from `compiler/`
 4. No registration step — discovery is automatic
 
 ## `data/state.json` — incremental compiler state
@@ -89,7 +89,7 @@ Subfolder name does **not** change compiler behavior — only organization for h
 
 This legacy snapshot file is no longer used. Incremental state lives in `data/state.json`.
 
-Older format mapping processed files → page slugs. **Not read by current `main.py`.** Safe to ignore or delete.
+Older format mapping processed files → page slugs. **Not read by current `main.js`.** Safe to ignore or delete.
 
 Example structure:
 

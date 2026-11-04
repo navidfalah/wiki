@@ -48,7 +48,7 @@ isn't a new architecture, just the existing one containerized.
 One deliberate detail: `backend/Dockerfile` is built with `context: .`
 (the repo root), not `context: ./backend`. That's not stylistic — the
 image needs *both* `backend/` (Node) and `compiler/` (Python), since the
-backend spawns `python3 main.py`/`cli.py` as subprocesses rather than
+backend spawns `node compiler/main.js`/`cli.py` as subprocesses rather than
 calling a separate service (see
 [11-wiki-app-and-dashboards.md](./11-wiki-app-and-dashboards.md)'s
 "Python bridge" section) — so `backend/Dockerfile` installs Python
@@ -65,7 +65,7 @@ directly, only the backend's REST API.
 `./wiki-app/static/media` as bind volumes on the `backend` service (not
 baked into the image) so a compile's output persists across rebuilds and
 is visible on the host — and mounts `./compiler` itself as a live volume,
-so editing `main.py`/`cli.py` during development doesn't require a
+so editing `main.js`/`cli.py` during development doesn't require a
 rebuild (the Node side of `backend/` is not live-mounted; rebuild the
 image to pick up TypeScript changes).
 

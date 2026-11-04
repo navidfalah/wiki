@@ -62,7 +62,7 @@ remember.
 
 ## Procedure (for whoever runs this)
 
-1. Compile the wiki once (`python main.py --force`) so `/chat` has a real
+1. Compile the wiki once (`node compiler/main.js --force`) so `/chat` has a real
    corpus to search — plausibly the demo Aurora Labs/TeaBuddy sample data,
    or a participant's own corpus if this is run as a dogfooding session
    rather than a lab study.

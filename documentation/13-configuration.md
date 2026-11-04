@@ -72,7 +72,7 @@ GITHUB_REPO: ${{ github.event.repository.name }}
 
 Required repo secret:
 
-- `OPENAI_API_KEY` — the compiler is LLM-only (see [08-llm-and-heuristics.md](./08-llm-and-heuristics.md)); without this secret set, `python compiler/main.py` fails immediately and the workflow build step fails.
+- `OPENAI_API_KEY` — the compiler is LLM-only (see [08-llm-and-heuristics.md](./08-llm-and-heuristics.md)); without this secret set, `node compiler/main.js` fails immediately and the workflow build step fails.
 
 ## `AGENTS.md`
 

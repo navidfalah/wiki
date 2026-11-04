@@ -139,7 +139,7 @@ per-account at connect time.
 | Backend routes | `backend/src/routes/index.ts`: `GET /api/connectors`, `POST /api/connectors/:id/oauth/{start,callback}`, `POST /api/connectors/imap/connect`, `POST /api/connectors/:id/items`, `POST /api/connectors/:id/items/import`, `DELETE /api/connectors/:id/accounts/:accountLabel` |
 | Dashboard | `/connectors` (`frontend/src/views/connectors.ejs` + `client/connectors.ts`) — catalog cards, "Connect new account" (opens the provider's consent screen in a new tab), an inline IMAP connect form, per-account item browsing, and one-click import |
 | OAuth callback page | `/connectors/callback/:id` (`connectors-callback.ejs` + `client/connectors-callback.ts`) — this is the value each `*_REDIRECT_URI` above must point at; it reads `code`/`state` from the query string, asks for an account label (the provider doesn't hand back a display name from just an access token here), and posts to the callback route |
-| Imported content | `data/raw/connectors/<connector_id>/<account_label>/<title>__<item_id>.txt` — plain text with a short "imported via" header, picked up by `main.py`'s existing recursive `.txt`/`.md` scan of `data/raw/` with no separate ingestion path |
+| Imported content | `data/raw/connectors/<connector_id>/<account_label>/<title>__<item_id>.txt` — plain text with a short "imported via" header, picked up by `main.js`'s existing recursive `.txt`/`.md` scan of `data/raw/` with no separate ingestion path |
 | Tests | `compiler/tests/test_connectors_service.py` (15 tests, fakes only), `compiler/tests/test_cli.py`'s `connectors-*` cases |
 
 Two design points worth calling out:

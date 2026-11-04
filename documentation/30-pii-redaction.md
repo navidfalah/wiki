@@ -9,7 +9,7 @@ only module in the series that's deliberately not LLM-based at all.
 |---|---|
 | Module | `compiler/pii_redaction.py` |
 | Evaluation | `compiler/pii_redaction_eval.py` |
-| Pipeline integration | `main.py --redact-pii` / `WIKI_REDACT_PII=true` |
+| Pipeline integration | `main.js --redact-pii` / `WIKI_REDACT_PII=true` |
 | Tests | `test_pii_redaction.py`, `test_pii_redaction_eval.py` |
 
 ## Why offline, and why not everything is redacted
@@ -69,7 +69,7 @@ unredacted text; redaction only affects what actually leaves the machine.
 ever strips categories (SSN, credit card, API key, phone, IPv4) that are
 unambiguously safe to redact and never in tension with entity resolution
 (see the table above) — there's no real reason for a chunk of raw text to
-reach the LLM with a live SSN or API key in it. Use `main.py --no-redact-pii`
+reach the LLM with a live SSN or API key in it. Use `main.js --no-redact-pii`
 or `WIKI_REDACT_PII=false` to opt back out.
 
 ## Evaluation: no API key needed, for once
@@ -168,4 +168,4 @@ separately-named policy — not a side effect of enabling the location tier.
 ## Next
 
 - [26-entity-resolution.md](./26-entity-resolution.md) — the feature this module's default policy is deliberately designed not to interfere with
-- [24-extraction-critic.md](./24-extraction-critic.md) / [29-active-learning.md](./29-active-learning.md) — the other `main.py` flags, both still off-by-default cost/quality opt-ins (this one is the exception, on by default)
+- [24-extraction-critic.md](./24-extraction-critic.md) / [29-active-learning.md](./29-active-learning.md) — the other `main.js` flags, both still off-by-default cost/quality opt-ins (this one is the exception, on by default)

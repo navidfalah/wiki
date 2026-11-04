@@ -6,7 +6,7 @@ import { loadLlmSettings } from '../lib/llmSettings';
 import { chatService } from '../lib/chatService';
 import { Semaphore } from '../lib/semaphore';
 
-const chatSlots = new Semaphore(Math.max(1, Number(process.env.CHAT_MAX_CONCURRENCY || process.env.PY_MAX_CONCURRENCY) || 2));
+const chatSlots = new Semaphore(Math.max(1, Number(process.env.CHAT_MAX_CONCURRENCY) || 2));
 import { resolveDocPaths } from '../lib/resourcesEngine';
 
 export function registerChatRoutes(app: Express): void {
