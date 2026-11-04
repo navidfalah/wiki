@@ -10,7 +10,7 @@ const serverFiles = ['Core.gs','Store.gs','Readers.gs','Compiler.gs','Search.gs'
 const combined = '// Wissensbau — Apps Script server bundle. Generated from src/*.gs.\n\n' + serverFiles.map(name=>'// ===== '+name+' =====\n'+fs.readFileSync(path.join(source,name),'utf8')).join('\n\n');
 new vm.Script(combined,{filename:'Code.gs'});fs.writeFileSync(path.join(install,'Code.gs'),combined);
 for(const name of ['Index.html','Styles.html','Fonts.html','Translations.html','Client.html','appsscript.json'])fs.copyFileSync(path.join(source,name),path.join(install,name));
-for(const name of ['README.md','INSTALL-fa.md'])fs.copyFileSync(path.join(base,name),path.join(install,name));
+for(const name of ['INSTALL-en.md','INSTALL-fa.md'])fs.copyFileSync(path.join(base,name),path.join(install,name));
 fs.writeFileSync(path.join(install,'.clasp.json.example'),JSON.stringify({scriptId:'PASTE_YOUR_SCRIPT_ID_HERE',rootDir:'.'},null,2)+'\n');
 fs.writeFileSync(path.join(install,'.claspignore'),'**/**\n!*.gs\n!*.html\n!appsscript.json\n');
 fs.mkdirSync(path.join(install,'licenses'),{recursive:true});for(const name of fs.readdirSync(path.join(base,'licenses')))fs.copyFileSync(path.join(base,'licenses',name),path.join(install,'licenses',name));

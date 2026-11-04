@@ -91,6 +91,10 @@ describe('interop with compiler/page_history.py', () => {
 });
 
 describe('input validation', () => {
+  it('accepts page names in supported languages', () => {
+    expect(isPageFile('überblick.md')).toBe(true);
+    expect(isPageFile('دانش.md')).toBe(true);
+  });
   it.each(['../secrets.md', 'a/b.md', '.hidden.md', 'page.txt', ''])('rejects page name %j', (name) => {
     expect(isPageFile(name)).toBe(false);
     expect(() => listVersions(name, history)).toThrow();

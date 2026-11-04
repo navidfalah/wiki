@@ -1,9 +1,10 @@
 import { createApp } from './app';
 import { reconcileOrphanedPipelineRuns } from './lib/pipelineRuns';
-import { runCli } from './lib/pythonBridge';
+import { ensureDefaultConnections } from './lib/defaultConnectors';
 import { logSystemEvent } from './lib/activityLog';
 import { startBackupScheduler } from './lib/backupScheduler';
 import { BACKUPS_DIR, DATA_ROOT } from './paths';
+import path from 'node:path';
 
 const app = createApp();
 const PORT = Number(process.env.PORT ?? 8000);
@@ -25,13 +26,13 @@ if (reconciled.length) {
 // didn't take any action to trigger it.
 // SKIP_DEFAULT_CONNECTIONS=true (set in docker-compose.prod.yml) skips this
 // entirely: a production install has no sample Postgres to point at, and it
-// saves a Python process spawn at every boot.
+// avoids creating sample data on production installations.
 if (process.env.SKIP_DEFAULT_CONNECTIONS === 'true') {
   // eslint-disable-next-line no-console
   console.log('Skipped default sample connections (SKIP_DEFAULT_CONNECTIONS=true)');
 } else {
-  runCli<{ connected: string[]; already_connected: string[] }>('connectors-ensure-defaults')
-    .then(({ connected }) => {
+  ensureDefaultConnections({ dataDir: path.join(DATA_ROOT, 'data') })
+    .then(({ connected }: { connected: string[] }) => {
       if (connected.length) {
         // eslint-disable-next-line no-console
         console.log(`Connected default sample account(s): ${connected.join(', ')}`);

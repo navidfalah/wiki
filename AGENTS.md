@@ -65,6 +65,6 @@ Sample domain: **Aurora Labs** (fictional IoT startup). Replace with your topic 
 
 ## Google Apps Script target
 
-The independent Drive-native application lives in `apps-script/`. See its README and `documentation/43-google-apps-script.md` for deployment, file coverage and limits. Its `Core.gs` is portable JavaScript; the remaining `.gs` files adapt it to Google services. Local mode is the default; API compilation and chat are explicit opt-ins.
+The independent Drive-native application lives in `apps-script/`. See `apps-script/INSTALL-en.md` and `documentation/43-google-apps-script.md` for deployment, file coverage and limits. Its `Core.gs` is portable JavaScript; the remaining `.gs` files adapt it to Google services. Local mode is the default; API compilation and chat are explicit opt-ins.
 
 After changing this target, run `npm run check` and `npm test` in `apps-script/`. Run `npm run package` to regenerate the combined installation script, project-content JSON and ZIP. Tests simulate Google services; do not claim live deployment or API validation without actually performing them. Keep all UI strings in the paired English/German dictionaries in `Translations.html`. Do not change `data/raw/` as part of development.

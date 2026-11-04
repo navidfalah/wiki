@@ -139,12 +139,8 @@ services:
       # well-known default.
       ADMIN_USERNAME: ${ADMIN_USERNAME:-admin}
       ADMIN_PASSWORD: ${ADMIN_PASSWORD:?Set ADMIN_PASSWORD in .env before the first start}
-      # Cap concurrent Python calls so a burst queues instead of OOM-killing.
-      # Short calls share one warm `cli.py --serve` worker (~50 MB while warm);
-      # streaming chat and compiles still start their own process.
-      PY_MAX_CONCURRENCY: ${PY_MAX_CONCURRENCY:-2}
-      PY_WORKER: ${PY_WORKER:-1}
-      PY_WORKER_POOL_SIZE: ${PY_WORKER_POOL_SIZE:-1}
+      # Cap concurrent retrieval requests.
+      CHAT_MAX_CONCURRENCY: ${CHAT_MAX_CONCURRENCY:-2}
       # Automatic backups into data/backups (see doc 40); copy them off-host.
       BACKUP_INTERVAL_HOURS: ${BACKUP_INTERVAL_HOURS:-24}
       BACKUP_KEEP: ${BACKUP_KEEP:-7}

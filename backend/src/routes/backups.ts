@@ -6,7 +6,7 @@ import { BACKUPS_DIR, DATA_ROOT } from '../paths';
 import { HttpError, wrap } from '../lib/httpError';
 import { logEvent } from '../lib/activityLog';
 import { requireAdmin } from '../lib/authMiddleware';
-import { isBuildRunning } from '../lib/pythonBridge';
+import { isBuildRunning } from '../lib/buildService';
 import { BackupError, backupPath, createBackup, deleteBackup, listBackups, restoreBackup, validateArchive } from '../lib/backups';
 import { backupSchedule } from '../lib/backupScheduler';
 import { syncSymlinks } from '../lib/sourcesRegistry';

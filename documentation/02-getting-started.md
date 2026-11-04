@@ -126,17 +126,15 @@ Default port **3000**. Kill conflicting processes if port is in use.
 From repo root:
 
 ```bash
-chmod +x build_wiki.sh
-./build_wiki.sh                  # compile + build backend + build frontend
-./build_wiki.sh --force          # pass --force to the compiler
+node build_wiki.js               # compile + build backend + build frontend
+node build_wiki.js --force       # pass --force to the compiler
 ```
 
-`build_wiki.sh`:
+`build_wiki.js`:
 
-1. Creates/activates `compiler/.venv`, installs Python deps
-2. Runs `python compiler/main.py` (forwards CLI args)
-3. `npm install` + `npm run build` in `backend/` → `backend/dist/`
-4. `npm install` + `npm run build` in `frontend/` → `frontend/dist/` + `frontend/dist-static/`
+1. Installs missing dependencies and builds `backend/` → `backend/dist/`
+2. Runs `node compiler/main.js` (forwards CLI args)
+3. Installs missing dependencies and builds `frontend/` → `frontend/dist/` + `frontend/dist-static/`
 
 Run the production build:
 

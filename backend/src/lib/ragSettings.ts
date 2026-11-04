@@ -11,11 +11,7 @@
  * meaningful for the "hybrid" architecture), and forces extractive answers
  * (skip the chat model entirely) even when one is configured.
  *
- * Persisted to data/rag_settings.json, which compiler/rag_settings.py
- * reads directly -- unlike llmSettings.ts, there's no env-var mirroring
- * step here: retrieval happens inside chat/chat-stream subprocesses
- * (cli.py, spawned by pythonBridge.ts), not the main.py build, and Python
- * just reads this same JSON file straight from data/.
+ * Persisted to data/rag_settings.json and read by the JavaScript chat service.
  */
 import fs from 'node:fs';
 import path from 'node:path';

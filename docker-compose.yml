@@ -4,12 +4,7 @@ services:
   # Express + TypeScript API server. Owns everything that's a plain
   # filesystem/JSON read or write (sources registry, raw-file explorer,
   # docs, analytics, dead-link audit, knowledge graph, resources) as a
-  # genuine TypeScript port -- see backend/src/lib/. Retrieval/LLM chat
-  # (rag_engine.py) and .eml parsing + trust resolution (email_engine.py)
-  # stay Python, reached via a subprocess into compiler/cli.py rather than
-  # reimplemented; the compiler pipeline itself (`main.py`) also stays
-  # Python, run the same way build_runner.py used to, just spawned from
-  # Node instead of FastAPI. See documentation/11-wiki-app-and-dashboards.md.
+  # JavaScript implementation -- see backend/src/lib/.
   backend:
     build:
       context: .
@@ -50,11 +45,6 @@ services:
       - ./wiki-app/docs:/app/wiki-app/docs
       - ./wiki-app/static/media:/app/wiki-app/static/media
       - ./compiler/temp_output:/app/compiler/temp_output
-      # Live code mount for the Python side only — main.py/cli.py edits on
-      # the host apply without a rebuild. The Node side isn't live-mounted
-      # (unlike the old compiler-api's uvicorn reload=True); rebuild the
-      # image to pick up backend/ changes.
-      - ./compiler:/app/compiler
     ports:
       # Host-side port is overridable (BACKEND_PORT=8001 docker compose up)
       # for when something else on the host is already using 8000 --

@@ -11,7 +11,7 @@ source .venv/bin/activate
 pip install -r requirements.txt
 ```
 
-Run compiler commands from `compiler/` with venv active, or use `build_wiki.sh`.
+This applies to the retained legacy Python tools. The JavaScript build uses `node build_wiki.js`.
 
 ## No raw files found
 
@@ -101,8 +101,7 @@ lsof -nP -iTCP:3000 -sTCP:LISTEN   # macOS/Linux
 
 ## Build already running (HTTP 409)
 
-Only one SSE compile at a time (`backend/src/lib/pythonBridge.ts`'s
-in-memory lock). Wait for completion or restart the backend to release it.
+Only one SSE compile runs at a time, with one waiting request. Wait for completion or restart the backend to release the queue.
 
 ## Slow compiles
 

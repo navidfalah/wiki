@@ -394,7 +394,7 @@ interface LlmProfile {
 /** Populates the per-run "Extraction/linking model" and "Synthesis model"
  *  pickers from the Settings page's providers -- overriding "default"/
  *  "thinking" for just this build (see routes/index.ts's /api/build/stream
- *  and pythonBridge.ts's streamCompilerBuild). */
+ *  and the JavaScript build service). */
 async function loadRunOptionModels() {
   const defaultSelect = el('run-opt-default-model') as HTMLSelectElement;
   const thinkingSelect = el('run-opt-thinking-model') as HTMLSelectElement;

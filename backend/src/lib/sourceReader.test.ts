@@ -1,0 +1,33 @@
+import fs from 'node:fs';
+import os from 'node:os';
+import path from 'node:path';
+import { describe, expect, it } from 'vitest';
+import { zipSync, strToU8 } from 'fflate';
+import { readSource } from './sourceReader';
+
+describe('JavaScript source reader', () => {
+  it('reads Office documents, spreadsheets and presentation notes without Python', async () => {
+    const root = fs.mkdtempSync(path.join(os.tmpdir(), 'wiki-reader-'));
+    try {
+      const samples = [
+        ['a.docx', { 'word/document.xml': '<w:document><w:p><w:r><w:t>Battery report</w:t></w:r></w:p></w:document>' }, 'Battery report'],
+        ['b.xlsx', { 'xl/workbook.xml': '<workbook xmlns:r="r"><sheets><sheet name="Sheet" r:id="r1"/></sheets></workbook>', 'xl/_rels/workbook.xml.rels': '<Relationships><Relationship Id="r1" Target="worksheets/sheet1.xml"/></Relationships>', 'xl/worksheets/sheet1.xml': '<worksheet><row><c r="A1"><v>220</v></c></row></worksheet>' }, '220'],
+        ['c.pptx', { 'ppt/presentation.xml': '<p:presentation xmlns:r="r"><p:sldId r:id="r1"/></p:presentation>', 'ppt/_rels/presentation.xml.rels': '<Relationships><Relationship Id="r1" Target="slides/slide1.xml"/></Relationships>', 'ppt/slides/slide1.xml': '<p:sld><a:p><a:t>Slide content</a:t></a:p></p:sld>' }, 'Slide content'],
+      ] as const;
+      for (const [name, entries, expected] of samples) {
+        const filename = path.join(root, name);
+        fs.writeFileSync(filename, zipSync(Object.fromEntries(Object.entries(entries).map(([key, value]) => [key, strToU8(value)]))));
+        expect(await readSource(filename)).toContain(expected);
+      }
+    } finally { fs.rmSync(root, { recursive: true, force: true }); }
+  });
+  it('reports inaccessible content and never executes markup', async () => {
+    const root = fs.mkdtempSync(path.join(os.tmpdir(), 'wiki-reader-'));
+    try {
+      const html = path.join(root, 'a.html'); fs.writeFileSync(html, '<script>alert(1)</script><p>Battery</p>');
+      expect(await readSource(html)).not.toContain('alert');
+      const broken = path.join(root, 'broken.xlsx'); fs.writeFileSync(broken, 'broken');
+      expect(await readSource(broken)).toContain('content unavailable');
+    } finally { fs.rmSync(root, { recursive: true, force: true }); }
+  });
+});

@@ -1,13 +1,10 @@
 # syntax=docker/dockerfile:1
 #
 # Build context is the REPO ROOT (see docker-compose*.yml's `context: .`):
-# this image needs both backend/ (the Express+TS API) and compiler/ (the
-# Python pipeline, run as a subprocess -- see backend/src/lib/pythonBridge.ts
-# and compiler/cli.py). paths.ts resolves PROJECT_ROOT the same way
-# compiler/models.py does, so the layout below mirrors the repo: backend/
-# and compiler/ as siblings of data/ and wiki-app/.
+# The backend runs the compiler and connectors in JavaScript. The extension
+# manifest remains at its existing path for compatibility with local data.
 #
-# Three stages so the final image carries no compilers, no pip, no
+# Two stages so the final image carries no language compilers, no pip, no
 # devDependencies and no TypeScript sources -- only what runs.
 
 # --- 1. TypeScript build -----------------------------------------------------
@@ -18,33 +15,13 @@ RUN npm ci
 COPY backend/ .
 RUN npm run build && npm prune --omit=dev
 
-# --- 2. Python virtualenv ----------------------------------------------------
-FROM node:22-slim AS pydeps
-RUN apt-get update \
-    && apt-get install -y --no-install-recommends python3 python3-venv \
-    && rm -rf /var/lib/apt/lists/*
-COPY compiler/requirements.txt /tmp/requirements.txt
-RUN python3 -m venv /opt/venv \
-    && /opt/venv/bin/pip install --no-cache-dir -r /tmp/requirements.txt
-
-# --- 3. Runtime --------------------------------------------------------------
+# --- 2. Runtime --------------------------------------------------------------
 FROM node:22-slim
-RUN apt-get update \
-    && apt-get install -y --no-install-recommends python3 \
-    && rm -rf /var/lib/apt/lists/*
-
-ENV NODE_ENV=production \
-    PYTHONUNBUFFERED=1 \
-    PYTHONDONTWRITEBYTECODE=1 \
-    PYTHON_BIN=/opt/venv/bin/python
+ENV NODE_ENV=production
 
 WORKDIR /app
-COPY --from=pydeps /opt/venv /opt/venv
-COPY compiler/ compiler/
-# Pre-compile the pipeline's bytecode once: every chat/email request spawns a
-# fresh interpreter, and with PYTHONDONTWRITEBYTECODE it would otherwise
-# re-parse every module on every start.
-RUN /opt/venv/bin/python -m compileall -q compiler
+COPY compiler/all_source_extensions.json compiler/all_source_extensions.json
+COPY compiler/main.js compiler/main.js
 COPY --from=build /app/backend/dist backend/dist
 COPY --from=build /app/backend/node_modules backend/node_modules
 COPY backend/package.json backend/

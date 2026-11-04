@@ -7,9 +7,8 @@ Browser
   → frontend/src/app.ts       pages, language selection, authenticated API proxy
   → backend/src/app.ts        API middleware and error handling
   → backend/src/routes/       endpoints grouped by feature
-  → backend/src/lib/          application logic and filesystem storage
-  → compiler/cli.py           Python engine commands (through pythonBridge.ts)
-    compiler/main.py          compile entry point → pipeline/runner.py
+  → backend/src/lib/          application logic, storage, compiler, search and connectors
+    compiler/main.js          command-line compiler entry point
 ```
 
 ## Where to make a change
@@ -23,9 +22,9 @@ Browser
 | API behavior | `backend/src/routes/<feature>.ts` |
 | Storage and application rules | `backend/src/lib/` |
 | Backend data locations | `backend/src/paths.ts` |
-| Compilation stages | `compiler/pipeline/runner.py` and the stage modules; see [compiler guide](../compiler/README.md) |
-| Retrieval and chat | `compiler/rag_engine.py`, `hybrid_retrieval.py`, `rag_settings.py` |
-| External data connectors | `compiler/connectors/`, `connectors_service.py` |
+| Compilation stages | `backend/src/lib/compilerEngine.js`; see [JavaScript runtime guide](44-javascript-runtime-migration.md) |
+| Retrieval and chat | `backend/src/lib/chatEngine.js`, `chatService.ts` |
+| External data connectors | `backend/src/lib/externalConnectors.js`, `googleConnector.js` |
 | Local and production deployment | `docker-compose.yml`, `docker-compose.prod.yml`, `deploy/` |
 
 ## Backend feature modules
@@ -77,4 +76,4 @@ npm test --prefix frontend
 
 Backend endpoint regression tests live in `backend/src/routes/*.routes.test.ts` and start the real application against temporary data and a fake Python bridge. They need permission to listen on localhost. Backup tests require GNU tar (the default macOS tar does not support their `--transform` fixtures).
 
-For Python-only changes, use the compiler test suite described in [getting started](02-getting-started.md). Broader background remains in the [documentation index](README.md).
+For Python-only changes, use the compiler test suite described in [getting started](02-getting-started.md). Broader background is listed in the [project guide](../PROJECT_GUIDE.md).

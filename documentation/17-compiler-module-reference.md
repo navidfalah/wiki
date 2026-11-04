@@ -201,7 +201,7 @@ Dev-only — not imported by the compiler pipeline. See
 
 | Script | Role |
 |--------|------|
-| `build_wiki.sh` | venv + compile + `npm run build` |
+| `build_wiki.js` | JavaScript compile + backend/frontend builds |
 
 ## Next
 

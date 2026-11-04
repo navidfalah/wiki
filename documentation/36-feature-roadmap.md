@@ -75,7 +75,7 @@ retrieved passages) and returns a `"faithfulness"` field alongside
 `"answer"`/`"sources"`/`"mode"` from both `answer_question()` and
 `answer_question_stream()`. That field passes through `cli.py` unchanged
 (plain dict/NDJSON pass-through, no schema to update), gets typed as
-`ChatFaithfulness` in `pythonBridge.ts` and `chatSessions.ts` (optional
+`ChatFaithfulness` in `chatSessions.ts` (optional
 everywhere, so old persisted sessions without it don't break), and renders
 as a small badge in `chat.ts`'s `faithfulnessBadgeHtml()` — a fixed
 "Grounded · verbatim" pill for extractive answers, or a

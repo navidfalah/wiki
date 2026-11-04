@@ -2,15 +2,15 @@ import type { Express } from 'express';
 import { HttpError, wrap } from '../lib/httpError';
 import { logEvent } from '../lib/activityLog';
 import { listConnectorEvents, logConnectorEvent } from '../lib/connectorActivity';
-import { runCli } from '../lib/pythonBridge';
+import { connectors, googleConnector, externalConnectors } from '../lib/connectorService';
 
 export function registerConnectorRoutes(app: Express): void {
-  // --- External connectors (bridged to connectors_service.py) --------------
+  // --- External connectors -------------------------------------------------
 
   app.get(
     '/api/connectors',
     wrap(async (_req, res) => {
-      res.json(await runCli('connectors-catalog'));
+      res.json({ connectors: connectors.catalog() });
     }),
   );
 
@@ -18,7 +18,7 @@ export function registerConnectorRoutes(app: Express): void {
     '/api/connectors/:id/oauth/start',
     wrap(async (req, res) => {
       try {
-        const result = await runCli('connectors-oauth-start', { connector_id: req.params.id });
+        const result = googleConnector.start(req.params.id);
         res.json(result);
       } catch (err: any) {
         if (err.errorType === 'not_configured') throw new HttpError(400, err.message);
@@ -32,7 +32,7 @@ export function registerConnectorRoutes(app: Express): void {
     wrap(async (req, res) => {
       const { code, state, account_label: accountLabel } = req.body ?? {};
       try {
-        const result = await runCli('connectors-oauth-callback', { connector_id: req.params.id, code, state, account_label: accountLabel });
+        const result = await googleConnector.complete(req.params.id, code, state, accountLabel);
         logEvent(req.user?.username, 'Connected external account', `${req.params.id} → ${accountLabel}`);
         res.json(result);
       } catch (err: any) {
@@ -46,7 +46,7 @@ export function registerConnectorRoutes(app: Express): void {
     wrap(async (req, res) => {
       const { account_label: accountLabel, host, password, port, mailbox } = req.body ?? {};
       try {
-        const result = await runCli('connectors-imap-connect', { account_label: accountLabel, host, password, port, mailbox });
+        const result = connectors.connect('imap', { account_label: accountLabel, host, password, port, mailbox });
         logEvent(req.user?.username, 'Connected external account', `imap → ${accountLabel}`);
         res.json(result);
       } catch (err: any) {
@@ -61,7 +61,7 @@ export function registerConnectorRoutes(app: Express): void {
       const { account_label: accountLabel, host, password, port, dbname, user, schema } = req.body ?? {};
       const startedAt = Date.now();
       try {
-        const result = await runCli('connectors-postgres-connect', { account_label: accountLabel, host, password, port, dbname, user, schema });
+        const result = connectors.connect('postgres', { account_label: accountLabel, host, password, port, dbname, user, schema });
         logEvent(req.user?.username, 'Connected external account', `postgres → ${accountLabel}`);
         logConnectorEvent({
           username: req.user?.username,
@@ -95,7 +95,7 @@ export function registerConnectorRoutes(app: Express): void {
       const { account_label: accountLabel, db_path: dbPath } = req.body ?? {};
       const startedAt = Date.now();
       try {
-        const result = await runCli('connectors-sqlite-connect', { account_label: accountLabel, db_path: dbPath });
+        const result = connectors.connect('sqlite', { account_label: accountLabel, db_path: dbPath });
         logEvent(req.user?.username, 'Connected external account', `sqlite → ${accountLabel}`);
         logConnectorEvent({
           username: req.user?.username,
@@ -129,7 +129,7 @@ export function registerConnectorRoutes(app: Express): void {
       const { account_label: accountLabel, query, limit } = req.body ?? {};
       const startedAt = Date.now();
       try {
-        const result = await runCli('connectors-items-list', { connector_id: req.params.id, account_label: accountLabel, query, limit });
+        const result = { items: await externalConnectors.list(req.params.id, accountLabel, query, limit) };
         const count = Array.isArray(result?.items) ? result.items.length : undefined;
         logConnectorEvent({
           username: req.user?.username,
@@ -165,12 +165,7 @@ export function registerConnectorRoutes(app: Express): void {
       const { account_label: accountLabel, item_id: itemId, item_title: itemTitle } = req.body ?? {};
       const startedAt = Date.now();
       try {
-        const result = await runCli('connectors-item-import', {
-          connector_id: req.params.id,
-          account_label: accountLabel,
-          item_id: itemId,
-          item_title: itemTitle,
-        });
+        const result = await externalConnectors.importItem(req.params.id, accountLabel, itemId, itemTitle);
         logEvent(req.user?.username, 'Imported item from connector', `${req.params.id} → ${result.raw_path}`);
         logConnectorEvent({
           username: req.user?.username,
@@ -202,7 +197,7 @@ export function registerConnectorRoutes(app: Express): void {
   app.delete(
     '/api/connectors/:id/accounts/:accountLabel',
     wrap(async (req, res) => {
-      const result = await runCli('connectors-disconnect', { connector_id: req.params.id, account_label: req.params.accountLabel });
+      const result = connectors.disconnect(req.params.id, req.params.accountLabel);
       logEvent(req.user?.username, 'Disconnected external account', `${req.params.id} → ${req.params.accountLabel}`);
       logConnectorEvent({
         username: req.user?.username,

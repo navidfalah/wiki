@@ -9,7 +9,7 @@
  * - `compiler/temp_output/index.json`: the topic index.
  *
  * Archives are `data/backups/wissensbau-<stamp>[-<label>].tar.gz`, written by
- * the system `tar` from an explicit list of **regular files only**. Source
+ * JavaScript from an explicit list of **regular files only**. Source
  * folder mirrors under data/raw are symlinks to folders outside the project;
  * they aren't copied, and `syncSymlinks()` recreates them from
  * data/sources.json after a restore. Because of that, restore can reject any
@@ -17,9 +17,9 @@
  * classic tar attack where an uploaded archive plants a symlink and then
  * writes through it.
  */
-import { spawn } from 'node:child_process';
 import fs from 'node:fs';
 import path from 'node:path';
+import * as tar from 'tar';
 
 export interface BackupRoots {
   projectRoot: string;
@@ -71,20 +71,6 @@ export function collectFiles(roots: BackupRoots): string[] {
   return files;
 }
 
-function runTar(args: string[], input?: string): Promise<string> {
-  return new Promise((resolve, reject) => {
-    const child = spawn('tar', args);
-    let stdout = '';
-    let stderr = '';
-    child.stdout.on('data', (c) => (stdout += c));
-    child.stderr.on('data', (c) => (stderr += c));
-    child.on('error', (err) => reject(new BackupError(`tar failed to start: ${err.message}`)));
-    child.on('close', (code) => (code === 0 ? resolve(stdout) : reject(new BackupError(`tar exited ${code}: ${stderr.trim()}`))));
-    if (input !== undefined) child.stdin.end(input);
-    else child.stdin.end();
-  });
-}
-
 export async function createBackup(roots: BackupRoots, label = '', now: Date = new Date()): Promise<BackupInfo> {
   fs.mkdirSync(roots.backupsDir, { recursive: true });
   const safeLabel = label.toLowerCase().replace(/[^a-z0-9-]+/g, '-').replace(/^-+|-+$/g, '').slice(0, 40);
@@ -96,7 +82,7 @@ export async function createBackup(roots: BackupRoots, label = '', now: Date = n
   const partial = `${target}.partial`;
   const files = collectFiles(roots);
   try {
-    await runTar(['-czf', partial, '-C', roots.projectRoot, '--null', '--no-recursion', '-T', '-'], files.map((f) => `${f}\0`).join(''));
+    await tar.create({ gzip: true, file: partial, cwd: roots.projectRoot, noDirRecurse: true, portable: true }, files);
     fs.renameSync(partial, target);
   } finally {
     fs.rmSync(partial, { force: true });
@@ -143,26 +129,24 @@ const ALLOWED_ENTRY_RE = /^(data\/(?!backups(\/|$))[^\0]+|wiki-app\/docs\/[^\0]+
 /** Every entry must be a regular file or directory inside the allowed
  * trees, with no absolute or `..` path. Returns the file entries. */
 export async function validateArchive(archive: string): Promise<string[]> {
-  const listing = await runTar(['-tvzf', archive]);
   const files: string[] = [];
-  for (const line of listing.split('\n')) {
-    if (!line.trim()) continue;
-    const type = line[0];
-    // GNU tar -tv: "<perms> <owner>/<group> <size> <date> <time> <name>"
-    const nameMatch = /^\S+\s+\S+\s+\d+\s+\S+\s+\S+\s+(.*)$/.exec(line);
-    const name = nameMatch?.[1] ?? '';
-    if (type !== '-' && type !== 'd') throw new BackupError(`Archive contains a link or special file: ${name || line}`);
-    if (!name || name.startsWith('/') || name.split('/').includes('..')) throw new BackupError(`Unsafe path in archive: ${name}`);
+  let invalid: BackupError | undefined;
+  try { await tar.list({ file: archive, strict: true, preservePaths: true, onReadEntry: (entry) => {
+    if (invalid) return;
+    const type = entry.type, name = entry.path;
+    if (type !== 'File' && type !== 'Directory') { invalid = new BackupError(`Archive contains a link or special file: ${name}`); return; }
+    if (!name || name.startsWith('/') || name.includes('\\') || name.split('/').includes('..')) { invalid = new BackupError(`Unsafe path in archive: ${name}`); return; }
     const clean = name.replace(/\/$/, '');
-    if (type === 'd') {
+    if (type === 'Directory') {
       if (!['data', 'wiki-app', 'wiki-app/docs', 'wiki-app/static', 'wiki-app/static/media', 'compiler', 'compiler/temp_output'].includes(clean) && !ALLOWED_ENTRY_RE.test(clean)) {
-        throw new BackupError(`Unexpected directory in archive: ${clean}`);
+        invalid = new BackupError(`Unexpected directory in archive: ${clean}`);
       }
-      continue;
+      return;
     }
-    if (!ALLOWED_ENTRY_RE.test(clean)) throw new BackupError(`Unexpected file in archive: ${clean}`);
+    if (!ALLOWED_ENTRY_RE.test(clean)) { invalid = new BackupError(`Unexpected file in archive: ${clean}`); return; }
     files.push(clean);
-  }
+  } }); } catch (error: any) { throw new BackupError(`Invalid backup archive: ${error.message}`); }
+  if (invalid) throw invalid;
   if (!files.length) throw new BackupError('Archive is empty');
   return files;
 }
@@ -176,7 +160,7 @@ export async function validateArchive(archive: string): Promise<string[]> {
 function assertNoSymlinkedParents(projectRoot: string, files: string[]): void {
   for (const file of files) {
     const parts = file.split('/');
-    for (let i = 1; i < parts.length; i++) {
+    for (let i = 1; i <= parts.length; i++) {
       const ancestor = path.join(projectRoot, ...parts.slice(0, i));
       let stat: fs.Stats;
       try {
@@ -199,6 +183,6 @@ export async function restoreBackup(roots: BackupRoots, archive: string): Promis
       if (name.endsWith('.md')) fs.unlinkSync(path.join(docsDir, name));
     }
   }
-  await runTar(['-xzf', archive, '-C', roots.projectRoot, '--no-same-owner', '--no-same-permissions']);
+  await tar.extract({ file: archive, cwd: roots.projectRoot, strict: true, noMtime: true });
   return { restoredFiles: files.length, safetyBackup: safety.name };
 }

@@ -71,7 +71,7 @@ Ported module-for-module from the Python `compiler/` engines, in
 | `linkOverrides.ts` | `link_overrides.py` (read/CRUD surface) | Knowledge graph, connection overrides |
 | `resourcesEngine.ts` | `resources_engine.py` | Cited-source dedup |
 | `fsWalk.ts` | — | Shared directory-walk helper (see below) |
-| `pythonBridge.ts` | `build_runner.py` + new | Build SSE stream, `cli.py` subprocess calls |
+| `buildService.ts` | Compiler execution | JavaScript build coordination and SSE stream |
 
 **A real bug found while porting, not a hypothetical:**
 `fs.readdirSync(dir, { withFileTypes: true })`'s `Dirent.isFile()` /
@@ -85,20 +85,9 @@ without it. Fixed once, centrally, in `fsWalk.ts`'s `walkEntries()`
 (uses `fs.statSync`, which follows symlinks, instead of trusting Dirent
 flags) and wired into every walker that touches `data/raw/`.
 
-### Python bridge (`src/lib/pythonBridge.ts`, `compiler/cli.py`)
+### Compiler execution
 
-- `streamCompilerBuild()` spawns `python3 -u main.py [--force]` with
-  `cwd: compiler/`, streams stdout/stderr as Server-Sent Events — the
-  same shape `build_runner.py` used to produce for FastAPI, just spawned
-  from Node instead of `asyncio.subprocess`.
-- `runCli(command, input)` spawns `python3 cli.py <command>`, writes JSON
-  to stdin, reads one JSON object from stdout. `compiler/cli.py` has four
-  subcommands: `chat`, `chat-status` (both call `rag_engine.py`),
-  `emails-list`, `email-detail` (both call `email_engine.py`). Verified
-  directly against the real corpus before wiring the Express routes to
-  it — all four return real data (see `compiler/cli.py`'s own tests via
-  manual invocation in this repo's history, or run
-  `echo '{"message":"..."}' | python3 cli.py chat` yourself).
+The backend runs compilation, email handling, retrieval and connectors in JavaScript. See [the runtime migration guide](44-javascript-runtime-migration.md) for current coverage and limitations.
 
 ### Routes (`src/routes/index.ts`)
 

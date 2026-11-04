@@ -1,15 +1,15 @@
 import type { Express } from 'express';
 import { HttpError, wrap } from '../lib/httpError';
 import { logEvent } from '../lib/activityLog';
-import { runCli } from '../lib/pythonBridge';
+import { emailService } from '../lib/emailService';
 
 export function registerEmailRoutes(app: Express): void {
-  // --- Emails (bridged to email_engine.py) ----------------------------------
+  // --- Email sources ----------------------------------------------------------
 
   app.get(
     '/api/emails',
     wrap(async (_req, res) => {
-      res.json(await runCli('emails-list'));
+      res.json(await emailService.list());
     }),
   );
 
@@ -18,7 +18,7 @@ export function registerEmailRoutes(app: Express): void {
     wrap(async (req, res) => {
       const relPath = (req.params as any)[0] as string;
       try {
-        res.json(await runCli('email-detail', { path: relPath }));
+        res.json(await emailService.detail(relPath));
       } catch (err: any) {
         if (err.errorType === 'not_an_email') throw new HttpError(400, err.message);
         if (err.errorType === 'not_found') throw new HttpError(404, err.message);
@@ -42,12 +42,12 @@ export function registerEmailRoutes(app: Express): void {
     '/api/emails',
     wrap(async (req, res) => {
       try {
-        const result = await runCli('email-create', emailPayload(req.body));
+        const result = await emailService.create(emailPayload(req.body));
         logEvent(req.user?.username, 'Created email', result.path);
         res.status(201).json(result);
       } catch (err: any) {
         if (err.errorType === 'not_an_email') throw new HttpError(400, err.message);
-        if (!err.errorType) throw new HttpError(400, err.message);
+        if (!err.errorType || err.errorType === 'invalid') throw new HttpError(400, err.message);
         throw err;
       }
     }),
@@ -58,13 +58,13 @@ export function registerEmailRoutes(app: Express): void {
     wrap(async (req, res) => {
       const relPath = (req.params as any)[0] as string;
       try {
-        const result = await runCli('email-update', { path: relPath, ...emailPayload(req.body) });
+        const result = await emailService.update(relPath, emailPayload(req.body));
         logEvent(req.user?.username, 'Updated email', relPath);
         res.json(result);
       } catch (err: any) {
         if (err.errorType === 'not_an_email') throw new HttpError(400, err.message);
         if (err.errorType === 'not_found') throw new HttpError(404, err.message);
-        if (!err.errorType) throw new HttpError(400, err.message);
+        if (!err.errorType || err.errorType === 'invalid') throw new HttpError(400, err.message);
         throw err;
       }
     }),
@@ -75,7 +75,7 @@ export function registerEmailRoutes(app: Express): void {
     wrap(async (req, res) => {
       const relPath = (req.params as any)[0] as string;
       try {
-        const result = await runCli('email-delete', { path: relPath });
+        const result = emailService.remove(relPath);
         logEvent(req.user?.username, 'Deleted email', relPath);
         res.json(result);
       } catch (err: any) {

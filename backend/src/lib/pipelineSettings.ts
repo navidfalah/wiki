@@ -4,10 +4,8 @@
  * active-learning corrections (active_learning.py), PII redaction
  * (pii_redaction.py), live internet search enrichment (web_search.py), and
  * which top-level data/raw/ folders participate at all. These already
- * exist as compiler/main.py CLI flags (also readable
- * from WIKI_* env vars, see main.py's argparse defaults) that
- * pythonBridge.ts's streamCompilerBuild() has always been able to pass
- * per-run; this file gives the Pipeline Architecture settings page a place
+ * are passed to the JavaScript compiler per run; this file gives the
+ * Pipeline Architecture settings page a place
  * to persist a *default* choice so every build behaves that way without
  * re-selecting it each time. Persisted to data/pipeline_settings.json.
  */

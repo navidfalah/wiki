@@ -17,7 +17,7 @@ import { atomicWriteText } from './atomicWrite';
 export const MAX_VERSIONS_PER_PAGE = 20;
 export type HistoryReason = 'compile' | 'edit' | 'delete' | 'restore';
 
-const PAGE_FILE_RE = /^[A-Za-z0-9][A-Za-z0-9._-]*\.md$/;
+const PAGE_FILE_RE = /^[\p{L}\p{N}][\p{L}\p{N}\p{M}._-]*\.md$/u;
 const VERSION_ID_RE = /^(\d{8}T\d{6}\d{6})Z-(compile|edit|delete|restore)$/;
 const VOLATILE_LINE_RE = /^(last_updated|last_modified):.*$/gm;
 

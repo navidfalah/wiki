@@ -1,23 +1,20 @@
 # 12 — API Server
 
 **Path:** `backend/` (Express + TypeScript)
-**Start:** `cd backend && npm run dev:server` (dev) or `npm start` after `npm run build` (production)
+**Start:** `cd backend && npm run dev` (dev) or `npm start` after `npm run build` (production)
 **Default URL:** http://localhost:8000
 
 Everything below describes the request/response *shapes*, which are
 unchanged from the previous FastAPI implementation (`compiler/server.py`,
 now retired) — only the runtime changed. See
 [11-wiki-app-and-dashboards.md](./11-wiki-app-and-dashboards.md) for how
-the endpoints are implemented (which are genuine TypeScript ports vs.
-which bridge to Python via `compiler/cli.py`).
+the endpoints are implemented. See [the runtime migration guide](44-javascript-runtime-migration.md) for current coverage.
 
 ## Stack
 
 - Express 4 + TypeScript, run via `tsx` in dev / compiled with `tsc` for production
 - CORS enabled for `localhost:3000`, `127.0.0.1:3000`
-- `main.py` (the compile) and `rag_engine.py`/`email_engine.py` (chat,
-  email parsing) are invoked as `python3` subprocesses — see
-  `backend/src/lib/pythonBridge.ts`
+- Compilation, retrieval and email parsing run in JavaScript modules under `backend/src/lib/`.
 
 ## Health
 
@@ -125,9 +122,9 @@ GET /api/build/stream?force=false
 | `done` | `code`, `success`, `message` |
 | `error` | `message` |
 
-**Concurrency:** Only one build at a time. Second request → HTTP **409** `"A build is already running"`.
+**Concurrency:** One build runs at a time; one additional request may wait in the queue.
 
-**Implementation:** `backend/src/lib/pythonBridge.ts`'s `streamCompilerBuild()` spawns `python3 -u main.py` with an optional `--force` flag (same shape the old `build_runner.py` produced). Strips ANSI codes from Rich terminal output. The backend process must have `OPENAI_API_KEY` set in its environment — `main.py` is LLM-only and exits `1` immediately otherwise.
+**Implementation:** `backend/src/lib/buildService.ts` coordinates the JavaScript compiler and streams progress. Compilation requires a configured model API key.
 
 ## Knowledge graph
 

@@ -1,13 +1,13 @@
 import fs from 'node:fs';
 import type { Express } from 'express';
-import { INDEX_JSON, OUTPUT_DIR, RAW_DIR, REVIEW_REPORT_PATH } from '../paths';
+import { INDEX_JSON, OUTPUT_DIR, RAW_DIR, REVIEW_REPORT_PATH, STATE_FILE } from '../paths';
 import { HttpError, wrap } from '../lib/httpError';
 import { buildAnalytics, getTagDetail } from '../lib/analytics';
 import { buildAttentionReport } from '../lib/attentionEngine';
 import { logEvent } from '../lib/activityLog';
 import { loadTopicIndex } from '../lib/docUtils';
 import { buildKnowledgeGraphPayload, loadLinkOverrides, saveLinkOverrides, validateConnections } from '../lib/linkOverrides';
-import { runCli } from '../lib/pythonBridge';
+import { entityGraphPayload } from '../lib/entityGraph';
 import { getResourceDetail, listResources } from '../lib/resourcesEngine';
 
 export function registerKnowledgeRoutes(app: Express): void {
@@ -94,12 +94,14 @@ export function registerKnowledgeRoutes(app: Express): void {
     }),
   );
 
-  // --- Entity graph (bridged to entity_graph.py) ----------------------------
+  // --- Entity graph ----------------------------------------------------------
 
   app.get(
     '/api/entity-graph',
-    wrap(async (_req, res) => {
-      res.json(await runCli('entity-graph'));
+    wrap((_req, res) => {
+      let state: unknown = { files: {} };
+      try { state = JSON.parse(fs.readFileSync(STATE_FILE, 'utf-8')); } catch { /* missing or invalid state */ }
+      res.json(entityGraphPayload(state));
     }),
   );
 

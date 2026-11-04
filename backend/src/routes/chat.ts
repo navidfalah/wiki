@@ -3,16 +3,19 @@ import { HttpError, wrap } from '../lib/httpError';
 import { appendAssistantTurn, appendUserTurn, createChatSession, deleteChatSession, listChatSessions, loadChatSession, renameChatSession, setChatSessionCorpusSource, setChatSessionLlmProfile, setChatSessionResourceScope, truncateChatSession } from '../lib/chatSessions';
 import { logEvent } from '../lib/activityLog';
 import { loadLlmSettings } from '../lib/llmSettings';
-import { runCli, streamChat } from '../lib/pythonBridge';
+import { chatService } from '../lib/chatService';
+import { Semaphore } from '../lib/semaphore';
+
+const chatSlots = new Semaphore(Math.max(1, Number(process.env.CHAT_MAX_CONCURRENCY || process.env.PY_MAX_CONCURRENCY) || 2));
 import { resolveDocPaths } from '../lib/resourcesEngine';
 
 export function registerChatRoutes(app: Express): void {
-  // --- Chat / RAG (bridged to rag_engine.py) --------------------------------
+  // --- Chat / retrieval ------------------------------------------------------
 
   app.get(
     '/api/chat/status',
-    wrap(async (_req, res) => {
-      res.json(await runCli('chat-status'));
+    wrap((_req, res) => {
+      res.json(chatService.status());
     }),
   );
 
@@ -96,10 +99,7 @@ export function registerChatRoutes(app: Express): void {
     }),
   );
 
-  // Not wrap()'d: streamChat() writes SSE headers immediately (like
-  // streamCompilerBuild's /api/build/stream above), so any failure after
-  // that point has to be reported as an SSE 'error' event, not a JSON
-  // error response -- see streamChat's own error handling for that.
+  // Send extractive results over the existing SSE protocol.
   app.get('/api/chat/sessions/:id/stream', async (req, res) => {
     const message = String(req.query.message ?? '').trim();
     if (!message) {
@@ -116,7 +116,6 @@ export function registerChatRoutes(app: Express): void {
     // mode -- a raw-sources chat searches all of data/raw/ unscoped.
     const corpusSource = session.corpus_source === 'raw' ? 'raw' : 'wiki';
     const docScope = corpusSource === 'wiki' && session.resource_scope ? resolveDocPaths(session.resource_scope) : null;
-    const history = session.messages.map((m) => ({ role: m.role, content: m.content }));
 
     // Persisted before streamChat runs, not after it succeeds: streamChat
     // can fail partway through (a dropped connection, an LLM error), and
@@ -125,20 +124,30 @@ export function registerChatRoutes(app: Express): void {
     // even though the composer had already cleared it client-side.
     appendUserTurn(req.params.id, message);
 
+    res.writeHead(200, {
+      'Content-Type': 'text/event-stream',
+      'Cache-Control': 'no-cache',
+      Connection: 'keep-alive',
+      'X-Accel-Buffering': 'no',
+    });
+    const emit = (event: Record<string, unknown>) => res.write(`data: ${JSON.stringify(event)}\n\n`);
+    const release = await chatSlots.acquire();
     try {
-      const result = await streamChat(res, {
-        message,
-        history,
-        docScope,
-        corpusSource,
-        llmProfileId: session.llm_profile_id,
-      });
-      const sourcesWithSlug = (result.sources ?? []).map((s) =>
-        corpusSource === 'wiki' ? { ...s, slug: s.doc_path.replace(/\.md$/, '') } : { ...s },
+      if (res.destroyed) return;
+      const result = await chatService.answer({ message, docScope, corpusSource });
+      if (res.destroyed) return;
+      const sourcesWithSlug = result.sources.map((source) =>
+        corpusSource === 'wiki' ? { ...source, slug: source.doc_path.replace(/\.md$/, '') } : { ...source },
       );
       appendAssistantTurn(req.params.id, result.answer, sourcesWithSlug, result.faithfulness);
+      emit({ type: 'sources', sources: sourcesWithSlug });
+      emit({ type: 'delta', text: result.answer });
+      emit({ type: 'done', ...result, sources: sourcesWithSlug });
     } catch {
-      /* already reported to the client as an SSE 'error' event by streamChat */
+      if (!res.destroyed) emit({ type: 'error', message: 'Could not search the selected sources.' });
+    } finally {
+      release();
+      if (!res.destroyed) res.end();
     }
   });
 

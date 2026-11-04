@@ -35,16 +35,18 @@ was removed. Production runs the Docker stack described in
 ## Local production build
 
 ```bash
-./build_wiki.sh
-./build_wiki.sh --force
+node build_wiki.js
+node build_wiki.js --force
 ```
 
-Output: `wiki-app/build/`
+Output: `backend/dist/`, `frontend/dist/` and `frontend/dist-static/`.
 
-Preview:
+Run the built services:
 
 ```bash
-cd wiki-app && npm run serve
+cd backend && npm start
+# In another terminal:
+cd frontend && npm start
 ```
 
 ## baseUrl behavior
@@ -65,13 +67,13 @@ Broken link warnings in build logs may reference path-prefix mismatches between 
 | Dashboard React pages (static bundle) | `data/state.json` |
 | | Live SSE compile (needs backend) |
 
-Dashboard pages will load but show API errors on GitHub Pages unless you host a separate API and set `WIKI_API_URL` at build time.
+The frontend uses the backend API; configure both services for deployment.
 
 ## Manual deploy alternative
 
 ```bash
-./build_wiki.sh --force
-# Upload wiki-app/build/ to any static host (S3, Netlify, etc.)
+node build_wiki.js --force
+# Deploy the built backend and frontend with their runtime configuration.
 ```
 
 ## Next

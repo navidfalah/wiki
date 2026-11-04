@@ -2,21 +2,21 @@
 
 Start with the **[project map](documentation/project-map.md)** for the current application layers, feature modules, and where to make changes.
 
-> **This file is a short index.** Detailed documentation lives in **[documentation/](./documentation/README.md)** — split across 18 focused guides with small implementation details.
+> **This file is a short index.** Detailed documentation is listed below.
 
 ## Quick start
 
 ```bash
-cd compiler && python3 -m venv .venv && source .venv/bin/activate
-pip install -r requirements.txt && python main.py --force
-cd ../wiki-app && npm install && npm start
+npm install --prefix backend
+npm run build --prefix backend
+node compiler/main.js --force
 ```
 
 ## Documentation map
 
 | Topic | File |
 |-------|------|
-| **Index (start here)** | [documentation/README.md](./documentation/README.md) |
+| **Index (start here)** | [project map](./documentation/project-map.md) |
 | What & why | [01-overview.md](./documentation/01-overview.md) |
 | Install & run | [02-getting-started.md](./documentation/02-getting-started.md) |
 | Architecture | [03-architecture.md](./documentation/03-architecture.md) |
@@ -65,6 +65,6 @@ cd ../wiki-app && npm install && npm start
 
 ## Also see
 
-- [README.md](./README.md) — original comprehensive README
+- [Apps Script installation](./apps-script/INSTALL-en.md)
 - [AGENTS.md](./AGENTS.md) — Cursor agent workflows
 - [PROMPTS.md](./PROMPTS.md) — example prompts

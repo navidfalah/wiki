@@ -1,6 +1,6 @@
 # 43 — Drive-native Apps Script application
 
-The independent application in [`apps-script/`](../apps-script/README.md) implements the simplified Wissensbau workflow entirely with Apps Script JavaScript and HTML. No Python process or Node server is required at runtime. The existing local application remains available during migration.
+The independent application in [`apps-script/`](../apps-script/INSTALL-en.md) implements the simplified Wissensbau workflow entirely with Apps Script JavaScript and HTML. No Python process or Node server is required at runtime. The existing local application remains available during migration.
 
 Runtime data is stored in the user's Drive workspace: source copies, extracted text, Markdown pages, snapshots, progress, cached model responses and conversations. The workspace pointer and API key are stored in Apps Script User Properties. A key never appears in ordinary Drive files or bootstrap responses.
 
@@ -14,7 +14,7 @@ Runtime data is stored in the user's Drive workspace: source copies, extracted t
 
 Local processing is the default. It preserves source text and organizes pages by filename, without semantic topic inference or generated summaries. API-assisted extraction/synthesis and generated chat answers are separate opt-ins. Exact-title links, references and keyword retrieval always run in JavaScript.
 
-Modern Word/Excel/PowerPoint files, templates and macro-enabled containers are read as data. Google Docs, Sheets and Slides use native services. PDF and older Office formats can use temporary Google conversion. Formula execution, Office macros, image interpretation and audio transcription are not performed. See the README's format matrix for precise coverage and conversion limits.
+Modern Word/Excel/PowerPoint files, templates and macro-enabled containers are read as data. Google Docs, Sheets and Slides use native services. PDF and older Office formats can use temporary Google conversion. Formula execution, Office macros, image interpretation and audio transcription are not performed. See the installation guide's format matrix for precise coverage and conversion limits.
 
 Deployment uses the supplied V8 manifest, Drive API v3 and execution as the accessing user, initially restricted to the owner. Personal account setup and authorization must be verified in Google; local service simulations do not establish live platform correctness. Full native Docs/Sheets/Slides scopes are declared because the built-in `openById` services require them, even though these readers do not edit the sources.
 

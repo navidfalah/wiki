@@ -103,26 +103,13 @@ function patchIndexStatus(ids: string[], status: string, finishedAt: string): vo
  * `reason` under `status`, but only if it's still recorded as "running" on
  * disk -- a no-op if PipelineRun.finish() already ran (the normal success/
  * error path), so this is safe to call speculatively any time a build's
- * subprocess exits without knowing whether Python's own cleanup ran.
+ * run stops without completing its normal cleanup.
  * `status` defaults to "error" (an actual crash/kill this process didn't
  * request) -- pass "stopped" for a deliberate user-requested stop, so it
  * reads as "you did this on purpose" rather than a red traceback-style
  * failure. Returns whether it actually changed anything.
  *
- * Not actually racing PipelineRun.finish() for the SAME run, despite both
- * being unlocked read-modify-write on the same file from separate
- * processes: compiler/pipeline_tracker.py's _save()/finish() are fully
- * synchronous and themselves write atomically (temp file + rename, same
- * pattern as atomicWriteJson below), so Python's last write for a run is
- * always complete before that process can exit -- and this is only ever
- * called from pythonBridge.ts's child.on('close', ...), which Node only
- * fires after the subprocess has actually exited. What both sides DO
- * share unprotected is index.json, which isn't scoped to one run's
- * lifecycle -- this function's patchIndexStatus() call and a concurrent
- * compile's own PipelineRun.start()/finish() (a genuinely different,
- * unrelated run) can race for real. atomicWriteJson at least turns that
- * into "whichever write lands last wins outright" instead of a
- * truncated/corrupt file if the loser's write is caught mid-write.
+ * Status changes use atomic writes to avoid partially written JSON.
  */
 export function markRunAbandoned(id: string, reason: string, status: 'error' | 'stopped' = 'error'): boolean {
   if (!RUN_ID_RE.test(id)) return false;
@@ -152,18 +139,7 @@ export function markRunAbandoned(id: string, reason: string, status: 'error' | '
 
 /**
  * Marks every run still recorded as "running" as failed. Called once at
- * backend startup: this process's in-memory `buildRunning` flag (see
- * pythonBridge.ts) always starts false, so any run still marked "running"
- * on disk is necessarily orphaned -- its subprocess died with the previous
- * server process (crash, `docker compose down`, host reboot) before
- * PipelineRun ever got to call finish(). Without this, such a run sits in
- * "running" forever, which is what /api/pipelines/:id's `wasRunning` check
- * and the dashboard's "build in progress" banner both trust blindly.
- *
- * A build stopped or crashed *during* this same backend process's uptime
- * is instead caught immediately by pythonBridge.ts calling
- * markRunAbandoned() as soon as the subprocess exits -- this only ever
- * catches what a previous server process left behind.
+ * backend startup when an interrupted server left a run unfinished.
  */
 export function reconcileOrphanedPipelineRuns(): string[] {
   const orphaned = listPipelineRuns().filter((s) => s.status === 'running');

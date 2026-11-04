@@ -386,7 +386,7 @@ def _run_command(command: str) -> tuple[dict, int]:
 
 
 def serve() -> int:
-    """Long-lived worker for backend/src/lib/pythonWorker.ts: one JSON request
+    """Legacy long-lived worker: one JSON request
     per stdin line ({"id", "command", "input", "env"}), one JSON response per
     line ({"id", "code", "payload"}). Saves the ~0.6 s of imports every
     one-shot `cli.py <command>` pays.

@@ -2,7 +2,7 @@
 
 > Current behavior: linking uses Python only. Chat defaults to local keyword search and source excerpts. See [42 — Minimal AI](./42-minimal-ai.md) for the simplified workflow and migration of older settings.
 
-The build now lives in **`compiler/pipeline/`**, with one module per stage, a runner, reporting, and command-line parsing. See the [compiler guide](../compiler/README.md) for the current module map. `main.py` remains the compatible entry point.
+The legacy Python build lives in **`compiler/pipeline/`**, with one module per stage, a runner, reporting, and command-line parsing. See the [JavaScript runtime guide](44-javascript-runtime-migration.md) for the current application compiler.
 
 Entry point: `compiler/main.py`  
 Function: `run_pipeline(*, force=False)`
@@ -142,61 +142,29 @@ Meta tags excluded from categorization: `wiki`, `auto-ingest`, `llm-ingest`, `in
 | 4 | New/changed/removed draft filenames |
 | 5 | Dirty drafts + pages linking to changed/removed topics |
 
-## build_wiki.sh integration
+## build_wiki.js integration
 
-`build_wiki.sh` at repo root:
+`build_wiki.js` at repo root:
 
-1. Ensures `compiler/.venv`
-2. Runs `python compiler/main.py "$@"` (forwards `--force`)
-3. Runs `npm run build` in `wiki-app/`
+1. Builds the JavaScript backend
+2. Runs `node compiler/main.js` (forwards `--force`)
+3. Builds the frontend
 
-Aborts Docusaurus build if compiler exits non-zero.
+Aborts the frontend build if compilation fails.
 
 ## Live compile (dashboard)
 
-`/api/build/stream` spawns the same `main.py` via `build_runner.py`:
+`/api/build/stream` runs the JavaScript compiler through `buildService.ts`:
 
-- Query params: `force` (default `false`, forwarded to `main.py` as `--force`) and
-  `timeout_seconds` (optional override for the run's time limit)
-- Requires `OPENAI_API_KEY` in the server's environment; `main.py` exits `1` immediately otherwise
-- Streams SSE events: `start`, `log`, `done`, `error`
-- Only one build at a time — the route acquires `_build_lock` synchronously before
-  returning the `StreamingResponse` (not lazily inside the generator), so two
-  concurrent requests can't both slip past the "already running" check; the loser
-  gets `409`
-- `POST /api/build/stop` kills the in-flight build on demand (`{"stopped": bool}`);
-  the running stream reports it as `done` with `success: false` and
-  `"message": "Build stopped by user."` and releases the lock itself
-- Strips ANSI escape codes from Rich output before streaming
+- The `force` query parameter controls whether unchanged sources are reprocessed.
+- Compilation requires a configured model API key.
+- Progress is streamed using SSE events including `start`, `log` and `done`.
+- Only one build runs at a time, and one further request may wait in the queue; another request receives HTTP 409.
+- `POST /api/build/stop` requests cancellation and the stream reports the stopped build.
 
 ### Failure handling
 
-Every exit path — clean finish, non-zero exit, timeout, user stop, failure to
-spawn, the client disconnecting, or a bug in `build_runner.py` itself — ends in
-exactly one `done` event and always kills the subprocess and clears its
-module-level slot, so a broken run can never wedge `_build_lock` or leave an
-orphaned process running:
-
-| Cause | `error.kind` | `done.success` |
-|-------|--------------|-----------------|
-| Entrypoint missing | `missing_entrypoint` | `false` |
-| `main.py` fails to spawn (OS error) | `spawn_failed` | `false` |
-| Subprocess has no stdout pipe | `no_stdout` | `false` |
-| Exceeds the timeout | `timeout` | `false` |
-| Finishes output but won't exit within the grace period | `exit_wait_timeout` | `false` |
-| Unhandled exception in `build_runner.py` | `unexpected` | `false` |
-| `POST /api/build/stop` called | *(no error event)* | `false` |
-| Client disconnects mid-stream | *(no event — generator is cancelled)* | — |
-| Normal non-zero exit code | *(no error event, just `done`)* | `false` |
-
-**Timed out builds:** killed (SIGTERM, then SIGKILL after a 10s grace period) if
-the run exceeds `DEFAULT_BUILD_TIMEOUT_SECONDS` (1800s / 30 min), or the
-`COMPILER_BUILD_TIMEOUT_SECONDS` env var / `timeout_seconds` query param when set.
-
-**Client disconnect:** if the SSE connection drops (browser closed, network
-hiccup), FastAPI cancels the generator; `stream_compiler_build` catches the
-resulting `CancelledError`, kills the subprocess, and re-raises — no zombie
-process is left running against a closed pipe.
+The build service records errors or cancellation in run history and releases the build slot. An interrupted server run is marked as abandoned when the backend restarts. A disconnected client does not by itself stop an active build.
 
 ## Next
 

@@ -2,6 +2,8 @@ import { execFileSync } from 'node:child_process';
 import fs from 'node:fs';
 import os from 'node:os';
 import path from 'node:path';
+import { gzipSync } from 'fflate';
+import * as tar from 'tar';
 import { afterEach, beforeEach, describe, expect, it } from 'vitest';
 import {
   BackupError,
@@ -27,17 +29,21 @@ function write(rel: string, content: string) {
 const read = (rel: string) => fs.readFileSync(path.join(roots.projectRoot, rel), 'utf-8');
 const exists = (rel: string) => fs.existsSync(path.join(roots.projectRoot, rel));
 
-/** Build an archive from `entries` (name -> content) with GNU tar, keeping names verbatim. */
-function craftArchive(entries: Record<string, string>, extraArgs: string[] = []): string {
-  const staging = fs.mkdtempSync(path.join(tmp, 'craft-'));
-  const names: string[] = [];
-  Object.values(entries).forEach((content, i) => {
-    fs.writeFileSync(path.join(staging, `f${i}`), content);
-    names.push(`f${i}`);
-  });
+/** Build test archives with literal paths, including deliberately unsafe ones. */
+function craftArchive(entries: Record<string, string>): string {
+  const chunks: Buffer[] = [];
+  for (const [name, content] of Object.entries(entries)) {
+    const header = Buffer.alloc(512), bytes = Buffer.from(content);
+    const octal = (value: number, size: number) => value.toString(8).padStart(size - 1, '0') + '\0';
+    header.write(name, 0, 100); header.write(octal(0o644, 8), 100); header.write(octal(0, 8), 108); header.write(octal(0, 8), 116);
+    header.write(octal(bytes.length, 12), 124); header.write(octal(0, 12), 136); header.fill(32, 148, 156); header[156] = '0'.charCodeAt(0);
+    header.write('ustar\0', 257); header.write('00', 263);
+    header.write(octal(header.reduce((sum, byte) => sum + byte, 0), 8), 148);
+    chunks.push(header, bytes, Buffer.alloc((512 - bytes.length % 512) % 512));
+  }
+  chunks.push(Buffer.alloc(1024));
   const out = path.join(tmp, `crafted-${Date.now()}-${Math.random()}.tar.gz`);
-  const transforms = Object.keys(entries).flatMap((name, i) => ['--transform', `s,^f${i}$,${name},`]);
-  execFileSync('tar', ['-czPf', out, '-C', staging, ...transforms, ...extraArgs, ...names]);
+  fs.writeFileSync(out, gzipSync(Buffer.concat(chunks)));
   return out;
 }
 
@@ -134,7 +140,7 @@ describe('validateArchive rejects unsafe archives', () => {
     const staging = fs.mkdtempSync(path.join(tmp, 'empty-'));
     fs.mkdirSync(path.join(staging, 'data'));
     const out = path.join(tmp, 'empty.tar.gz');
-    execFileSync('tar', ['-czf', out, '-C', staging, 'data']);
+    await tar.create({ gzip: true, file: out, cwd: staging, portable: true }, ['data']);
     await expect(validateArchive(out)).rejects.toThrow(/empty/);
   });
 });

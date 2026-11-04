@@ -7,7 +7,7 @@ Updated for the **llm-wiki-project** layout (`data/raw/` → `compiler/` → `wi
 ## Prompt 1 — Orient
 
 ```
-Read README.md, AGENTS.md, and compiler/main.py. Explain the three-layer
+Read PROJECT_GUIDE.md, AGENTS.md, and compiler/main.js. Explain the three-layer
 architecture (data/raw, compiler, wiki-app) and how the pipeline flows.
 Do not change files yet.
 ```
@@ -98,5 +98,5 @@ for my domain. Re-run the compiler.
 ```
 Add a GitHub Actions workflow that runs the compiler and builds wiki-app
 with npm run build, uploading the Docusaurus build artifact. Document deploy
-steps in README.md.
+steps in PROJECT_GUIDE.md.
 ```

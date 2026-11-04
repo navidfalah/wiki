@@ -7,6 +7,15 @@ export default tseslint.config(
   js.configs.recommended,
   ...tseslint.configs.recommended,
   {
+    // Runtime modules are deliberately plain CommonJS JavaScript for Node.
+    files: ['src/**/*.js'],
+    languageOptions: {
+      sourceType: 'commonjs',
+      globals: { require: 'readonly', module: 'readonly', process: 'readonly', Buffer: 'readonly', fetch: 'readonly', AbortController: 'readonly', AbortSignal: 'readonly', DOMException: 'readonly', URL: 'readonly', URLSearchParams: 'readonly', FormData: 'readonly', Blob: 'readonly' },
+    },
+    rules: { '@typescript-eslint/no-require-imports': 'off', 'no-useless-escape': 'off' },
+  },
+  {
     rules: {
       'no-console': 'warn',
       // The Express error middleware, route wrappers, and CLI bridge deal in

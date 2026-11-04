@@ -1,6 +1,6 @@
 import fs from 'node:fs';
 import path from 'node:path';
-import { afterAll, beforeAll, describe, expect, it } from 'vitest';
+import { afterAll, beforeAll, describe, expect, it, vi } from 'vitest';
 import { startHarness, type Harness } from './__fixtures__/harness';
 
 let h: Harness;
@@ -68,29 +68,43 @@ describe('pipeline runs and usage', () => {
   });
 });
 
-describe('compile stream', () => {
-  it('streams the run id and cleaned log lines, and passes pipeline flags through', async () => {
-    const events = await sse('/api/build/stream?force=true&redact_pii=false&exclude_folders=notes,drafts');
-    const types = events.map((e) => e.type);
-    expect(types[0]).toBe('start');
-    expect(events).toContainEqual(expect.objectContaining({ type: 'run_id', run_id: '20260927-120000-abcdef' }));
-    const logs = events.filter((e) => e.type === 'log').map((e) => e.message);
-    expect(logs).toContain('Step 1/5: discovering raw files'); // ANSI colour codes stripped
-    expect(logs).toContain('warning on stderr');
-    expect(logs).toContain('Step 5/5: done (no trailing newline)');
-    expect(events.at(-1)).toMatchObject({ type: 'done', success: true, code: 0 });
-    const call = h.pythonCalls().find((c: any) => c.command === 'main.py') as any;
-    expect(call.args).toEqual(expect.arrayContaining(['--force', '--no-redact-pii', '--exclude-folders=notes,drafts']));
+describe('JavaScript compile stream', () => {
+  it('builds with isolated model responses, persists progress, and never starts Python', async () => {
+    const previousKey = process.env.OPENAI_API_KEY, previousBase = process.env.OPENAI_BASE_URL;
+    const realFetch = globalThis.fetch, prompts: string[] = [];
+    process.env.OPENAI_API_KEY = 'test-key'; process.env.OPENAI_BASE_URL = 'https://model.invalid/v1';
+    vi.stubGlobal('fetch', async (input: Parameters<typeof fetch>[0], init?: RequestInit) => {
+      if (!String(input).startsWith('https://model.invalid/')) return realFetch(input, init);
+      const request = JSON.parse(String(init?.body)); const system = request.messages[0].content, prompt = request.messages[1].content;
+      prompts.push(prompt);
+      const content = system.includes('knowledge extractor') ? JSON.stringify({ topics: ['Battery'], entities: [], concepts: [] }) : '# Battery\n\nInformation from the supplied sources.';
+      return new Response(JSON.stringify({ choices: [{ message: { content } }], usage: { prompt_tokens: 5, completion_tokens: 2, total_tokens: 7 } }), { status: 200, headers: { 'content-type': 'application/json' } });
+    });
+    try {
+      const before = h.pythonCalls().length;
+      const events = await sse('/api/build/stream?force=true&redact_pii=false&exclude_folders=notes,drafts');
+      expect(events[0].type).toBe('start');
+      const id = events.find((event) => event.type === 'run_id').run_id;
+      expect(id).toMatch(/^\d{8}-\d{6}-[a-f0-9]{6}$/);
+      expect(events.at(-1)).toMatchObject({ type: 'done', success: true, code: 0 });
+      expect(prompts.length).toBeGreaterThan(0); expect(prompts.every((prompt) => !prompt.includes('notes/kickoff.txt'))).toBe(true);
+      expect((await h.json('GET', `/api/pipelines/${id}`, auth())).body.status).toBe('success');
+      expect(fs.readFileSync(path.join(h.root, 'wiki-app/docs/battery.md'), 'utf8')).toContain('References & Trust');
+      expect(h.pythonCalls()).toHaveLength(before);
+    } finally {
+      vi.unstubAllGlobals();
+      if (previousKey === undefined) delete process.env.OPENAI_API_KEY; else process.env.OPENAI_API_KEY = previousKey;
+      if (previousBase === undefined) delete process.env.OPENAI_BASE_URL; else process.env.OPENAI_BASE_URL = previousBase;
+    }
   });
 
-  it('reports a failed compile and is idle again afterwards', async () => {
-    process.env.FAKE_BUILD_EXIT = '3';
+  it('reports a missing key and is idle again afterwards', async () => {
+    const previousKey = process.env.OPENAI_API_KEY; process.env.OPENAI_API_KEY = '';
     try {
-      const events = await sse('/api/build/stream');
-      expect(events.at(-1)).toMatchObject({ type: 'done', success: false, code: 3 });
-    } finally {
-      delete process.env.FAKE_BUILD_EXIT;
-    }
+      const events = await sse('/api/build/stream?force=true');
+      expect(events.at(-1)).toMatchObject({ type: 'done', success: false, code: 1 });
+      expect(events.at(-1).message).toMatch(/API key/);
+    } finally { if (previousKey === undefined) delete process.env.OPENAI_API_KEY; else process.env.OPENAI_API_KEY = previousKey; }
     expect((await h.json('GET', '/api/build/status', auth())).body).toEqual({ running: false });
   });
 
@@ -99,41 +113,45 @@ describe('compile stream', () => {
   });
 });
 
-describe('chat stream', () => {
-  it('streams tokens and saves both turns with linked sources', async () => {
+describe('JavaScript chat stream', () => {
+  it('streams source excerpts and saves both turns without calling Python', async () => {
+    const before = h.pythonCalls().length;
     const id = (await h.json('POST', '/api/chat/sessions', { ...auth(), body: { title: 'q' } })).body.id;
-    const events = await sse(`/api/chat/sessions/${id}/stream?message=${encodeURIComponent('What battery?')}`);
-    expect(events.map((e) => e.type)).toEqual(['sources', 'token', 'token', 'done']);
+    const events = await sse(`/api/chat/sessions/${id}/stream?message=${encodeURIComponent('battery')}`);
+    expect(events.map((event) => event.type)).toEqual(['sources', 'delta', 'done']);
+    expect(events.at(-1).mode).toBe('extractive');
+    expect(events.at(-1).answer).toContain('Battery target 2 years');
     const session = (await h.json('GET', `/api/chat/sessions/${id}`, auth())).body;
-    expect(session.messages.map((m: any) => m.role)).toEqual(['user', 'assistant']);
-    expect(session.messages[1].content).toBe('Aurora uses a CR2032.');
-    expect(session.messages[1].sources[0]).toMatchObject({ doc_path: 'aurora-labs.md' });
+    expect(session.messages.map((message: any) => message.role)).toEqual(['user', 'assistant']);
+    expect(session.messages[1].sources[0]).toMatchObject({ doc_path: 'notes/kickoff.txt' });
     expect(session.messages[1].sources[0].slug).toBeUndefined();
-    const call = h.pythonCalls().filter((c: any) => c.command === 'chat-stream').at(-1) as any;
-    expect(call.input).toMatchObject({ message: 'What battery?', corpus_source: 'raw' });
+    expect(h.pythonCalls()).toHaveLength(before);
   });
 
-  it('passes a model error through and saves no answer', async () => {
+  it('returns a visible no-match response and keeps the user message', async () => {
     const id = (await h.json('POST', '/api/chat/sessions', { ...auth(), body: {} })).body.id;
-    const events = await sse(`/api/chat/sessions/${id}/stream?message=${encodeURIComponent('fail please')}`);
-    expect(events.at(-1)).toMatchObject({ type: 'error', message: 'model unavailable' });
+    const events = await sse(`/api/chat/sessions/${id}/stream?message=nonexistentunicorn`);
+    expect(events.map((event) => event.type)).toEqual(['sources', 'delta', 'done']);
+    expect(events.at(-1).mode).toBe('no_match');
     const session = (await h.json('GET', `/api/chat/sessions/${id}`, auth())).body;
-    expect(session.messages.map((m: any) => m.role)).toEqual(['user']);
+    expect(session.messages.map((message: any) => message.role)).toEqual(['user', 'assistant']);
   });
 
-  it('surfaces a crash before any event as an error', async () => {
+  it('supports searching wiki pages with clickable sources', async () => {
     const id = (await h.json('POST', '/api/chat/sessions', { ...auth(), body: {} })).body.id;
-    const events = await sse(`/api/chat/sessions/${id}/stream?message=${encodeURIComponent('silent please')}`);
-    expect(events.at(-1)).toMatchObject({ type: 'error' });
-    expect(events.at(-1).message).toMatch(/crashed before any event/);
+    await h.json('PATCH', `/api/chat/sessions/${id}`, { ...auth(), body: { corpus_source: 'wiki' } });
+    const events = await sse(`/api/chat/sessions/${id}/stream?message=moisture`);
+    expect(events.at(-1).mode).toBe('extractive');
+    expect(events[0].sources[0]).toMatchObject({ doc_path: 'nova-widget.md', slug: 'nova-widget' });
   });
 
-  it('keeps the chat history in follow-up questions', async () => {
+  it('preserves both turns across follow-up questions', async () => {
     const id = (await h.json('POST', '/api/chat/sessions', { ...auth(), body: {} })).body.id;
-    await sse(`/api/chat/sessions/${id}/stream?message=first`);
-    await sse(`/api/chat/sessions/${id}/stream?message=second`);
-    const call = h.pythonCalls().filter((c: any) => c.command === 'chat-stream').at(-1) as any;
-    expect(call.input.history.map((m: any) => m.content)).toEqual(['first', 'Aurora uses a CR2032.']);
+    await sse(`/api/chat/sessions/${id}/stream?message=battery`);
+    await sse(`/api/chat/sessions/${id}/stream?message=relay`);
+    const session = (await h.json('GET', `/api/chat/sessions/${id}`, auth())).body;
+    expect(session.messages.map((message: any) => message.role)).toEqual(['user', 'assistant', 'user', 'assistant']);
+    expect(session.messages[2].content).toBe('relay');
   });
 });
 
@@ -148,7 +166,25 @@ describe('connector activity', () => {
     expect(body.events.map((e: any) => e.action)).toEqual(['import', 'connect']);
   });
 
-  it('the connector catalog comes from the bridge', async () => {
-    expect((await h.json('GET', '/api/connectors', auth())).body).toEqual({ connectors: [] });
+  it('lists the available connectors without a Python bridge', async () => {
+    const body = (await h.json('GET', '/api/connectors', auth())).body;
+    expect(body.connectors.map((item: any) => item.id)).toEqual(['gmail', 'google_drive', 'imap', 'postgres', 'sqlite']);
+  });
+
+  it('connects, browses, imports and disconnects SQLite without Python', async () => {
+    const oldKey = process.env.CONNECTOR_SECRET_KEY;
+    process.env.CONNECTOR_SECRET_KEY = Buffer.alloc(32, 7).toString('base64');
+    try {
+      const SQL = await require('sql.js/dist/sql-asm.js')(), db = new SQL.Database();
+      db.run('CREATE TABLE observations (note TEXT)'); db.run("INSERT INTO observations VALUES ('A measured value')");
+      const file = path.join(h.root, 'observations.sqlite'); fs.writeFileSync(file, Buffer.from(db.export())); db.close();
+      const before = h.pythonCalls().length;
+      expect((await h.json('POST', '/api/connectors/sqlite/connect', { ...auth(), body: { account_label: 'research', db_path: file } })).status).toBe(200);
+      expect((await h.json('POST', '/api/connectors/sqlite/items', { ...auth(), body: { account_label: 'research' } })).body.items[0].id).toBe('observations');
+      const imported = await h.json('POST', '/api/connectors/sqlite/items/import', { ...auth(), body: { account_label: 'research', item_id: 'observations' } });
+      expect(imported.status).toBe(200); expect(fs.readFileSync(path.join(h.root, 'data/raw', imported.body.raw_path), 'utf8')).toContain('A measured value');
+      expect((await h.json('DELETE', '/api/connectors/sqlite/accounts/research', auth())).body.disconnected).toBe(true);
+      expect(h.pythonCalls()).toHaveLength(before);
+    } finally { if (oldKey === undefined) delete process.env.CONNECTOR_SECRET_KEY; else process.env.CONNECTOR_SECRET_KEY = oldKey; }
   });
 });

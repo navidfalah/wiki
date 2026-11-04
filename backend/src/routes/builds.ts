@@ -6,10 +6,10 @@ import { loadLlmSettings } from '../lib/llmSettings';
 import { loadPipelineSettings } from '../lib/pipelineSettings';
 import { deletePipelineRun, getPipelineRun, listPipelineRuns } from '../lib/pipelineRuns';
 import { computeUsageSummary } from '../lib/tokenUsage';
-import { getCurrentRunId, isBuildRunning, stopBuild, streamCompilerBuild } from '../lib/pythonBridge';
+import { getCurrentRunId, isBuildRunning, stopBuild, streamCompilerBuild } from '../lib/buildService';
 
 export function registerBuildRoutes(app: Express): void {
-  // --- Build (SSE, spawns python3 main.py) -----------------------------------
+  // --- Build (SSE) ----------------------------------------------------------
 
   app.get('/api/build/status', (_req, res) => res.json({ running: isBuildRunning() }));
 

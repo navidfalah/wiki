@@ -2,7 +2,7 @@
   "name": "wiki-backend",
   "version": "1.0.0",
   "private": true,
-  "description": "Express + TypeScript API server for the LLM Wiki. Reads/writes the same data/ and wiki-app/docs/ files the Python compiler produces; shells out to the Python compiler for the actual compile and chat/RAG.",
+  "description": "JavaScript and TypeScript API server and compiler for the Wissensbau wiki.",
   "type": "commonjs",
   "main": "dist/index.js",
   "scripts": {
@@ -17,7 +17,14 @@
     "bcryptjs": "^3.0.3",
     "cors": "^2.8.5",
     "express": "^4.19.2",
-    "multer": "^2.3.0"
+    "fflate": "^0.8.2",
+    "imapflow": "^2.10.0",
+    "mailparser": "^3.9.0",
+    "multer": "^2.3.0",
+    "pdfjs-dist": "^4.10.38",
+    "pg": "^8.23.1",
+    "sql.js": "^1.15.2",
+    "tar": "^7.5.22"
   },
   "devDependencies": {
     "@eslint/js": "^9.39.5",

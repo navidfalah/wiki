@@ -71,7 +71,7 @@ export function seed(root: string) {
   write(root, 'wiki-app/docs/aurora-labs.md', AURORA_PAGE);
   write(root, 'wiki-app/docs/nova-widget.md', NOVA_PAGE);
   write(root, 'data/raw/notes/kickoff.txt', 'Kickoff: Mira and Jonah start Aurora Labs. Battery target 2 years.');
-  write(root, 'data/raw/emails/relay.eml', 'Subject: Relay battery drain\n\nBatch 4 units drain faster.');
+  write(root, 'data/raw/emails/relay.eml', 'Subject: Relay battery drain\nFrom: Mira Chen <mira@example.test>\nDate: Tue, 02 Jun 2026 12:00:00 +0000\n\nBatch 4 units drain faster with relay mode. The relay radio sleep timer resets on every received packet.');
   write(root, 'data/raw/uploads/page.html', '<script>alert(document.cookie)</script><p>hi</p>');
   write(root, 'compiler/temp_output/index.json', JSON.stringify({ topics: { 'Aurora Labs': 'aurora-labs.md', 'Nova Widget': 'nova-widget.md' } }));
   write(root, 'data/state.json', JSON.stringify({ version: 1, files: {}, runs: [] }));

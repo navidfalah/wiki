@@ -130,12 +130,8 @@ Each task has a clear definition of done. IDs map to §3.
 - Done when the eval runs offline with a cached or mock LLM, and its results
   are recorded in a new doc.
 
-**T6 — Persistent Python worker** (item 6, M)
-- Replace `runCli`'s spawn-per-call with a long-lived `cli.py --serve`
-  process that speaks JSON lines, with a restart-on-crash supervisor in
-  `pythonBridge.ts`. Keep the concurrency semaphore.
-- Done when p50 latency of `/api/emails` drops by at least 500 ms and
-  existing backend tests pass.
+**T6 — Python worker** (superseded)
+- The active backend now runs email, chat, compilation and connectors in JavaScript without a Python worker.
 
 **T7 — Frontend tests + e2e smoke** (item 7, M)
 - Add vitest with happy-dom for `client/lib/*` (i18n, api, dom).

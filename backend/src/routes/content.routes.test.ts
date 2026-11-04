@@ -107,10 +107,10 @@ describe('search', () => {
     expect(body.results[0].snippet.toLowerCase()).toContain('cr2032');
   });
 
-  it('searches full email bodies (asks the bridge for them)', async () => {
+  it('searches full email bodies without Python', async () => {
     const { body } = await h.json('GET', '/api/search?q=sleep+timer', auth());
     expect(body.results.find((r: any) => r.type === 'email')).toMatchObject({ path: 'emails/relay.eml', meta: { from: 'Mira Chen <mira@example.test>' } });
-    expect(h.pythonCalls().filter((c) => c.command === 'emails-list').at(-1)?.input).toEqual({ include_body: true });
+    expect(h.pythonCalls().filter((c) => c.command === 'emails-list')).toHaveLength(0);
   });
 
   it('finds cited resources', async () => {
@@ -168,10 +168,19 @@ describe('resources, graph and analytics', () => {
   });
 });
 
+describe('JavaScript entity graph', () => {
+  it('returns graph data without starting a Python command', async () => {
+    const before = h.pythonCalls().length;
+    const { status, body } = await h.json('GET', '/api/entity-graph', auth());
+    expect(status).toBe(200);
+    expect(body).toHaveProperty('entities');
+    expect(body.counts).toHaveProperty('total_entities');
+    expect(h.pythonCalls()).toHaveLength(before);
+  });
+});
+
 describe('bridged to Python', () => {
   it.each([
-    ['/api/emails', 'emails'],
-    ['/api/entity-graph', 'nodes'],
     ['/api/chat/status', 'corpus_pages'],
   ])('%s passes the bridge result through', async (url, key) => {
     const { status, body } = await h.json('GET', url, auth());

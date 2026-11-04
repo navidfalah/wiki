@@ -95,11 +95,7 @@ def run_pipeline(
     )
 
     run = PipelineRun.start(force=force, settings=_pipeline_settings_snapshot(llm))
-    # Machine-readable marker, not a Rich-formatted log line: the Node
-    # bridge (pythonBridge.ts's streamCompilerBuild) parses this out of
-    # stdout to learn the run id, so the dashboard can poll
-    # data/pipeline_runs/<id>.json for live step-by-step progress instead
-    # of just tailing raw log text.
+    # Machine-readable marker for legacy clients that monitor a run.
     print(f"@@RUN_ID@@{run.id}")
     current_step_name = ""
     try:

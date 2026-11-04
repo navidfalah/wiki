@@ -120,7 +120,7 @@ Edit `data/link_overrides.json` or `PUT /api/knowledge-graph/overrides`. Re-run 
 ## Production build workflow
 
 ```bash
-./build_wiki.sh --force
+node build_wiki.js --force
 cd wiki-app && npm run serve
 ```
 

@@ -1,7 +1,7 @@
 import type { Express } from 'express';
 import { OUTPUT_DIR } from '../paths';
 import { wrap } from '../lib/httpError';
-import { runCli } from '../lib/pythonBridge';
+import { emailService } from '../lib/emailService';
 import { searchCorpusPage, type EmailSummary } from '../lib/searchEngine';
 
 export function registerSearchRoutes(app: Express): void {
@@ -19,7 +19,7 @@ export function registerSearchRoutes(app: Express): void {
       }
       let emails: EmailSummary[] = [];
       try {
-        const emailsData = await runCli<{ emails: EmailSummary[] }>('emails-list', { include_body: true });
+        const emailsData = await emailService.list(true);
         emails = emailsData.emails ?? [];
       } catch {
         // Emails are best-effort here -- a broken compiler bridge shouldn't

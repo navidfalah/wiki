@@ -1,16 +1,12 @@
 /**
- * Tiny counting semaphore. Each Python call (a streaming chat process, or a
- * request to the warm cli.py worker) holds tens of MB, so on a small server
- * a burst of requests can exhaust RAM long before CPU matters. Capping how
- * many run at once trades a little latency for not getting OOM-killed --
- * see pythonBridge.ts and PY_MAX_CONCURRENCY.
+ * Tiny counting semaphore used to bound concurrent chat retrieval requests.
  */
 export class Semaphore {
   private available: number;
   private readonly waiters: Array<() => void> = [];
 
   constructor(permits: number) {
-    // A NaN (e.g. PY_MAX_CONCURRENCY=abc) or <1 value must not leave zero
+    // A NaN or <1 value must not leave zero
     // permits: nothing would ever be granted and every caller would hang.
     this.available = Number.isFinite(permits) ? Math.max(1, Math.floor(permits)) : 1;
   }

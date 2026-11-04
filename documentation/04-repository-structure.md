@@ -8,11 +8,11 @@ Complete map of the repository. Paths are relative to repo root (`wiki/`).
 
 ```
 wiki/
-├── README.md                 # Long-form project README
+├── PROJECT_GUIDE.md          # Project and documentation map
 ├── PROJECT_GUIDE.md          # Pointer to documentation/
 ├── AGENTS.md                 # Agent/human workflow schema
 ├── PROMPTS.md                # Example Cursor prompts
-├── build_wiki.sh             # One-command: compile + Docusaurus build
+├── build_wiki.js             # One-command: compile + backend/frontend builds
 ├── .env.example              # API key template → copy to .env
 ├── .gitignore
 ├── documentation/            # This documentation set

@@ -399,7 +399,7 @@ All companies, employees, contacts, transactions, images and measurements in thi
 
 `reference/image-prompts.json` records the prompts used with the built-in image generation tool. Generated images should be retained with their manifest checksums if the text fixtures are regenerated.
 """
-    write_text(base, "README.md", readme)
+    write_text(base, "SOURCE-GUIDE.md", readme)
     starter = [p for p in sorted(sources.rglob("*")) if p.is_file() and (
         p.suffix in {".docx", ".xlsx", ".pptx"} or p.name in {
             "01-nova-widget-product.png", "02-meshsync-planning-whiteboard.png", "04-packing-slip-scan.png",

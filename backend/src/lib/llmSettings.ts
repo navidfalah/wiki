@@ -11,10 +11,8 @@
  * local-llm Docker container (which reads its own env at container
  * start, not this file) picks up model changes on its next restart.
  *
- * compiler/llm_client.py's LLMClient.for_purpose() reads the per-purpose
- * env vars this module derives (see envOverridesForSpawn) -- that's the
- * other half of the wiring, applied when pythonBridge.ts spawns the
- * compiler subprocess.
+ * Build and chat services use the per-purpose values derived by
+ * envOverridesForSpawn when loading their settings.
  */
 import crypto from 'node:crypto';
 import fs from 'node:fs';
