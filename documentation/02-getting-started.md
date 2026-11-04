@@ -152,9 +152,10 @@ docker compose up --build
 ## CLI quick reference
 
 ```bash
-# Compiler (from compiler/) — requires OPENAI_API_KEY
-python main.py                   # incremental
-python main.py --force           # reprocess all raw files
+# JavaScript compiler — build once after checkout; model calls depend on configuration
+npm run build --prefix backend
+node compiler/main.js            # incremental
+node compiler/main.js --force    # reprocess all raw files
 
 # Test data generators (from compiler/)
 python scripts/dev/generate_junk_data.py [--overwrite]
@@ -162,10 +163,12 @@ python scripts/dev/generate_bulk_dummy_data.py [--overwrite] [--samples-only | -
 python scripts/dev/generate_varied_dummy_data.py [--overwrite] [--count N]
 python scripts/dev/generate_extended_dummy_data.py [--overwrite]
 
-# Maintenance
-python fix_frontmatter.py [--dry-run] [--docs-dir PATH]
-python fix_dead_links.py [--dry-run] [--docs-dir PATH]
-python reviewer.py               # LLM quality review (needs API key)
+# Maintenance (JavaScript)
+node compiler/fix_frontmatter.js [--dry-run] [--docs-dir PATH]
+node compiler/fix_dead_links.js [--dry-run] [--docs-dir PATH]
+node compiler/fix_mdx_body.js [--dry-run] [--docs-dir PATH]
+node compiler/dead_link_checker.js [--docs-dir PATH]
+node compiler/faithfulness_heuristic.js [--docs PATH] [--raw PATH]
 
 # Backend (from backend/)
 npm run dev:server               # tsx watch, port 8000

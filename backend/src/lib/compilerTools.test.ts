@@ -4,9 +4,7 @@ import path from 'node:path';
 import { afterEach, describe, expect, it } from 'vitest';
 // The compiler is intentionally plain CommonJS JavaScript so its utilities
 // also run without the backend's TypeScript loader.
-// eslint-disable-next-line @typescript-eslint/no-require-imports
 const linkTools = require('../../../compiler/dead_link_checker.js');
-// eslint-disable-next-line @typescript-eslint/no-require-imports
 const repairTools = require('../../../compiler/fix_dead_links.js');
 
 let root: string | undefined;

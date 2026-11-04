@@ -2,14 +2,14 @@
 
 Project: **Wissensbau** — a non-commercial research project, hosted at **https://wissensbau.de**. Keep copy descriptive and research-oriented (no marketing claims; no study results exist yet). UI languages: English and German — every user-visible string goes through `t()` (see `documentation/41-internationalization-and-fonts.md`); run `npm run typecheck` in `frontend/` after touching views or client scripts. Fonts: Sora (UI/headings) + Inter (long-form text), self-hosted.
 
-You maintain this wiki alongside the **Python compiler** in `compiler/`. Humans add raw files to `data/raw/`; the compiler generates `wiki-app/docs/`; you can refine pages and workflows here.
+You maintain this wiki with the JavaScript compiler in `backend/src/lib/` and its command entry point in `compiler/main.js`. Humans add raw files to `data/raw/`; the compiler generates `wiki-app/docs/`; you can refine pages and workflows here. The older Python implementation is in migration and must not gain new functionality.
 
 ## Architecture
 
 | Layer | Path | Owner |
 |-------|------|-------|
 | Raw sources | `data/raw/` (text, `.eml`, images, PDF/CSV/JSON/DOCX/XLSX/PPTX/ZIP) | Human — never modify via LLM |
-| Compiler | `compiler/` | Python pipeline, LLM-only (requires `OPENAI_API_KEY`) |
+| Compiler | `backend/src/lib/`, `compiler/main.js` | JavaScript pipeline; local deterministic steps by default, model calls are configurable |
 | Wiki output | `wiki-app/docs/` | Generated markdown (Docusaurus) |
 | Static site | `wiki-app/` | React/Docusaurus viewer |
 | Schema | `AGENTS.md` | Human + LLM co-evolution |
@@ -17,11 +17,12 @@ You maintain this wiki alongside the **Python compiler** in `compiler/`. Humans 
 
 ## Workflows
 
-### Compile (Python)
+### Compile (JavaScript)
 
 ```bash
-cd compiler && python main.py --force
-cd ../wiki-app && npm start
+cd backend && npm run build
+cd .. && node compiler/main.js --force
+cd wiki-app && npm start
 ```
 
 ### Ingest (Cursor)
@@ -29,7 +30,7 @@ cd ../wiki-app && npm start
 When the user says **ingest [filename]**:
 
 1. Read `data/raw/[filename]` — do not edit raw files
-2. Either run `python main.py --force` or manually update `wiki-app/docs/`
+2. Either run `node compiler/main.js --force` or manually update `wiki-app/docs/`
 3. Ensure cross-links between entity, concept, and source pages
 4. Update `wiki-app/docs/index.md` and add a log entry if using `wiki-app/docs/log.md`
 
@@ -57,7 +58,7 @@ page_type: source | entity | concept | comparison | synthesis
 ---
 ```
 
-Use `[[slug/path|Label]]` in body — the compiler's `linker.py` converts these to markdown links.
+Use `[[slug/path|Label]]` in body — the JavaScript compiler converts these to markdown links.
 
 ## Domain
 

@@ -76,8 +76,25 @@ function slugify(text) {
 
 function loadTopicIndex(indexJsonPath = INDEX_JSON_PATH) {
   if (!fs.existsSync(indexJsonPath)) return {};
-  const data = JSON.parse(fs.readFileSync(indexJsonPath, 'utf8'));
-  return data?.topics && typeof data.topics === 'object' && !Array.isArray(data.topics) ? data.topics : {};
+  try {
+    const data = JSON.parse(fs.readFileSync(indexJsonPath, 'utf8'));
+    return data?.topics && typeof data.topics === 'object' && !Array.isArray(data.topics) ? data.topics : {};
+  } catch {
+    return {};
+  }
+}
+
+function loadTopicIndexOrDocs(docsDir = OUTPUT_DIR, indexJsonPath = INDEX_JSON_PATH) {
+  const fromCompiler = loadTopicIndex(indexJsonPath);
+  if (Object.keys(fromCompiler).length || !fs.existsSync(docsDir)) return fromCompiler;
+  const index = {};
+  for (const name of fs.readdirSync(docsDir).sort()) {
+    if (!name.endsWith('.md') || name === 'index.md' || name === 'log.md') continue;
+    const meta = parseFrontmatter(fs.readFileSync(path.join(docsDir, name), 'utf8'));
+    const title = typeof meta.title === 'string' && meta.title.trim() ? meta.title.trim() : path.basename(name, '.md');
+    if (!Object.hasOwn(index, title)) index[title] = name;
+  }
+  return index;
 }
 
 function topicFilename(topicIndex, topic, docsDir = OUTPUT_DIR) {
@@ -138,6 +155,6 @@ function rawFileStatus(relPath, currentMd5, state) {
 module.exports = {
   PROJECT_ROOT, OUTPUT_DIR, INDEX_JSON_PATH,
   parseFrontmatter, stripFrontmatter, extractLinks, normalizeTopic, slugify,
-  loadTopicIndex, topicFilename, collectSourceMetadata, synthesizedPagesForTopics,
+  loadTopicIndex, loadTopicIndexOrDocs, topicFilename, collectSourceMetadata, synthesizedPagesForTopics,
   readDocPayload, rawFileStatus,
 };
