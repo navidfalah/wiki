@@ -108,7 +108,7 @@ No npm install is needed for those commands. Tests run pure JavaScript plus an i
 
 ## Shared core
 
-`src/Core.gs` contains no Google service calls. It can also be loaded with CommonJS in Node, or used as the `WikiCore` global in another JavaScript runtime. `npm run package` emits the same code as `dist/WikiCore.js`. `Store.gs`, `Readers.gs` and `Compiler.gs` provide the Apps Script adapters and execution loop.
+`src/Core.gs` contains the portable algorithms and no Google service calls. `Store.gs`, `Readers.gs` and `Compiler.gs` provide the Apps Script adapters and execution loop. The installation package includes only Apps Script `.gs`/HTML project files and the required JSON manifest; Node scripts are used for development checks and packaging only.
 
 ## Official platform references
 

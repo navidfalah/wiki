@@ -1,16 +1,15 @@
 .DS_Store
 .env
-.obsidian/
-.claude/worktrees/
-*.tmp
-__pycache__/
-*.pyc
-.venv/
-venv/
+.env.*
 node_modules/
 backend/dist/
 frontend/dist/
 frontend/dist-static/
+apps-script/.clasp.json
+apps-script/.clasprc.json
+apps-script/src/.clasp.json
+apps-script/src/.clasprc.json
+*.tmp
 data/state.json
 data/sources.json
 data/.llm-cache.sqlite
@@ -28,16 +27,7 @@ data/sessions.json
 data/activity_log.json
 data/connector_activity.json
 data/sample.sqlite
-compiler/temp_output/*
-!compiler/temp_output/.gitkeep
+wiki-app/.docusaurus/
+wiki-app/node_modules/
 wiki-app/static/media/*
 !wiki-app/static/media/.gitkeep
-
-# Playwright
-playwright-report/
-test-results/
-
-# Coverage output
-.coverage
-coverage/
-htmlcov/

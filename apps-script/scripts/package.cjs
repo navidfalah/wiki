@@ -14,7 +14,9 @@ for(const name of ['INSTALL-en.md','INSTALL-fa.md'])fs.copyFileSync(path.join(ba
 fs.writeFileSync(path.join(install,'.clasp.json.example'),JSON.stringify({scriptId:'PASTE_YOUR_SCRIPT_ID_HERE',rootDir:'.'},null,2)+'\n');
 fs.writeFileSync(path.join(install,'.claspignore'),'**/**\n!*.gs\n!*.html\n!appsscript.json\n');
 fs.mkdirSync(path.join(install,'licenses'),{recursive:true});for(const name of fs.readdirSync(path.join(base,'licenses')))fs.copyFileSync(path.join(base,'licenses',name),path.join(install,'licenses',name));
-fs.copyFileSync(path.join(source,'Core.gs'),path.join(dist,'WikiCore.js'));
+// Remove the old cross-runtime JavaScript copy: Apps Script receives the
+// `.gs` sources (or the combined `Code.gs`), never a standalone `.js` file.
+fs.rmSync(path.join(dist,'WikiCore.js'),{force:true});
 const apiFiles = ['Code.gs','Index.html','Styles.html','Fonts.html','Translations.html','Client.html','appsscript.json'].map(filename=>({name:filename.replace(/\.(gs|html|json)$/,''),type:filename.endsWith('.gs')?'SERVER_JS':filename.endsWith('.html')?'HTML':'JSON',source:fs.readFileSync(path.join(install,filename),'utf8')}));
 fs.writeFileSync(path.join(dist,'apps-script-project.json'),JSON.stringify({files:apiFiles},null,2));
 function crc32(bytes){let crc=-1;for(const b of bytes){crc^=b;for(let n=0;n<8;n++)crc=(crc>>>1)^(0xedb88320&-(crc&1));}return(crc^-1)>>>0;}

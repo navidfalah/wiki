@@ -4,7 +4,9 @@ const path = require('node:path');
 const vm = require('node:vm');
 const root = path.resolve(__dirname, '../src');
 let failures = [];
+const allowedProjectFiles = /\.(?:gs|html)$|^appsscript\.json$/;
 for (const name of fs.readdirSync(root)) {
+  if (!allowedProjectFiles.test(name)) failures.push(`${name}: Apps Script source must be .gs, .html, or appsscript.json`);
   const source = fs.readFileSync(path.join(root, name), 'utf8');
   try {
     if (name.endsWith('.gs')) new vm.Script(source, { filename: name });
