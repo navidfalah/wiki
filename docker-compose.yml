@@ -86,9 +86,9 @@ services:
   # started by a plain `docker compose up`; run
   # `docker compose --profile local-llm up` to include it. See
   # documentation/33-docker-and-local-llm.md for the full switch-over, and
-  # docker/local-llm/ for the Dockerfile + entrypoint.
+  # docker/local-llm/ for the JavaScript model downloader.
   # Sample PostgreSQL database for the "Connect your own database" feature
-  # (/database page, compiler/connectors/postgres_db.py). Represents a
+      # (/database page, backend/src/lib/postgresConnector.js). Represents a
   # user's own external Postgres instance -- seeded with a small fictional
   # Aurora Labs knowledge base (departments/employees/projects/kb_articles)
   # via docker/postgres/init.sql so the whole connect -> browse -> import
@@ -122,30 +122,47 @@ services:
     restart: unless-stopped
 
   local-llm:
-    build:
-      context: .
-      dockerfile: docker/local-llm/Dockerfile
+    image: ghcr.io/ggml-org/llama.cpp:server
     container_name: llm-wiki-local-llm
     profiles: ["local-llm"]
+    depends_on:
+      local-llm-model:
+        condition: service_completed_successfully
     environment:
-      # MODEL_REPO/MODEL_FILE must name an actual GGUF file on Hugging
-      # Face. Defaults to bartowski/gemma-2-2b-it-GGUF's Q5_K_M quant
-      # (~1.9GB, real repo — verified against the Hugging Face listing).
-      # Override in .env to swap in a different Gemma-family GGUF build.
-      MODEL_REPO: ${LOCAL_LLM_MODEL_REPO:-bartowski/gemma-2-2b-it-GGUF}
       MODEL_FILE: ${LOCAL_LLM_MODEL_FILE:-gemma-2-2b-it-Q5_K_M.gguf}
       MODEL_ALIAS: ${LOCAL_LLM_MODEL_ALIAS:-gemma-2-2b-it}
-      HF_TOKEN: ${HF_TOKEN:-}
       LOCAL_LLM_CONTEXT: ${LOCAL_LLM_CONTEXT:-4096}
       LOCAL_LLM_CHAT_FORMAT: ${LOCAL_LLM_CHAT_FORMAT:-gemma}
     volumes:
-      # Named volume so the (multi-GB) model download survives container
-      # restarts and image rebuilds — only re-downloaded if MODEL_FILE
-      # changes to something not already present.
       - local-llm-models:/models
     ports:
       - "8080:8080"
+    command:
+      - -m
+      - /models/${LOCAL_LLM_MODEL_FILE:-gemma-2-2b-it-Q5_K_M.gguf}
+      - --alias
+      - ${LOCAL_LLM_MODEL_ALIAS:-gemma-2-2b-it}
+      - --host
+      - 0.0.0.0
+      - --port
+      - "8080"
+      - --ctx-size
+      - ${LOCAL_LLM_CONTEXT:-4096}
+      - --chat-template
+      - ${LOCAL_LLM_CHAT_FORMAT:-gemma}
     restart: unless-stopped
+
+  local-llm-model:
+    image: node:22-alpine
+    profiles: ["local-llm"]
+    environment:
+      MODEL_REPO: ${LOCAL_LLM_MODEL_REPO:-bartowski/gemma-2-2b-it-GGUF}
+      MODEL_FILE: ${LOCAL_LLM_MODEL_FILE:-gemma-2-2b-it-Q5_K_M.gguf}
+      HF_TOKEN: ${HF_TOKEN:-}
+    volumes:
+      - local-llm-models:/models
+      - ./docker/local-llm/download-model.mjs:/download-model.mjs:ro
+    command: ["node", "/download-model.mjs"]
 
 volumes:
   local-llm-models:

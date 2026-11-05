@@ -1,6 +1,6 @@
 # 32 — User Study: Wiki+Chat vs. Plain Email Search
 
-**No study has been run.** This document and `compiler/user_study.py` are
+**No study has been run.** This document and `backend/src/lib/userStudy.js` are
 the protocol and instrument for one — task design, counterbalancing,
 metrics, and analysis plan — ready to execute the moment real participants
 are available. Running one needs recruiting actual people and having them
@@ -9,14 +9,14 @@ plausible-looking trial data to make this task look "done" would be a
 research-integrity failure worse than any honestly-named gap elsewhere in
 this series, so none exists here — `data/user_study_results.json` is
 created only by a real session (and is gitignored, same as
-`data/state.json`), and every test in `test_user_study.py` that exercises
+`data/state.json`), and every test in `userStudy.test.ts` that exercises
 `summarize()` says explicitly, in the code, that its input is synthetic
 timing data for testing arithmetic, never a study result.
 
 | | |
 |---|---|
-| Instrument | `compiler/user_study.py` |
-| Tests (mechanism only — no real data exists) | `compiler/tests/test_user_study.py` |
+| Instrument | `backend/src/lib/userStudy.js` |
+| Tests (mechanism only — no real data exists) | `backend/src/lib/userStudy.test.ts` |
 | Results, once collected | `data/user_study_results.json` (gitignored) |
 
 ## Research question

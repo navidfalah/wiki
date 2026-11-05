@@ -1,6 +1,6 @@
 /**
- * Port of synthesizer.py's discover_raw_source_files() -- every recognized
- * raw source file under data/raw/, excluding _archive/ and dotfiles.
+ * Discover every recognized raw source file under data/raw/, excluding
+ * _archive/ and dotfiles.
  */
 import crypto from 'node:crypto';
 import fs from 'node:fs';
@@ -17,11 +17,10 @@ export function loadState(): { files: Record<string, any> } {
   }
 }
 
-// Read directly from compiler/all_source_extensions.json -- generated from
-// synthesizer.py's ALL_SOURCE_EXTENSIONS (text + email +
-// media_ingest.IMAGE_EXTENSIONS/AUDIO_EXTENSIONS/FILE_EXTENSIONS) and
-// guarded by test_all_source_extensions_manifest.py -- rather than a
-// hand-copied literal here that could silently drift from the Python list.
+// Read directly from compiler/all_source_extensions.json (text + email +
+// image, audio, and document extensions) and
+// guarded by rawFiles.test.ts rather than a hand-copied literal that could
+// silently drift from the compiler's recognized extensions.
 const ALL_SOURCE_EXTENSIONS_MANIFEST = path.join(COMPILER_DIR, 'all_source_extensions.json');
 export const ALL_SOURCE_EXTENSIONS = new Set<string>(
   JSON.parse(fs.readFileSync(ALL_SOURCE_EXTENSIONS_MANIFEST, 'utf-8')),

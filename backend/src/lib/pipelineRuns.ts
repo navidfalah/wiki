@@ -1,6 +1,6 @@
 /**
  * Read-only access to the pipeline run history written by
- * compiler/pipeline_tracker.py -- one JSON file per run under
+ * one JSON file per run under
  * data/pipeline_runs/, plus a newest-first index.json summary.
  */
 import fs from 'node:fs';
@@ -38,7 +38,7 @@ export interface PipelineRunStep {
   detail: string | null;
   error: string | null;
   /** The step's actual input/output (file lists, topic names, etc.) -- see
-   * compiler/pipeline_tracker.py's finish_step(). Shape varies per step. */
+   * finishStep(). Shape varies per step. */
   data?: Record<string, unknown> | null;
 }
 

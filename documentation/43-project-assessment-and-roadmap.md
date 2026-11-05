@@ -53,7 +53,7 @@ Rating method:
 | 7 | **Frontend tests**: unit tests for `client/lib/*` plus a Playwright smoke test in CI (login → wiki → search → chat with a mocked LLM) | 4 | M | 0.9 | **1.8** |
 | 8 | **Page version history / compile diff**: users need to see what the LLM changed between runs before they trust it | 4 | M | 0.8 | **1.6** |
 | 9 | **Run the user study (doc 32)**: pilot with 6–8 people first. This is the project's central research claim. | 5 | L | 0.9 | **1.5** |
-| 10 | **Search v2**: reuse the BM25 index from `hybrid_retrieval.py`, full email bodies, deep links to items. Today it is 29 ms/query at 227 pages and linear, so roughly 1.3 s at 10k pages. | 3 | M | 0.8 | **1.2** |
+| 10 | **Search v2**: reuse the BM25 index from `hybridRetrieval.js`, full email bodies, deep links to items. Today it is 29 ms/query at 227 pages and linear, so roughly 1.3 s at 10k pages. | 3 | M | 0.8 | **1.2** |
 | 11 | **Automated backups + export/restore** in the admin UI | 3 | M | 0.8 | **1.2** |
 | 12 | **SQLite for app state** (users, sessions, chat, activity) instead of JSON files, which unlocks more than one backend instance | 3 | M | 0.7 | **1.05** |
 | 13 | **Active learning / temporal model on the live corpus** instead of the pilot dataset (docs 27, 29, 36 #6). This is the "claim extraction" research problem. | 4 | L | 0.5 | **0.67** |
@@ -103,7 +103,7 @@ Each task has a clear definition of done. IDs map to §3.
 **T2 — Eval regression gate** (item 2, S)
 - Add a CI step that runs `retrieval_eval.py`, `entity_resolution_eval.py`,
   `trust_propagation_eval.py`, `pii_redaction_eval.py` and
-  `faithfulness_heuristic.py` offline, and compares them to a committed
+  `faithfulnessHeuristic.js` offline, and compares them to a committed
   baseline JSON.
 - Done when a metric drop beyond tolerance, or an empty input set, fails CI.
 
@@ -121,14 +121,10 @@ Each task has a clear definition of done. IDs map to §3.
 - Done when `npm audit --omit=dev` is clean and no page logs a CSP
   violation (checked with the Playwright smoke test from T7).
 
-**T5 — Gold Q&A benchmark** (item 5, M)
-- Write `data/qa_benchmark.json` with 50–100 questions over the sample
-  corpus: expected answer facts plus the source path(s).
-- Write `compiler/qa_benchmark_eval.py` to score each RAG architecture
-  (answer recall, source recall, faithfulness) and the search API
-  (hit@k).
-- Done when the eval runs offline with a cached or mock LLM, and its results
-  are recorded in a new doc.
+**T5 — Gold Q&A benchmark** (item 5, M) — **Done**
+- `data/qa_benchmark.json` contains 65 grounded questions. The JavaScript
+  evaluator scores retrieval architectures and the search API; offline
+  results and limitations are documented in [doc 44](./44-qa-benchmark.md).
 
 **T6 — Python worker** (superseded)
 - The active backend now runs email, chat, compilation and connectors in JavaScript without a Python worker.
@@ -190,7 +186,7 @@ passed CI, which now runs on every push.
 | T1 CI on main, pinned tooling | **Done** | CI runs on push to `main` and on manual dispatch. Ruff is pinned and targets Python 3.10, and the suite runs on both 3.10 and 3.12, which exposed and fixed an `asyncio.TimeoutError` bug on 3.10. |
 | T3 Isolate optional imports | **Done** | A broken `cryptography` install now fails only the connector commands. Tested with a simulated pyo3 panic. |
 | T4 Security quick wins | **Done** | Nonce-based CSP on every page. Fixed a **stored XSS**: uploaded `.html`/`.xml` previews were served same-origin; they now get a `sandbox` CSP. 0 npm vulnerabilities in both packages. |
-| T2 Eval regression gate | **Done** | `eval_gate.py` runs in CI and fails on a score drop, or on an eval that ran on nothing. It catches the old groundedness bug. |
+| T2 Eval regression gate | **Done** | `evalGate.js` runs in CI and fails on a score drop, or on an eval that ran on nothing. It catches the old groundedness bug. |
 | T5 Gold Q&A benchmark | **Done** | 65 grounded questions; results in doc 44. |
 | T7 Frontend tests + e2e | **Done** | 23 unit tests, plus a Playwright suite in CI (9 tests) that fails on any script error or CSP violation. |
 | T6 Persistent Python worker | **Done** | `/api/emails` p50 went from **763 ms to 33 ms**. A warm worker uses about 49 MB. |
@@ -211,7 +207,7 @@ wiki therefore has to rest on what BM25 can't measure: answer quality with
 an LLM, trust and contradiction signals, browsing, and version history.
 Next steps, in order:
 
-1. `python qa_benchmark_eval.py --with-llm`, which separates HyDE, Fusion
+1. `node compiler/qaBenchmarkEval.js --with-llm`, which separates HyDE, Fusion
    and hybrid retrieval.
 2. An LLM-judged answer-quality eval on the same 65 questions.
 3. The user-study pilot (T9), with doc 44's questions as its tasks.

@@ -16,8 +16,8 @@ data/page_history/<page-stem>/<YYYYMMDDTHHMMSSffffffZ>-<reason>.md
 
 | Reason | Written by |
 |---|---|
-| `compile` | `compiler/linker.py`, before relinking a page (`page_history.snapshot`) |
-| `delete` | `linker.py` when a topic disappears; the backend on *Delete* and *Delete all pages* |
+| `compile` | `backend/src/lib/compilerEngine.js`, before replacing a generated page |
+| `delete` | JavaScript compiler when a generated topic disappears; backend on *Delete* and *Delete all pages* |
 | `edit` | backend `PUT /api/docs/*` (the wiki editor) |
 | `restore` | backend, before restoring an older version |
 
@@ -27,9 +27,8 @@ data/page_history/<page-stem>/<YYYYMMDDTHHMMSSffffffZ>-<reason>.md
 - The newest 20 versions per page are kept.
 - `data/page_history/` is runtime data, so it is gitignored. Back it up
   together with `data/`.
-- The on-disk format is shared by `compiler/page_history.py` and
-  `backend/src/lib/pageHistory.ts`, and a test checks that the backend reads
-  versions the compiler wrote.
+- The compiler and API share `backend/src/lib/pageHistory.ts` and the same
+  on-disk format.
 
 ## Using it
 

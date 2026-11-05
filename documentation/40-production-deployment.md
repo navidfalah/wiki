@@ -170,8 +170,8 @@ All values go in `.env` (see `.env.example`):
 | `BACKUP_INTERVAL_HOURS` / `BACKUP_KEEP` | `24` / `7` | Automatic backups (`0` = off) and how many scheduled ones to keep |
 | `BACKUP_MAX_UPLOAD_MB` | `1024` | Largest backup archive the admin panel accepts |
 
-Lower `PY_MAX_CONCURRENCY` to `1` and `BACKEND_MEM_LIMIT` to `512m` on a 1 GB
-host (or also set `PY_WORKER=0` there); raise both on a bigger one.
+Lower `CHAT_MAX_CONCURRENCY` to `1` and `BACKEND_MEM_LIMIT` to `512m` on a 1 GB
+host; raise them on a bigger one.
 
 ### Local dry run
 
@@ -281,6 +281,6 @@ The files are ordinary `tar.gz` archives, so a manual restore on the host is
 | Compose refuses to start | `ADMIN_PASSWORD` missing in `.env` |
 | Domain doesn't resolve / Cloudflare shows an error page | Tunnel: `systemctl status cloudflared`, `cloudflared tunnel info wissensbau`. Proxied DNS: is the record orange-clouded, is `FRONTEND_PORT` open and reachable, is SSL/TLS mode "Flexible"? |
 | `EACCES` writing `data/` | `sudo chown -R 1000:1000 data wiki-app/docs wiki-app/static/media` |
-| Backend restarts repeatedly | Likely hit its memory cap — lower `PY_MAX_CONCURRENCY` or raise `BACKEND_MEM_LIMIT`; see `docker stats` |
+| Backend restarts repeatedly | Likely hit its memory cap — lower `CHAT_MAX_CONCURRENCY` or raise `BACKEND_MEM_LIMIT`; see `docker stats` |
 | Build killed on the server | Add swap (see above) or build locally and `docker save … \| ssh … docker load` |
 | Login says "Too many failed sign-in attempts" | Wait 15 min, or restart the backend to reset the in-memory counters |

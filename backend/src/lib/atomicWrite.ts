@@ -15,9 +15,7 @@
  * is however long the rename takes, not however long the full
  * JSON.stringify + write takes.
  *
- * Mirrors compiler/pipeline_tracker.py's own _atomic_write_json -- same
- * temp-file-plus-rename shape, so a file either side writes is safe
- * either way.
+ * The temp-file-plus-rename shape keeps shared JSON files safe to read.
  */
 import fs from 'node:fs';
 import path from 'node:path';

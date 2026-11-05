@@ -8,9 +8,9 @@ Task T5 in [43-project-assessment-and-roadmap.md](./43-project-assessment-and-ro
 | | |
 |---|---|
 | Questions | `data/qa_benchmark.json` (65) |
-| Retrieval eval | `compiler/qa_benchmark_eval.py` |
+| JavaScript retrieval eval | `backend/src/lib/qaBenchmarkEval.js` (`node compiler/qaBenchmarkEval.js`) |
 | Search eval | `backend/src/lib/searchBenchmark.ts` (+ `.test.ts`) |
-| Dataset tests | `compiler/tests/test_qa_benchmark.py` |
+| Dataset tests | `backend/src/lib/qaBenchmarkEval.test.ts` |
 | Gated in CI | `qa.*` metrics in `compiler/eval_baseline.json` (doc 14) |
 
 ## The dataset
@@ -86,7 +86,7 @@ What this does and doesn't show:
    - HyDE and RAG-Fusion need an LLM, and without one they fall back to BM25.
 
    Comparing the five architectures therefore needs
-   `python qa_benchmark_eval.py --with-llm`, which has not been run yet
+   `node compiler/qaBenchmarkEval.js --with-llm`, which has not been run yet
    because it needs an API key.
 
 ### Search (`searchCorpus`, top 5)
@@ -117,6 +117,6 @@ keywords and the answers. Both rates are regression floors in
 
 When the corpus changes, re-run the grounding tests. If questions become
 wrong, fix them in `data/qa_benchmark.json`, not by loosening facts. Then
-accept the new numbers with `python eval_gate.py --update-baseline`, and
+accept the new numbers with `node evalGate.js --update-baseline`, and
 raise `KEYWORD_HIT_AT_5_FLOOR` in `searchBenchmark.test.ts` if search has
 improved.

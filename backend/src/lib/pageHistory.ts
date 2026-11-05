@@ -1,6 +1,6 @@
 /**
  * Version history for compiled wiki pages -- the backend half of
- * compiler/page_history.py (keep the on-disk format in sync):
+ * the former Python page-history writer (preserves the established on-disk format):
  *
  *   data/page_history/<page-stem>/<stamp>-<reason>.md
  *

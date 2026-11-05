@@ -6,10 +6,10 @@ change the BM25-vs-vector-search picture.
 
 | | |
 |---|---|
-| Persistent vector store | `compiler/vector_store.py` |
-| Persistent graph store | `compiler/graph_store.py` |
-| Benchmark | `compiler/scalability_benchmark.py` |
-| Tests | `test_vector_store.py`, `test_graph_store.py`, `test_scalability_benchmark.py` |
+| Persistent vector store | `backend/src/lib/vectorStore.js` |
+| Persistent graph store | `backend/src/lib/graphStore.js` |
+| Benchmark | `backend/src/lib/scalabilityBenchmark.js` (`node compiler/scalabilityBenchmark.js`) |
+| Tests | `backend/src/lib/vectorStore.test.ts`, `backend/src/lib/graphStore.test.ts`, `backend/src/lib/scalabilityBenchmark.test.ts` |
 
 ## What "migrate to vector/graph storage" means here
 
@@ -46,7 +46,7 @@ argument and behavior is exactly what it was before this wiring existed.
 
 ## The benchmark: BM25 vs. a naive vector store, by corpus size
 
-`scalability_benchmark.py` scales `retrieval_eval_dataset.py`'s ~24 real
+`scalabilityBenchmark.js` scales the retrieval evaluation dataset's real
 passages up to a target size by replication with a per-copy numeric suffix
 (clearly synthetic scaling data, not a claim about what a 10,000-document
 personal wiki would actually contain), then times: BM25 indexing+query
@@ -80,12 +80,12 @@ never changes between queries, and (2) BM25 operates on plain Python
 lists already held in memory, with no serialization or disk I/O at all.
 
 **Update — the two avoidable costs in (1) are now fixed, without adding
-ANN indexing or any new dependency.** `vector_store.py` now stores each
+ANN indexing or any new dependency.** `vectorStore.js` now stores each
 embedding as packed binary doubles (`array('d', ...).tobytes()`) instead
 of JSON text, and persists each vector's L2 norm alongside it at upsert
 time instead of recomputing it on every query — `search()` now computes
 exactly one norm from scratch per call (the query's), not one per stored
-record. Same machine, same `python scalability_benchmark.py`, after that
+record. The benchmark can be rerun with `node compiler/scalabilityBenchmark.js`; after that
 change:
 
 | Corpus size | BM25 index (ms) | BM25 query (ms) | Vector insert (ms) | Vector query (ms) |
@@ -153,16 +153,16 @@ demonstrated in isolation:
   and `prune_stale_vector_store_entries()` is there for a caller that wants
   to actually clean those out. Omitting `vector_store` keeps `retrieve_hybrid()`'s
   original from-scratch-every-call behavior exactly as it was.
-- **`trust_propagation.py` / `graph_store.py`.** `import_claim_group()` now
+- **`trustPropagation.js` / `graphStore.js`.** `importClaimGroup()` now
   captures every `Claim` field (not just enough to render a graph — enough
   to reconstruct one), plus a `claim_group` node for `domain`/`subject`/
-  `description`. `export_claim_group()` is the inverse, and
-  `trust_propagation.propagate_group_trust_from_store(store, group_id, ...)`
+  `description`. `exportClaimGroup()` is the inverse, and
+  `propagateGroupTrustFromStore(store, group_id, ...)`
   runs propagation against a store-backed graph. Verified byte-for-byte
   against the in-memory path on the real pilot dataset — every claim's
   `score` and `prior` match exactly between `propagate_group_trust(group)`
   and `propagate_group_trust_from_store(store, group.id)`
-  (`test_propagate_group_trust_from_store_matches_in_memory_exactly_on_real_dataset`).
+  (`backend/src/lib/graphStore.test.ts`).
 
 Neither store's data is populated by the main compile pipeline itself yet
 — `main.js`'s five steps still write `wiki-app/docs/` and

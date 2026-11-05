@@ -1,8 +1,8 @@
 /**
  * Pipeline Architecture: persisted defaults for the compiler pipeline's
- * optional stages/behaviors -- the critic pass (extraction_critic.py),
- * active-learning corrections (active_learning.py), PII redaction
- * (pii_redaction.py), live internet search enrichment (web_search.py), and
+ * optional stages/behaviors -- the critic pass,
+ * active-learning corrections (activeLearning.js), PII redaction
+ * (piiRedaction.js), live internet search enrichment (researchOptions.js), and
  * which top-level data/raw/ folders participate at all. These already
  * are passed to the JavaScript compiler per run; this file gives the
  * Pipeline Architecture settings page a place

@@ -110,7 +110,7 @@ export const resources = {
   'resources.connectors.kindOauth': 'OAuth2, read-only',
   'resources.connectors.kindImap': 'IMAP, app password',
   'resources.connectors.noAccounts': 'No accounts connected yet.',
-  'resources.connectors.secretKeyWarnHtml': '<code class="rounded bg-white px-1 py-0.5">CONNECTOR_SECRET_KEY</code> is not set on the server, so credentials can\'t be stored yet. Generate one with <code class="rounded bg-white px-1 py-0.5">python -c "from connectors.credential_store import generate_secret_key; print(generate_secret_key())"</code> and set it in <code class="rounded bg-white px-1 py-0.5">.env</code>.',
+  'resources.connectors.secretKeyWarnHtml': '<code class="rounded bg-white px-1 py-0.5">CONNECTOR_SECRET_KEY</code> is not set on the server, so credentials can\'t be stored yet. Generate one with <code class="rounded bg-white px-1 py-0.5">node compiler/generateConnectorSecret.js</code> and set it in <code class="rounded bg-white px-1 py-0.5">.env</code>.',
   'resources.connectors.browseItems': 'Browse items',
   'resources.connectors.untitled': '(untitled)',
   'resources.connectors.import': 'Import',

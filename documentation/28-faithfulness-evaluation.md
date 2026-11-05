@@ -8,8 +8,8 @@ without a live model.
 
 | | |
 |---|---|
-| Module | `compiler/faithfulness_eval.py` |
-| Tests | `compiler/tests/test_faithfulness_eval.py` |
+| JavaScript module | `backend/src/lib/faithfulnessEval.js` (`compiler/faithfulnessEval.js` exports the same API) |
+| JavaScript API tests | `backend/src/lib/faithfulnessEval.test.ts` |
 | Offline proxy (no model/network needed) | `backend/src/lib/faithfulnessHeuristic.js`, `backend/src/lib/faithfulnessHeuristic.test.ts` |
 
 ## Two modes, two kinds of guarantee
@@ -22,8 +22,10 @@ characters with a trailing `…`). No token of that answer is generated —
 it's a formatting operation over already-retrieved text. That's provable by
 re-parsing the answer and checking each snippet against the corpus,
 purely structurally, with no LLM judge and no API key:
-`is_extractive_answer_verbatim()` does exactly that, and
-`evaluate_extractive_faithfulness()` runs it over a batch of queries.
+`isExtractiveAnswerVerbatim()` does exactly that. The JavaScript
+`evaluateExtractiveFaithfulness()` accepts the corpus and answer function so
+it can evaluate an injected chat engine without depending on the old Python
+RAG runtime.
 
 **Real result, no API key needed** (reusing `retrieval_eval_dataset.py`'s 8
 hand-labeled queries against a small compiled-doc corpus built from
@@ -44,35 +46,28 @@ guard against that regressing.
 
 **`mode: "generated"` has no such guarantee.** A chat model asked to write
 a new answer from retrieved context can add a detail the context doesn't
-support — the exact failure `extraction_critic.py`
+support — the exact failure the compiler's `researchOptions.js` critic
 ([24](./24-extraction-critic.md)) targets in wiki *synthesis*; this module
 targets the same failure in wiki *chat*. Checking it requires a second
-model acting as an NLI-style judge (`judge_faithfulness()`,
+model acting as an NLI-style judge (`judgeFaithfulness()`,
 `FAITHFULNESS_JUDGE_SYSTEM_PROMPT`): given the source passages actually
 retrieved for a query and the model's answer, does the judge consider every
 factual claim in the answer entailed by those passages. Like
-`extraction_critic.py`'s critic and `hybrid_retrieval.py`'s reranker, a
+the compiler critic and `hybridRetrieval.js`'s reranker, a
 malformed judge response degrades to "not faithful" with `parse_error` set
 rather than being silently counted as a pass or crashing the harness.
 
-## Running it
+## JavaScript API
 
-```bash
-cd compiler
-python faithfulness_eval.py   # extractive tier: no key needed
-                               # generated tier: needs OPENAI_API_KEY
-```
+`backend/src/lib/faithfulnessEval.js` ports the structural check and judge.
+`evaluateExtractiveFaithfulness()` takes an array of queries plus an injected
+corpus and `answer(query)` function. `evaluateGeneratedFaithfulness()` also
+takes `retrieve(query, corpus, { llm })` and an `llm.generate()` client. This
+keeps the evaluation algorithms independent of the old Python RAG engine.
 
-Not run against a live model in this environment — no key is configured
-here. The script prints the extractive-mode result (real, shown above) and
-then either the generated-mode hallucination rate or a clear skip message,
-same pattern as `extraction_critic_eval.py` / `retrieval_eval.py`'s
-embeddings tiers. `evaluate_generated_faithfulness()`'s mechanics (running
-`answer_question()` in generated mode, then judging each answer against the
-same passages `retrieve_hybrid()` actually retrieved for it) are fully
-exercised in `test_evaluate_generated_faithfulness_end_to_end` with a fake
-model, so the harness itself is validated even though its real-model
-numbers aren't in this document yet.
+The reported 8/8 value above comes from an earlier Python run. The
+JavaScript implementation has not yet been measured against the corpus or a
+live model; those historic numbers are not evidence that the port matches.
 
 ## What's still missing
 
@@ -89,10 +84,10 @@ proxy's own guidance, a reported organizational block isn't something to
 route around, so this genuinely cannot be closed in this environment —
 stated plainly rather than worked around with an unauthorized download
 path. Once a key or an unblocked network path is available, running
-`faithfulness_eval.py` (and growing its query set, or building a dedicated
+`faithfulnessEval.js` (and growing its query set, or building a dedicated
 hand-labeled faithfulness dataset the way `data/trust_eval_dataset.json`
 was built for trust) is what should replace this paragraph with real
-numbers — and would let the `extraction_critic.py` pass and the
+numbers — and would let the critic pass and the
 faithfulness judge be compared directly: does stripping ungrounded
 sentences from synthesized *pages* (task #4) also reduce the hallucination
 rate of *chat answers* built from those same pages, or are they independent

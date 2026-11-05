@@ -1,6 +1,6 @@
 # 17 — Compiler Module Reference
 
-Current JavaScript compiler entry points and key legacy module references.
+Current JavaScript compiler entry points and historical Python module references.
 
 ## Orchestration
 
@@ -13,7 +13,7 @@ Current JavaScript compiler entry points and key legacy module references.
 
 ## Core pipeline
 
-### `synthesizer.py`
+### Former `synthesizer.py` workflow → `backend/src/lib/compilerEngine.js`
 
 | Symbol | Role |
 |--------|------|
@@ -30,13 +30,11 @@ Current JavaScript compiler entry points and key legacy module references.
 | `slugify()` | URL-safe slugs |
 | `RawChunk` / `ChunkExtraction` | `source_type: "text" \| "email" \| "image" \| "file"` |
 
-### `text_chunking.py`
+### `backend/src/lib/textChunking.js`
 
-`split_text_into_chunks()` — paragraph-based chunking shared by
-`synthesizer.py`, `media_ingest.py`, and `email_ingest.py` (kept in its own
-stdlib-only module so those don't have to import `synthesizer.py`).
+`splitTextIntoChunks()` — paragraph-based chunking used by the active compiler.
 
-### `media_ingest.py`
+### Former `media_ingest.py` workflow → `backend/src/lib/sourceReader.js` and `compilerEngine.js`
 
 | Symbol | Role |
 |--------|------|
@@ -57,7 +55,7 @@ stdlib-only module so those don't have to import `synthesizer.py`).
 | `build_email_chunks()` | `ParsedEmail` → chunk dict(s), saves attachments via `media_ingest` |
 | `EMAIL_EXTENSIONS` | `{".eml"}` |
 
-### `trust.py`
+### `backend/src/lib/trust.js`
 
 | Symbol | Role |
 |--------|------|
@@ -67,25 +65,22 @@ stdlib-only module so those don't have to import `synthesizer.py`).
 | `load_trust_config()` / `save_trust_config()` | Read/write `data/source_trust.json` |
 | `TRUST_LEVELS` | `unverified < low < medium < high < verified` |
 
-### `linker.py`
+### JavaScript compiler and linking
+
+The former Python linker was removed. The active compiler uses exact-title
+linking and manual overrides through `backend/src/lib/compilerEngine.js` and
+`backend/src/lib/linkOverrides.ts`.
+
+The compiler's internal `applyOverrides()` helper applies require/block rules
+while generating each page.
+
+### `compiler/moc_generator.js`
 
 | Symbol | Role |
 |--------|------|
-| `build_topic_index()` | Full index rebuild |
-| `update_topic_index()` | Incremental index update |
-| `load_topic_index()` | Read `index.json` |
-| `link_page_with_llm()` | LLM link injection |
-| `link_and_export_pages()` | Step 5 export to `wiki-app/docs/` |
-| `wrap_docusaurus_doc()` | Front matter wrapper |
-| `IndexDelta` | Tracks index add/update/remove |
-
-### `moc_generator.py`
-
-| Symbol | Role |
-|--------|------|
-| `generate_moc()` | Write `wiki-app/docs/index.md` |
-| `TAG_CATEGORY_RULES` | Tag → sidebar category mapping |
-| `FOLDER_CATEGORIES` | entities/concepts/sources labels |
+| `generateMoc()` | Write `wiki-app/docs/index.md` |
+| Dynamic tag categories | Derive sidebar groups from page tags |
+| Folder categories | Group entity/concept/source pages |
 
 ## LLM and quality
 
@@ -101,7 +96,7 @@ stdlib-only module so those don't have to import `synthesizer.py`).
 | `transcribe_audio()` | Speech-to-text completion (audio transcription, model `OPENAI_TRANSCRIPTION_MODEL`) + retry |
 | `complete_json()` | JSON parse helper |
 
-### `reviewer.py`
+### `reviewer.js`
 
 | Symbol | Role |
 |--------|------|
@@ -110,16 +105,14 @@ stdlib-only module so those don't have to import `synthesizer.py`).
 
 ## Linking and overrides
 
-### `link_overrides.py`
+### `backend/src/lib/linkOverrides.ts`
 
 | Symbol | Role |
 |--------|------|
-| `load_link_overrides()` | Read `data/link_overrides.json` |
-| `save_link_overrides()` | Write with `updated_at` |
-| `validate_connections()` | Filter invalid topic pairs |
-| `apply_connection_overrides()` | require/block on page body |
-| `build_knowledge_graph_payload()` | API graph structure |
-| `detect_topic_links()` | Parse markdown links → topics |
+| `loadLinkOverrides()` / `saveLinkOverrides()` | Read/write `data/link_overrides.json` |
+| `validateConnections()` | Filter invalid topic pairs |
+| `buildKnowledgeGraphPayload()` | Build API graph structure |
+| `detectTopicLinks()` | Parse Markdown links into topic relations |
 
 ## API and builds
 
@@ -149,13 +142,13 @@ Analytics API behavior now lives in `backend/src/lib/analytics.js` and Express r
 
 Path constants: `PROJECT_ROOT`, `RAW_DIR`, `OUTPUT_DIR`, `STATE_FILE`
 
-### `yaml_frontmatter.py`
+### `backend/src/lib/yamlFrontmatter.js`
 
 `yaml_quote()` — safe quoting for YAML scalar values
 
-### `mdx_sanitize.py`
+### `compiler/mdx_sanitize.js`
 
-`sanitize_for_mdx()` — escape/sanitize body for Docusaurus MDX
+`sanitizeForMdx()` — escape/sanitize the generated Markdown body
 
 ### `fix_frontmatter.js`
 
@@ -165,19 +158,10 @@ CLI to re-quote broken front matter fields in `wiki-app/docs/`
 
 MDX body repair utility
 
-## Test data generators (`scripts/dev/`)
+## Test data generators
 
-Dev-only — not imported by the compiler pipeline. See
+The former Python generators are retired. See
 [09-test-data-generation.md](./09-test-data-generation.md).
-
-| Module | Function |
-|--------|----------|
-| `generate_dummy_data.py` | Dispatcher CLI: `python generate_dummy_data.py <junk\|bulk\|extended\|varied\|keep-aurora>` |
-| `generate_junk_data.py` | `generate_junk_data()` — 10 seed files |
-| `generate_bulk_dummy_data.py` | `generate_bulk_dummy_data()`, `generate_procedural_dummy_test_data()` |
-| `generate_varied_dummy_data.py` | `generate_varied_dummy_data()` |
-| `generate_extended_dummy_data.py` | Extended wave-2 file dict |
-| `keep_aurora_raw.py` | Archive non-Aurora raw files to `data/_archive_non_aurora/` |
 
 ## Repo root scripts
 

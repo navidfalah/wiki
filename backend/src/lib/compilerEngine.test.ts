@@ -96,6 +96,15 @@ describe('JavaScript compiler', () => {
     expect(state.files['sensor.png'].chunks[0].text).toContain('A sensor photograph.');
     expect(state.files['memo.wav'].chunks[0].text).toContain('The battery lasts two days.');
   });
+  it('keeps an audio download link when transcription is unavailable', async () => {
+    const { rawDir, options } = fixture();
+    options.model.transcribeAudio.mockRejectedValueOnce(new Error('transcription unavailable'));
+    fs.writeFileSync(path.join(rawDir, 'memo.wav'), 'fake audio');
+    await compile(options);
+    const state = JSON.parse(fs.readFileSync(options.stateFile, 'utf8'));
+    expect(state.files['memo.wav'].chunks[0].text).toContain('Transcription unavailable');
+    expect(state.files['memo.wav'].chunks[0].text).toContain('[Listen to memo.wav]');
+  });
   it('escapes MDX markup outside links and code', () => {
     expect(markdownSafe('<b>{x}</b> `a{b}` [x](./a.md)')).toBe('&lt;b&gt;&#123;x&#125;&lt;/b&gt; `a{b}` [x](./a.md)');
   });

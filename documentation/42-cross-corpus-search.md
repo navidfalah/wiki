@@ -16,7 +16,7 @@ against three corpora in one response:
   (`backend/src/lib/resourcesEngine.ts`), matched against the source path,
   source type, and the titles of pages citing it.
 - **Emails** — every ingested `.eml`, via `runCli('emails-list')`
-  (`compiler/email_engine.py`), matched against subject, sender, date, and
+  (`backend/src/lib/emailEngine.js`), matched against subject, sender, date, and
   the 220-character body preview the compiler already extracts.
 
 ## Ranking (search v2)
@@ -49,7 +49,7 @@ that all appear in one document. Search v2 (task T10) ranks instead:
 Both numbers are regression floors in
 `backend/src/lib/searchBenchmark.test.ts`.
 
-This is still not the chat retriever. Chat uses `compiler/hybrid_retrieval.py`
+This is still not the chat retriever. Chat uses `backend/src/lib/hybridRetrieval.js`
 (doc 25) to put passages in front of an LLM. Search is about *finding where
 something lives*.
 

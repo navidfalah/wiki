@@ -39,7 +39,7 @@ Subfolder name does **not** change compiler behavior — only organization for h
 
 **Created on:** first successful compile  
 **Gitignored:** yes  
-**Used by:** `synthesizer.py`, `server.py`, `analytics.py`, `reviewer.py`
+**Used by:** `synthesizer.js`, `server.py`, `analytics.py`, `reviewer.js`
 
 ### Schema
 

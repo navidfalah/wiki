@@ -30,7 +30,7 @@ export interface SearchHit {
   meta?: Record<string, string>;
 }
 
-/** The subset of email_engine.py's list_emails() fields search needs. */
+/** The subset of email metadata fields search needs. */
 export interface EmailSummary {
   path: string;
   subject?: string;

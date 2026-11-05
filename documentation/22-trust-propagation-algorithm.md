@@ -1,7 +1,7 @@
 # 22 — Trust Propagation Algorithm
 
-The thesis-track spine itself: `compiler/trust_propagation.py` extends
-`trust.py`'s static, rule-based trust with relational evidence from a claim
+The thesis-track spine itself: `backend/src/lib/trustPropagation.js` extends
+`trust.js`'s static, rule-based trust with relational evidence from a claim
 graph's `corroborates`/`contradicts`/`supersedes` edges (the schema
 [21-trust-eval-dataset.md](./21-trust-eval-dataset.md) defines). This module
 implements the algorithm; task #3 (still to come) is the formal evaluation —
@@ -11,7 +11,7 @@ behavior, not a validated result.
 
 ## Why static rules aren't enough
 
-`trust.py` assigns a claim's trust from its source's path/type alone — a
+`trust.js` assigns a claim's trust from its source's path/type alone — a
 glob rule or a source-type default. That can't express two things this
 project's own corpus actually needs:
 
@@ -58,7 +58,8 @@ cross-group edges yet):
 **Critically: `propagate_group_trust()` never reads `claim.gold_label`.**
 That field exists solely for the dataset in [21](./21-trust-eval-dataset.md)
 to be scored against; reading it here would mean the algorithm grades its
-own exam. `tests/test_trust_propagation.py::test_gold_label_never_affects_the_propagated_score`
+own exam. `backend/src/lib/trustPropagation.test.ts` verifies that changing
+gold labels never changes the propagated scores.
 enforces this empirically — it mutates every claim's gold label and asserts
 the computed scores don't move by a single bit.
 
@@ -115,4 +116,4 @@ for the formal metrics this summarizes:
 
 - [21-trust-eval-dataset.md](./21-trust-eval-dataset.md) — the claim graph schema and labeled ground truth this operates on
 - [23-trust-propagation-evaluation.md](./23-trust-propagation-evaluation.md) — the formal precision/ranking evaluation and per-term ablations that justify prior_weight=0.2 and the other defaults
-- `compiler/trust.py` — the static prior this module extends, still the source of truth for the live References & Trust table until the evaluation's results are judged strong enough to integrate
+- `backend/src/lib/trust.js` — the static prior this module extends, still the source of truth for the live References & Trust table until the evaluation's results are judged strong enough to integrate

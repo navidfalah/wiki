@@ -1,7 +1,6 @@
 /**
- * Port of compiler/resources_engine.py -- every cited source, deduped and
- * browsable independently of any one page (inverts each page's
- * "References & Trust" table into "what cites this source").
+ * Inverts each page's "References & Trust" table into a deduplicated,
+ * browsable list of sources and the pages that cite them.
  */
 import fs from 'node:fs';
 import path from 'node:path';

@@ -112,7 +112,7 @@ export const resources: Record<keyof typeof en, string> = {
   'resources.connectors.kindOauth': 'OAuth2, nur lesend',
   'resources.connectors.kindImap': 'IMAP, App-Passwort',
   'resources.connectors.noAccounts': 'Noch keine Konten verbunden.',
-  'resources.connectors.secretKeyWarnHtml': '<code class="rounded bg-white px-1 py-0.5">CONNECTOR_SECRET_KEY</code> ist auf dem Server nicht gesetzt, daher können Zugangsdaten noch nicht gespeichert werden. Erzeugen Sie einen mit <code class="rounded bg-white px-1 py-0.5">python -c "from connectors.credential_store import generate_secret_key; print(generate_secret_key())"</code> und tragen Sie ihn in <code class="rounded bg-white px-1 py-0.5">.env</code> ein.',
+  'resources.connectors.secretKeyWarnHtml': '<code class="rounded bg-white px-1 py-0.5">CONNECTOR_SECRET_KEY</code> ist auf dem Server nicht gesetzt, daher können Zugangsdaten noch nicht gespeichert werden. Erzeugen Sie einen mit <code class="rounded bg-white px-1 py-0.5">node compiler/generateConnectorSecret.js</code> und tragen Sie ihn in <code class="rounded bg-white px-1 py-0.5">.env</code> ein.',
   'resources.connectors.browseItems': 'Elemente durchsuchen',
   'resources.connectors.untitled': '(ohne Titel)',
   'resources.connectors.import': 'Importieren',

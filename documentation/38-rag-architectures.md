@@ -2,7 +2,7 @@
 
 > Current behavior: Experimental architectures described below remain research utilities, but are no longer selectable through app settings. Saved experimental choices migrate to keyword search and extractive answers. See [42 — Minimal AI](./42-minimal-ai.md).
 
-`hybrid_retrieval.py` + `rag_engine.retrieve_hybrid()` ([25](./25-hybrid-retrieval.md))
+`hybridRetrieval.js` + the JavaScript chat retriever ([25](./25-hybrid-retrieval.md))
 cover one family of RAG design: retrieve, optionally fuse in embeddings,
 optionally rerank with the chat model. That's the *hybrid retrieve-and-rerank*
 architecture. The published literature has several other shapes RAG commonly
@@ -11,16 +11,17 @@ This task researches five of them and implements each as its own,
 independently selectable, independently testable strategy rather than a
 variation on the existing one — same "one small pure module" pattern the
 rest of the compiler follows (`trust.py`, `analytics.py`,
-`hybrid_retrieval.py`).
+`hybridRetrieval.js`).
 
 | | |
 |---|---|
-| Implementation | `compiler/rag_architectures.py` |
-| Shared types (`Passage`, `ScoredPassage`, corpus indexing) | `compiler/rag_types.py` |
-| Settings field | `RagSettings.architecture` (`compiler/rag_settings.py`) |
+| JavaScript implementation | `backend/src/lib/ragArchitectures.js` (`compiler/ragArchitectures.js` wrapper) |
+| JavaScript implementation | `backend/src/lib/ragArchitectures.js` |
+| Shared JS types and corpus indexing | `backend/src/lib/ragTypes.js` |
+| Settings field | `RagSettings.architecture` (`backend/src/lib/ragSettings.ts`) |
 | Wiring into chat | `rag_engine._retrieve()` dispatches on `architecture` |
 | Settings UI | `/rag-architecture` (`frontend/src/views/rag-architecture.ejs`) |
-| Tests | `compiler/tests/test_rag_architectures.py` |
+| Tests | `backend/src/lib/ragArchitectures.test.js` |
 
 ## The research: what each architecture solves
 
@@ -106,7 +107,7 @@ means something more than "tune the same pipeline five ways":
 
 ## Shared shape
 
-Every architecture in `rag_architectures.py` has the same signature:
+Every architecture in `ragArchitectures.js` accepts the same options object:
 
 ```python
 def retrieve_xyz(
@@ -122,11 +123,11 @@ def retrieve_xyz(
 so `rag_architectures.retrieve(architecture_name, ...)` can dispatch to any
 of them by string name, and `rag_engine._retrieve()` doesn't need to know
 anything about a given architecture's internals — same as how it already
-didn't need to know about `hybrid_retrieval.py`'s three tiers. `Passage` and
-`ScoredPassage` moved to a new `rag_types.py` module so `rag_architectures.py`
+didn't need to know about `hybridRetrieval.js`'s three tiers. `Passage` and
+`ScoredPassage` moved to the shared `ragTypes.js` module so `ragArchitectures.js`
 doesn't have to import `rag_engine.py` (which is what dispatches *to* it —
-the dependency can only run one way; see `rag_types.py`'s and
-`rag_architectures.py`'s module docstrings).
+the dependency can only run one way; see `ragTypes.js`'s and
+`ragArchitectures.js`'s module documentation).
 
 Every architecture degrades to plain BM25 (or, for `retrieve_corrective()`,
 to its heuristic grader) when no LLM is configured or an LLM call fails —
@@ -137,7 +138,7 @@ architecture shares one call signature.
 
 ## Settings and wiring
 
-`RagSettings.architecture` (`compiler/rag_settings.py`) is one of `"hybrid"`
+`RagSettings.architecture` (`backend/src/lib/ragSettings.ts`) is one of `"hybrid"`
 (the pre-existing default — `retrieve_hybrid()`'s tiers, still tuned by
 `retrieval_mode`/`bm25_k1`/`bm25_b`/`use_vector_store`), `"naive"`,
 `"hyde"`, `"fusion"`, `"graph"`, or `"corrective"`. `rag_engine._retrieve()`
@@ -153,20 +154,20 @@ BM25/hybrid/rerank label when it isn't hybrid.
 
 Same persistence path as the rest of the RAG Architecture settings page:
 `backend/src/lib/ragSettings.ts` validates and writes
-`data/rag_settings.json`; `compiler/rag_settings.py` reads it back inside
+`data/rag_settings.json`; `backend/src/lib/ragSettings.ts` reads it back inside
 the `cli.py` chat/chat-stream subprocess. No env-var mirroring, no rebuild
 required — a changed architecture applies to the next question asked.
 
 ## Testing
 
-`test_rag_architectures.py` covers each architecture's happy path (that it
+`ragArchitectures.test.js` covers each architecture's happy path (that it
 actually surfaces the relevant passage, and — for HyDE, RAG-Fusion, and
 GraphRAG — a case a plain BM25 baseline specifically *wouldn't* surface: a
 differently-worded query for RAG-Fusion, a page reachable only through a
 cross-link for GraphRAG), its no-LLM fallback to BM25, and (for HyDE,
 RAG-Fusion, Corrective RAG) graceful degradation when the LLM call itself
-fails. `test_rag_engine.py` and `test_hybrid_retrieval.py` are unchanged and
-still pass — moving `Passage`/`ScoredPassage`/`_passage_id` to `rag_types.py`
+fails. The JavaScript chat and hybrid retrieval tests cover these paths and
+still pass — moving `Passage`/`ScoredPassage`/`passageId` to `ragTypes.js`
 kept `rag_engine.Passage` etc. as re-exports/aliases specifically so nothing
 downstream had to change.
 

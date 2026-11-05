@@ -1,7 +1,7 @@
 # 08 — LLM Client
 
 The compiler is **LLM-only**. Every pipeline step that interprets or writes content requires `OPENAI_API_KEY`.  
-**Module:** `compiler/llm_client.py`
+**Module:** `backend/src/lib/modelClient.js`
 
 ## Requirement
 
@@ -16,7 +16,7 @@ Without a key, `node compiler/main.js` exits immediately:
 Error: OPENAI_API_KEY is required. Copy .env.example to .env and set your API key.
 ```
 
-`require_llm()` in `llm_client.py` enforces this at pipeline start and in synthesizer/linker entry points.
+`require_llm()` in `backend/src/lib/modelClient.js` enforces this at pipeline start and in synthesizer/linker entry points.
 
 ## Environment variables
 
@@ -53,10 +53,10 @@ Returns client or raises `RuntimeError` if key missing.
 
 | Step | Module | Function |
 |------|--------|----------|
-| Extraction | `synthesizer.py` | `extract_chunk_topics()` |
-| Synthesis | `synthesizer.py` | `synthesize_topic_wiki_pages()` |
-| Linking | `linker.py` | `link_page_with_llm()` |
-| Review (optional) | `reviewer.py` | `review_page_with_llm()` |
+| Extraction | `backend/src/lib/compilerEngine.js` | Model-backed topic extraction |
+| Synthesis | `backend/src/lib/compilerEngine.js` | Model-backed page synthesis |
+| Linking | `backend/src/lib/compilerEngine.js` | Deterministic exact-title linking; no model call |
+| Review (optional) | `backend/src/lib/researchOptions.js` | Optional critic pass |
 
 ## Cache
 

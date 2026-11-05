@@ -1,6 +1,6 @@
 /**
  * Aggregates the per-run token_usage rows pipelineRuns.ts already exposes
- * (written by compiler/pipeline_tracker.py / llm_client.py) into the totals
+ * (written by the JavaScript pipeline and model client) into the totals
  * the Usage page needs: cost and tokens broken down by pipeline step
  * ("process"), by model, and by calendar day -- plus a grand total. Reads
  * every run file, so it's a snapshot of history, not a live counter.

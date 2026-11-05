@@ -1,5 +1,5 @@
 /**
- * Port of compiler/moc_generator.py's categorization logic -- groups
+ * Shared categorization logic for generated Map of Content pages -- groups
  * compiled wiki pages into folder-like categories (by their most common
  * shared tags) for the /wiki listing's default "folders" view. The flat
  * "file mode" view bypasses this and lists every page in one layer.

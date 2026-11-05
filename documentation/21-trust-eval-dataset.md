@@ -10,12 +10,15 @@ guarantees it stays grounded in the corpus it claims to describe.
 | | |
 |---|---|
 | Data | `data/trust_eval_dataset.json` |
-| Loader/validator | `compiler/trust_eval_dataset.py` |
-| Tests | `compiler/tests/test_trust_eval_dataset.py` |
+| JavaScript loader/validator | `compiler/trustEvalDataset.js` |
+| JavaScript trust propagation | `compiler/trustPropagation.js` |
+| Persistent graph store | `backend/src/lib/graphStore.js` |
+| Review queue and correction storage | `compiler/activeLearning.js` |
+| Tests | `backend/src/lib/trustEvalDataset.test.js` |
 
 ## Why this exists
 
-`trust.py` currently assigns trust by static, human-authored glob rules
+`backend/src/lib/trust.js` currently assigns trust by static, human-authored glob rules
 (`data/source_trust.json`) and a per-source-type default. That's a
 reasonable engineering default, but it can't do the thing a *propagation*
 model can: raise trust because five independent sources corroborate a
@@ -39,7 +42,7 @@ default read interval"). Each group holds:
   actually operates on; the gold labels are what its output gets scored
   against.
 
-Gold labels (`compiler/trust_eval_dataset.py:GOLD_LABELS`):
+Gold labels (`backend/src/lib/trustEvalDataset.js:GOLD_LABELS`):
 
 | Label | Meaning |
 |---|---|
@@ -64,7 +67,7 @@ Gold labels (`compiler/trust_eval_dataset.py:GOLD_LABELS`):
    quoted-printable-encoded `.eml` won't string-match its own plaintext) and
    checks the quote appears verbatim, modulo markdown `**bold**` markers and
    an explicit `[...]` marker for quotes that bridge non-adjacent lines in
-   the source. `tests/test_trust_eval_dataset.py` runs this against the real
+   the source. `backend/src/lib/trustEvalDataset.test.js` runs this against the real
    dataset on every test run — the dataset cannot silently drift from the
    corpus.
 3. **Trust is per-claim, not per-source.** `nova_battery_cell_type/nbc-1`
@@ -135,4 +138,4 @@ print(summary_stats(load_trust_eval_dataset()))
 
 - [documentation/19-multimedia-email-and-trust.md](./19-multimedia-email-and-trust.md) — the trust-scoring and References & Trust system this dataset evaluates
 - [documentation/18-sample-domain.md](./18-sample-domain.md) — the fictional domain and its intentional contradictions
-- `compiler/trust.py` — the current static rule engine this dataset is meant to eventually help replace/augment
+- `backend/src/lib/trust.js` — the current static rule engine this dataset is meant to eventually help replace/augment

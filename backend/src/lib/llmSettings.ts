@@ -5,7 +5,7 @@
  * recognizes -- "default" (extraction/indexing/linking), "thinking"
  * (synthesis -- the pipeline's one genuinely reasoning-heavy step, see
  * compiler/main.js's step 3), "chat" (interactive RAG Q&A -- see
- * rag_engine.py's answer_question()/stream_answer(), which already call
+ * backend/src/lib/chatEngine.js's answer_question()/stream_answer(), which already call
  * LLMClient.for_purpose("chat")), and "embedding". Persisted to
  * data/llm_settings.json; also mirrored into the repo's .env so the
  * local-llm Docker container (which reads its own env at container
@@ -36,7 +36,7 @@ export interface LlmProfile {
   model: string;
   api_key: string;
   /** Sampling temperature (0-2). Applied to the creative/synthesis calls that
-   *  don't hardcode their own temperature -- see compiler/llm_client.py. */
+   *  don't hardcode their own temperature -- see backend/src/lib/modelClient.js. */
   temperature: number;
   /** Nucleus sampling (0-1). Omitted from the API call when left unset. */
   top_p: number | null;
@@ -301,9 +301,8 @@ export function saveLlmSettings(input: any): LlmSettings {
   const settings: LlmSettings = { profiles, assignments, local_llm };
   atomicWriteJson(LLM_SETTINGS_FILE, settings);
 
-  // Mirror local-llm model config into .env -- this is what docker-compose
-  // and docker/local-llm/entrypoint.sh actually read; the JSON file above
-  // only drives this Node process and the compiler subprocess it spawns.
+  // Mirror local-llm model config into .env for the Compose model downloader
+  // and server. The JSON file above drives this Node process.
   upsertEnvVars({
     LOCAL_LLM_MODEL_REPO: local_llm.model_repo,
     LOCAL_LLM_MODEL_FILE: local_llm.model_file,

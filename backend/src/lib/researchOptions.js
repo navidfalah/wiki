@@ -1,11 +1,9 @@
 'use strict';
-const fs = require('node:fs');
+const { loadCorrections, renderFewshotBlock } = require('./activeLearning');
 const CRITIC = 'You are a fact-checking critic. Compare the draft with the supplied source excerpts. Identify specific factual sentences that are not supported by the excerpts. Return only JSON: {"flagged":[{"sentence":"exact sentence copied from draft","reason":"why unsupported"}]}. Do not flag a supported paraphrase. If none, return {"flagged":[]}.';
 
 function correctionsBlock(file) {
-  let entries; try { entries = JSON.parse(fs.readFileSync(file, 'utf8')).corrections; } catch { return ''; }
-  if (!Array.isArray(entries) || !entries.length) return '';
-  return ['Known corrections from human review — apply the same judgment to similar text:', ...entries.map((item) => `- "${String(item.quote_excerpt || '').slice(0, 200)}" -> ${item.verdict}: ${item.note}`)].join('\n');
+  try { return renderFewshotBlock(loadCorrections(file)); } catch { return ''; }
 }
 async function critic({ model, sources, draft, samples = 1, corrections = '', signal = undefined }) {
   samples = Math.max(1, Math.min(10, Math.floor(samples) || 1));

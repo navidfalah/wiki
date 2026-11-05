@@ -44,6 +44,32 @@ describe('JavaScript chat retrieval', () => {
     vi.stubGlobal('fetch', vi.fn(async () => { throw new Error('unavailable'); }));
     expect((await engine.answer({ message: 'battery', corpusSource: 'raw' })).mode).toBe('extractive');
   });
+  it('persists passage embeddings in SQLite and only embeds the query after the corpus is stored', async () => {
+    const calls: string[][] = [];
+    const fetch = vi.fn(async (_url: string, options: RequestInit) => {
+      const input = JSON.parse(String(options.body)).input as string[]; calls.push(input);
+      return { ok: true, json: async () => ({ data: input.map((_, index) => ({ index, embedding: [1, 0] })) }) };
+    });
+    vi.stubGlobal('fetch', fetch);
+    const root = fs.mkdtempSync(path.join(os.tmpdir(), 'wiki-chat-js-')); roots.push(root);
+    const rawDir = path.join(root, 'raw'), docsDir = path.join(root, 'docs'); fs.mkdirSync(rawDir); fs.mkdirSync(docsDir);
+    fs.writeFileSync(path.join(rawDir, 'battery.txt'), 'Frequent transmissions drain the battery.');
+    const storePath = path.join(root, 'vector_store.sqlite');
+    // Rebuild with the persistent store path used by the deployed chat service.
+    const persistedEngine = createChatEngine({ rawDir: path.join(root, 'raw'), docsDir: path.join(root, 'docs'), embeddingCacheFile: path.join(root, 'vectors.json'), vectorStoreFile: storePath,
+      discoverRawSourceFiles: (dir: string) => fs.readdirSync(dir).map((name) => path.join(dir, name)),
+      loadSettings: () => ({ retrieval_mode: 'hybrid', top_k: 5, bm25_k1: 1.5, bm25_b: 0.75, use_vector_store: true }),
+      parseFrontmatter: () => ({}), stripFrontmatter: (text: string) => text,
+      isChatAvailable: () => false, embeddingConfig: () => ({ apiKey: 'test', base: 'https://example.test/v1', model: 'embed' }),
+    });
+    expect((await persistedEngine.answer({ message: 'charge', corpusSource: 'raw' })).mode).toBe('extractive');
+    expect(fs.existsSync(storePath)).toBe(true);
+    const cached = JSON.parse(fs.readFileSync(path.join(root, 'vectors.json'), 'utf8'));
+    expect(Object.keys(cached).length).toBeGreaterThan(1);
+    fs.rmSync(path.join(root, 'vectors.json'));
+    expect((await persistedEngine.answer({ message: 'different query', corpusSource: 'raw' })).mode).toBe('extractive');
+    expect(calls[1]).toEqual(['different query']);
+  });
   it('combines ranking positions rather than unrelated raw scores', () => {
     const a = { id: 1, passage: { text: 'a' }, score: 200 }, b = { id: 2, passage: { text: 'b' }, score: 0.2 };
     expect(fusion([[a, b], [b]], 2)[0].id).toBe(2);

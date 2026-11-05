@@ -2,7 +2,7 @@ import type { pipelineArchitecture as en } from '../en/pipeline-architecture';
 
 export const pipelineArchitecture: Record<keyof typeof en, string> = {
   'pipeline-architecture.title': 'Pipeline-Architektur',
-  'pipeline-architecture.introHtml': 'Wählen Sie Quellordner und Datenschutzeinstellungen. KI extrahiert Themen und schreibt Seiten; Python fügt Links hinzu.',
+  'pipeline-architecture.introHtml': 'Wählen Sie Quellordner und Datenschutzeinstellungen. KI extrahiert Themen und schreibt Seiten; der JavaScript-Compiler fügt Links hinzu.',
   'pipeline-architecture.stages': 'Pipeline-Stufen',
   'pipeline-architecture.stagesHint': 'Zusätzliche Modellprüfungen und automatische Korrekturrückmeldungen gehören nicht zum Standardlauf.',
   'pipeline-architecture.critic': 'Kritik-Durchlauf',

@@ -11,15 +11,15 @@ export default tseslint.config(
     files: ['src/**/*.js'],
     languageOptions: {
       sourceType: 'commonjs',
-      globals: { require: 'readonly', module: 'readonly', process: 'readonly', Buffer: 'readonly', fetch: 'readonly', AbortController: 'readonly', AbortSignal: 'readonly', DOMException: 'readonly', URL: 'readonly', URLSearchParams: 'readonly', FormData: 'readonly', Blob: 'readonly' },
+      globals: { require: 'readonly', module: 'readonly', __dirname: 'readonly', process: 'readonly', Buffer: 'readonly', console: 'readonly', setTimeout: 'readonly', clearTimeout: 'readonly', TextDecoder: 'readonly', fetch: 'readonly', AbortController: 'readonly', AbortSignal: 'readonly', DOMException: 'readonly', URL: 'readonly', URLSearchParams: 'readonly', FormData: 'readonly', Blob: 'readonly' },
     },
     rules: { '@typescript-eslint/no-require-imports': 'off', 'no-useless-escape': 'off' },
   },
   {
     rules: {
       'no-console': 'warn',
-      // The Express error middleware, route wrappers, and CLI bridge deal in
-      // untyped JSON from subprocess stdout / req.body -- `any` there is the
+      // The Express error middleware and route wrappers deal in untyped
+      // request JSON -- `any` there is the
       // honest type, not a shortcut.
       '@typescript-eslint/no-explicit-any': 'off',
       '@typescript-eslint/no-unused-vars': [
@@ -34,17 +34,6 @@ export default tseslint.config(
     // in with require() rather than an import statement -- intentional, not
     // a leftover CommonJS habit.
     files: ['**/*.test.ts'],
-    rules: {
-      '@typescript-eslint/no-require-imports': 'off',
-    },
-  },
-  {
-    // Plain-Node scripts spawned by tests (e.g. the fake Python worker).
-    files: ['**/__fixtures__/*.cjs'],
-    languageOptions: {
-      sourceType: 'commonjs',
-      globals: { require: 'readonly', process: 'readonly', setTimeout: 'readonly' },
-    },
     rules: {
       '@typescript-eslint/no-require-imports': 'off',
     },

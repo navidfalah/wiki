@@ -11,10 +11,10 @@ exports.uploadFiles = uploadFiles;
 exports.deleteFile = deleteFile;
 exports.moveFile = moveFile;
 /**
- * Port of compiler/raw_folders.py -- create/delete folders and move files
- * inside data/raw/, backing the file-explorer dashboard UI.
+ * Create/delete folders and move files inside data/raw/, backing the
+ * file-explorer dashboard UI.
  *
- * Same safety rule as the Python original: every operand is checked for
+ * Every operand is checked for
  * symlink-ness and containment *before* being resolved (realpath), never
  * after -- resolving first would follow a symlink to whatever it points
  * at and silently operate on the real target instead of refusing.

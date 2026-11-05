@@ -2,9 +2,8 @@
  * Multi-session chat storage: one JSON file per session under
  * data/chat_sessions/ (same directory-of-JSON-files shape as
  * data/pipeline_runs/, see pipelineRuns.ts), plus an index.json summary
- * this module keeps in sync on every write -- unlike pipeline runs, there
- * is no Python writer here, so both the index and the per-session files
- * are owned by this module alone.
+ * this module keeps in sync on every write; both the index and session
+ * files are owned by this module.
  */
 import crypto from 'node:crypto';
 import fs from 'node:fs';

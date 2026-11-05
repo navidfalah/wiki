@@ -17,7 +17,7 @@ wiki/
 ├── .gitignore
 ├── documentation/            # This documentation set
 ├── data/                     # All compiler input and runtime state
-├── compiler/                 # Python pipeline + API + generators
+├── compiler/                 # JavaScript compiler tools and evaluations
 └── wiki-app/                 # Docusaurus site + dashboards
 ```
 
@@ -43,7 +43,7 @@ data/
 │
 ├── state.json                # Incremental compiler state (gitignored, created on compile)
 ├── link_overrides.json       # Manual knowledge-graph connection rules
-├── source_trust.json         # Per-source trust level rules — see trust.py
+├── source_trust.json         # Per-source trust level rules — see backend/src/lib/trust.js
 └── .llm-cache.sqlite         # LLM response cache (gitignored, optional)
 ```
 
@@ -63,51 +63,22 @@ Everything else (and dotfiles like `.gitkeep`) is ignored.
 ```
 compiler/
 ├── main.js                   # JavaScript compiler command-line entry point
-├── synthesizer.py            # Chunking, extraction, synthesis
-├── text_chunking.py          # Shared paragraph-chunking (text/email/file)
-├── media_ingest.py           # Images, audio + file attachments → chunks
-├── email_ingest.py           # .eml parsing → chunks
-├── trust.py                  # Source trust levels + References & Trust section
-├── linker.py                 # Topic index, cross-link injection, export
-├── moc_generator.py          # Hierarchical index.md
-├── llm_client.py             # OpenAI client, cache, retries, vision captioning
-├── link_overrides.py         # require/block connection rules
-├── reviewer.py               # LLM quality review → review_report.txt
-├── dead_link_checker.py      # Broken link detection
-├── models.py                 # Path constants (RAW_DIR, OUTPUT_DIR, STATE_FILE)
-├── yaml_frontmatter.py       # Safe YAML quoting
-├── mdx_sanitize.py           # Sanitize body for Docusaurus MDX
+├── models.js                 # Shared paths for raw, output and state data
+├── doc_utils.js              # Markdown, frontmatter and topic helpers
+├── trust.js                  # Source trust levels
+├── raw_folders.js            # Raw-folder management helpers
+├── evalGate.js               # Offline compiler evaluation
+├── reviewer.js               # LLM review → review_report.txt
 ├── fix_frontmatter.js        # Repair quoted YAML fields in docs
 ├── fix_mdx_body.js           # MDX body fixes
-├── requirements.txt
-├── requirements-dev.txt      # + ruff, pytest
-├── pyproject.toml            # ruff + pytest config
-├── review_report.txt         # Output of reviewer.py (if run, not committed)
-├── temp_output/              # Draft pages + index.json (intermediate)
-│   ├── *.md
-│   └── index.json
-├── tests/                    # pytest suite for pure-logic modules
-│   ├── test_yaml_frontmatter.py
-│   ├── test_mdx_sanitize.py
-│   ├── test_synthesizer.py
-│   ├── test_linker.py
-│   ├── test_link_overrides.py
-│   ├── test_media_ingest.py
-│   ├── test_email_ingest.py
-│   ├── test_trust.py
-│   ├── test_multimedia_pipeline.py     # mixed source types, end-to-end w/ fake LLM
-│   └── test_generated_banner_pipeline.py
-├── scripts/dev/               # Dev-only test-data generators (not part of the pipeline)
-│   ├── generate_dummy_data.py         # Dispatcher CLI for the generators below
-│   ├── generate_junk_data.py          # 10 seed Aurora junk files
-│   ├── generate_bulk_dummy_data.py    # [SAMPLE] + procedural bulk
-│   ├── generate_varied_dummy_data.py
-│   ├── generate_extended_dummy_data.py
-│   └── keep_aurora_raw.py             # Archive non-Aurora raw files
-└── .venv/                    # Python virtualenv (local, gitignored)
+└── temp_output/              # Draft pages + topic index (intermediate)
 ```
 
-### Path constants (`models.py`)
+The running compiler implementation is `backend/src/lib/compilerEngine.js`;
+`compiler/main.js` is its command-line entry point. The app's current
+automated suites use Vitest under `backend/src/` and `frontend/`.
+
+### Path constants (`models.js`)
 
 | Constant | Resolves to |
 |----------|-------------|
@@ -156,7 +127,7 @@ wiki-app/
 
 ```
 .github/workflows/wiki-build.yml   # CI: compile → build → GitHub Pages
-.github/workflows/pr-checks.yml    # CI: lint + pytest + build on pull_request
+.github/workflows/pr-checks.yml    # CI: Node lint + typecheck + tests + build
 ```
 
 ## Files you should not commit

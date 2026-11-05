@@ -1,16 +1,17 @@
 # 23 — Trust Propagation Evaluation
 
 The results chapter: formal metrics and ablations for
-`compiler/trust_propagation.py` (task #2) against the labeled dataset
+`compiler/trustPropagation.js` (task #2) against the labeled dataset
 (task #1). Everything below was produced by running
-`python compiler/trust_propagation_eval.py` against the real
-`data/trust_eval_dataset.json` — the numbers are not hand-written, and
-`compiler/tests/test_trust_propagation_eval.py` re-asserts the headline
-comparisons on every test run so they can't silently drift from the code.
+The JavaScript evaluator is runnable with `node compiler/trustPropagationEval.js`.
+The recorded values below were produced by the legacy Python evaluator against
+the real `data/trust_eval_dataset.json`; they are not hand-written. The
+JavaScript port is the current implementation, but these recorded values still
+need a JavaScript evaluation pass before they can be attributed to the port.
 
 ## Metrics
 
-`compiler/trust_propagation_eval.py` collapses the dataset's 5-way gold
+`backend/src/lib/trustPropagationEval.js` collapses the dataset's 5-way gold
 label taxonomy to a binary split — `GOOD = {correct, scope_dependent}` vs.
 `BAD = {incorrect, superseded, disputed}` — because a v1 propagation
 algorithm only outputs one continuous score, and the coarsest meaningful
@@ -30,7 +31,7 @@ Groups with no BAD claims (`meshsync_relay_battery_drain_root_cause`) report
 ## Headline result: propagation vs. the static baseline
 
 `STATIC_BASELINE_CONFIG` (`prior_weight=1`, `supersede_decay=1`) makes
-`propagate_group_trust()`'s output reduce to *exactly* `trust.py`'s current
+`propagateGroupTrust()`'s output reduce to *exactly* `trust.js`'s current
 static prior — `test_static_baseline_config_reproduces_prior_exactly`
 enforces this bit-for-bit. It is the existing system, not a strawman.
 
@@ -109,7 +110,7 @@ Pairwise accuracy is monotonically non-increasing as `prior_weight` rises
 (`test_prior_weight_sweep_is_monotonic_non_increasing_on_this_dataset`
 holds this as a regression check, with the explicit caveat that this is an
 observed property of *this* dataset, not a claimed universal property of
-the algorithm). `trust_propagation.py`'s shipped default was originally set
+the algorithm). `trustPropagation.js`'s shipped default was originally set
 to `0.3` by inspection during task #2, before this sweep existed; the sweep
 shows `0.3` is already past the start of the drop-off, so the default was
 revised to `0.2` — in the middle of the flat, maximal region, rather than at
@@ -138,7 +139,7 @@ which is precisely the scope-awareness gap named as a limitation below.
 
 Trust propagation and entity resolution ([26](./26-entity-resolution.md))
 aren't wired together in this codebase — `trust_eval_dataset.json`'s claim
-groups are hand-labeled, not derived by running `entity_resolution.py`'s
+groups are hand-labeled, not derived by running `entityResolution.js`'s
 clustering over the corpus. So this question has no live code path to
 measure yet, but it has a concrete, reproducible *simulated* answer:
 `trust_propagation_eval.simulate_isolated_claim()` takes one real claim,
@@ -170,7 +171,7 @@ contradiction-edge evidence is the single largest contributor to
 pairwise_acc after supersession, an entity-resolution false negative is
 not a minor, containable failure mode — it silently disables the exact
 mechanism that catches superseded/wrong claims for whichever claim gets
-cut off. `tests/test_trust_propagation_eval.py`'s
+cut off. `backend/src/lib/trustPropagationEval.test.js`'s
 `test_simulate_isolated_claim_*` tests lock this finding in as a
 regression check, and `simulate_isolated_claim()` can be re-run against any
 other claim/group pair to check whether the pattern holds generally (it's
@@ -181,7 +182,7 @@ This is a named risk for the eventual entity-resolution → trust-propagation
 wiring, not a reason not to build it: the fix is for that integration to
 be conservative about splitting (favor under-merging risk over
 over-merging risk, or escalate ambiguous cases to a human/LLM tier — which
-`entity_resolution.py` already does for exactly this reason, see
+`entityResolution.js` already does for exactly this reason, see
 [26](./26-entity-resolution.md)) rather than a reason to keep the two
 systems disconnected.
 
@@ -215,4 +216,4 @@ systems disconnected.
 
 - [21-trust-eval-dataset.md](./21-trust-eval-dataset.md) — the dataset these results are computed against
 - [22-trust-propagation-algorithm.md](./22-trust-propagation-algorithm.md) — the algorithm being evaluated
-- `compiler/trust_propagation_eval.py` — run it directly (`python trust_propagation_eval.py`) to reproduce every number above
+- `backend/src/lib/trustPropagationEval.js` — run `node compiler/trustPropagationEval.js` to reproduce the report above

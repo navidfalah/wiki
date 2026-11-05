@@ -5,6 +5,8 @@ const path = require('node:path');
 const crypto = require('node:crypto');
 const core = require('./wikiCore');
 const { readSource } = require('./sourceReader');
+const { makeDoc, bm25Rank, cosineSimilarity, reciprocalRankFusion } = require('./hybridRetrieval');
+const { VectorStore } = require('./vectorStore');
 
 function markdownFiles(root) {
   const result = [];
@@ -28,34 +30,16 @@ function sections(body) {
   flush(); return result;
 }
 function bm25(query, passages, limit, config) {
-  const terms = core.tokenize(query);
-  if (!terms.length || !passages.length) return [];
-  const docs = passages.map((passage, id) => {
-    const words = core.tokenize(passage.text), counts = new Map();
-    for (const word of words) counts.set(word, (counts.get(word) || 0) + 1);
-    return { id, passage, counts, length: words.length };
-  });
-  const avg = docs.reduce((sum, doc) => sum + doc.length, 0) / (docs.filter((doc) => doc.length).length || 1) || 1;
-  const frequencies = new Map([...new Set(terms)].map((word) => [word, docs.filter((doc) => doc.counts.has(word)).length]));
-  return docs.map((doc) => {
-    const score = terms.reduce((sum, word) => {
-      const tf = doc.counts.get(word) || 0; if (!tf) return sum;
-      const idf = Math.log(1 + (docs.length - frequencies.get(word) + 0.5) / (frequencies.get(word) + 0.5));
-      return sum + idf * tf * (config.k1 + 1) / (tf + config.k1 * (1 - config.b + config.b * doc.length / avg));
-    }, 0);
-    return { id: doc.id, passage: doc.passage, score };
-  }).filter((hit) => hit.score > 0).sort((a, b) => b.score - a.score).slice(0, limit);
+  const passageById = new Map(passages.map((passage) => [passageVectorId(passage), passage]));
+  const docs = passages.map((passage) => makeDoc(passageVectorId(passage), passage.text));
+  return bm25Rank(query, docs, { topK: limit, config }).map((item) => ({ id: item.doc_id, passage: passageById.get(item.doc_id), score: item.score }));
 }
-function similarity(a, b) {
-  if (!a.length || a.length !== b.length) return 0;
-  let ab = 0, aa = 0, bb = 0;
-  for (let i = 0; i < a.length; i++) { ab += a[i] * b[i]; aa += a[i] ** 2; bb += b[i] ** 2; }
-  return aa && bb ? ab / Math.sqrt(aa * bb) : 0;
-}
+function passageVectorId(passage) { return crypto.createHash('sha256').update(JSON.stringify([passage.doc_path, passage.title, passage.heading, passage.text])).digest('hex'); }
+function similarity(a, b) { return cosineSimilarity(a, b); }
 function fusion(rankings, limit) {
-  const scores = new Map(), docs = new Map();
-  for (const ranking of rankings) ranking.forEach((item, index) => { scores.set(item.id, (scores.get(item.id) || 0) + 1 / (60 + index + 1)); docs.set(item.id, item.passage); });
-  return [...scores].map(([id, score]) => ({ id, score, passage: docs.get(id) })).sort((a, b) => b.score - a.score).slice(0, limit);
+  const passageById = new Map(rankings.flatMap((ranking) => ranking.map((item) => [item.id, item.passage])));
+  const fused = reciprocalRankFusion(rankings.map((ranking) => ranking.map((item) => ({ doc_id: item.id, score: item.score }))), { topK: limit });
+  return fused.map((item) => ({ id: item.doc_id, score: item.score, passage: passageById.get(item.doc_id) }));
 }
 function makeEmbeddings(config, options = {}) {
   const cache = new Map();
@@ -88,6 +72,15 @@ function makeEmbeddings(config, options = {}) {
   };
 }
 function createChatEngine(options) {
+  let vectorQueue = Promise.resolve();
+  function withVectorStore(operation) {
+    const current = vectorQueue.then(async () => {
+      const store = await VectorStore.open(options.vectorStoreFile);
+      try { return await operation(store); } finally { store.close(); }
+    });
+    vectorQueue = current.catch(() => undefined);
+    return current;
+  }
   async function corpus(source, scope) {
     const passages = [];
     if (source === 'wiki') {
@@ -120,8 +113,23 @@ function createChatEngine(options) {
       const embedding = options.embeddingConfig();
       if (embedding.apiKey) try {
         const embed = makeEmbeddings(embedding, { cacheFile: settings.use_vector_store ? options.embeddingCacheFile : undefined });
-        const vectors = await embed([query, ...passages.map((p) => p.text)]), q = vectors[0];
-        const semantic = passages.map((passage, id) => ({ id, passage, score: similarity(q, vectors[id + 1]) })).sort((a, b) => b.score - a.score).slice(0, shortlist);
+        let semantic;
+        if (settings.use_vector_store && options.vectorStoreFile) {
+          semantic = await withVectorStore(async (store) => {
+            const docs = passages.map((passage) => ({ id: passageVectorId(passage), passage })), liveIds = new Set(docs.map((doc) => doc.id));
+            const missing = docs.filter((doc) => store.get(doc.id) === null);
+            if (missing.length) {
+              const vectors = await embed(missing.map((doc) => doc.passage.text));
+              store.upsertMany(missing.map((doc, index) => ({ id: doc.id, text: doc.passage.text, embedding: vectors[index] })));
+            }
+            const queryVector = (await embed([query]))[0];
+            return store.search(queryVector, { topK: store.count() }).filter(([id]) => liveIds.has(id)).slice(0, shortlist)
+              .map(([id, score]) => ({ id, passage: docs.find((doc) => doc.id === id).passage, score }));
+          });
+        } else {
+          const vectors = await embed([query, ...passages.map((p) => p.text)]), q = vectors[0];
+          semantic = passages.map((passage, index) => ({ id: passageVectorId(passage), passage, score: similarity(q, vectors[index + 1]) })).sort((a, b) => b.score - a.score).slice(0, shortlist);
+        }
         ranked = fusion([ranked, semantic], shortlist);
       } catch { /* BM25 remains available if embeddings fail. */ }
     }
@@ -130,7 +138,24 @@ function createChatEngine(options) {
     const seen = new Set(), sources = [];
     for (const item of ranked) if (!seen.has(item.passage.doc_path)) { seen.add(item.passage.doc_path); sources.push({ doc_path: item.passage.doc_path, title: item.passage.title, heading: item.passage.heading, score: Number(item.score.toFixed(4)) }); }
     const excerpts = ranked.slice(0, 3).map(({ passage }) => `\n**${passage.title} — ${passage.heading}**\n${passage.text.length > 400 ? `${passage.text.slice(0, 400)}…` : passage.text}`);
-    return { answer: [`Here are the closest source excerpts from the ${label}:`, ...excerpts].join('\n'), sources, mode: 'extractive', faithfulness: { basis: /** @type {'extractive'} */ ('extractive'), unsupported_rate: 0, checkable_count: 0 } };
+    const extractiveAnswer = [`Here are the closest source excerpts from the ${label}:`, ...excerpts].join('\n');
+    if (settings.answer_mode === 'generated' && options.generateAnswer) {
+      const context = ranked.slice(0, 5).map(({ passage }, index) => `[${index + 1}] ${passage.title} — ${passage.heading}\n${passage.text}`).join('\n\n');
+      try {
+        const generated = await options.generateAnswer({
+          message: query,
+          context,
+          sourceLabel: label,
+        });
+        if (typeof generated === 'string' && generated.trim()) {
+          const faithfulness = options.scoreAnswer
+            ? options.scoreAnswer(generated.trim(), ranked.slice(0, 5).map(({ passage }) => passage.text).join('\n\n'))
+            : { basis: 'extractive', unsupported_rate: 0, checkable_count: 0 };
+          return { answer: generated.trim(), sources, mode: 'generated', faithfulness };
+        }
+      } catch { /* keep the source-grounded extractive response available */ }
+    }
+    return { answer: extractiveAnswer, sources, mode: 'extractive', faithfulness: { basis: /** @type {'extractive'} */ ('extractive'), unsupported_rate: 0, checkable_count: 0 } };
   }
   function status() {
     const files = markdownFiles(options.docsDir), rawFiles = options.discoverRawSourceFiles(options.rawDir).length;
@@ -139,4 +164,4 @@ function createChatEngine(options) {
   }
   return { answer, status, corpus };
 }
-module.exports = { createChatEngine, bm25, fusion, makeEmbeddings, similarity };
+module.exports = { createChatEngine, bm25, fusion, makeEmbeddings, similarity, passageVectorId };

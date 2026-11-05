@@ -2,23 +2,27 @@
 
 > Current behavior: Current automatic identity matching only merges normalized exact names. First-name/full-name and email/name inference is no longer automatic. This reduces merge coverage; the earlier pilot scores below do not describe the current default. See [42 — Minimal AI](./42-minimal-ai.md).
 
-`synthesizer.py`'s per-chunk entity extraction returns a name *string* per
-mention with no notion that `"Mira Chen"`, `"Mira"`, and
-`"mira.chen@auroralabs.example"` are the same person — so what `linker.py`
-builds today is a mention graph, not an entity graph. This module resolves
+The JavaScript compiler's per-chunk extraction returns entity names without
+automatically merging first names, full names, or email addresses. The graph
+view therefore reports explicit names rather than inferring identity. The
+research prototype below explores how those mentions could be resolved. It resolves
 mentions into clusters, turning that into something closer to a real
 knowledge graph.
 
 | | |
 |---|---|
-| Module | `compiler/entity_resolution.py` |
-| Eval dataset (real corpus mentions) | `compiler/entity_resolution_eval_dataset.py` |
-| Eval script (pairwise precision/recall/F1) | `compiler/entity_resolution_eval.py` |
-| Real-corpus wiring | `compiler/entity_graph.py` — see "Wired up: a real entity graph" below |
-| Dashboard | `/entities` — `frontend/src/views/entities.ejs` + `client/entities.ts`, bridged via `cli.py`'s `entity-graph` command and `GET /api/entity-graph` |
-| Tests | `test_entity_resolution.py`, `test_entity_resolution_eval_dataset.py`, `test_entity_resolution_eval.py`, `test_entity_graph.py` |
+| Runtime graph module | `backend/src/lib/entityGraph.js` |
+| Resolver | `compiler/entityResolution.js` |
+| Eval dataset (real corpus mentions) | `compiler/entityResolutionEvalDataset.js` |
+| Eval script (pairwise precision/recall/F1) | `compiler/entityResolutionEval.js` |
+| API | `GET /api/entity-graph` |
+| Runtime tests | `backend/src/lib/entityGraph.test.ts` |
 
-## Design: same tiered-degradation shape as hybrid_retrieval.py
+The tiered JavaScript resolver described below is a research prototype, not part
+of the current application path. The runtime graph groups case-insensitive
+exact names and does not call an embeddings or language-model API.
+
+## Design: same tiered-degradation shape as the former hybrid retrieval module
 
 Three tiers, each optional, each only running on what the tier before it
 left ambiguous — not a fresh pass over everything:
@@ -31,7 +35,7 @@ left ambiguous — not a fresh pass over everything:
    Only the strong-evidence cases reach the auto-merge threshold (`0.85`);
    anything in the `[0.55, 0.85)` band is *escalated*, not merged.
 2. **Embeddings** (only if `embed_fn` is given) — cosine similarity
-   (reusing `hybrid_retrieval.cosine_similarity` from task #5) on whatever
+   (using a cosine-similarity helper) on whatever
    the heuristic tier escalated.
 3. **LLM adjudication** (only if an available `llm` is given) — a direct
    yes/no prompt (`ENTITY_ADJUDICATION_SYSTEM_PROMPT`) on whatever's still
@@ -60,7 +64,7 @@ token out of two on each side, so it doesn't, and falls through to the weak
 
 ## Evaluation
 
-`entity_resolution_eval_dataset.py` holds 16 real mentions across 7 gold
+`entityResolutionEvalDataset.js` holds 16 real mentions across 7 gold
 entities (`Mira Chen`, `Jonah Park`, `Alex Kim`, `Alex Rivera`, `Sam
 Rivera`, `Nova Widget`, `SenseNode SN-400`), every one grounded — `test_entity_resolution_eval_dataset.py`
 verifies each `(mention, source_path)` pair actually appears in its cited
@@ -79,11 +83,15 @@ about "SenseNode SN-400" and "Nova Widget" shares a token, but a resolver
 using document-level context carelessly (rather than name evidence) could
 still be tempted to associate them since they're always mentioned together.
 
-`entity_resolution_eval.py` computes pairwise precision/recall/F1 (for
+`entityResolutionEval.js` computes pairwise precision/recall/F1 (for
 every pair of mentions: does "predicted same cluster" agree with "gold
 same cluster") — a standard clustering-evaluation metric.
 
 **Result, heuristic tier alone, no API key needed:**
+
+The value below is the legacy Python evaluation result. Run
+`node compiler/entityResolutionEval.js` to reproduce it against the JavaScript
+port; it has not been rerun here.
 
 ```
 precision=1.00 recall=1.00 f1=1.00  (11/11 predicted pairs correct, 11 gold pairs)
@@ -102,46 +110,16 @@ like "Bob" for "Robert") would be needed to actually exercise and evaluate
 the embedding and LLM tiers — a direct, named follow-up rather than
 something this pilot's perfect score should be read as covering.
 
-## Wired up: a real entity graph
+## Runtime entity graph
 
-`compiler/entity_graph.py` closes the gap this doc originally left open —
-`linker.py`'s mention graph feeding into something clustered. It doesn't
-touch `linker.py` or `main.js`'s pipeline itself; instead it's a read-side
-adapter, computed on demand, the same posture `/api/knowledge-graph` and
-`/api/attention` already use for `state.json`/`index.json`-derived data
-rather than adding another persisted output file the pipeline has to know
-how to regenerate:
-
-- `mentions_from_state(state)` walks `data/state.json`'s `files[*].chunks[*].entities`
-  — exactly the same per-chunk entity mentions `synthesizer.py`'s
-  `CHUNK_EXTRACTION_SYSTEM_PROMPT` already extracts and `linker.py`'s
-  mention graph is built from — and turns each into a `Mention(name, source, description)`.
-- `build_entity_graph(state)` feeds those through `resolve_entities()`
-  from this module, heuristic tier only (no `embed_fn`/`llm` passed) — the
-  same tier this doc's own eval showed reaches perfect precision/recall on
-  this project's real corpus, so the on-demand HTTP endpoint stays free
-  and instant, no API key required.
-- `entity_graph_payload(state)` sorts clusters by source count (entities
-  cited across more sources surface first) and adds summary counts
-  (`total_entities`, `total_mentions`, `multi_source_entities`,
-  `multi_alias_entities` — the last one is direct evidence of the
-  heuristic tier actually merging name/email variants, not just passing
-  every mention through as a singleton).
-
-Bridged through the same JSON-in/JSON-out `cli.py` pattern as chat/email/
-review (`entity-graph` command, no input needed) and a `GET /api/entity-graph`
-route; `/entities` renders it as filterable cards (canonical name, other
-aliases, source count, mention count). `test_entity_graph.py` covers
-`mentions_from_state()`'s parsing (including malformed/missing chunk data),
-the Mira Chen/email/first-name merge case across three distinct sources,
-and — again — that the Alex Kim/Alex Rivera/Sam Rivera hard negative stays
-apart on synthetic state data shaped like a real compile's output, without
-needing an actual `data/state.json` (which requires an LLM run to
-produce) checked into the test fixtures.
+`backend/src/lib/entityGraph.js` reads extracted entity names from the compiler
+state and groups case-insensitive exact matches. `GET /api/entity-graph` serves
+the result to `/entities`; it does not call embeddings or a language model.
+The experimental JavaScript resolver and its pilot evaluation remain separate
+research artifacts and do not describe runtime behavior.
 
 ## Next
 
-- [25-hybrid-retrieval.md](./25-hybrid-retrieval.md) — the tiered-degradation pattern this module reuses, and `cosine_similarity`
-- `compiler/synthesizer.py` — `CHUNK_EXTRACTION_SYSTEM_PROMPT`, the source of the raw entity mentions this module resolves
-- `compiler/entity_graph.py` — the real-corpus wiring described above
-- `compiler/linker.py` — the topic/mention graph this module resolves entities from (unchanged by the wiring — `entity_graph.py` reads the same `state.json` linker.py's own mention graph is built from, independently)
+- [25-hybrid-retrieval.md](./25-hybrid-retrieval.md) — the tiered-degradation pattern this module reuses
+- `backend/src/lib/wikiCore.js` — compiler extraction of raw entity mentions
+- `backend/src/lib/entityGraph.js` — current exact-name graph implementation

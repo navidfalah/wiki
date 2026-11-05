@@ -1,6 +1,6 @@
 export const entities = {
   'entities.title': 'Entities',
-  'entities.introHtml': 'Per-chunk extraction returns a name <em>string</em> per mention -- "Mira Chen", "Mira", and "mira.chen@auroralabs.example" don\'t know they\'re the same person. This resolves mentions from every processed source into clusters (heuristic tier, deterministic, no LLM call) -- the real entity graph behind the topic/mention graph <code class="rounded bg-gray-100 px-1 py-0.5">linker.py</code> builds. Entities cited across more sources are listed first.',
+  'entities.introHtml': 'Per-chunk extraction returns a name <em>string</em> per mention -- "Mira Chen", "Mira", and "mira.chen@auroralabs.example" don\'t know they\'re the same person. This resolves mentions from every processed source into clusters (heuristic tier, deterministic, no LLM call) -- the entity graph behind the topic and mention graph, built by the JavaScript compiler. Entities cited across more sources are listed first.',
   'entities.filterPlaceholder': 'Filter by name…',
   'entities.refresh': '↻ Refresh',
   'entities.card.entities': 'Resolved entities',

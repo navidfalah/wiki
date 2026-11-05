@@ -3,7 +3,7 @@
 > Current behavior: Current linking is deterministic: exact topic titles plus manual connection overrides, with no LLM calls or inferred entity aliases. Historical descriptions of the LLM linking pass below are superseded. See [42 — Minimal AI](./42-minimal-ai.md).
 
 How drafts become linked wiki pages and how the table of contents is built.  
-**Modules:** `linker.py`, `moc_generator.py`, `link_overrides.py`
+**Modules:** `backend/src/lib/compilerEngine.js`, `compiler/moc_generator.js`, `backend/src/lib/linkOverrides.ts`
 
 ## Topic index (`index.json`)
 
@@ -78,7 +78,7 @@ matching alone is a floor, not the ceiling this pass could be.
 
 `build_alias_topic_index(topic_index, mentions)` closes that gap using
 infrastructure that already existed but wasn't wired into linking:
-`entity_resolution.py`'s heuristic tier (task #6) clusters mention strings
+`backend/src/lib/entityResolution.js`'s heuristic tier (task #6) clusters mention strings
 into the same entity — "Mira" and "Mira Chen" merge via its subset-of-
 tokens rule — and every alias in a cluster that touches a real topic title
 gets added to the index the mechanical pass uses, pointing at that title's
@@ -86,7 +86,7 @@ file. Heuristic tier only (no `embed_fn`/`llm` passed to
 `resolve_entities()`) — fully offline and deterministic, same property as
 the rest of this module; a mention needing the embedding or LLM tier to
 resolve is left alone rather than guessed at, and
-`entity_resolution.py`'s own hard-negative design (Alex Kim vs. Alex
+`entityResolution.js`'s own hard-negative design (Alex Kim vs. Alex
 Rivera share a token but are different people) keeps this conservative by
 construction. An alias never overrides a real topic_index entry for the
 same string — exact titles always win.
@@ -183,7 +183,7 @@ Applied during `link_and_export_pages()` via `apply_connection_overrides()`.
 
 ## Map of Content (MOC)
 
-**Module:** `moc_generator.py`  
+**Module:** `compiler/moc_generator.js`
 **Output:** `wiki-app/docs/index.md`
 
 ### Categorization

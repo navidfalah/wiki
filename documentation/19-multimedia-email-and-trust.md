@@ -4,9 +4,9 @@ Three additions on top of the core 5-step pipeline, each its own module:
 
 | Concern | Module | Source types it adds |
 |---------|--------|----------------------|
-| Images, audio & file attachments | `media_ingest.py` | `image`, `audio`, `file` |
-| Email | `email_ingest.py` | `email` |
-| Source trust + citations | `trust.py` | (applies to every source type) |
+| Images, audio & file attachments | `backend/src/lib/compilerEngine.js` + `sourceReader.js` | `image`, `audio`, `file` |
+| Email | `backend/src/lib/emailIngest.js` + `compilerEngine.js` | `email` |
+| Source trust + citations | `backend/src/lib/trust.js` | (applies to every source type) |
 
 All three plug into the **existing** extraction/synthesis/linking pipeline —
 there's no separate pipeline for non-text sources. See
@@ -50,7 +50,12 @@ incremental compile as plain text files — a new image only gets captioned
 Same for audio: a given file is only transcribed once, then served from the
 SQLite LLM cache on every later compile.
 
-## Images, audio, and files (`media_ingest.py`)
+## Images, audio, and files (current JavaScript implementation)
+
+The active implementation is in `backend/src/lib/compilerEngine.js` and
+`backend/src/lib/sourceReader.js`. The Python module names below describe the
+former compiler implementation and are retained here only as historical
+behavior notes.
 
 - **Images** get captioned via `LLMClient.describe_image()` (see below) —
   the caption becomes the chunk's text, with the image itself embedded as
@@ -118,7 +123,7 @@ is configured — a leading `/static/...` absolute path would NOT get the
 `baseUrl` prefix and would silently break between local dev (`baseUrl: /`)
 and the GitHub Pages build (`baseUrl: /<repo>/`).
 
-## Email (`email_ingest.py`)
+## Email (current JavaScript implementation: `backend/src/lib/emailIngest.js`)
 
 A dedicated module rather than folding emails into the generic text path,
 because an email has real structure worth preserving — From/To/Cc/Date/
@@ -137,7 +142,7 @@ email thread is a different *kind* of evidence than a scraped forum post).
 - mbox archives (many messages in one file) are **out of scope** — split one
   into individual `.eml` files first if that's what you have.
 
-## Trust and references (`trust.py`)
+## Trust and references (`backend/src/lib/trust.js`)
 
 Two things, both deliberately deterministic (not left up to the LLM):
 
@@ -217,14 +222,12 @@ it's shared across both calls in the same run), not a second real API call.
 
 Everything except the LLM calls themselves (topic extraction, image
 captioning, audio transcription) is pure logic and unit-tested without any
-API key: `tests/test_media_ingest.py`, `tests/test_email_ingest.py`,
-`tests/test_trust.py`, `tests/test_llm_client_audio.py` (fakes the OpenAI
+API key: `backend/src/lib/sourceReader.test.ts`, `backend/src/lib/emailIngest.test.ts`,
+`backend/src/lib/trust.test.js`, `tests/test_llm_client_audio.py` (fakes the OpenAI
 `audio.transcriptions` client to test caching/retries without a real key).
-`tests/test_media_ingest.py` builds real minimal DOCX/XLSX/PPTX/ZIP files
-in-memory with the extraction libraries themselves (`python-docx`/
-`openpyxl`/`python-pptx`/stdlib `zipfile`) and asserts on the extracted
-text, plus covers every graceful-degradation path (invalid file bytes for
-each format, a corrupt ZIP) falling back to the opaque attachment.
+`sourceReader.test.ts` checks Office extraction, text formats, safe HTML,
+ZIP manifests, and opaque-attachment fallbacks. `emailIngest.test.ts` checks
+email headers, body text, and decoded attachment content.
 `tests/test_multimedia_pipeline.py` exercises the full chunk → extract →
 group → synthesize flow with a fake LLM, asserting that mixed source types
 (text + image + audio + email + file in one topic) all appear correctly in

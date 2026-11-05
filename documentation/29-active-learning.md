@@ -1,22 +1,22 @@
 # 29 — Active-Learning Human Review/Correction Loop
 
-> Current behavior: The app review page now displays wiki-health issues only. Pilot claim scoring/corrections and temporal facts are no longer exposed as app endpoints. Research utilities remain available offline. See [42 — Minimal AI](./42-minimal-ai.md).
+> Current behavior: The app review page displays wiki-health issues only. Pilot claim scoring and correction submission remain offline research utilities. Temporal facts are available through the read-only `GET /api/temporal-facts` route, backed by the JavaScript temporal model. See [42 — Minimal AI](./42-minimal-ai.md).
 
 Every prior task in this series (trust propagation, temporal modeling,
 entity resolution) produces a *judgment* — a score, a cluster, a current/
 superseded call. This task closes the loop on that: it turns
-`trust_propagation.py`'s continuous scores into a triage queue of claims
+`trustPropagation.js`'s continuous scores into a triage queue of claims
 worth a human's five seconds, stores what a human decides durably, and
 feeds it back into future extraction — so `References & Trust` stops being
 a one-way, read-only report and becomes a feedback signal.
 
 | | |
 |---|---|
-| Module | `compiler/active_learning.py` |
+| Module | `backend/src/lib/activeLearning.js` |
 | Correction store | `data/review_corrections.json` (created on first use; same human-editable-JSON pattern as `data/link_overrides.json` / `data/source_trust.json`) |
 | Pipeline integration | `main.js --use-corrections` / `WIKI_USE_CORRECTIONS=true` |
 | Dashboard | Two independent UIs on the same module: `/review` — `frontend/src/views/review.ejs` + `frontend/src/client/review.ts`, bridged via `compiler/cli.py`'s `review-candidates`/`review-corrections-list`/`review-correction-save` commands and `backend/src/routes/index.ts`'s `/api/review/*` routes; and `/review-queue` — `frontend/src/views/review-queue.ejs` + `frontend/src/client/review-queue.ts`, bridged via `review-queue`/`review-correct` and `/api/review-queue/*` |
-| Tests | `compiler/tests/test_active_learning.py`, `compiler/tests/test_cli.py` |
+| Tests | `backend/src/lib/activeLearning.test.js` |
 
 ## Selection: what's worth reviewing
 
@@ -132,7 +132,7 @@ through HTTP.
 **Still a gap:** both dashboards wire the *review queue UI* against
 `select_review_candidates_for_dataset()`, which itself still only runs on
 `trust_eval_dataset.json`'s pilot structure — wiring `select_review_candidates()`
-against a *live compiled corpus* (via `resources_engine.py`'s deduped source
+against a *live compiled corpus* (via `backend/src/lib/resourcesEngine.ts`'s deduped source
 list, or a new adapter that builds a claim-group-shaped graph from real
 `state.json` chunk extractions) instead is not part of either task and
 remains open. See [36-feature-roadmap.md](./36-feature-roadmap.md) for where

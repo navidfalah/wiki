@@ -11,7 +11,7 @@ unless someone explicitly turns it on for that run.
 | Module | `compiler/web_search.py` |
 | Pipeline integration | `main.js --web-search` / `WIKI_WEB_SEARCH_ENABLED=true`, wired into step 3 (Synthesis) |
 | Tests | `tests/test_web_search.py` |
-| Trust default | `source_type="web"` → `"low"` (`trust.py`) |
+| Trust default | `source_type="web"` → `"low"` (`backend/src/lib/trust.js`) |
 | Dashboard toggle | Dashboard → Run options → "Web search enrichment" (per run); Pipeline Architecture → "Web search enrichment" (persisted default) |
 
 ## Why it's off by default, and why per-run rather than per-topic
@@ -58,7 +58,7 @@ like a local one —
 — appended onto `grouped[topic]`, so it's synthesized into the page
 alongside local chunks by the same LLM call, cross-linked by the same
 linker, and cited in the same "References & Trust" table
-([trust.py](../compiler/trust.py),
+([trust.js](../backend/src/lib/trust.js),
 [19-multimedia-email-and-trust.md](./19-multimedia-email-and-trust.md)) —
 `source_type="web"` defaults to `"low"` trust, the same tier as an
 AI-guessed image caption, since it's unvetted third-party content pulled in

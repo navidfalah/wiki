@@ -1,6 +1,6 @@
 /**
  * Boots the real Express app (createApp) against a throwaway data root and
- * a fake Python bridge, on a random port. Import it before anything that
+ * the JavaScript services, on a random port. Import it before anything that
  * reads ../paths -- the env it sets decides where the app reads and writes.
  */
 import fs from 'node:fs';
@@ -14,11 +14,9 @@ export const ADMIN = { username: 'admin', password: 'harness-admin-pw' };
 export interface Harness {
   root: string;
   baseUrl: string;
-  pythonLog: string;
   request(method: string, url: string, opts?: { token?: string; body?: unknown; headers?: Record<string, string>; form?: FormData }): Promise<Response>;
   json<T = any>(method: string, url: string, opts?: { token?: string; body?: unknown; headers?: Record<string, string> }): Promise<{ status: number; body: T }>;
   login(username?: string, password?: string): Promise<string>;
-  pythonCalls(): { command: string; input: any }[];
   close(): Promise<void>;
 }
 
@@ -80,16 +78,8 @@ export function seed(root: string) {
 export async function startHarness(): Promise<Harness> {
   const root = fs.mkdtempSync(path.join(os.tmpdir(), 'routes-'));
   seed(root);
-  const fakePython = path.join(root, 'fake-python');
-  fs.copyFileSync(path.join(__dirname, 'fakePython.cjs'), fakePython);
-  fs.chmodSync(fakePython, 0o755);
-  const pythonLog = path.join(root, 'fake-python-calls.jsonl');
-
   Object.assign(process.env, {
     WIKI_DATA_ROOT: root,
-    PYTHON_BIN: fakePython,
-    FAKE_PYTHON_LOG: pythonLog,
-    PY_WORKER: '0',
     ADMIN_USERNAME: ADMIN.username,
     ADMIN_PASSWORD: ADMIN.password,
     BACKUP_INTERVAL_HOURS: '0',
@@ -128,17 +118,12 @@ export async function startHarness(): Promise<Harness> {
   return {
     root,
     baseUrl,
-    pythonLog,
     request,
     json,
     async login(username = ADMIN.username, password = ADMIN.password) {
       const res = await json('POST', '/api/auth/login', { body: { username, password } });
       if (res.status !== 200) throw new Error(`login failed: ${res.status} ${JSON.stringify(res.body)}`);
       return res.body.token as string;
-    },
-    pythonCalls() {
-      if (!fs.existsSync(pythonLog)) return [];
-      return fs.readFileSync(pythonLog, 'utf-8').trim().split('\n').filter(Boolean).map((l) => JSON.parse(l));
     },
     async close() {
       await new Promise<void>((resolve) => server.close(() => resolve()));

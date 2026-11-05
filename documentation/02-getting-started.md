@@ -53,12 +53,9 @@ node compiler/main.js --force
 Expected output: progress for the compile stages and Map of Content generation. Final pages land in `wiki-app/docs/` (still the compiler's output directory — see the note in
 [11-wiki-app-and-dashboards.md](./11-wiki-app-and-dashboards.md) on why that path didn't change even though Docusaurus is gone).
 
-If you see `No raw files found under data/raw/`:
-
-```bash
-python scripts/dev/generate_junk_data.py    # from compiler/ — creates 10 seed files
-node compiler/main.js --force
-```
+If you see `No raw files found under data/raw/`, add source files to that
+human-managed folder before compiling. The removed Python sample generators
+are not part of the JavaScript application.
 
 ## Node setup (backend + frontend)
 
@@ -141,12 +138,6 @@ docker compose up --build
 npm run build --prefix backend
 node compiler/main.js            # incremental
 node compiler/main.js --force    # reprocess all raw files
-
-# Test data generators (from compiler/)
-python scripts/dev/generate_junk_data.py [--overwrite]
-python scripts/dev/generate_bulk_dummy_data.py [--overwrite] [--samples-only | --dummy-only | --varied-only]
-python scripts/dev/generate_varied_dummy_data.py [--overwrite] [--count N]
-python scripts/dev/generate_extended_dummy_data.py [--overwrite]
 
 # Maintenance (JavaScript)
 node compiler/fix_frontmatter.js [--dry-run] [--docs-dir PATH]

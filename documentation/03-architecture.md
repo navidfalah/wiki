@@ -1,6 +1,6 @@
 # 03 — Architecture
 
-> Current behavior: linking uses Python only. Chat defaults to local keyword search and source excerpts. See [42 — Minimal AI](./42-minimal-ai.md) for the simplified workflow and migration of older settings.
+> Current application runtime: JavaScript/TypeScript. Linking is deterministic; chat defaults to local keyword search and source excerpts. The repository no longer contains Python source code. See [42 — Minimal AI](./42-minimal-ai.md) for the current AI settings.
 
 ## System diagram
 
@@ -11,8 +11,8 @@ flowchart TB
     end
 
     subgraph ingest [Non-text ingestors]
-        EMAIL["email_ingest.py<br/>.eml → chunk"]
-        MEDIA["media_ingest.py<br/>image/file → chunk"]
+        EMAIL["email reader<br/>.eml → text"]
+        MEDIA["source reader<br/>office/PDF/image/audio → text"]
         VISION["LLMClient.describe_image()"]
         STATIC["wiki-app/static/media/"]
         MEDIA --> VISION
@@ -20,13 +20,13 @@ flowchart TB
         EMAIL --> STATIC
     end
 
-    subgraph compiler [Python compiler — compiler/]
+    subgraph compiler [JavaScript compiler — backend/src/lib/compilerEngine.js]
         S1["1. Data reading<br/>chunk raw files"]
         S2["2. Extraction<br/>topics, entities, concepts"]
         S3["3. Synthesis<br/>draft pages + References & Trust"]
         S4["4. Indexing<br/>index.json"]
         S5["5. Cross-linking<br/>inject links"]
-        TRUST["trust.py<br/>resolve_trust / build_references"]
+        TRUST["source trust metadata"]
         TEMP["compiler/temp_output/"]
         STATE["data/state.json"]
         S1 --> S2 --> S3 --> S4 --> S5
@@ -67,8 +67,7 @@ flowchart TB
 ```
 
 Non-text sources (`.eml`, images, PDF/CSV/JSON/DOCX/XLSX/PPTX/ZIP) are turned
-into ordinary text chunks by `email_ingest.py` / `media_ingest.py` *before*
-Step 1 ever sees them, so everything from Step 1 onward is unchanged — see
+into text by the JavaScript source reader before extraction. See
 [19-multimedia-email-and-trust.md](./19-multimedia-email-and-trust.md).
 
 ## Layer table
@@ -112,11 +111,7 @@ Understanding the split between `temp_output/` and `wiki-app/docs/` is essential
 The linker reads drafts from `temp_output/`, injects links, wraps/sanitizes for MDX, and writes to `wiki-app/docs/`.
 
 Every generated file carries an `<!-- AUTO-GENERATED ... -->` HTML comment right after
-its frontmatter — a draft-specific note in `temp_output/`, a different final note in
-`wiki-app/docs/` — so an editor opening either file sees immediately that it's
-compiler output and where edits actually belong. The linker strips the draft's note
-before linking and writes its own; see `insert_generated_banner()` /
-`strip_generated_banner()` in `yaml_frontmatter.py`.
+its frontmatter so an editor opening the file sees that it is compiler output.
 
 ## Incremental vs full rebuild
 
@@ -129,13 +124,12 @@ Incremental behavior is critical when `data/raw/` has 1000+ test files.
 
 ## LLM-only pipeline
 
-The compiler is **LLM-only** — extraction, synthesis, and linking all call `LLMClient`
-directly and raise via `require_llm()` if `OPENAI_API_KEY` is unset. There is no
-heuristic/offline code path:
+The compiler uses the configured model for extraction and synthesis. Linking and
+index generation are deterministic JavaScript operations:
 
 ```
                     ┌─────────────────┐
-                    │   main.py       │
+                    │   main.js       │
                     └────────┬────────┘
                              │
                       require_llm()
@@ -165,8 +159,8 @@ interactivity — no React, no client framework. See
 
 | Component | Technology |
 |-----------|------------|
-| Compiler orchestration | Python 3.12+, `rich` |
-| LLM | OpenAI SDK, SQLite cache |
+| Compiler orchestration | Node.js 22, JavaScript/TypeScript |
+| Model APIs | OpenAI-compatible HTTP API, local response cache |
 | Backend API | Express + TypeScript (`backend/`) |
 | Frontend | Express + TypeScript + EJS (`frontend/`), no client framework |
 | Styling | Tailwind CSS 3 + `@tailwindcss/typography` |

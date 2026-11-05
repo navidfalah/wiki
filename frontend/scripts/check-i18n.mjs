@@ -7,15 +7,45 @@
  */
 import fs from 'node:fs';
 import path from 'node:path';
-import { fileURLToPath, pathToFileURL } from 'node:url';
-import { execSync } from 'node:child_process';
+import { fileURLToPath } from 'node:url';
+import ts from 'typescript';
 
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
 
-// Load the compiled-on-the-fly dictionaries through tsx (already a devDependency).
-const loader = `import { dictionaries } from ${JSON.stringify(pathToFileURL(path.join(root, 'src/i18n/index.ts')).href)}; console.log(JSON.stringify(dictionaries));`;
-const dicts = JSON.parse(execSync(`npx tsx -e '${loader.replace(/'/g, "'\\''")}'`, { cwd: root, encoding: 'utf8' }));
-
+// Read the static TypeScript dictionaries from their AST. This avoids a tsx
+// subprocess/IPC server and still compares the actual exported keys and text.
+function readDictionary(directory) {
+  const result = {};
+  for (const name of fs.readdirSync(directory).filter((file) => file.endsWith('.ts')).sort()) {
+    const file = path.join(directory, name);
+    const source = ts.createSourceFile(file, fs.readFileSync(file, 'utf8'), ts.ScriptTarget.Latest, true, ts.ScriptKind.TS);
+    let object;
+    for (const statement of source.statements) {
+      if (!ts.isVariableStatement(statement)) continue;
+      for (const declaration of statement.declarationList.declarations) {
+        let initializer = declaration.initializer;
+        while (initializer && (ts.isAsExpression(initializer) || ts.isSatisfiesExpression(initializer) || ts.isTypeAssertionExpression(initializer))) initializer = initializer.expression;
+        if (ts.isIdentifier(declaration.name) && declaration.name.text !== 'en' && declaration.name.text !== 'de' && initializer && ts.isObjectLiteralExpression(initializer)) {
+          object = initializer;
+        }
+      }
+    }
+    if (!object) throw new Error(`No exported dictionary object found in ${file}`);
+    for (const property of object.properties) {
+      if (!ts.isPropertyAssignment(property)) continue;
+      const key = ts.isStringLiteral(property.name) || ts.isNoSubstitutionTemplateLiteral(property.name) ? property.name.text : null;
+      const value = ts.isStringLiteral(property.initializer) || ts.isNoSubstitutionTemplateLiteral(property.initializer) ? property.initializer.text : null;
+      if (key === null || value === null) throw new Error(`Expected static string key/value in ${file}`);
+      if (Object.hasOwn(result, key)) throw new Error(`Duplicate i18n key ${key} in ${directory}`);
+      result[key] = value;
+    }
+  }
+  return result;
+}
+const dicts = {
+  en: readDictionary(path.join(root, 'src/i18n/en')),
+  de: readDictionary(path.join(root, 'src/i18n/de')),
+};
 let failures = 0;
 const fail = (msg) => {
   failures++;

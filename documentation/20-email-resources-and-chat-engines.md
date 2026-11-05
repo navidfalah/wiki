@@ -1,29 +1,32 @@
 # 20 — Email, Resources, and Chat Engines
 
+> Historical implementation notes: the Python engines described below have
+> JavaScript runtime replacements in `backend/src/lib/` and the Express API.
+
 Three additional dashboard sections, each backed by its own small, pure
 Python module ("engine") under `compiler/`, following the same pattern as
-`analytics.py`, `trust.py`, and `link_overrides.py`: a module with no FastAPI
+`analytics.js`, `trust.js`, and `link_overrides.js`: a module with no FastAPI
 import that does the real work and is unit-testable on its own, wired into
 `server.py` as a thin set of routes.
 
 | Section | Route | Engine module | Frontend |
 |---|---|---|---|
-| Email knowledge engine | `/emails` | `compiler/email_engine.py` | `src/pages/emails.js` + `src/components/EmailEngine/` |
-| Resources | `/resources` | `compiler/resources_engine.py` | `src/pages/resources.js` + `src/components/ResourcesExplorer/` |
-| Chat (RAG) | `/chat` | `compiler/rag_engine.py` | `src/pages/chat.js` + `src/components/ChatEngine/` |
+| Email knowledge engine | `/emails` | `backend/src/lib/emailEngine.js` via `emailService.ts` | `src/pages/emails.js` + `src/components/EmailEngine/` |
+| Resources | `/resources` | `backend/src/lib/resourcesEngine.ts` | Express-rendered resources page |
+| Chat (RAG) | `/chat` | `backend/src/lib/chatEngine.js` | `src/pages/chat.js` + `src/components/ChatEngine/` |
 
-`compiler/doc_utils.py` holds the frontmatter/topic-lookup helpers shared by
+`compiler/doc_utils.js` holds the frontmatter/topic-lookup helpers shared by
 all of them (and by the pre-existing raw-file/doc endpoints in `server.py`),
 so no engine module imports `server.py` and none import each other.
 
-## Email knowledge engine (`email_engine.py`)
+## Email knowledge engine (`backend/src/lib/emailEngine.js`)
 
 Treats every ingested `.eml` source as a first-class, independently
 browsable knowledge item rather than just another raw file:
 
 - `list_emails(raw_dir=RAW_DIR)` — parses headers (via `email_ingest.parse_eml`,
   no LLM call) for every `.eml` under `data/raw/`, plus each message's
-  pipeline status (`Processed`/`Unprocessed`), trust level (`trust.py`), and
+  pipeline status (`Processed`/`Unprocessed`), trust level (`trust.js`), and
   how many topics it has contributed once compiled.
 - `get_email_detail(file_path, raw_dir=..., docs_dir=...)` — full body,
   attachments, and the wiki pages synthesized from this thread's topics
@@ -35,7 +38,7 @@ browsable knowledge item rather than just another raw file:
 requires a compile to have run — headers parse straight from the raw file —
 so a mailbox is browsable the moment `.eml` files land in `data/raw/`.
 
-## Resources (`resources_engine.py`)
+## Resources (`backend/src/lib/resourcesEngine.ts`)
 
 Every synthesized page already carries a deterministic `## References &
 Trust` table (see [19](./19-multimedia-email-and-trust.md)). This engine
@@ -54,7 +57,7 @@ inspectable independent of which page happened to reference it first.
 
 `GET /api/resources` and `GET /api/resources/{path}` expose these.
 
-## Chat / RAG engine (`rag_engine.py`)
+## Chat / RAG engine (`backend/src/lib/chatEngine.js`)
 
 Answers questions over the compiled wiki (`wiki-app/docs/`) — the
 cross-linked network `linker.py` already built — rather than over raw
@@ -87,10 +90,9 @@ these.
 
 ## Testing
 
-All three engines are unit-tested without an API key, same as the rest of
-the compiler: `tests/test_email_engine.py`, `tests/test_resources_engine.py`,
-`tests/test_rag_engine.py` (including a case that exercises the extractive
-fallback path with `LLMClient(api_key="")`).
+The current resources implementation is covered by
+`backend/src/lib/resourcesEngine.test.ts`. The old Python email/chat engine
+tests remain attached to the retired research runtime.
 
 ## Next
 

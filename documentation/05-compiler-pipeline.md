@@ -1,11 +1,11 @@
 # 05 — Compiler Pipeline
 
-> Current behavior: linking uses Python only. Chat defaults to local keyword search and source excerpts. See [42 — Minimal AI](./42-minimal-ai.md) for the simplified workflow and migration of older settings.
+> Current behavior: the compiler runs in JavaScript. Chat defaults to local keyword search and source excerpts. See [42 — Minimal AI](./42-minimal-ai.md) for the current AI settings.
 
-The legacy Python build lives in **`compiler/pipeline/`**, with one module per stage, a runner, reporting, and command-line parsing. See the [JavaScript runtime guide](44-javascript-runtime-migration.md) for the current application compiler.
+The active build implementation is `backend/src/lib/compilerEngine.js`. Python stage-by-stage notes later in this document describe the retired implementation and are retained as migration history.
 
 Entry point: `compiler/main.js`  
-Function: `run_pipeline(*, force=False)`
+Function: `compile(options)`
 
 ## Overview
 
@@ -20,7 +20,7 @@ Step 5  Cross-linking    → wiki-app/docs/*.md
 +       Map of Content   → wiki-app/docs/index.md
 ```
 
-Terminal output uses the `rich` library: step banners, progress bars, incremental status tables, final summary panel.
+The Node backend streams stage progress to the dashboard and command line.
 
 ## CLI
 
@@ -84,8 +84,7 @@ Output: draft markdown with YAML front matter (`id`, `title`, `tags`, `last_upda
 
 ## Step 4 — Indexing
 
-**Module:** `linker.py`  
-**Function:** `update_topic_index()` (incremental) or `build_topic_index()` (full)
+**Module:** `backend/src/lib/compilerEngine.js`
 
 Builds/updates `compiler/temp_output/index.json`:
 
@@ -100,19 +99,18 @@ Builds/updates `compiler/temp_output/index.json`:
 
 Maps **display title** → **filename** (not slug path). Used by linker for injection.
 
-`IndexDelta` tracks `added`, `updated`, `removed` entries for incremental re-linking.
+The compiler writes the current topic map as part of each build.
 
 ## Step 5 — Cross-linking
 
-**Module:** `linker.py`  
-**Function:** `link_and_export_pages()`
+**Module:** `backend/src/lib/compilerEngine.js`
 
 For each draft in `temp_output/` that needs re-linking:
 
 1. Read draft body (strip existing front matter for linking pass)
-2. Inject links via the LLM, matched against `index.json` titles
+2. Inject deterministic exact-title links from the topic index
 3. Apply `data/link_overrides.json` require/block rules
-4. Sanitize for MDX (`mdx_sanitize.py`)
+4. Sanitize generated Markdown (`backend/src/lib/mdxSanitize.js`)
 5. Wrap with Docusaurus front matter (`id`, `title`, `sidebar_label`, `slug`, `page_type`)
 6. Write to `wiki-app/docs/{filename}`
 
@@ -120,13 +118,13 @@ Incremental: only pages in `dirty_filenames` or affected by `index_delta` are re
 
 ## Map of Content (post-pipeline)
 
-**Module:** `moc_generator.py`  
+**Module:** `compiler/moc_generator.js`
 **Function:** `generate_moc(OUTPUT_DIR)`
 
 Reads all exported pages in `wiki-app/docs/`, categorizes by:
 
 - Folder (`entities/`, `concepts/`, `sources/`)
-- Tag rules (`TAG_CATEGORY_RULES` in `moc_generator.py`)
+- Categories are derived from corpus tags in `compiler/moc_generator.js`
 
 Writes `wiki-app/docs/index.md` with hierarchical bullet lists and one-line summaries.
 

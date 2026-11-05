@@ -1,5 +1,5 @@
 /**
- * Port of compiler/dead_link_checker.py -- find markdown links in compiled
+ * Find markdown links in compiled
  * docs whose target file doesn't exist. Includes the balanced-parens link
  * regex fix (see documentation/07-linking-moc-and-pages.md): a naive
  * "stop at the first )" regex truncates any URL containing its own

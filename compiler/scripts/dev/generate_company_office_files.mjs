@@ -2,7 +2,7 @@
 // node_modules. Arguments: pack directory, build directory, runtime root.
 import fs from 'node:fs/promises';
 import path from 'node:path';
-import { pathToFileURL } from 'node:url';
+import { createRequire } from 'node:module';
 import { Workbook, SpreadsheetFile, Presentation, PresentationFile } from '@oai/artifact-tool';
 
 const [packDir, buildDir, runtimeRoot, phase = 'all'] = process.argv.slice(2);
@@ -85,8 +85,8 @@ await workbookFile('support', 'GH 03 support register', 'support/[SAMPLE]-suppor
   data.support.slice(1).map(r => [...r.slice(0,5), new Date(r[5]+'T00:00:00Z'), true]));
 }
 
-const skillDir = path.join(runtimeRoot, 'plugins/openai-primary-runtime/plugins/presentations/skills/presentations');
-const { finalizePresentation } = await import(pathToFileURL(path.join(skillDir, 'container_tools/artifact_tool_utils.mjs')).href);
+const runtimeRequire = createRequire(path.join(process.env.RUNTIME_NODE_MODULES, '__runtime_resolver__.cjs'));
+const { unzipSync } = runtimeRequire('fflate');
 function textBox(slide, text, x, y, w, h, size, color = '#192c3d', bold = false) {
   const shape = slide.shapes.add({ geometry: 'textbox', position: { left:x, top:y, width:w, height:h }, fill:'none', line:{ fill:'none', width:0 } });
   shape.text = text;
@@ -123,16 +123,46 @@ for (const [slug, date, title, slides] of [
   const candidate = path.join(buildDir, `${slug}-candidate.pptx`);
   await (await PresentationFile.exportPptx(p)).save(candidate);
   const target = path.join(inputs, 'presentations', `[SAMPLE]-${slug}.pptx`);
+  try { await fs.access(target); throw new Error(`Refusing to replace ${target}`); }
+  catch (error) { if (error.code !== 'ENOENT') throw error; }
   await fs.mkdir(path.dirname(target), { recursive:true });
-  const result = await finalizePresentation({
-    workspaceDir:path.dirname(packDir), candidatePath:candidate, finalPath:target,
-    pythonExecutable:path.join(runtimeRoot, 'dependencies/python/bin/python3'),
-    integrityValidatorPath:path.join(skillDir, 'container_tools/inspect_presentation_package_integrity.py'),
-    layoutValidatorPath:path.join(skillDir, 'container_tools/inspect_presentation_layout_geometry.py'),
-    layoutArgs:['--expected-slide-size-emu', '12192000,6858000', '--validate-heading-fit'],
-    fontPolicy:{basis:'design', families:[font]}, explicitTotalSlideCount:3,
-    verifyArtifactToolImport:true,
-    receiptPath:path.join(buildDir, `${slug}-validation.json`),
-  });
+  const packageFiles = unzipSync(new Uint8Array(await fs.readFile(candidate)));
+  const fileNames = Object.keys(packageFiles);
+  const xml = (name) => {
+    const contents = packageFiles[name];
+    if (!contents) throw new Error(`Presentation package is missing ${name}`);
+    return new TextDecoder().decode(contents);
+  };
+  if (!fileNames.includes('[Content_Types].xml') || !fileNames.includes('_rels/.rels')) {
+    throw new Error('Presentation package is missing required OOXML parts');
+  }
+  const presentationXml = xml('ppt/presentation.xml');
+  const dimensions = presentationXml.match(/<p:sldSz\b[^>]*\bcx="(\d+)"[^>]*\bcy="(\d+)"/);
+  if (!dimensions || dimensions[1] !== '12192000' || dimensions[2] !== '6858000') {
+    throw new Error('Presentation slide size does not match the 16:9 layout');
+  }
+  const slideNames = fileNames.filter((name) => /^ppt\/slides\/slide\d+\.xml$/.test(name));
+  if (slideNames.length !== slides.length) throw new Error(`Expected ${slides.length} slides, found ${slideNames.length}`);
+  for (const slideName of slideNames) {
+    const slideXml = xml(slideName);
+    if (!slideXml.includes(`typeface="${font}"`)) throw new Error(`${slideName} does not use the expected ${font} font`);
+    for (const shape of slideXml.matchAll(/<p:sp\b[\s\S]*?<\/p:sp>/g)) {
+      const transform = shape[0].match(/<a:xfrm\b[\s\S]*?<\/a:xfrm>/);
+      if (!transform) continue;
+      const offset = transform[0].match(/<a:off\b[^>]*\bx="(-?\d+)"[^>]*\by="(-?\d+)"/);
+      const extent = transform[0].match(/<a:ext\b[^>]*\bcx="(\d+)"[^>]*\bcy="(\d+)"/);
+      if (!offset || !extent) continue;
+      const [x, y, width, height] = [offset[1], offset[2], extent[1], extent[2]].map(Number);
+      if (x < 0 || y < 0 || x + width > 12192000 || y + height > 6858000) {
+        throw new Error(`${slideName} contains a shape outside the slide bounds`);
+      }
+    }
+    if (!fileNames.includes(slideName.replace('ppt/slides/slide', 'ppt/notesSlides/notesSlide').replace('.xml', '.xml'))) {
+      throw new Error(`${slideName} is missing speaker notes`);
+    }
+  }
+  await fs.copyFile(candidate, target, fs.constants.COPYFILE_EXCL);
+  const result = { valid: true, slide_count: slideNames.length, slide_size_emu: [12192000, 6858000], font, checked_shape_bounds: true, checked_speaker_notes: true };
+  await fs.writeFile(path.join(buildDir, `${slug}-validation.json`), `${JSON.stringify(result, null, 2)}\n`);
   console.log(JSON.stringify({ presentation:target, validation:result }));
 }

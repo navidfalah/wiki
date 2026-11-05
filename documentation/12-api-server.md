@@ -173,7 +173,7 @@ Raw chunks and compiled pages for a normalized tag slug. **404** if tag unknown.
 GET /api/review-report
 ```
 
-Contents of `compiler/review_report.txt` if `reviewer.py` was run. Otherwise `exists: false`.
+Contents of `compiler/review_report.txt` if `reviewer.js` was run. Otherwise `exists: false`.
 
 ## Security notes
 

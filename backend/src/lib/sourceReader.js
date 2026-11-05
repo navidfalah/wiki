@@ -62,7 +62,18 @@ async function readSourceBytes(bytes, name) {
   const ext = path.extname(name).toLowerCase().slice(1);
   if (bytes.length > 40 * 1024 * 1024) return `[${name} — file exceeds the reader size limit]`;
   try {
-    if (ext === 'eml') { const mail = await simpleParser(bytes); return `Subject: ${mail.subject || ''}\nFrom: ${mail.from?.text || ''}\nTo: ${mail.to?.text || ''}\nDate: ${mail.headers.get('date') || ''}\n\n${mail.text || ''}`; }
+    if (ext === 'eml') {
+      const mail = await simpleParser(bytes);
+      const header = (label, value, fallback) => `${label}: ${value || fallback}`;
+      return [
+        header('Subject', mail.subject, '(no subject)'),
+        header('From', mail.from?.text, '(unknown sender)'),
+        header('To', mail.to?.text, '(unknown recipient)'),
+        ...(mail.cc?.text ? [`Cc: ${mail.cc.text}`] : []),
+        header('Date', mail.date?.toISOString?.() || mail.headers.get('date'), '(unknown date)'),
+        '', mail.text?.trim() || '(empty body)',
+      ].join('\n');
+    }
     if (ext === 'pdf') return await pdfText(bytes);
     if (['docx','docm','xlsx','xlsm','pptx','pptm','odt','ods','odp'].includes(ext)) return core.office(archiveEntries(bytes), ext);
     if (ext === 'zip') return archiveManifest(bytes);

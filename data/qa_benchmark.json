@@ -1,5 +1,5 @@
 {
-  "description": "Gold Q&A benchmark over the fictional sample corpus in data/raw/. Every answer fact appears verbatim (after normalization) in at least one listed source -- enforced by compiler/tests/test_qa_benchmark.py. `facts` is a list of required facts; each fact is a list of acceptable phrasings (lowercase substrings). `keywords` is a short keyword query for the substring search API, which does not handle natural-language questions.",
+  "description": "Gold Q&A benchmark over the fictional sample corpus in data/raw/. Every answer fact appears verbatim (after normalization) in at least one listed source -- enforced by backend/src/lib/qaBenchmarkEval.test.ts. `facts` is a list of required facts; each fact is a list of acceptable phrasings (lowercase substrings). `keywords` is a short keyword query for the substring search API, which does not handle natural-language questions.",
   "version": 1,
   "questions": [
     {

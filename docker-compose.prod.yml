@@ -15,13 +15,12 @@
 #
 # Differences from docker-compose.yml (the dev stack):
 #   - No sample Postgres, no local-llm, no live code mounts.
-#   - Hard memory limits + capped Node heaps + capped Python concurrency, so
+#   - Hard memory limits + capped Node heaps, so
 #     one busy chat or compile can't take the whole box down.
 #   - Non-root containers, no extra capabilities, rotated logs.
 #
 # Rough memory budget with the defaults below (idle -> limit):
-#   frontend ~60 MB (160 MB cap) · backend ~90 MB idle, 768 MB cap covers 2
-#   concurrent Python processes (+ caddy ~15 MB / 64 MB cap if that profile
+#   frontend ~60 MB (160 MB cap) · backend ~90 MB idle (+ caddy ~15 MB / 64 MB cap if that profile
 #   is enabled) => comfortable on 1 GB RAM, happy on 2 GB. Tune via the
 #   *_MEM_LIMIT vars.
 

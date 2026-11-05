@@ -1,9 +1,7 @@
 /**
- * Port of compiler/sources_registry.py -- registers external folders as a
- * mirrored tree of per-file symlinks under data/raw/, so the Python
- * compiler's discover_raw_source_files() (which walks RAW_DIR recursively,
- * same non-symlink-following-directory caveat that motivated per-file
- * mirroring in the Python original) picks every file up unchanged.
+ * Registers external folders as per-file symlink mirrors under data/raw/.
+ * The JavaScript source scanner discovers these files without following
+ * external directory symlinks.
  */
 import crypto from 'node:crypto';
 import fs from 'node:fs';

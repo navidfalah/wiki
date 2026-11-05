@@ -18,7 +18,7 @@ OPENAI_MODEL=gpt-4o-mini
 
 | Variable | Required | Default | Used by |
 |----------|----------|---------|---------|
-| `OPENAI_API_KEY` | No | empty | `llm_client.py` — enables LLM mode |
+| `OPENAI_API_KEY` | No | empty | `backend/src/lib/modelClient.js` — enables LLM mode |
 | `OPENAI_BASE_URL` | No | OpenAI v1 URL | Compatible APIs |
 | `OPENAI_MODEL` | No | `gpt-4o-mini` | Chat completions, image captioning |
 | `OPENAI_EMBEDDING_MODEL` | No | `text-embedding-3-small` | Hybrid retrieval embeddings |
@@ -90,7 +90,7 @@ Example Cursor prompts for orient, compile, ingest, lint tasks.
 
 ## Compiler path constants
 
-Defined in `compiler/models.py` — change only if restructuring repo layout:
+Defined in `compiler/models.js` — change only if restructuring repo layout:
 
 ```python
 PROJECT_ROOT = Path(__file__).resolve().parent.parent

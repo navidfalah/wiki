@@ -11,15 +11,14 @@ real database on hand.
 
 | | |
 |---|---|
-| Connector | `compiler/connectors/postgres_db.py` — `PostgresConnector` |
-| Registry | `compiler/connectors/registry.py` — id `postgres` |
-| Wiring | `compiler/connectors_service.py` — `connect_postgres()`, `_build_connector()` |
-| CLI bridge | `compiler/cli.py` — `connectors-postgres-connect` |
-| Backend route | `backend/src/routes/index.ts` — `POST /api/connectors/postgres/connect` (list/import/disconnect reuse the generic `/api/connectors/:id/...` routes already wired for every connector) |
+| Connector | `backend/src/lib/externalConnectors.js` |
+| Registry | `backend/src/lib/defaultConnectors.js` — id `postgres` |
+| Wiring | `backend/src/lib/connectorService.ts` |
+| Backend routes | `backend/src/routes/connectors.ts` — connect, list, import and disconnect endpoints |
 | Dedicated page | `/database` (`frontend/src/views/database.ejs` + `client/database.ts`) |
 | Also available on | `/connectors` (`client/connectors.ts`) — the generic catalog page, for consistency with Gmail/Drive/IMAP |
 | Sample database | `docker-compose.yml`'s `postgres` service + `docker/postgres/init.sql` |
-| Tests | `compiler/tests/test_connectors_postgres.py`, plus the `postgres` cases added to `test_connectors_registry.py`/`test_connectors_service.py` |
+| Tests | `backend/src/lib/externalConnectors.test.ts` and connector route integration tests |
 
 ## Why tables-as-items
 
@@ -95,7 +94,7 @@ Same posture as IMAP in 34-external-connectors.md, adapted for SQL:
 service (`postgres:16-alpine`) seeded once via
 `docker/postgres/init.sql` — a small fictional Aurora Labs internal
 knowledge base, reusing the same sample domain as
-`scripts/dev/generate_junk_data.py`:
+the existing fictional Aurora Labs source material:
 
 | Table | Contents |
 |-------|----------|

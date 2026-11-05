@@ -1,4 +1,3 @@
-/* global __dirname */
 'use strict';
 
 const crypto = require('node:crypto');

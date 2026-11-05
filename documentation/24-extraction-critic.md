@@ -9,9 +9,9 @@ isn't in any source at all."
 
 | | |
 |---|---|
-| Module | `compiler/extraction_critic.py` |
-| Eval fixtures + live-model runner | `compiler/extraction_critic_eval.py` |
-| Tests | `compiler/tests/test_extraction_critic.py`, `test_extraction_critic_eval.py` |
+| Module | `backend/src/lib/researchOptions.js` (`critic()`) |
+| Eval fixtures + hook-driven runner | `compiler/extractionCriticEval.js` |
+| Fixture tests | `backend/src/lib/extractionCriticEval.test.js` |
 | Integration point | `synthesizer.synthesize_topic_wiki_pages(..., apply_critic=True)` |
 | Enable it | `node compiler/main.js --critic-pass` or `WIKI_CRITIC_PASS=true` |
 
@@ -22,7 +22,7 @@ set of raw source chunks in a single call (`WIKI_PAGE_SYSTEM_PROMPT`).
 Nothing stops that model from adding a plausible-sounding detail that isn't
 actually in any chunk — a specific version number, a date, an attribution
 to the wrong person, a metric nobody measured. The deterministic
-References & Trust table (`trust.py`) that gets appended afterward lists
+References & Trust table (`backend/src/lib/trust.js`) that gets appended afterward lists
 *where the page's content came from*, but it can't tell you whether every
 sentence in the body is actually supported by those sources.
 
@@ -32,16 +32,15 @@ sentence in the body is actually supported by those sources.
 additional LLM call per page: given the same source chunk text the first
 pass saw, plus the draft it produced, the critic returns JSON naming every
 sentence that asserts something the sources don't support
-(`CRITIC_SYSTEM_PROMPT` in `extraction_critic.py`). `apply_critic_pass()`
+(`CRITIC` prompt in `researchOptions.js`). The compiler applies the critic result
 then strips every flagged sentence it can match **verbatim** in the draft —
 deliberately conservative: a sentence the critic paraphrased instead of
 quoting exactly is left in place (`removed=False` on the `FlaggedSentence`)
 rather than guessed at, because a wrong removal (deleting a correct
 sentence due to a fuzzy match) is worse than a missed one.
 
-A malformed critic response (not JSON, missing the `flagged` key) never
-raises — it degrades to "no flags found" with `parse_error` set, so a
-critic-pass hiccup can't take down a whole compile.
+If every sample is malformed, the JS critic leaves the draft unchanged and
+returns `parseError: true`, so a critic hiccup can't take down the compile.
 
 **Opt-in, not default.** It roughly doubles the LLM cost of the synthesis
 step (one extra full-page call), so it's wired through as an explicit flag
@@ -102,7 +101,7 @@ needed it).
 default) and `--critic-samples` (also off by default) — three independent
 opt-ins, each adding real LLM cost, each explicit rather than assumed.
 Mechanism-tested end to end in
-`tests/test_extraction_critic.py::test_synthesize_topic_wiki_pages_regenerates_after_heavy_flagging`
+`backend/src/lib/compilerEngine.test.ts`'s heavy-flagging regeneration case
 via a `FakeHeavyHallucinationLLM` that returns a heavily-fabricated first
 draft, a clean regenerated draft once it sees the "do not repeat" feedback,
 and a matching critic response for each — no live model, same honest
@@ -115,15 +114,13 @@ Same split as the rest of this project's LLM-touching code (see
 a live model are tested now; the parts that do are set up to run whenever
 API access is available, not simulated.
 
-**Mechanism (tested now, no API key):** `tests/test_extraction_critic.py`
-uses a `FakeLLM` (same pattern as `tests/test_multimedia_pipeline.py`) to
-verify prompt construction, JSON parsing, verbatim-vs-paraphrase removal
-behavior, malformed-response fallback, and the actual
-`synthesize_topic_wiki_pages(apply_critic=True)` integration end-to-end —
-12 tests, all passing without ever calling a real model.
+**Mechanism (tested without a live API key):** `backend/src/lib/researchOptions.test.ts`
+uses a fake model to verify majority voting and malformed-response fallback;
+`backend/src/lib/compilerEngine.test.ts` checks that the compiler applies
+the critic and regeneration settings.
 
 **Judgment quality (requires a live model, not run automatically):**
-`extraction_critic_eval.py` holds four hand-authored fixtures in the Aurora
+`extractionCriticEval.js` holds four hand-authored fixtures in the Aurora
 Labs/MeshSync voice — three with an injected hallucination (a fabricated
 firmware version, a fabricated date+attribution, a fabricated field-test
 metric) mixed into otherwise-grounded sentences, and one fully-grounded
@@ -131,13 +128,14 @@ negative control so precision is measurable, not just recall. Run it with:
 
 ```bash
 cd compiler
-python extraction_critic_eval.py   # needs OPENAI_API_KEY in .env
+`evaluateFixtures(reviewFn)` accepts the configured critic as a callback; the
+fixtures themselves are checked offline by Vitest.
 ```
 
 It reports precision/recall of flagged sentences against the hand-labeled
 expectations. Without a key it prints a message and exits cleanly rather
 than failing — verified by
-`tests/test_extraction_critic_eval.py`'s structural checks on the fixture
+`backend/src/lib/extractionCriticEval.test.js` structural checks on the fixture
 corpus itself (every expected substring actually appears in its fixture's
 draft, flagged/clean expectations don't contradict each other, at least one
 negative control exists).
@@ -145,7 +143,7 @@ negative control exists).
 ## Honest limitation
 
 **No numbers exist yet for how good the critic actually is** — this
-environment has no `OPENAI_API_KEY`, so `extraction_critic_eval.py` has
+environment has no `OPENAI_API_KEY`, so live critic quality has
 never been run against a real model. That is explicitly named here rather
 than implied away: the mechanism is validated, the judgment quality is not.
 Running it (and, ideally, growing the fixture corpus past four hand-picked
@@ -162,5 +160,5 @@ can't — right now that comparison is only possible in principle, not run.
 ## Next
 
 - [21-trust-eval-dataset.md](./21-trust-eval-dataset.md) / [22](./22-trust-propagation-algorithm.md) / [23](./23-trust-propagation-evaluation.md) — the related but distinct trust-propagation work
-- `compiler/synthesizer.py` — `WIKI_PAGE_SYSTEM_PROMPT` and `synthesize_topic_wiki_pages()`, what the critic pass runs after
-- `compiler/trust.py` — the deterministic References & Trust section this pass complements (source-level trust) rather than replaces (sentence-level grounding)
+- `backend/src/lib/compilerEngine.js` — `WIKI_PAGE_SYSTEM_PROMPT` and `synthesize_topic_wiki_pages()`, what the critic pass runs after
+- `backend/src/lib/trust.js` — the deterministic References & Trust section this pass complements (source-level trust) rather than replaces (sentence-level grounding)

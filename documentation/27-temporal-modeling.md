@@ -10,9 +10,9 @@ which.
 
 | | |
 |---|---|
-| Module | `compiler/temporal_model.py` |
-| Evaluation | `compiler/temporal_model_eval.py` |
-| Tests | `test_temporal_model.py`, `test_temporal_model_eval.py` |
+| JavaScript module | `backend/src/lib/temporalModel.js` |
+| JavaScript tests | `backend/src/lib/temporalModel.test.js`, `backend/src/lib/temporalModelEval.js` |
+| API | `GET /api/temporal-facts` |
 
 ## The two time axes
 
@@ -28,7 +28,7 @@ which.
   it isn't yet a meaningfully separate value — named honestly as a gap
   below, not silently glossed over.
 
-Like `trust_propagation.py`, this module never reads `claim.gold_label` —
+Like `trustPropagation.js`, this module never reads `claim.gold_label` —
 `current_claims()` and `as_of()` are derived purely from dates and
 `supersedes` edges, so they can be checked against the gold labels as an
 independent cross-validation (see Evaluation below), not graded against
@@ -52,7 +52,7 @@ everything that corroborates it. `current_claims()` is the same query with
 
 ## Evaluation: does the purely-temporal answer agree with the gold labels?
 
-`temporal_model_eval.py` reuses `trust_propagation_eval.py`'s
+`backend/src/lib/temporalModelEval.js` reuses `trustPropagationEval.js`'s
 `GOOD={correct, scope_dependent}` / `BAD={incorrect, superseded, disputed}`
 split (same reasoning: the richer 5-way taxonomy isn't something a binary
 "is this claim currently valid" question should be expected to reproduce)
@@ -88,7 +88,7 @@ imperfect in two groups, and both are explainable, not bugs:**
   `teabuddy_herbal_preset_timing` group, which *does* split its
   before/after correction into `thp-1`/`thp-2` with a `supersedes` edge
   between them. That's an inconsistency in how task #1's dataset was
-  authored, not a limitation of this module's logic — `test_temporal_model_eval.py::test_battery_cell_type_precision_reflects_the_known_annotation_gap`
+  authored, not a limitation of this module's logic — the JS evaluation regression check preserves this known annotation gap
   pins it down as a named, regression-guarded finding rather than a
   silent gap.
 

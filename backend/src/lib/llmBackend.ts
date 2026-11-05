@@ -1,7 +1,7 @@
 /**
  * Describes which LLM backend the compiler subprocess would use, purely
  * from the env vars docker-compose.yml passes to this container (mirrors
- * llm_client.py's own OPENAI_BASE_URL / OPENAI_API_KEY / OPENAI_MODEL
+ * backend/src/lib/modelClient.js's own OPENAI_BASE_URL / OPENAI_API_KEY / OPENAI_MODEL
  * reads) -- lets the UI explain an empty token-usage table instead of
  * just showing "no data".
  */

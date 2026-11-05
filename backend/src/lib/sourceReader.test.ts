@@ -3,7 +3,7 @@ import os from 'node:os';
 import path from 'node:path';
 import { describe, expect, it } from 'vitest';
 import { zipSync, strToU8 } from 'fflate';
-import { readSource } from './sourceReader';
+import { readSource, readSourceBytes } from './sourceReader';
 
 describe('JavaScript source reader', () => {
   it('reads Office documents, spreadsheets and presentation notes without Python', async () => {
@@ -29,5 +29,20 @@ describe('JavaScript source reader', () => {
       const broken = path.join(root, 'broken.xlsx'); fs.writeFileSync(broken, 'broken');
       expect(await readSource(broken)).toContain('content unavailable');
     } finally { fs.rmSync(root, { recursive: true, force: true }); }
+  });
+
+  it('reads text-oriented formats, strips active HTML, and lists ZIP entries without extracting them', async () => {
+    for (const [name, text] of [
+      ['a.csv', 'name,value\nfoo,1'], ['b.tsv', 'name\tvalue\nfoo\t1'],
+      ['c.json', '{"key":"value"}'], ['d.xml', '<record>Battery</record>'],
+      ['e.yaml', 'battery: 220'], ['f.log', 'battery warning'],
+    ]) expect(await readSourceBytes(Buffer.from(text), name)).toContain(text);
+    expect(await readSourceBytes(Buffer.from('<script>secret()</script><p>Battery</p>'), 'page.html')).not.toContain('secret');
+    const zip = zipSync({ 'folder/readme.txt': strToU8('not extracted'), 'other.csv': strToU8('name,value') });
+    const manifest = await readSourceBytes(Buffer.from(zip), 'archive.zip');
+    expect(manifest).toContain('folder/readme.txt');
+    expect(manifest).toContain('other.csv');
+    expect(manifest).not.toContain('not extracted');
+    expect(await readSourceBytes(Buffer.from('opaque'), 'file.rtf')).toContain('content not parsed');
   });
 });

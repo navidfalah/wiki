@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { redactText } from './piiRedaction';
+import { DEFAULT_POLICY, NER_AUGMENTED_POLICY, NER_CATEGORIES, STRICT_CATEGORIES, STRICT_POLICY, redactText } from './piiRedaction';
 
 describe('JavaScript redaction', () => {
   it('redacts supported categories consistently and keeps names and emails by default', () => {
@@ -15,5 +15,20 @@ describe('JavaScript redaction', () => {
   });
   it('supports strict email redaction when explicitly selected', () => {
     expect(redactText('mira@example.test', ['email']).text).toBe('[EMAIL_1]');
+    expect(redactText('mira@example.test', STRICT_POLICY).text).toBe('[EMAIL_1]');
+  });
+  it('supports an injected location recognizer only when that policy enables the category', () => {
+    const recognizeAustin = (text: string): Array<[number, number, string, string]> => {
+      const start = text.indexOf('Austin');
+      return start < 0 ? [] : [[start, start + 6, 'location', 'Austin']];
+    };
+    expect(redactText('Team in Austin.', DEFAULT_POLICY, { nerBackend: recognizeAustin }).text).toContain('Austin');
+    const result = redactText('Team in Austin, SSN 123-45-6789.', NER_AUGMENTED_POLICY, { nerBackend: recognizeAustin });
+    expect(result.text).toContain('[LOCATION_1]');
+    expect(result.text).toContain('[SSN_1]');
+    expect(result.findings.map((finding: any) => finding.category)).toEqual(['location', 'ssn']);
+    expect(NER_CATEGORIES).toEqual(['location']);
+    expect(NER_CATEGORIES).not.toContain('person');
+    expect(STRICT_CATEGORIES).not.toContain('location');
   });
 });

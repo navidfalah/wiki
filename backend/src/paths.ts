@@ -1,7 +1,6 @@
 /**
- * Shared path constants -- mirrors compiler/models.py exactly, so this
- * backend reads/writes the same files the Python compiler does. Nothing
- * about the Python pipeline's on-disk layout changes.
+ * Shared path constants for the JavaScript application. Runtime state keeps
+ * the established on-disk locations under data/ and wiki-app/.
  */
 import path from 'node:path';
 

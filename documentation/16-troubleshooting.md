@@ -1,29 +1,13 @@
 # 16 — Troubleshooting
 
-## Python / virtualenv
-
-**Symptom:** `ModuleNotFoundError` for `openai`, `rich`, etc.
-
-```bash
-cd compiler
-python3 -m venv .venv
-source .venv/bin/activate
-pip install -r requirements.txt
-```
-
-This applies to the retained legacy Python tools. The JavaScript build uses `node build_wiki.js`.
-
 ## No raw files found
 
 ```
 No raw files found under data/raw/
 ```
 
-Ensure at least one `.txt` or `.md` exists under `data/raw/`:
-
-```bash
-cd compiler && python scripts/dev/generate_junk_data.py
-```
+Add source files to the human-managed `data/raw/` folder, then run
+`node compiler/main.js`. The compiler does not create seed data.
 
 ## YAML front matter errors
 
@@ -132,7 +116,7 @@ Production uses `baseUrl: /<repo>/`. Local uses `/`. Links in compiler output us
 
 ## MDX parse errors from junk data
 
-Compiler runs `mdx_sanitize.py` on export. If manual edits introduce raw `<` or invalid JSX:
+The JavaScript compiler sanitizes generated Markdown on export. If manual edits introduce raw `<` or invalid JSX:
 
 - Recompile affected pages
 - Or run `node compiler/fix_mdx_body.js` if applicable

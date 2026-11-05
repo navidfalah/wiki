@@ -12,6 +12,10 @@ search, selection, and multi-format export. Doc 26 said entity resolution
 they were written; this survey re-checked each claim against the current
 tree before ranking anything as a gap.
 
+> Historical survey: its references to `mechanical_linker.py` and the Python
+> linker describe a retired implementation. The current compiler is
+> `backend/src/lib/compilerEngine.js` and links by exact topic titles.
+
 ## Method
 
 For each of the 34 prior `documentation/NN-*.md` modules, grepped the
@@ -63,7 +67,7 @@ alongside this doc update by mirroring the existing `imap/connect`/
 
 ### 3. Faithfulness score in the live chat UI — closed
 
-Was: `faithfulness_heuristic.py` (offline, no API key needed — task #8)
+Implemented in: `backend/src/lib/faithfulnessHeuristic.js` (offline, no API key needed — task #8)
 exercised only by `compiler/tests/` and the eval harness, with
 `rag_engine.py`'s live `answer_question()` path never calling it — a chat
 answer gave no signal about how grounded it was.
@@ -81,7 +85,7 @@ as a small badge in `chat.ts`'s `faithfulnessBadgeHtml()` — a fixed
 "Grounded · verbatim" pill for extractive answers, or a
 "~N% grounded · estimate" pill (color-coded, with a title hedging it's a
 heuristic proxy, not an LLM judge) for generated ones. Covered by
-`test_faithfulness_heuristic.py` and `test_rag_engine.py`'s faithfulness
+`faithfulnessHeuristic.test.ts` and the active chat engine's faithfulness
 assertions.
 
 One real rough edge left: the streaming chat path only shows the badge
@@ -112,8 +116,8 @@ expansion most compiles don't need), same convention as
 
 ### 5. Temporal model not wired into any live query path — closed
 
-Was: `temporal_model.py`'s bi-temporal `as_of()` queries (task #7) were
-covered by `temporal_model_eval.py` and tests only — no API route, no
+Was: the Python implementation's bi-temporal `asOf()` queries (task #7) were
+covered by `temporalModelEval.js` and its tests only — no API route, no
 dashboard surface.
 
 Now shipped, read-only: `cli.py`'s new `cmd_temporal_facts` command

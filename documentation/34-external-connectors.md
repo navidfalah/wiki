@@ -7,25 +7,24 @@ encrypted at rest, and nothing is fabricated or trusted implicitly.
 
 | | |
 |---|---|
-| Package | `compiler/connectors/` |
-| Common interface | `base.py` — `Connector`, `ConnectorItem` |
-| Credential value object | `credentials.py` — `ConnectorCredentials` (redacted repr) |
-| Encrypted-at-rest storage | `credential_store.py` — `CredentialStore` (Fernet) |
-| OAuth2 base (PKCE + CSRF state) | `oauth2.py` — `OAuth2Connector` |
-| HTTP transport (stdlib only) | `http_transport.py` |
-| Connectors | `gmail.py`, `google_drive.py` (OAuth2), `imap_email.py` (password) |
-| Catalog | `registry.py` |
-| Tests | `compiler/tests/test_connectors_*.py` (73 tests, all against fakes — no real network) |
-| Wiring (dashboard, API, pipeline import) | `compiler/connectors_service.py` + `/connectors` — see "What's wired up now" below |
+| Package | `backend/src/lib/` and `backend/src/routes/connectors.ts` |
+| Connector catalog | `defaultConnectors.js` |
+| Credentials | `connectorCredentials.js` |
+| OAuth (Google), Gmail and Drive | `googleConnector.js` |
+| IMAP, PostgreSQL and SQLite adapters | `externalConnectors.js` |
+| Service wiring and API | `connectorService.ts`, `routes/connectors.ts` |
+| Tests | `backend/src/lib/*Connector*.test.ts` and route integration tests |
+| Pipeline import | Imported source files are written under `data/raw/connectors/` and read by the JS compiler |
+
+> **Implementation note:** Sections below retain design notes and examples from the original Python implementation. That package and its CLI bridge have been removed. The table above lists the current JavaScript source of truth; old Python commands and test paths below are historical and cannot be run.
 
 ## Why this exists, and what's now wired up
 
-This gives the project a real, tested primitive for pulling content from
-Gmail, Google Drive, or any IMAP mailbox — the same shape of connection
-the email-ingestion pipeline already has to a local `data/raw/` mailbox
-export, but live and per-account. **It is now wired into the dashboard**
-via `compiler/connectors_service.py` (orchestration only — no network
-code of its own) plus a `/connectors` page: a "Connect an app" screen,
+This gives the project a tested JavaScript implementation for pulling
+content from Gmail, Google Drive, IMAP, PostgreSQL and SQLite — the same
+shape of connection the email-ingestion pipeline already has to a local
+`data/raw/` mailbox export, but live and per-account. It is wired into the
+dashboard via the backend connector service and `/connectors` page: a "Connect an app" screen,
 the OAuth redirect/callback round trip, an IMAP connect form, browsing an
 account's items, and importing one into `data/raw/connectors/` so it
 flows through the normal compile pipeline. See "What's wired up now"
@@ -111,7 +110,7 @@ Google API or mail server.
 ## Setting it up
 
 ```env
-CONNECTOR_SECRET_KEY=          # generate: python -c "from connectors.credential_store import generate_secret_key; print(generate_secret_key())"
+CONNECTOR_SECRET_KEY=          # generate: node compiler/generateConnectorSecret.js
 
 GMAIL_CLIENT_ID=
 GMAIL_CLIENT_SECRET=

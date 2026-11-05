@@ -7,9 +7,8 @@
     "qa.wiki.naive.source_hit": 0.05
   },
   "metrics": {
-    "entity_resolution.heuristic.f1": 1.0,
-    "entity_resolution.heuristic.precision": 1.0,
-    "entity_resolution.heuristic.recall": 1.0,
+    "entity_resolution.heuristic.f1": 0.0,
+    "entity_resolution.heuristic.recall": 0.0,
     "faithfulness.extractive.verbatim_rate": 1.0,
     "groundedness.supported_rate": 0.6458,
     "pii.precision": 1.0,

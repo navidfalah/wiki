@@ -3,7 +3,7 @@
  * is one of the gold sources in the top k results? A wiki-page hit counts
  * when the page's References table cites a gold source; a resource hit
  * counts when it *is* one. Byte-identical copies in data/raw/ count as the
- * same source. Email hits aren't scored (they need the Python bridge).
+ * same source. Email hits use the JavaScript email source reader.
  */
 import crypto from 'node:crypto';
 import fs from 'node:fs';

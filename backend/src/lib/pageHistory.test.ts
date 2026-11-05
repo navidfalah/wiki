@@ -75,8 +75,8 @@ describe('snapshotPage', () => {
   });
 });
 
-describe('interop with compiler/page_history.py', () => {
-  it('lists versions written by the Python side (microsecond stamps)', () => {
+describe('interop with legacy page-history files', () => {
+  it('lists files using the historical microsecond stamp format', () => {
     fs.mkdirSync(path.join(history, 'aurora-labs'), { recursive: true });
     fs.writeFileSync(path.join(history, 'aurora-labs', '20260927T124500123456Z-compile.md'), 'old');
     fs.writeFileSync(path.join(history, 'aurora-labs', 'notes.txt'), 'ignored');
@@ -85,7 +85,7 @@ describe('interop with compiler/page_history.py', () => {
     ]);
   });
 
-  it('produces the same stamp shape Python does', () => {
+  it('produces sortable microsecond-resolution stamps', () => {
     expect(versionStamp(new Date('2026-09-27T12:45:00.123Z'))).toMatch(/^\d{8}T\d{12}Z$/);
   });
 });

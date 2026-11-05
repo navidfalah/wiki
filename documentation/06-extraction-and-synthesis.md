@@ -1,7 +1,7 @@
 # 06 — Extraction and Synthesis
 
 How raw text becomes structured extractions and draft wiki pages.  
-**Module:** `compiler/synthesizer.py`
+**Module:** `backend/src/lib/compilerEngine.js`
 
 ## Chunking
 
@@ -17,7 +17,7 @@ for the full extension list). Symlinks follow normal filesystem behavior.
 
 ### Split algorithm (text)
 
-`split_text_into_chunks(content, max_chars=2000)` — now in `text_chunking.py`,
+`splitTextIntoChunks(content, maxChars=2000)` — now in `backend/src/lib/textChunking.js`,
 shared with `media_ingest.py` and `email_ingest.py`:
 
 1. Split on blank lines → paragraphs
@@ -69,7 +69,7 @@ LLM-only. See [08-llm-and-heuristics.md](./08-llm-and-heuristics.md).
 
 ### LLM extraction
 
-- System prompt: `CHUNK_EXTRACTION_SYSTEM_PROMPT` (in `synthesizer.py`)
+- System prompt: `CHUNK_EXTRACTION_SYSTEM_PROMPT` (in `backend/src/lib/compilerEngine.js`)
 - Input: source path, chunk index, chunk text (truncated to 8000 chars)
 - Output: JSON with `topics`, `entities`, `concepts`
 - Parsed via `_parse_extraction_json()` — extracts first `{...}` block from response
@@ -140,7 +140,7 @@ System prompt: `WIKI_PAGE_SYSTEM_PROMPT` — asks for markdown with front matter
 and explicitly tells the model **not** to write its own Sources/References
 section. After the response comes back, `synthesize_topic_wiki_pages()`
 strips any such section the model wrote anyway (safety net) and appends a
-deterministic `## References & Trust` table built from `trust.py` — see
+deterministic `## References & Trust` table built from `backend/src/lib/trust.js` — see
 [19-multimedia-email-and-trust.md](./19-multimedia-email-and-trust.md).
 
 ### Legacy per-file synthesis (removed)

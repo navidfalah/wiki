@@ -95,10 +95,8 @@ describe('page history', () => {
 });
 
 describe('search', () => {
-  it('an empty query returns nothing without calling Python', async () => {
-    const before = h.pythonCalls().length;
+  it('an empty query returns nothing', async () => {
     expect((await h.json('GET', '/api/search?q=%20', auth())).body).toEqual({ query: '', total: 0, results: [] });
-    expect(h.pythonCalls().length).toBe(before);
   });
 
   it('finds wiki pages for a typed question', async () => {
@@ -107,10 +105,9 @@ describe('search', () => {
     expect(body.results[0].snippet.toLowerCase()).toContain('cr2032');
   });
 
-  it('searches full email bodies without Python', async () => {
+  it('searches full email bodies', async () => {
     const { body } = await h.json('GET', '/api/search?q=sleep+timer', auth());
     expect(body.results.find((r: any) => r.type === 'email')).toMatchObject({ path: 'emails/relay.eml', meta: { from: 'Mira Chen <mira@example.test>' } });
-    expect(h.pythonCalls().filter((c) => c.command === 'emails-list')).toHaveLength(0);
   });
 
   it('finds cited resources', async () => {
@@ -169,17 +166,15 @@ describe('resources, graph and analytics', () => {
 });
 
 describe('JavaScript entity graph', () => {
-  it('returns graph data without starting a Python command', async () => {
-    const before = h.pythonCalls().length;
+  it('returns graph data from the JavaScript entity service', async () => {
     const { status, body } = await h.json('GET', '/api/entity-graph', auth());
     expect(status).toBe(200);
     expect(body).toHaveProperty('entities');
     expect(body.counts).toHaveProperty('total_entities');
-    expect(h.pythonCalls()).toHaveLength(before);
   });
 });
 
-describe('bridged to Python', () => {
+describe('JavaScript chat and email APIs', () => {
   it.each([
     ['/api/chat/status', 'corpus_pages'],
   ])('%s passes the bridge result through', async (url, key) => {

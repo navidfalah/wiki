@@ -18,18 +18,11 @@ This rewrite is a single Express+TypeScript **frontend** that renders
 backed by a single Express+TypeScript **backend** API — Docusaurus and the
 old React app are gone, not layered under the new stack.
 
-**What did *not* change:** the Python compiler pipeline
-(`compiler/main.js` and every module it calls — extraction, synthesis,
-linking, MOC generation) is untouched, same code, same tests. Retrieval
-for chat (`rag_engine.py`, hybrid BM25 + embeddings + reranking + LLM
-calls) and `.eml` parsing + trust resolution (`email_engine.py`) also stay
-Python deliberately — reimplementing IR/NLP and MIME parsing from scratch
-in a rewrite is exactly the kind of work that produces a worse, silently
-different system, not a faster one. The Node backend reaches these
-through `compiler/cli.py`, a thin subprocess bridge (see "Python bridge"
-below).
+The compiler, chat, email handling, connectors, and API services now run in
+JavaScript/TypeScript. The Python implementation is being retired as its
+remaining developer and evaluation workflows are migrated.
 
-## Two Node services, one Python compiler
+## Node services and JavaScript compiler
 
 ```
  browser
@@ -38,9 +31,9 @@ below).
    ▼
 frontend (Express+TS, :3000)  ──SSR fetch──▶  backend (Express+TS, :8000)
                                                     │
-                                     spawn node compiler/main.js / cli.py
+                                     run compiler/main.js
                                                     ▼
-                                          compiler/ (Python, unchanged)
+                                          compiler/ (JavaScript)
                                                     │
                                     reads/writes data/, wiki-app/docs/
 ```
@@ -57,19 +50,19 @@ below).
 
 **Entry point:** `src/index.ts` · **Port:** 8000 (`PORT` env var)
 
-Ported module-for-module from the Python `compiler/` engines, in
-`src/lib/`:
+The current Node services and their retired Python equivalents are listed
+below. The JavaScript implementation is the runtime source of truth:
 
-| TS module | Ports | Notes |
+| JavaScript/TS module | Replaced Python module | Notes |
 |-----------|-------|-------|
 | `sourcesRegistry.ts` | `sources_registry.py` | Symlink-mirror source folders into `data/raw/` |
 | `rawFolders.ts` | `raw_folders.py` | Create/delete/move inside `data/raw/` |
 | `rawFiles.ts` | `synthesizer.discover_raw_source_files` | File discovery + md5 status |
-| `docUtils.ts` | `doc_utils.py` | Frontmatter parsing, doc payloads |
-| `deadLinkChecker.ts` | `dead_link_checker.py` | Broken-link scan (balanced-parens regex fix included) |
+| `backend/src/lib/docUtils.ts` | `compiler/doc_utils.js` | Frontmatter parsing, doc payloads |
+| `deadLinkChecker.ts` | `dead_link_checker.py` | Broken-link scan |
 | `analytics.ts` | `analytics.py` | Metrics, tag registry, dead-link audit |
-| `linkOverrides.ts` | `link_overrides.py` (read/CRUD surface) | Knowledge graph, connection overrides |
-| `resourcesEngine.ts` | `resources_engine.py` | Cited-source dedup |
+| `linkOverrides.ts` | `link_overrides.py` | Knowledge graph, connection overrides |
+| `resourcesEngine.ts` | `resources_engine.py` (retired) | Cited-source dedup |
 | `fsWalk.ts` | — | Shared directory-walk helper (see below) |
 | `buildService.ts` | Compiler execution | JavaScript build coordination and SSE stream |
 
@@ -171,8 +164,7 @@ header, so it saves as a real `.txt` file.
 
 ## Source folder registry (unchanged behavior, now backing a TS route)
 
-**Module:** `backend/src/lib/sourcesRegistry.ts` (ported from
-`compiler/sources_registry.py`) · **Registry file:** `data/sources.json`
+**Module:** `backend/src/lib/sourcesRegistry.ts` · **Registry file:** `data/sources.json`
 (gitignored, like `data/state.json`)
 
 The compiler pipeline only ever reads from one hardcoded directory,

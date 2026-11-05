@@ -69,7 +69,7 @@ describe('pipeline runs and usage', () => {
 });
 
 describe('JavaScript compile stream', () => {
-  it('builds with isolated model responses, persists progress, and never starts Python', async () => {
+  it('builds with isolated model responses and persists progress', async () => {
     const previousKey = process.env.OPENAI_API_KEY, previousBase = process.env.OPENAI_BASE_URL;
     const realFetch = globalThis.fetch, prompts: string[] = [];
     process.env.OPENAI_API_KEY = 'test-key'; process.env.OPENAI_BASE_URL = 'https://model.invalid/v1';
@@ -81,7 +81,6 @@ describe('JavaScript compile stream', () => {
       return new Response(JSON.stringify({ choices: [{ message: { content } }], usage: { prompt_tokens: 5, completion_tokens: 2, total_tokens: 7 } }), { status: 200, headers: { 'content-type': 'application/json' } });
     });
     try {
-      const before = h.pythonCalls().length;
       const events = await sse('/api/build/stream?force=true&redact_pii=false&exclude_folders=notes,drafts');
       expect(events[0].type).toBe('start');
       const id = events.find((event) => event.type === 'run_id').run_id;
@@ -90,7 +89,6 @@ describe('JavaScript compile stream', () => {
       expect(prompts.length).toBeGreaterThan(0); expect(prompts.every((prompt) => !prompt.includes('notes/kickoff.txt'))).toBe(true);
       expect((await h.json('GET', `/api/pipelines/${id}`, auth())).body.status).toBe('success');
       expect(fs.readFileSync(path.join(h.root, 'wiki-app/docs/battery.md'), 'utf8')).toContain('References & Trust');
-      expect(h.pythonCalls()).toHaveLength(before);
     } finally {
       vi.unstubAllGlobals();
       if (previousKey === undefined) delete process.env.OPENAI_API_KEY; else process.env.OPENAI_API_KEY = previousKey;
@@ -114,8 +112,7 @@ describe('JavaScript compile stream', () => {
 });
 
 describe('JavaScript chat stream', () => {
-  it('streams source excerpts and saves both turns without calling Python', async () => {
-    const before = h.pythonCalls().length;
+  it('streams source excerpts and saves both turns', async () => {
     const id = (await h.json('POST', '/api/chat/sessions', { ...auth(), body: { title: 'q' } })).body.id;
     const events = await sse(`/api/chat/sessions/${id}/stream?message=${encodeURIComponent('battery')}`);
     expect(events.map((event) => event.type)).toEqual(['sources', 'delta', 'done']);
@@ -125,7 +122,6 @@ describe('JavaScript chat stream', () => {
     expect(session.messages.map((message: any) => message.role)).toEqual(['user', 'assistant']);
     expect(session.messages[1].sources[0]).toMatchObject({ doc_path: 'notes/kickoff.txt' });
     expect(session.messages[1].sources[0].slug).toBeUndefined();
-    expect(h.pythonCalls()).toHaveLength(before);
   });
 
   it('returns a visible no-match response and keeps the user message', async () => {
@@ -166,25 +162,23 @@ describe('connector activity', () => {
     expect(body.events.map((e: any) => e.action)).toEqual(['import', 'connect']);
   });
 
-  it('lists the available connectors without a Python bridge', async () => {
+  it('lists the available JavaScript connectors', async () => {
     const body = (await h.json('GET', '/api/connectors', auth())).body;
     expect(body.connectors.map((item: any) => item.id)).toEqual(['gmail', 'google_drive', 'imap', 'postgres', 'sqlite']);
   });
 
-  it('connects, browses, imports and disconnects SQLite without Python', async () => {
+  it('connects, browses, imports and disconnects SQLite', async () => {
     const oldKey = process.env.CONNECTOR_SECRET_KEY;
     process.env.CONNECTOR_SECRET_KEY = Buffer.alloc(32, 7).toString('base64');
     try {
       const SQL = await require('sql.js/dist/sql-asm.js')(), db = new SQL.Database();
       db.run('CREATE TABLE observations (note TEXT)'); db.run("INSERT INTO observations VALUES ('A measured value')");
       const file = path.join(h.root, 'observations.sqlite'); fs.writeFileSync(file, Buffer.from(db.export())); db.close();
-      const before = h.pythonCalls().length;
       expect((await h.json('POST', '/api/connectors/sqlite/connect', { ...auth(), body: { account_label: 'research', db_path: file } })).status).toBe(200);
       expect((await h.json('POST', '/api/connectors/sqlite/items', { ...auth(), body: { account_label: 'research' } })).body.items[0].id).toBe('observations');
       const imported = await h.json('POST', '/api/connectors/sqlite/items/import', { ...auth(), body: { account_label: 'research', item_id: 'observations' } });
       expect(imported.status).toBe(200); expect(fs.readFileSync(path.join(h.root, 'data/raw', imported.body.raw_path), 'utf8')).toContain('A measured value');
       expect((await h.json('DELETE', '/api/connectors/sqlite/accounts/research', auth())).body.disconnected).toBe(true);
-      expect(h.pythonCalls()).toHaveLength(before);
     } finally { if (oldKey === undefined) delete process.env.CONNECTOR_SECRET_KEY; else process.env.CONNECTOR_SECRET_KEY = oldKey; }
   });
 });

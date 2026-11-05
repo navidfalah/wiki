@@ -1,14 +1,12 @@
 #!/usr/bin/env node
 'use strict';
 
-// Plain JavaScript counterpart of compiler/doc_utils.py. Paths and JSON
-// formats match the compiler and backend so they can share the same files.
+// Shared JavaScript document utilities. Paths and JSON formats match the
+// compiler and backend so they can share the same files.
 const fs = require('node:fs');
 const path = require('node:path');
 
-const PROJECT_ROOT = path.resolve(__dirname, '..');
-const DATA_ROOT = process.env.WIKI_DATA_ROOT ? path.resolve(process.env.WIKI_DATA_ROOT) : PROJECT_ROOT;
-const OUTPUT_DIR = path.join(DATA_ROOT, 'wiki-app', 'docs');
+const { PROJECT_ROOT, DATA_ROOT, OUTPUT_DIR } = require('./models.js');
 const INDEX_JSON_PATH = path.join(DATA_ROOT, 'compiler', 'temp_output', 'index.json');
 const LINK_RE = /\[([^\]]+)\]\(([^)]+)\)/g;
 
@@ -46,7 +44,7 @@ function parseFrontmatter(content) {
         if (inner) for (const item of inner.split(',')) if (item.trim()) tags.push(unquote(item.trim()));
         continue;
       }
-      // Match the Python reader's permissive behavior for a bare tags value:
+      // Preserve the permissive behavior for a bare tags value:
       // it starts a block list and is not exposed as meta.tags.
       inTags = true;
       continue;

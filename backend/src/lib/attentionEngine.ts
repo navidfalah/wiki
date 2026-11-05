@@ -38,7 +38,7 @@ function groupTopicsFromState(state: { files?: Record<string, any> }): Set<strin
 }
 
 function parseReviewReport(text: string): AttentionItem[] {
-  // Mirrors compiler/reviewer.py's format_report() layout: pages are
+  // Mirrors compiler/reviewer.js's formatReport() layout: pages are
   // separated by a "----...----" rule, each starting with "PAGE: <topic>",
   // "FILE: <path>", "SEVERITY: MAJOR|MINOR", optional "SUMMARY: ...".
   const items: AttentionItem[] = [];

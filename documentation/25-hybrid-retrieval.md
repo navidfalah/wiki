@@ -1,62 +1,53 @@
 # 25 — Hybrid Retrieval (BM25 + Embeddings + Reranker)
 
-`rag_engine.py`'s chat originally ranked passages with an ad hoc TF-IDF-style
-scorer (see [20](./20-email-resources-and-chat-engines.md)). This replaces
-that scorer with a three-tier retrieval stack, each tier independently
-optional so the chat still works with zero setup — a corpus and nothing
-else — exactly like before.
+The Node chat now shares BM25, cosine similarity and reciprocal-rank fusion
+through `backend/src/lib/hybridRetrieval.js`. Embeddings remain optional; the
+default chat still searches locally without an API call.
 
 | | |
 |---|---|
-| Primitives (BM25, embeddings, RRF, LLM rerank) | `compiler/hybrid_retrieval.py` |
-| Embedding calls + cache | `LLMClient.embed_text()` in `compiler/llm_client.py` |
-| Wiring into the chat | `rag_engine.retrieve()` / `rag_engine.retrieve_hybrid()` |
-| Eval dataset (reuses task #1's grounded quotes) | `compiler/retrieval_eval_dataset.py` |
-| Eval script (Recall@5 / nDCG@5) | `compiler/retrieval_eval.py` |
-| Tests | `test_hybrid_retrieval.py`, `test_llm_client_embed.py`, `test_retrieval_eval_dataset.py`, `test_retrieval_eval.py`, plus new cases in `test_rag_engine.py` |
+| Primitives (BM25, embeddings, RRF, LLM rerank) | `backend/src/lib/hybridRetrieval.js` |
+| Embedding calls + cache | `makeEmbeddings()` in `backend/src/lib/chatEngine.js` |
+| Wiring into the chat | `createChatEngine()` in `backend/src/lib/chatEngine.js` |
+| Eval dataset (reuses the grounded claim quotes) | `backend/src/lib/retrievalEvalDataset.js` |
+| Eval script (Recall@5 / nDCG@5) | `backend/src/lib/retrievalEval.js` (`node compiler/retrievalEval.js`) |
+| Runtime tests | `backend/src/lib/chatEngine.test.ts`; the standalone evaluator is available for research reports |
 
 ## The three tiers
 
-1. **BM25** (`hybrid_retrieval.bm25_rank`) — Okapi BM25, stdlib only. This
-   is what `rag_engine.retrieve()` now uses directly; it's the new
-   always-available default, same role the original TF-IDF scorer played.
-2. **Embeddings + reciprocal rank fusion** — `LLMClient.embed_text()` calls
-   an OpenAI-compatible embeddings endpoint (default
-   `text-embedding-3-small`, overridable via `OPENAI_EMBEDDING_MODEL`),
-   cached in the same SQLite cache `generate_response()` uses (a JSON-encoded
-   vector under a `<embedding>`-tagged key — no new cache table).
-   `hybrid_retrieval.reciprocal_rank_fusion()` merges the BM25 and embedding
+1. **BM25** (`hybridRetrieval.bm25Rank`) — Okapi BM25, always available.
+   This is the default path used by `chatEngine.js`.
+2. **Embeddings + reciprocal rank fusion** — `chatEngine.js` can call an
+   OpenAI-compatible embeddings endpoint (default `text-embedding-3-small`,
+   overridable via `OPENAI_EMBEDDING_MODEL`) and caches vectors locally.
+   `hybridRetrieval.reciprocalRankFusion()` merges the BM25 and embedding
    rankings by rank position, not raw score — BM25 scores and cosine
    similarities aren't on comparable scales, so fusing by rank avoids having
    to normalize either one.
-3. **LLM rerank** — `hybrid_retrieval.llm_rerank()` sends the fused
+3. **LLM rerank** — `hybridRetrieval.llmRerank()` sends the fused
    shortlist to the chat model with a prompt asking for a relevance-ordered
    list of indices, and reorders accordingly. A malformed or missing
    response falls back to the original order rather than guessing (same
-   "don't act on an untrustworthy parse" pattern as `extraction_critic.py`).
+   "don't act on an untrustworthy parse" pattern as the compiler critic).
 
-`rag_engine.retrieve_hybrid()` wires all three together and degrades one
-tier at a time on failure: no LLM configured → BM25 only; embeddings call
-fails → BM25-only ranking feeds the (still-attempted) reranker; reranker
-call fails → the fused BM25+embeddings ranking is returned as-is. Every
-degradation path is covered by a dedicated test in `test_rag_engine.py`
-(`test_retrieve_hybrid_degrades_gracefully_when_embeddings_fail` /
-`..._when_rerank_fails`).
+The live chat currently uses BM25 and optional embeddings; it does not invoke
+the LLM reranker. The reranker remains available to evaluation callers that
+explicitly provide an LLM hook, so the default chat does not spend extra API
+calls on reranking.
 
-`retrieve_hybrid(..., vector_store=...)` optionally backs the embedding
-tier with a persistent `vector_store.VectorStore` (task #11) instead of
-re-embedding the whole corpus from scratch every call — see
-[31-vector-graph-storage-and-scalability.md](./31-vector-graph-storage-and-scalability.md#live-pipeline-wiring)
-for the wiring details and the tests proving a second call against an
-unchanged corpus embeds nothing new. Omitting it keeps the original
-from-scratch behavior described above unchanged.
+The current Node chat stores optional embedding vectors in its JSON cache.
+The former Python vector-store integration is not part of the Node chat path.
 
-## Result 1 (no API key needed): BM25 vs. the original TF-IDF scorer
+## Recorded legacy result: BM25 vs. the original TF-IDF scorer
 
-`retrieval_eval.py` keeps the *exact* original scoring formula
+These figures come from the previous Python evaluator. Reproduce the
+JavaScript result with `node compiler/retrievalEval.js`; that output has not
+been run here.
+
+`backend/src/lib/retrievalEval.js` keeps the *exact* original scoring formula
 (`legacy_tfidf_rank`) as an isolated, clearly-labeled baseline — nothing
 else in the codebase uses it anymore — and scores it against the same
-hand-labeled queries as BM25. `retrieval_eval_dataset.py` builds its corpus
+hand-labeled queries as BM25. `backend/src/lib/retrievalEvalDataset.js` builds its corpus
 by repurposing `data/trust_eval_dataset.json`'s already-grounded claim
 quotes as retrievable passages (a different, new annotation on top of that
 data: which claims are *topically relevant* to each hand-written query,
@@ -106,13 +97,12 @@ BM25 tier matters even where its standalone score ties the baseline.
 ## Result 2 (requires `OPENAI_API_KEY`): hybrid and reranked tiers
 
 Not run in this environment — no API key is configured here.
-`retrieval_eval.py` prints a clear skip message rather than fabricating
-numbers, same pattern as `extraction_critic_eval.py`
+`backend/src/lib/retrievalEval.js` prints a clear skip message rather than fabricating
+numbers, same pattern as `extractionCriticEval.js`
 ([24](./24-extraction-critic.md)). Run it once a key is available:
 
 ```bash
-cd compiler
-python retrieval_eval.py   # needs OPENAI_API_KEY in .env
+node compiler/retrievalEval.js   # optional embedding tier needs OPENAI_API_KEY in .env
 ```
 
 It will report Recall@5/nDCG@5 for `hybrid_bm25_embeddings` (BM25 fused
@@ -123,7 +113,7 @@ results.
 
 ## What's mechanically verified without a key
 
-`test_hybrid_retrieval.py` (14 tests) covers BM25 ranking/edge-cases,
+`backend/src/lib/hybridRetrieval.test.ts` covers BM25 ranking/edge-cases,
 cosine similarity properties, RRF's rank-based fusion behavior (including a
 document missing from one of the fused lists), and the LLM reranker's
 parsing/fallback/`top_n` behavior via a fake LLM. `test_llm_client_embed.py`

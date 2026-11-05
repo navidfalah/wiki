@@ -1,6 +1,6 @@
 export const pipelineArchitecture = {
   'pipeline-architecture.title': 'Pipeline Architecture',
-  'pipeline-architecture.introHtml': 'Choose source folders and privacy settings. AI is used for topic extraction and page writing; links are added by Python.',
+  'pipeline-architecture.introHtml': 'Choose source folders and privacy settings. AI is used for topic extraction and page writing; links are added by the JavaScript compiler.',
   'pipeline-architecture.stages': 'Pipeline stages',
   'pipeline-architecture.stagesHint': 'Extra model reviews and automatic correction feedback are not part of the standard build.',
   'pipeline-architecture.critic': 'Critic pass',

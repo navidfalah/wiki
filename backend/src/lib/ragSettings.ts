@@ -1,12 +1,12 @@
 /**
  * RAG Architecture: lets the wiki UI pick which retrieval architecture chat
- * uses. "hybrid" is hybrid_retrieval.py's three-tier stack (BM25 always;
+ * uses. "hybrid" is the three-tier stack (BM25 always;
  * embedding fusion and LLM reranking each optional, chosen via
- * retrieval_mode -- see rag_engine.py's module docstring); the other
- * architecture values are compiler/rag_architectures.py's self-contained
+ * retrieval_mode -- see backend/src/lib/chatEngine.js's module docstring); the other
+ * architecture values are the self-contained
  * strategies (naive, HyDE, RAG-Fusion, GraphRAG-lite, Corrective RAG -- see
  * documentation/38-rag-architectures.md), each ignoring retrieval_mode
- * entirely. Also tunes BM25's k1/b, opts into vector_store.py's persistent
+ * entirely. Also tunes BM25's k1/b, opts into vectorStore.js's persistent
  * embedding store instead of re-embedding the corpus every call (only
  * meaningful for the "hybrid" architecture), and forces extractive answers
  * (skip the chat model entirely) even when one is configured.

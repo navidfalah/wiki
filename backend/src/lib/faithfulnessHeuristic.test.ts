@@ -66,4 +66,11 @@ describe('faithfulness heuristic', () => {
     expect(results[0].report.unsupportedRate).toBe(0);
     expect(formatCorpusReport(results)).toContain('1 compiled wiki pages');
   });
+
+  it('checks the committed wiki corpus using its source references', () => {
+    const results = checkCorpusGroundedness();
+    expect(results.length).toBeGreaterThan(100);
+    expect(results.every((result) => result.report.checkableCount >= 0)).toBe(true);
+    expect(results.reduce((sum, result) => sum + result.report.checkableCount, 0)).toBeGreaterThan(1000);
+  });
 });

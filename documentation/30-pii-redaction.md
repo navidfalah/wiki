@@ -7,14 +7,14 @@ only module in the series that's deliberately not LLM-based at all.
 
 | | |
 |---|---|
-| Module | `compiler/pii_redaction.py` |
-| Evaluation | `compiler/pii_redaction_eval.py` |
+| Module | `backend/src/lib/piiRedaction.js` |
+| Evaluation | `backend/src/lib/piiRedactionEval.js` (`node compiler/piiRedactionEval.js`) |
 | Pipeline integration | `main.js --redact-pii` / `WIKI_REDACT_PII=true` |
-| Tests | `test_pii_redaction.py`, `test_pii_redaction_eval.py` |
+| JavaScript evaluation tests | `backend/src/lib/piiRedactionEval.test.js`; redaction unit tests are in `piiRedaction.test.ts` |
 
 ## Why offline, and why not everything is redacted
 
-`pii_redaction.py` is a pure regex pass — stdlib `re` only, no network, no
+`piiRedaction.js` is a pure regex pass — no network, no
 model. That's the point, not a shortcut: redaction has to run *before*
 `OPENAI_API_KEY` is ever used, so it can't itself depend on the thing it's
 protecting against. The "local-model fallback for fully offline use" from
@@ -46,7 +46,7 @@ caller that wants it, but isn't the pipeline default.
 
 ## Mechanics
 
-`redact_text(text, policy)` finds every match of the policy's categories,
+`redactText(text, policy)` finds every match of the policy's categories,
 Luhn-validates credit-card-shaped numbers to cut false positives (a 16-digit
 non-card number like a malformed reference ID won't be flagged), and
 replaces each match with a stable per-value placeholder —
@@ -76,7 +76,7 @@ or `WIKI_REDACT_PII=false` to opt back out.
 
 Every other evaluation in this series has an "at least one tier requires
 OPENAI_API_KEY, not run in this environment" caveat. This one doesn't —
-`pii_redaction_eval.py`'s 13 hand-labeled fixtures (obviously-fake values in
+`piiRedactionEval.js`'s 13 hand-labeled fixtures (obviously-fake values in
 realistic Aurora Labs-style sentences, never real PII) run entirely offline
 against the actual detectors:
 
@@ -130,30 +130,24 @@ This module stays regex-only, dependency-free, and always-available *by
 default* — that's still the right default given this project's actual
 constraint (redaction has to run before any network call, including before
 an NER model download would even be possible on first use). But
-`redact_text()` now accepts an optional `ner_backend` callable
-(`pii_redaction.NerBackend`) that plugs into the exact same
+`redactText()` now accepts an optional `nerBackend` callable that plugs into the exact same
 sort/placeholder/overlap-resolution pipeline the regex matches already go
 through — an NER hit is just another `(start, end, category, value)` span
 to that pipeline, it doesn't care where it came from.
 
-`load_spacy_ner_backend()` builds one from spaCy if it's installed, and
-returns `None` (not an error) if the package or model isn't present — same
-graceful-degradation shape as `entity_resolution.py`'s optional embedding/
-LLM tiers. **This environment has no spaCy installed**, so
-`pii_redaction_eval.py`'s NER section prints a skip message rather than a
+The JavaScript runtime accepts a backend supplied by the caller; it does not
+bundle or download an NER model. The evaluation command therefore prints a
+skip message rather than a
 number:
 
 ```
 === Optional NER tier (location category) ===
-No spaCy installed in this environment — NER_ONLY_FIXTURES not run. ...
+No NER backend is configured for this JavaScript runtime; NER-only fixtures were not scored.
 ```
 
-To reproduce real numbers: `pip install spacy && python -m spacy download
-en_core_web_sm`, then re-run `python pii_redaction_eval.py` — it auto-
-detects the backend and scores `NER_ONLY_FIXTURES` (kept separate from the
-main `FIXTURES` list precisely so the always-offline headline numbers
-above don't silently start depending on an optional dependency being
-present).
+To score the NER-only fixtures, pass an explicitly configured JavaScript
+NER backend to `runEval()` with `NER_AUGMENTED_POLICY`. The default evaluation
+remains offline and does not claim NER recall.
 
 **Deliberately no person-name NER category.** `NER_CATEGORIES` currently
 holds only `"location"`. A `"person"` category would be the most obvious

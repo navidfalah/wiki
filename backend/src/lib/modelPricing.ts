@@ -1,6 +1,6 @@
 /**
  * Static list-price table (USD per 1M tokens) used to estimate spend from
- * the token counts compiler/llm_client.py already records on every pipeline
+ * the token counts backend/src/lib/modelClient.js already records on every pipeline
  * run (see pipelineRuns.ts's `token_usage`). These are published list prices,
  * not the user's actual invoice -- a custom/negotiated rate, a local model,
  * or a provider not in this table won't be priced (see `lookupModelPricing`

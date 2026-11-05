@@ -8,7 +8,7 @@
 --
 -- This is fictional data for the same "Aurora Labs" sample domain the
 -- rest of this project's dummy-data generators use (see
--- scripts/dev/generate_junk_data.py) -- a small internal knowledge base:
+-- retired sample-data generators) -- a small internal knowledge base:
 -- who's on which team, what they're building, and a handful of support
 -- FAQs. It exists purely so the /database page's "Fill the form with the
 -- sample database's values" button has a real database to connect to and
