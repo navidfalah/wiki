@@ -1,0 +1,33 @@
+dataset: sample-09
+synthetic: true
+items:
+  - name: "lantern orbit"
+    count: 346
+  - name: "cobalt puzzle"
+    count: 414
+  - name: "puzzle lantern"
+    count: 304
+  - name: "pixel mango"
+    count: 285
+  - name: "orbit teapot"
+    count: 276
+  - name: "puzzle velvet"
+    count: 221
+  - name: "pocket cloud"
+    count: 411
+  - name: "cobalt pixel"
+    count: 302
+  - name: "puzzle lantern"
+    count: 398
+  - name: "cloud mango"
+    count: 320
+  - name: "puzzle saffron"
+    count: 192
+  - name: "meadow puzzle"
+    count: 184
+  - name: "comet robot"
+    count: 279
+  - name: "mango moss"
+    count: 238
+  - name: "saffron moss"
+    count: 251

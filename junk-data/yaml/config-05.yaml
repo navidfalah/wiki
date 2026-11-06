@@ -1,0 +1,33 @@
+dataset: sample-05
+synthetic: true
+items:
+  - name: "orbit puzzle"
+    count: 462
+  - name: "meadow meadow"
+    count: 367
+  - name: "pocket pocket"
+    count: 303
+  - name: "pocket cloud"
+    count: 58
+  - name: "velvet velvet"
+    count: 312
+  - name: "orbit velvet"
+    count: 206
+  - name: "comet meadow"
+    count: 207
+  - name: "moss velvet"
+    count: 425
+  - name: "lantern mango"
+    count: 265
+  - name: "lantern cobalt"
+    count: 481
+  - name: "pixel puzzle"
+    count: 218
+  - name: "pocket meadow"
+    count: 162
+  - name: "mango puzzle"
+    count: 53
+  - name: "teapot teapot"
+    count: 47
+  - name: "orbit robot"
+    count: 105

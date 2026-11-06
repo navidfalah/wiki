@@ -1,0 +1,256 @@
+{
+  "dataset": "sample-11",
+  "synthetic": true,
+  "items": [
+    {
+      "id": 1,
+      "name": "saffron teapot",
+      "tags": [
+        "lantern",
+        "pocket",
+        "moss"
+      ],
+      "value": 354
+    },
+    {
+      "id": 2,
+      "name": "pocket pixel",
+      "tags": [
+        "river",
+        "pocket",
+        "cloud"
+      ],
+      "value": 51
+    },
+    {
+      "id": 3,
+      "name": "cobalt teapot",
+      "tags": [
+        "lantern",
+        "moss",
+        "mango"
+      ],
+      "value": 335
+    },
+    {
+      "id": 4,
+      "name": "saffron robot",
+      "tags": [
+        "puzzle",
+        "saffron",
+        "robot"
+      ],
+      "value": 625
+    },
+    {
+      "id": 5,
+      "name": "river pixel",
+      "tags": [
+        "puzzle",
+        "pocket",
+        "pixel"
+      ],
+      "value": 643
+    },
+    {
+      "id": 6,
+      "name": "pixel robot",
+      "tags": [
+        "pocket",
+        "mango",
+        "pixel"
+      ],
+      "value": 576
+    },
+    {
+      "id": 7,
+      "name": "cloud saffron",
+      "tags": [
+        "river",
+        "mango",
+        "orbit"
+      ],
+      "value": 451
+    },
+    {
+      "id": 8,
+      "name": "puzzle mango",
+      "tags": [
+        "river",
+        "cloud",
+        "pocket"
+      ],
+      "value": 489
+    },
+    {
+      "id": 9,
+      "name": "mango lantern",
+      "tags": [
+        "pocket",
+        "meadow",
+        "moss"
+      ],
+      "value": 350
+    },
+    {
+      "id": 10,
+      "name": "robot cobalt",
+      "tags": [
+        "meadow",
+        "moss",
+        "mango"
+      ],
+      "value": 227
+    },
+    {
+      "id": 11,
+      "name": "river orbit",
+      "tags": [
+        "teapot",
+        "cobalt",
+        "meadow"
+      ],
+      "value": 906
+    },
+    {
+      "id": 12,
+      "name": "river velvet",
+      "tags": [
+        "robot",
+        "moss",
+        "teapot"
+      ],
+      "value": 620
+    },
+    {
+      "id": 13,
+      "name": "meadow orbit",
+      "tags": [
+        "mango",
+        "pixel",
+        "saffron"
+      ],
+      "value": 788
+    },
+    {
+      "id": 14,
+      "name": "robot mango",
+      "tags": [
+        "comet",
+        "mango",
+        "robot"
+      ],
+      "value": 69
+    },
+    {
+      "id": 15,
+      "name": "comet river",
+      "tags": [
+        "saffron",
+        "cobalt",
+        "teapot"
+      ],
+      "value": 805
+    },
+    {
+      "id": 16,
+      "name": "pixel cobalt",
+      "tags": [
+        "river",
+        "puzzle",
+        "teapot"
+      ],
+      "value": 567
+    },
+    {
+      "id": 17,
+      "name": "comet cloud",
+      "tags": [
+        "mango",
+        "teapot",
+        "cloud"
+      ],
+      "value": 452
+    },
+    {
+      "id": 18,
+      "name": "orbit puzzle",
+      "tags": [
+        "mango",
+        "moss",
+        "velvet"
+      ],
+      "value": 688
+    },
+    {
+      "id": 19,
+      "name": "comet pocket",
+      "tags": [
+        "velvet",
+        "lantern",
+        "comet"
+      ],
+      "value": 203
+    },
+    {
+      "id": 20,
+      "name": "saffron meadow",
+      "tags": [
+        "pixel",
+        "moss",
+        "pocket"
+      ],
+      "value": 99
+    },
+    {
+      "id": 21,
+      "name": "pixel saffron",
+      "tags": [
+        "velvet",
+        "mango",
+        "cobalt"
+      ],
+      "value": 922
+    },
+    {
+      "id": 22,
+      "name": "moss pocket",
+      "tags": [
+        "velvet",
+        "puzzle",
+        "pixel"
+      ],
+      "value": 311
+    },
+    {
+      "id": 23,
+      "name": "puzzle teapot",
+      "tags": [
+        "river",
+        "pixel",
+        "meadow"
+      ],
+      "value": 147
+    },
+    {
+      "id": 24,
+      "name": "velvet velvet",
+      "tags": [
+        "moss",
+        "velvet",
+        "puzzle"
+      ],
+      "value": 315
+    },
+    {
+      "id": 25,
+      "name": "lantern mango",
+      "tags": [
+        "meadow",
+        "teapot",
+        "cobalt"
+      ],
+      "value": 846
+    }
+  ]
+}

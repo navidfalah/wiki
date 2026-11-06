@@ -1,0 +1,33 @@
+dataset: sample-12
+synthetic: true
+items:
+  - name: "velvet pixel"
+    count: 169
+  - name: "pixel puzzle"
+    count: 126
+  - name: "river cloud"
+    count: 29
+  - name: "mango river"
+    count: 371
+  - name: "velvet river"
+    count: 330
+  - name: "pocket mango"
+    count: 330
+  - name: "pixel moss"
+    count: 98
+  - name: "mango velvet"
+    count: 233
+  - name: "pixel cobalt"
+    count: 313
+  - name: "comet pocket"
+    count: 190
+  - name: "velvet lantern"
+    count: 38
+  - name: "moss meadow"
+    count: 75
+  - name: "robot mango"
+    count: 253
+  - name: "meadow saffron"
+    count: 52
+  - name: "pixel cobalt"
+    count: 397

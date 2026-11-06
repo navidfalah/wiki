@@ -1,0 +1,33 @@
+dataset: sample-04
+synthetic: true
+items:
+  - name: "lantern cobalt"
+    count: 3
+  - name: "pocket pocket"
+    count: 74
+  - name: "river cloud"
+    count: 323
+  - name: "cobalt moss"
+    count: 400
+  - name: "puzzle meadow"
+    count: 117
+  - name: "puzzle puzzle"
+    count: 426
+  - name: "cobalt pocket"
+    count: 225
+  - name: "puzzle meadow"
+    count: 291
+  - name: "lantern comet"
+    count: 350
+  - name: "lantern orbit"
+    count: 351
+  - name: "moss puzzle"
+    count: 52
+  - name: "robot cobalt"
+    count: 68
+  - name: "river teapot"
+    count: 172
+  - name: "puzzle river"
+    count: 268
+  - name: "river saffron"
+    count: 285

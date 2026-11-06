@@ -1,0 +1,33 @@
+dataset: sample-10
+synthetic: true
+items:
+  - name: "teapot river"
+    count: 214
+  - name: "cobalt meadow"
+    count: 113
+  - name: "saffron saffron"
+    count: 82
+  - name: "teapot cloud"
+    count: 357
+  - name: "meadow velvet"
+    count: 251
+  - name: "velvet teapot"
+    count: 140
+  - name: "lantern velvet"
+    count: 353
+  - name: "river puzzle"
+    count: 352
+  - name: "pocket teapot"
+    count: 411
+  - name: "saffron meadow"
+    count: 61
+  - name: "saffron river"
+    count: 376
+  - name: "mango robot"
+    count: 485
+  - name: "pocket meadow"
+    count: 372
+  - name: "lantern cloud"
+    count: 441
+  - name: "meadow cobalt"
+    count: 39

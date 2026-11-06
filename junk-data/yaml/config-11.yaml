@@ -1,0 +1,33 @@
+dataset: sample-11
+synthetic: true
+items:
+  - name: "moss lantern"
+    count: 36
+  - name: "mango pixel"
+    count: 301
+  - name: "orbit cobalt"
+    count: 425
+  - name: "teapot comet"
+    count: 498
+  - name: "cloud comet"
+    count: 161
+  - name: "teapot cobalt"
+    count: 147
+  - name: "comet cobalt"
+    count: 145
+  - name: "orbit cobalt"
+    count: 325
+  - name: "river meadow"
+    count: 71
+  - name: "lantern cobalt"
+    count: 371
+  - name: "saffron orbit"
+    count: 53
+  - name: "lantern river"
+    count: 495
+  - name: "mango river"
+    count: 222
+  - name: "puzzle mango"
+    count: 34
+  - name: "cloud pocket"
+    count: 222

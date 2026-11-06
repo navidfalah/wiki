@@ -1,0 +1,256 @@
+{
+  "dataset": "sample-09",
+  "synthetic": true,
+  "items": [
+    {
+      "id": 1,
+      "name": "saffron pixel",
+      "tags": [
+        "robot",
+        "cobalt",
+        "puzzle"
+      ],
+      "value": 623
+    },
+    {
+      "id": 2,
+      "name": "velvet cloud",
+      "tags": [
+        "moss",
+        "robot",
+        "orbit"
+      ],
+      "value": 965
+    },
+    {
+      "id": 3,
+      "name": "orbit robot",
+      "tags": [
+        "moss",
+        "meadow",
+        "robot"
+      ],
+      "value": 665
+    },
+    {
+      "id": 4,
+      "name": "cloud puzzle",
+      "tags": [
+        "robot",
+        "cloud",
+        "pocket"
+      ],
+      "value": 448
+    },
+    {
+      "id": 5,
+      "name": "robot meadow",
+      "tags": [
+        "pixel",
+        "lantern",
+        "orbit"
+      ],
+      "value": 238
+    },
+    {
+      "id": 6,
+      "name": "meadow puzzle",
+      "tags": [
+        "mango",
+        "pixel",
+        "cobalt"
+      ],
+      "value": 123
+    },
+    {
+      "id": 7,
+      "name": "cloud puzzle",
+      "tags": [
+        "pocket",
+        "saffron",
+        "cloud"
+      ],
+      "value": 477
+    },
+    {
+      "id": 8,
+      "name": "robot cloud",
+      "tags": [
+        "orbit",
+        "robot",
+        "river"
+      ],
+      "value": 372
+    },
+    {
+      "id": 9,
+      "name": "puzzle orbit",
+      "tags": [
+        "pixel",
+        "cobalt",
+        "velvet"
+      ],
+      "value": 48
+    },
+    {
+      "id": 10,
+      "name": "puzzle pocket",
+      "tags": [
+        "pocket",
+        "cobalt",
+        "velvet"
+      ],
+      "value": 702
+    },
+    {
+      "id": 11,
+      "name": "pixel cloud",
+      "tags": [
+        "pocket",
+        "pixel",
+        "mango"
+      ],
+      "value": 269
+    },
+    {
+      "id": 12,
+      "name": "puzzle pocket",
+      "tags": [
+        "pocket",
+        "saffron",
+        "lantern"
+      ],
+      "value": 882
+    },
+    {
+      "id": 13,
+      "name": "teapot orbit",
+      "tags": [
+        "cobalt",
+        "comet",
+        "orbit"
+      ],
+      "value": 442
+    },
+    {
+      "id": 14,
+      "name": "lantern lantern",
+      "tags": [
+        "mango",
+        "cloud",
+        "comet"
+      ],
+      "value": 362
+    },
+    {
+      "id": 15,
+      "name": "puzzle moss",
+      "tags": [
+        "mango",
+        "puzzle",
+        "orbit"
+      ],
+      "value": 233
+    },
+    {
+      "id": 16,
+      "name": "saffron mango",
+      "tags": [
+        "teapot",
+        "cloud",
+        "lantern"
+      ],
+      "value": 898
+    },
+    {
+      "id": 17,
+      "name": "pixel mango",
+      "tags": [
+        "meadow",
+        "pocket",
+        "saffron"
+      ],
+      "value": 82
+    },
+    {
+      "id": 18,
+      "name": "cloud teapot",
+      "tags": [
+        "cobalt",
+        "moss",
+        "teapot"
+      ],
+      "value": 253
+    },
+    {
+      "id": 19,
+      "name": "river velvet",
+      "tags": [
+        "comet",
+        "cloud",
+        "lantern"
+      ],
+      "value": 467
+    },
+    {
+      "id": 20,
+      "name": "moss puzzle",
+      "tags": [
+        "lantern",
+        "moss",
+        "comet"
+      ],
+      "value": 720
+    },
+    {
+      "id": 21,
+      "name": "comet pixel",
+      "tags": [
+        "lantern",
+        "comet",
+        "robot"
+      ],
+      "value": 709
+    },
+    {
+      "id": 22,
+      "name": "robot cobalt",
+      "tags": [
+        "robot",
+        "mango",
+        "orbit"
+      ],
+      "value": 971
+    },
+    {
+      "id": 23,
+      "name": "orbit pixel",
+      "tags": [
+        "cloud",
+        "pocket",
+        "comet"
+      ],
+      "value": 765
+    },
+    {
+      "id": 24,
+      "name": "comet mango",
+      "tags": [
+        "mango",
+        "meadow",
+        "river"
+      ],
+      "value": 643
+    },
+    {
+      "id": 25,
+      "name": "orbit mango",
+      "tags": [
+        "mango",
+        "saffron",
+        "pixel"
+      ],
+      "value": 938
+    }
+  ]
+}

@@ -1,0 +1,256 @@
+{
+  "dataset": "sample-10",
+  "synthetic": true,
+  "items": [
+    {
+      "id": 1,
+      "name": "mango mango",
+      "tags": [
+        "pixel",
+        "meadow",
+        "puzzle"
+      ],
+      "value": 836
+    },
+    {
+      "id": 2,
+      "name": "teapot comet",
+      "tags": [
+        "robot",
+        "cobalt",
+        "meadow"
+      ],
+      "value": 49
+    },
+    {
+      "id": 3,
+      "name": "velvet velvet",
+      "tags": [
+        "moss",
+        "river",
+        "robot"
+      ],
+      "value": 808
+    },
+    {
+      "id": 4,
+      "name": "comet teapot",
+      "tags": [
+        "lantern",
+        "puzzle",
+        "orbit"
+      ],
+      "value": 371
+    },
+    {
+      "id": 5,
+      "name": "saffron cloud",
+      "tags": [
+        "pocket",
+        "meadow",
+        "pixel"
+      ],
+      "value": 194
+    },
+    {
+      "id": 6,
+      "name": "cobalt comet",
+      "tags": [
+        "pocket",
+        "cobalt",
+        "cloud"
+      ],
+      "value": 618
+    },
+    {
+      "id": 7,
+      "name": "pixel cobalt",
+      "tags": [
+        "saffron",
+        "pocket",
+        "moss"
+      ],
+      "value": 261
+    },
+    {
+      "id": 8,
+      "name": "cloud cloud",
+      "tags": [
+        "comet",
+        "cobalt",
+        "saffron"
+      ],
+      "value": 141
+    },
+    {
+      "id": 9,
+      "name": "cobalt pocket",
+      "tags": [
+        "pocket",
+        "velvet",
+        "cloud"
+      ],
+      "value": 700
+    },
+    {
+      "id": 10,
+      "name": "saffron puzzle",
+      "tags": [
+        "velvet",
+        "mango",
+        "pixel"
+      ],
+      "value": 244
+    },
+    {
+      "id": 11,
+      "name": "puzzle robot",
+      "tags": [
+        "river",
+        "lantern",
+        "moss"
+      ],
+      "value": 795
+    },
+    {
+      "id": 12,
+      "name": "velvet pixel",
+      "tags": [
+        "puzzle",
+        "velvet",
+        "orbit"
+      ],
+      "value": 841
+    },
+    {
+      "id": 13,
+      "name": "orbit lantern",
+      "tags": [
+        "teapot",
+        "velvet",
+        "mango"
+      ],
+      "value": 876
+    },
+    {
+      "id": 14,
+      "name": "teapot pocket",
+      "tags": [
+        "puzzle",
+        "velvet",
+        "lantern"
+      ],
+      "value": 190
+    },
+    {
+      "id": 15,
+      "name": "saffron orbit",
+      "tags": [
+        "pocket",
+        "cloud",
+        "pixel"
+      ],
+      "value": 183
+    },
+    {
+      "id": 16,
+      "name": "meadow orbit",
+      "tags": [
+        "velvet",
+        "comet",
+        "pocket"
+      ],
+      "value": 161
+    },
+    {
+      "id": 17,
+      "name": "robot cloud",
+      "tags": [
+        "cloud",
+        "moss",
+        "meadow"
+      ],
+      "value": 457
+    },
+    {
+      "id": 18,
+      "name": "pocket puzzle",
+      "tags": [
+        "meadow",
+        "mango",
+        "moss"
+      ],
+      "value": 91
+    },
+    {
+      "id": 19,
+      "name": "puzzle orbit",
+      "tags": [
+        "meadow",
+        "pixel",
+        "saffron"
+      ],
+      "value": 222
+    },
+    {
+      "id": 20,
+      "name": "lantern cloud",
+      "tags": [
+        "lantern",
+        "pixel",
+        "robot"
+      ],
+      "value": 935
+    },
+    {
+      "id": 21,
+      "name": "orbit river",
+      "tags": [
+        "velvet",
+        "saffron",
+        "pixel"
+      ],
+      "value": 315
+    },
+    {
+      "id": 22,
+      "name": "pocket pocket",
+      "tags": [
+        "cloud",
+        "cobalt",
+        "meadow"
+      ],
+      "value": 229
+    },
+    {
+      "id": 23,
+      "name": "mango moss",
+      "tags": [
+        "cloud",
+        "comet",
+        "velvet"
+      ],
+      "value": 649
+    },
+    {
+      "id": 24,
+      "name": "meadow velvet",
+      "tags": [
+        "teapot",
+        "lantern",
+        "cloud"
+      ],
+      "value": 170
+    },
+    {
+      "id": 25,
+      "name": "velvet moss",
+      "tags": [
+        "teapot",
+        "velvet",
+        "pocket"
+      ],
+      "value": 374
+    }
+  ]
+}

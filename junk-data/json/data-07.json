@@ -1,0 +1,256 @@
+{
+  "dataset": "sample-07",
+  "synthetic": true,
+  "items": [
+    {
+      "id": 1,
+      "name": "meadow cobalt",
+      "tags": [
+        "comet",
+        "teapot",
+        "orbit"
+      ],
+      "value": 802
+    },
+    {
+      "id": 2,
+      "name": "teapot pocket",
+      "tags": [
+        "cobalt",
+        "velvet",
+        "puzzle"
+      ],
+      "value": 535
+    },
+    {
+      "id": 3,
+      "name": "cloud robot",
+      "tags": [
+        "mango",
+        "meadow",
+        "velvet"
+      ],
+      "value": 427
+    },
+    {
+      "id": 4,
+      "name": "cloud cloud",
+      "tags": [
+        "lantern",
+        "puzzle",
+        "saffron"
+      ],
+      "value": 771
+    },
+    {
+      "id": 5,
+      "name": "saffron cobalt",
+      "tags": [
+        "puzzle",
+        "lantern",
+        "pixel"
+      ],
+      "value": 937
+    },
+    {
+      "id": 6,
+      "name": "moss moss",
+      "tags": [
+        "saffron",
+        "meadow",
+        "pixel"
+      ],
+      "value": 704
+    },
+    {
+      "id": 7,
+      "name": "pixel pixel",
+      "tags": [
+        "pixel",
+        "velvet",
+        "saffron"
+      ],
+      "value": 447
+    },
+    {
+      "id": 8,
+      "name": "river cloud",
+      "tags": [
+        "comet",
+        "velvet",
+        "meadow"
+      ],
+      "value": 977
+    },
+    {
+      "id": 9,
+      "name": "moss orbit",
+      "tags": [
+        "mango",
+        "pocket",
+        "meadow"
+      ],
+      "value": 566
+    },
+    {
+      "id": 10,
+      "name": "pixel robot",
+      "tags": [
+        "river",
+        "robot",
+        "pixel"
+      ],
+      "value": 696
+    },
+    {
+      "id": 11,
+      "name": "moss pocket",
+      "tags": [
+        "pocket",
+        "puzzle",
+        "velvet"
+      ],
+      "value": 524
+    },
+    {
+      "id": 12,
+      "name": "pixel lantern",
+      "tags": [
+        "orbit",
+        "robot",
+        "puzzle"
+      ],
+      "value": 624
+    },
+    {
+      "id": 13,
+      "name": "cloud teapot",
+      "tags": [
+        "puzzle",
+        "teapot",
+        "comet"
+      ],
+      "value": 620
+    },
+    {
+      "id": 14,
+      "name": "moss pocket",
+      "tags": [
+        "lantern",
+        "puzzle",
+        "cobalt"
+      ],
+      "value": 526
+    },
+    {
+      "id": 15,
+      "name": "meadow orbit",
+      "tags": [
+        "velvet",
+        "orbit",
+        "teapot"
+      ],
+      "value": 347
+    },
+    {
+      "id": 16,
+      "name": "river moss",
+      "tags": [
+        "lantern",
+        "cobalt",
+        "comet"
+      ],
+      "value": 79
+    },
+    {
+      "id": 17,
+      "name": "cobalt puzzle",
+      "tags": [
+        "teapot",
+        "pocket",
+        "mango"
+      ],
+      "value": 492
+    },
+    {
+      "id": 18,
+      "name": "cobalt saffron",
+      "tags": [
+        "orbit",
+        "cloud",
+        "comet"
+      ],
+      "value": 599
+    },
+    {
+      "id": 19,
+      "name": "meadow orbit",
+      "tags": [
+        "saffron",
+        "pocket",
+        "comet"
+      ],
+      "value": 834
+    },
+    {
+      "id": 20,
+      "name": "comet robot",
+      "tags": [
+        "robot",
+        "river",
+        "lantern"
+      ],
+      "value": 365
+    },
+    {
+      "id": 21,
+      "name": "teapot cobalt",
+      "tags": [
+        "robot",
+        "mango",
+        "pixel"
+      ],
+      "value": 260
+    },
+    {
+      "id": 22,
+      "name": "river saffron",
+      "tags": [
+        "mango",
+        "teapot",
+        "velvet"
+      ],
+      "value": 742
+    },
+    {
+      "id": 23,
+      "name": "teapot river",
+      "tags": [
+        "saffron",
+        "pocket",
+        "comet"
+      ],
+      "value": 459
+    },
+    {
+      "id": 24,
+      "name": "orbit cloud",
+      "tags": [
+        "pocket",
+        "velvet",
+        "mango"
+      ],
+      "value": 511
+    },
+    {
+      "id": 25,
+      "name": "orbit pixel",
+      "tags": [
+        "meadow",
+        "orbit",
+        "lantern"
+      ],
+      "value": 122
+    }
+  ]
+}

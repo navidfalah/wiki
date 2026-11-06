@@ -1,0 +1,256 @@
+{
+  "dataset": "sample-12",
+  "synthetic": true,
+  "items": [
+    {
+      "id": 1,
+      "name": "mango teapot",
+      "tags": [
+        "meadow",
+        "orbit",
+        "cobalt"
+      ],
+      "value": 874
+    },
+    {
+      "id": 2,
+      "name": "saffron comet",
+      "tags": [
+        "cobalt",
+        "moss",
+        "robot"
+      ],
+      "value": 427
+    },
+    {
+      "id": 3,
+      "name": "mango river",
+      "tags": [
+        "cloud",
+        "velvet",
+        "saffron"
+      ],
+      "value": 887
+    },
+    {
+      "id": 4,
+      "name": "cobalt cobalt",
+      "tags": [
+        "cobalt",
+        "saffron",
+        "lantern"
+      ],
+      "value": 562
+    },
+    {
+      "id": 5,
+      "name": "cloud lantern",
+      "tags": [
+        "velvet",
+        "orbit",
+        "puzzle"
+      ],
+      "value": 220
+    },
+    {
+      "id": 6,
+      "name": "orbit teapot",
+      "tags": [
+        "comet",
+        "meadow",
+        "robot"
+      ],
+      "value": 563
+    },
+    {
+      "id": 7,
+      "name": "pixel puzzle",
+      "tags": [
+        "saffron",
+        "mango",
+        "meadow"
+      ],
+      "value": 935
+    },
+    {
+      "id": 8,
+      "name": "river puzzle",
+      "tags": [
+        "meadow",
+        "comet",
+        "robot"
+      ],
+      "value": 276
+    },
+    {
+      "id": 9,
+      "name": "cloud pocket",
+      "tags": [
+        "pixel",
+        "velvet",
+        "orbit"
+      ],
+      "value": 266
+    },
+    {
+      "id": 10,
+      "name": "cobalt pixel",
+      "tags": [
+        "saffron",
+        "comet",
+        "lantern"
+      ],
+      "value": 32
+    },
+    {
+      "id": 11,
+      "name": "cobalt mango",
+      "tags": [
+        "robot",
+        "pixel",
+        "pocket"
+      ],
+      "value": 245
+    },
+    {
+      "id": 12,
+      "name": "lantern lantern",
+      "tags": [
+        "comet",
+        "river",
+        "saffron"
+      ],
+      "value": 0
+    },
+    {
+      "id": 13,
+      "name": "pixel river",
+      "tags": [
+        "mango",
+        "lantern",
+        "river"
+      ],
+      "value": 771
+    },
+    {
+      "id": 14,
+      "name": "pixel comet",
+      "tags": [
+        "comet",
+        "cloud",
+        "puzzle"
+      ],
+      "value": 94
+    },
+    {
+      "id": 15,
+      "name": "orbit orbit",
+      "tags": [
+        "orbit",
+        "pixel",
+        "lantern"
+      ],
+      "value": 753
+    },
+    {
+      "id": 16,
+      "name": "pocket comet",
+      "tags": [
+        "mango",
+        "puzzle",
+        "lantern"
+      ],
+      "value": 335
+    },
+    {
+      "id": 17,
+      "name": "moss saffron",
+      "tags": [
+        "cobalt",
+        "puzzle",
+        "pixel"
+      ],
+      "value": 817
+    },
+    {
+      "id": 18,
+      "name": "saffron orbit",
+      "tags": [
+        "pocket",
+        "river",
+        "robot"
+      ],
+      "value": 53
+    },
+    {
+      "id": 19,
+      "name": "pixel cloud",
+      "tags": [
+        "puzzle",
+        "comet",
+        "pixel"
+      ],
+      "value": 56
+    },
+    {
+      "id": 20,
+      "name": "comet pocket",
+      "tags": [
+        "river",
+        "lantern",
+        "velvet"
+      ],
+      "value": 679
+    },
+    {
+      "id": 21,
+      "name": "cloud pocket",
+      "tags": [
+        "cobalt",
+        "pixel",
+        "saffron"
+      ],
+      "value": 427
+    },
+    {
+      "id": 22,
+      "name": "meadow cloud",
+      "tags": [
+        "teapot",
+        "cobalt",
+        "meadow"
+      ],
+      "value": 294
+    },
+    {
+      "id": 23,
+      "name": "saffron teapot",
+      "tags": [
+        "orbit",
+        "velvet",
+        "moss"
+      ],
+      "value": 393
+    },
+    {
+      "id": 24,
+      "name": "moss mango",
+      "tags": [
+        "cobalt",
+        "cloud",
+        "comet"
+      ],
+      "value": 58
+    },
+    {
+      "id": 25,
+      "name": "cobalt moss",
+      "tags": [
+        "meadow",
+        "saffron",
+        "orbit"
+      ],
+      "value": 526
+    }
+  ]
+}

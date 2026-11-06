@@ -1,2 +1,0 @@
-device	site	interval_minutes	firmware	state	synthetic
-NW2-004	GH-03	15	0.9.4-rc2	active	true

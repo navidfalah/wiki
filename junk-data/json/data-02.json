@@ -1,0 +1,256 @@
+{
+  "dataset": "sample-02",
+  "synthetic": true,
+  "items": [
+    {
+      "id": 1,
+      "name": "meadow mango",
+      "tags": [
+        "mango",
+        "comet",
+        "cobalt"
+      ],
+      "value": 183
+    },
+    {
+      "id": 2,
+      "name": "velvet cloud",
+      "tags": [
+        "cobalt",
+        "mango",
+        "comet"
+      ],
+      "value": 719
+    },
+    {
+      "id": 3,
+      "name": "cobalt mango",
+      "tags": [
+        "moss",
+        "mango",
+        "orbit"
+      ],
+      "value": 590
+    },
+    {
+      "id": 4,
+      "name": "moss teapot",
+      "tags": [
+        "pixel",
+        "comet",
+        "mango"
+      ],
+      "value": 800
+    },
+    {
+      "id": 5,
+      "name": "teapot comet",
+      "tags": [
+        "robot",
+        "mango",
+        "pixel"
+      ],
+      "value": 887
+    },
+    {
+      "id": 6,
+      "name": "mango teapot",
+      "tags": [
+        "teapot",
+        "robot",
+        "cobalt"
+      ],
+      "value": 968
+    },
+    {
+      "id": 7,
+      "name": "robot lantern",
+      "tags": [
+        "comet",
+        "moss",
+        "river"
+      ],
+      "value": 887
+    },
+    {
+      "id": 8,
+      "name": "meadow meadow",
+      "tags": [
+        "comet",
+        "river",
+        "saffron"
+      ],
+      "value": 812
+    },
+    {
+      "id": 9,
+      "name": "pixel orbit",
+      "tags": [
+        "teapot",
+        "pixel",
+        "meadow"
+      ],
+      "value": 350
+    },
+    {
+      "id": 10,
+      "name": "pocket cobalt",
+      "tags": [
+        "mango",
+        "pixel",
+        "orbit"
+      ],
+      "value": 545
+    },
+    {
+      "id": 11,
+      "name": "velvet pocket",
+      "tags": [
+        "orbit",
+        "meadow",
+        "teapot"
+      ],
+      "value": 332
+    },
+    {
+      "id": 12,
+      "name": "pixel saffron",
+      "tags": [
+        "river",
+        "puzzle",
+        "meadow"
+      ],
+      "value": 374
+    },
+    {
+      "id": 13,
+      "name": "moss velvet",
+      "tags": [
+        "cloud",
+        "teapot",
+        "velvet"
+      ],
+      "value": 904
+    },
+    {
+      "id": 14,
+      "name": "robot cobalt",
+      "tags": [
+        "river",
+        "lantern",
+        "orbit"
+      ],
+      "value": 660
+    },
+    {
+      "id": 15,
+      "name": "meadow puzzle",
+      "tags": [
+        "meadow",
+        "teapot",
+        "puzzle"
+      ],
+      "value": 848
+    },
+    {
+      "id": 16,
+      "name": "meadow cobalt",
+      "tags": [
+        "cloud",
+        "orbit",
+        "lantern"
+      ],
+      "value": 203
+    },
+    {
+      "id": 17,
+      "name": "mango comet",
+      "tags": [
+        "orbit",
+        "pixel",
+        "puzzle"
+      ],
+      "value": 795
+    },
+    {
+      "id": 18,
+      "name": "moss pixel",
+      "tags": [
+        "velvet",
+        "comet",
+        "cloud"
+      ],
+      "value": 869
+    },
+    {
+      "id": 19,
+      "name": "robot puzzle",
+      "tags": [
+        "orbit",
+        "mango",
+        "puzzle"
+      ],
+      "value": 249
+    },
+    {
+      "id": 20,
+      "name": "orbit pixel",
+      "tags": [
+        "lantern",
+        "moss",
+        "robot"
+      ],
+      "value": 77
+    },
+    {
+      "id": 21,
+      "name": "cloud pocket",
+      "tags": [
+        "mango",
+        "teapot",
+        "pocket"
+      ],
+      "value": 168
+    },
+    {
+      "id": 22,
+      "name": "moss moss",
+      "tags": [
+        "cloud",
+        "puzzle",
+        "pocket"
+      ],
+      "value": 624
+    },
+    {
+      "id": 23,
+      "name": "cobalt saffron",
+      "tags": [
+        "orbit",
+        "puzzle",
+        "pixel"
+      ],
+      "value": 310
+    },
+    {
+      "id": 24,
+      "name": "velvet velvet",
+      "tags": [
+        "pixel",
+        "moss",
+        "mango"
+      ],
+      "value": 535
+    },
+    {
+      "id": 25,
+      "name": "puzzle comet",
+      "tags": [
+        "puzzle",
+        "pixel",
+        "velvet"
+      ],
+      "value": 773
+    }
+  ]
+}

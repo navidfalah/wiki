@@ -1,0 +1,256 @@
+{
+  "dataset": "sample-05",
+  "synthetic": true,
+  "items": [
+    {
+      "id": 1,
+      "name": "lantern river",
+      "tags": [
+        "pixel",
+        "velvet",
+        "comet"
+      ],
+      "value": 559
+    },
+    {
+      "id": 2,
+      "name": "robot saffron",
+      "tags": [
+        "orbit",
+        "moss",
+        "cloud"
+      ],
+      "value": 151
+    },
+    {
+      "id": 3,
+      "name": "mango pixel",
+      "tags": [
+        "moss",
+        "teapot",
+        "lantern"
+      ],
+      "value": 483
+    },
+    {
+      "id": 4,
+      "name": "mango velvet",
+      "tags": [
+        "mango",
+        "pixel",
+        "saffron"
+      ],
+      "value": 194
+    },
+    {
+      "id": 5,
+      "name": "robot cobalt",
+      "tags": [
+        "orbit",
+        "moss",
+        "pocket"
+      ],
+      "value": 567
+    },
+    {
+      "id": 6,
+      "name": "meadow cobalt",
+      "tags": [
+        "puzzle",
+        "teapot",
+        "mango"
+      ],
+      "value": 86
+    },
+    {
+      "id": 7,
+      "name": "pocket cobalt",
+      "tags": [
+        "moss",
+        "velvet",
+        "mango"
+      ],
+      "value": 517
+    },
+    {
+      "id": 8,
+      "name": "pixel cloud",
+      "tags": [
+        "pixel",
+        "orbit",
+        "comet"
+      ],
+      "value": 508
+    },
+    {
+      "id": 9,
+      "name": "moss pixel",
+      "tags": [
+        "comet",
+        "orbit",
+        "meadow"
+      ],
+      "value": 420
+    },
+    {
+      "id": 10,
+      "name": "meadow comet",
+      "tags": [
+        "saffron",
+        "river",
+        "pocket"
+      ],
+      "value": 158
+    },
+    {
+      "id": 11,
+      "name": "saffron moss",
+      "tags": [
+        "velvet",
+        "robot",
+        "saffron"
+      ],
+      "value": 106
+    },
+    {
+      "id": 12,
+      "name": "puzzle moss",
+      "tags": [
+        "cobalt",
+        "cloud",
+        "orbit"
+      ],
+      "value": 885
+    },
+    {
+      "id": 13,
+      "name": "mango pixel",
+      "tags": [
+        "robot",
+        "cobalt",
+        "orbit"
+      ],
+      "value": 114
+    },
+    {
+      "id": 14,
+      "name": "river comet",
+      "tags": [
+        "lantern",
+        "comet",
+        "pixel"
+      ],
+      "value": 506
+    },
+    {
+      "id": 15,
+      "name": "puzzle pixel",
+      "tags": [
+        "river",
+        "pocket",
+        "robot"
+      ],
+      "value": 228
+    },
+    {
+      "id": 16,
+      "name": "moss saffron",
+      "tags": [
+        "comet",
+        "pocket",
+        "meadow"
+      ],
+      "value": 239
+    },
+    {
+      "id": 17,
+      "name": "river pocket",
+      "tags": [
+        "moss",
+        "lantern",
+        "pixel"
+      ],
+      "value": 881
+    },
+    {
+      "id": 18,
+      "name": "moss velvet",
+      "tags": [
+        "puzzle",
+        "river",
+        "cloud"
+      ],
+      "value": 876
+    },
+    {
+      "id": 19,
+      "name": "moss comet",
+      "tags": [
+        "saffron",
+        "velvet",
+        "robot"
+      ],
+      "value": 65
+    },
+    {
+      "id": 20,
+      "name": "orbit moss",
+      "tags": [
+        "teapot",
+        "river",
+        "velvet"
+      ],
+      "value": 290
+    },
+    {
+      "id": 21,
+      "name": "cloud river",
+      "tags": [
+        "puzzle",
+        "cobalt",
+        "velvet"
+      ],
+      "value": 26
+    },
+    {
+      "id": 22,
+      "name": "puzzle comet",
+      "tags": [
+        "comet",
+        "river",
+        "puzzle"
+      ],
+      "value": 425
+    },
+    {
+      "id": 23,
+      "name": "river teapot",
+      "tags": [
+        "meadow",
+        "saffron",
+        "mango"
+      ],
+      "value": 200
+    },
+    {
+      "id": 24,
+      "name": "lantern velvet",
+      "tags": [
+        "meadow",
+        "cloud",
+        "robot"
+      ],
+      "value": 83
+    },
+    {
+      "id": 25,
+      "name": "orbit meadow",
+      "tags": [
+        "saffron",
+        "teapot",
+        "robot"
+      ],
+      "value": 441
+    }
+  ]
+}

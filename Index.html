@@ -1,0 +1,35 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <base target="_blank">
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <script>try{var savedTheme=localStorage.getItem('wb-theme');document.documentElement.dataset.theme=savedTheme==='dark'?'dark':'light';}catch(_){document.documentElement.dataset.theme='light';}</script>
+  <?!= include_('Styles'); ?>
+</head>
+<body>
+  <div id="app-shell" class="app-shell">
+    <aside class="sidebar" id="navigation-sidebar">
+      <a class="brand" target="_self" href="#dashboard" aria-label="Wissensbau"><span class="brand-mark">W</span>Wissensbau</a>
+      <p class="sidebar-caption" data-t="researchProject"></p>
+      <nav id="navigation" data-t-aria="navigation"></nav>
+      <div class="sidebar-bottom">
+        <span class="drive-dot"></span><span data-t="driveStorage"></span>
+        <div class="sidebar-controls"><div class="language-switch" role="group" data-t-aria="language">
+          <button type="button" data-language="en">EN</button><button type="button" data-language="de">DE</button>
+        </div><button type="button" class="icon-button" id="theme-toggle"></button></div>
+      </div>
+    </aside>
+    <button type="button" class="nav-scrim" id="nav-scrim" data-t-aria="closeNavigation" hidden></button>
+    <main>
+      <header class="topbar"><button type="button" class="icon-button nav-toggle" id="nav-toggle" data-t-aria="openNavigation" aria-controls="navigation-sidebar" aria-expanded="false"><svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 6h16M4 12h16M4 18h16"/></svg></button><span id="breadcrumb"></span><div class="topbar-right"><span id="mode-badge" class="badge"></span><a id="workspace-link" class="text-link" href="#" target="_blank" rel="noopener" data-t="openDrive" hidden></a></div></header>
+      <div id="build-banner" class="build-banner" hidden></div>
+      <div id="content" class="content" aria-live="polite"></div>
+      <footer><span data-t="footer"></span></footer>
+    </main>
+  </div>
+  <div id="toast" role="status" hidden></div>
+  <?!= include_('Translations'); ?>
+  <?!= include_('Client'); ?>
+</body>
+</html>

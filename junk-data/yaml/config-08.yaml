@@ -1,0 +1,33 @@
+dataset: sample-08
+synthetic: true
+items:
+  - name: "robot pocket"
+    count: 498
+  - name: "robot pixel"
+    count: 310
+  - name: "robot saffron"
+    count: 27
+  - name: "pixel robot"
+    count: 72
+  - name: "comet teapot"
+    count: 46
+  - name: "saffron teapot"
+    count: 242
+  - name: "cloud robot"
+    count: 373
+  - name: "puzzle meadow"
+    count: 317
+  - name: "cobalt puzzle"
+    count: 453
+  - name: "lantern cloud"
+    count: 280
+  - name: "cloud cobalt"
+    count: 95
+  - name: "moss pocket"
+    count: 83
+  - name: "orbit saffron"
+    count: 337
+  - name: "pocket saffron"
+    count: 426
+  - name: "meadow river"
+    count: 143

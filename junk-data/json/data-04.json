@@ -1,0 +1,256 @@
+{
+  "dataset": "sample-04",
+  "synthetic": true,
+  "items": [
+    {
+      "id": 1,
+      "name": "lantern cobalt",
+      "tags": [
+        "robot",
+        "mango",
+        "saffron"
+      ],
+      "value": 18
+    },
+    {
+      "id": 2,
+      "name": "mango lantern",
+      "tags": [
+        "cobalt",
+        "mango",
+        "meadow"
+      ],
+      "value": 795
+    },
+    {
+      "id": 3,
+      "name": "river pixel",
+      "tags": [
+        "lantern",
+        "cloud",
+        "pocket"
+      ],
+      "value": 54
+    },
+    {
+      "id": 4,
+      "name": "orbit pocket",
+      "tags": [
+        "teapot",
+        "puzzle",
+        "mango"
+      ],
+      "value": 443
+    },
+    {
+      "id": 5,
+      "name": "robot comet",
+      "tags": [
+        "saffron",
+        "pixel",
+        "pocket"
+      ],
+      "value": 19
+    },
+    {
+      "id": 6,
+      "name": "teapot moss",
+      "tags": [
+        "cobalt",
+        "robot",
+        "river"
+      ],
+      "value": 373
+    },
+    {
+      "id": 7,
+      "name": "lantern mango",
+      "tags": [
+        "cobalt",
+        "comet",
+        "pixel"
+      ],
+      "value": 998
+    },
+    {
+      "id": 8,
+      "name": "robot puzzle",
+      "tags": [
+        "meadow",
+        "cloud",
+        "teapot"
+      ],
+      "value": 194
+    },
+    {
+      "id": 9,
+      "name": "puzzle puzzle",
+      "tags": [
+        "cobalt",
+        "mango",
+        "pocket"
+      ],
+      "value": 427
+    },
+    {
+      "id": 10,
+      "name": "teapot orbit",
+      "tags": [
+        "velvet",
+        "comet",
+        "cobalt"
+      ],
+      "value": 215
+    },
+    {
+      "id": 11,
+      "name": "moss comet",
+      "tags": [
+        "velvet",
+        "pocket",
+        "puzzle"
+      ],
+      "value": 461
+    },
+    {
+      "id": 12,
+      "name": "velvet saffron",
+      "tags": [
+        "moss",
+        "comet",
+        "mango"
+      ],
+      "value": 816
+    },
+    {
+      "id": 13,
+      "name": "cloud moss",
+      "tags": [
+        "river",
+        "moss",
+        "velvet"
+      ],
+      "value": 289
+    },
+    {
+      "id": 14,
+      "name": "moss river",
+      "tags": [
+        "puzzle",
+        "velvet",
+        "comet"
+      ],
+      "value": 142
+    },
+    {
+      "id": 15,
+      "name": "moss comet",
+      "tags": [
+        "comet",
+        "robot",
+        "pixel"
+      ],
+      "value": 674
+    },
+    {
+      "id": 16,
+      "name": "river comet",
+      "tags": [
+        "pocket",
+        "comet",
+        "mango"
+      ],
+      "value": 41
+    },
+    {
+      "id": 17,
+      "name": "river orbit",
+      "tags": [
+        "moss",
+        "puzzle",
+        "cloud"
+      ],
+      "value": 60
+    },
+    {
+      "id": 18,
+      "name": "pocket moss",
+      "tags": [
+        "pocket",
+        "cobalt",
+        "mango"
+      ],
+      "value": 370
+    },
+    {
+      "id": 19,
+      "name": "pixel moss",
+      "tags": [
+        "pixel",
+        "teapot",
+        "cloud"
+      ],
+      "value": 480
+    },
+    {
+      "id": 20,
+      "name": "orbit cobalt",
+      "tags": [
+        "river",
+        "pocket",
+        "moss"
+      ],
+      "value": 500
+    },
+    {
+      "id": 21,
+      "name": "robot robot",
+      "tags": [
+        "moss",
+        "mango",
+        "teapot"
+      ],
+      "value": 740
+    },
+    {
+      "id": 22,
+      "name": "robot pixel",
+      "tags": [
+        "comet",
+        "cloud",
+        "meadow"
+      ],
+      "value": 95
+    },
+    {
+      "id": 23,
+      "name": "teapot mango",
+      "tags": [
+        "velvet",
+        "orbit",
+        "meadow"
+      ],
+      "value": 786
+    },
+    {
+      "id": 24,
+      "name": "moss teapot",
+      "tags": [
+        "cloud",
+        "saffron",
+        "pocket"
+      ],
+      "value": 112
+    },
+    {
+      "id": 25,
+      "name": "robot lantern",
+      "tags": [
+        "orbit",
+        "mango",
+        "comet"
+      ],
+      "value": 618
+    }
+  ]
+}

@@ -1,0 +1,256 @@
+{
+  "dataset": "sample-01",
+  "synthetic": true,
+  "items": [
+    {
+      "id": 1,
+      "name": "river comet",
+      "tags": [
+        "pixel",
+        "mango",
+        "meadow"
+      ],
+      "value": 597
+    },
+    {
+      "id": 2,
+      "name": "orbit robot",
+      "tags": [
+        "moss",
+        "orbit",
+        "puzzle"
+      ],
+      "value": 761
+    },
+    {
+      "id": 3,
+      "name": "saffron lantern",
+      "tags": [
+        "mango",
+        "cloud",
+        "puzzle"
+      ],
+      "value": 783
+    },
+    {
+      "id": 4,
+      "name": "meadow orbit",
+      "tags": [
+        "moss",
+        "lantern",
+        "cobalt"
+      ],
+      "value": 696
+    },
+    {
+      "id": 5,
+      "name": "pixel pocket",
+      "tags": [
+        "cobalt",
+        "meadow",
+        "comet"
+      ],
+      "value": 880
+    },
+    {
+      "id": 6,
+      "name": "pixel river",
+      "tags": [
+        "cobalt",
+        "moss",
+        "comet"
+      ],
+      "value": 484
+    },
+    {
+      "id": 7,
+      "name": "puzzle pixel",
+      "tags": [
+        "moss",
+        "river",
+        "meadow"
+      ],
+      "value": 403
+    },
+    {
+      "id": 8,
+      "name": "pixel lantern",
+      "tags": [
+        "pixel",
+        "mango",
+        "cobalt"
+      ],
+      "value": 160
+    },
+    {
+      "id": 9,
+      "name": "lantern cobalt",
+      "tags": [
+        "velvet",
+        "puzzle",
+        "moss"
+      ],
+      "value": 384
+    },
+    {
+      "id": 10,
+      "name": "lantern meadow",
+      "tags": [
+        "saffron",
+        "comet",
+        "robot"
+      ],
+      "value": 492
+    },
+    {
+      "id": 11,
+      "name": "moss pixel",
+      "tags": [
+        "river",
+        "pixel",
+        "mango"
+      ],
+      "value": 267
+    },
+    {
+      "id": 12,
+      "name": "river moss",
+      "tags": [
+        "mango",
+        "comet",
+        "velvet"
+      ],
+      "value": 261
+    },
+    {
+      "id": 13,
+      "name": "pixel robot",
+      "tags": [
+        "pocket",
+        "meadow",
+        "lantern"
+      ],
+      "value": 65
+    },
+    {
+      "id": 14,
+      "name": "meadow cobalt",
+      "tags": [
+        "orbit",
+        "lantern",
+        "comet"
+      ],
+      "value": 789
+    },
+    {
+      "id": 15,
+      "name": "comet meadow",
+      "tags": [
+        "comet",
+        "velvet",
+        "orbit"
+      ],
+      "value": 726
+    },
+    {
+      "id": 16,
+      "name": "moss puzzle",
+      "tags": [
+        "velvet",
+        "lantern",
+        "puzzle"
+      ],
+      "value": 243
+    },
+    {
+      "id": 17,
+      "name": "velvet teapot",
+      "tags": [
+        "orbit",
+        "cobalt",
+        "mango"
+      ],
+      "value": 296
+    },
+    {
+      "id": 18,
+      "name": "robot robot",
+      "tags": [
+        "puzzle",
+        "pocket",
+        "cobalt"
+      ],
+      "value": 412
+    },
+    {
+      "id": 19,
+      "name": "cloud cobalt",
+      "tags": [
+        "lantern",
+        "orbit",
+        "mango"
+      ],
+      "value": 423
+    },
+    {
+      "id": 20,
+      "name": "velvet river",
+      "tags": [
+        "comet",
+        "robot",
+        "teapot"
+      ],
+      "value": 733
+    },
+    {
+      "id": 21,
+      "name": "lantern saffron",
+      "tags": [
+        "mango",
+        "pixel",
+        "pocket"
+      ],
+      "value": 48
+    },
+    {
+      "id": 22,
+      "name": "mango velvet",
+      "tags": [
+        "saffron",
+        "moss",
+        "river"
+      ],
+      "value": 44
+    },
+    {
+      "id": 23,
+      "name": "meadow velvet",
+      "tags": [
+        "cloud",
+        "river",
+        "lantern"
+      ],
+      "value": 116
+    },
+    {
+      "id": 24,
+      "name": "puzzle comet",
+      "tags": [
+        "comet",
+        "cobalt",
+        "meadow"
+      ],
+      "value": 181
+    },
+    {
+      "id": 25,
+      "name": "pixel cobalt",
+      "tags": [
+        "river",
+        "robot",
+        "pocket"
+      ],
+      "value": 802
+    }
+  ]
+}

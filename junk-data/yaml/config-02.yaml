@@ -1,0 +1,33 @@
+dataset: sample-02
+synthetic: true
+items:
+  - name: "cloud river"
+    count: 137
+  - name: "cloud puzzle"
+    count: 452
+  - name: "mango meadow"
+    count: 333
+  - name: "cloud lantern"
+    count: 310
+  - name: "lantern pocket"
+    count: 341
+  - name: "meadow orbit"
+    count: 25
+  - name: "saffron teapot"
+    count: 349
+  - name: "lantern puzzle"
+    count: 54
+  - name: "moss cobalt"
+    count: 139
+  - name: "comet meadow"
+    count: 126
+  - name: "mango comet"
+    count: 141
+  - name: "orbit cobalt"
+    count: 128
+  - name: "velvet teapot"
+    count: 444
+  - name: "teapot pocket"
+    count: 117
+  - name: "pixel lantern"
+    count: 422

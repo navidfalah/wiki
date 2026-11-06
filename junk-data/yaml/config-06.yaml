@@ -1,0 +1,33 @@
+dataset: sample-06
+synthetic: true
+items:
+  - name: "saffron orbit"
+    count: 482
+  - name: "cloud meadow"
+    count: 278
+  - name: "pocket pixel"
+    count: 467
+  - name: "saffron velvet"
+    count: 249
+  - name: "puzzle velvet"
+    count: 283
+  - name: "robot moss"
+    count: 341
+  - name: "robot cloud"
+    count: 218
+  - name: "comet pocket"
+    count: 219
+  - name: "saffron velvet"
+    count: 179
+  - name: "pixel cloud"
+    count: 228
+  - name: "comet cobalt"
+    count: 156
+  - name: "puzzle cobalt"
+    count: 36
+  - name: "cloud lantern"
+    count: 123
+  - name: "comet moss"
+    count: 131
+  - name: "teapot velvet"
+    count: 247

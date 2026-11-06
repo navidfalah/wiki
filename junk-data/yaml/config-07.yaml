@@ -1,0 +1,33 @@
+dataset: sample-07
+synthetic: true
+items:
+  - name: "teapot puzzle"
+    count: 82
+  - name: "river velvet"
+    count: 26
+  - name: "cloud lantern"
+    count: 82
+  - name: "pixel cloud"
+    count: 268
+  - name: "mango moss"
+    count: 401
+  - name: "meadow moss"
+    count: 139
+  - name: "pocket river"
+    count: 349
+  - name: "meadow saffron"
+    count: 170
+  - name: "teapot orbit"
+    count: 416
+  - name: "meadow orbit"
+    count: 73
+  - name: "puzzle river"
+    count: 422
+  - name: "velvet lantern"
+    count: 477
+  - name: "mango saffron"
+    count: 443
+  - name: "meadow mango"
+    count: 289
+  - name: "teapot lantern"
+    count: 467

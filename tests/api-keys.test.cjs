@@ -1,0 +1,17 @@
+const fs=require('fs'),vm=require('vm'),assert=require('assert'),crypto=require('crypto');
+const ctx={console};vm.createContext(ctx);vm.runInContext(fs.readFileSync('Code.gs','utf8'),ctx);
+const props={WB_API_KEY:'old-secret'},requests=[];let statuses={};
+ctx.wbProps_=()=>({getProperty:k=>props[k],setProperty:(k,v)=>{props[k]=v},deleteProperty:k=>{delete props[k]}});
+ctx.wbHash_=v=>crypto.createHash('sha256').update(String(v)).digest('hex');ctx.wbLock_=fn=>fn();ctx.wbWorkspace_=()=>({});ctx.wbSettings_=()=>({aiChat:false});
+let seq=0;ctx.Utilities={getUuid:()=>`id-${++seq}`};
+ctx.UrlFetchApp={fetch:(_url,opts)=>{const key=opts.headers.Authorization.slice(7);requests.push(key);return {getResponseCode:()=>statuses[key]||200}}};
+assert.equal(ctx.wbApiKeys_()[0].id,'legacy');let result=ctx.apiAddApiKey({key:'new-secret'});assert.equal(result.ok,true);assert.equal(result.data.apiKeys.length,2);assert.ok(!JSON.stringify(result).includes('secret'));assert.ok(!props.WB_API_KEY);assert.equal(ctx.apiAddApiKey({key:'new-secret'}).error,'API_KEY_DUPLICATE');
+statuses={'old-secret':429,'new-secret':200};let response=ctx.wbApiFetch_('https://api.example/v1',{},null);assert.equal(response.getResponseCode(),200);assert.deepEqual(requests,['old-secret','new-secret']);assert.equal(props.WB_API_ACTIVE,'id-1');
+requests.length=0;ctx.wbApiFetch_('https://api.example/v1',{},null);assert.deepEqual(requests,['new-secret']);
+statuses={'new-secret':401,'old-secret':200};requests.length=0;ctx.wbApiFetch_('https://api.example/v1',{},null);assert.deepEqual(requests,['new-secret','old-secret']);
+statuses={'old-secret':400};requests.length=0;assert.equal(ctx.wbApiFetch_('https://api.example/v1',{},null).getResponseCode(),400);assert.deepEqual(requests,['old-secret']);
+let fingerprint=ctx.wbApiFingerprint_(ctx.wbApiKeys_());ctx.apiAddApiKey({key:'third-secret'});assert.throws(()=>ctx.wbCheckApiKeys_({keyFingerprint:fingerprint}),/API_SETTINGS_CHANGED/);
+result=ctx.apiRemoveApiKey('legacy');assert.equal(result.ok,true);assert.ok(!JSON.stringify(result).includes('secret'));assert.ok(!props.WB_API_ACTIVE);
+ctx.apiRemoveApiKey('id-1');ctx.wbSettings_=()=>({aiChat:true});assert.equal(ctx.apiRemoveApiKey('id-2').error,'API_KEY_REQUIRED');
+ctx.wbSettings_=()=>({});assert.equal(ctx.apiRemoveApiKey('id-2').ok,true);assert.throws(()=>ctx.wbCheckApiKeys_(),/API_KEY_REQUIRED/);
+console.log('API key tests passed: legacy migration, secret-free settings, fallback, preferred key and build fingerprints');

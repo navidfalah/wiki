@@ -1,0 +1,33 @@
+dataset: sample-01
+synthetic: true
+items:
+  - name: "comet mango"
+    count: 71
+  - name: "robot cloud"
+    count: 202
+  - name: "meadow pocket"
+    count: 179
+  - name: "moss pocket"
+    count: 64
+  - name: "moss river"
+    count: 217
+  - name: "mango river"
+    count: 323
+  - name: "puzzle velvet"
+    count: 487
+  - name: "cobalt puzzle"
+    count: 439
+  - name: "teapot teapot"
+    count: 220
+  - name: "pixel puzzle"
+    count: 182
+  - name: "mango robot"
+    count: 122
+  - name: "puzzle pixel"
+    count: 294
+  - name: "robot river"
+    count: 181
+  - name: "moss lantern"
+    count: 383
+  - name: "comet pocket"
+    count: 500
