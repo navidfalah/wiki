@@ -862,10 +862,21 @@ function wbJob_(ws) {
   var pointer = wbRead_(ws.root, 'job-pointer.json', null);
   return pointer ? wbRead_(DriveApp.getFolderById(pointer.folderId), 'job.json', null) : null;
 }
-function wbSaveJob_(job) { wbWrite_(DriveApp.getFolderById(job.folderId), 'job.json', JSON.stringify(job)); }
+function wbSaveJob_(job) {
+  var now = new Date().toISOString();
+  job.steps = job.steps || {};
+  if (job.timingPhase && job.timingPhase !== job.phase && job.steps[job.timingPhase]) job.steps[job.timingPhase].finishedAt = now;
+  var step = job.steps[job.phase];
+  if (!step) step = job.steps[job.phase] = { startedAt: now };
+  step.cursor = job.cursor; step.total = job.total;
+  if (job.status !== 'running') step.finishedAt = job.finishedAt || now;
+  job.timingPhase = job.phase;
+  job.updatedAt = now;
+  wbWrite_(DriveApp.getFolderById(job.folderId), 'job.json', JSON.stringify(job));
+}
 function wbJobSummary_(job) {
   if (!job) return null;
-  return { id: job.id, status: job.status, phase: job.phase, cursor: job.cursor, total: job.total, startedAt: job.startedAt, finishedAt: job.finishedAt || null, failures: job.failures || [], warnings: job.warnings || [], sourceCount: job.sources.length, pageCount: job.pages.length, ai: job.settings.aiCompile, calls: job.calls || 0, cacheHits: job.cacheHits || 0 };
+  return { id: job.id, status: job.status, phase: job.phase, cursor: job.cursor, total: job.total, startedAt: job.startedAt, finishedAt: job.finishedAt || null, failures: job.failures || [], warnings: job.warnings || [], sourceCount: job.sources.length, pageCount: job.pages.length, ai: job.settings.aiCompile, calls: job.calls || 0, cacheHits: job.cacheHits || 0, steps: job.steps || {}, updatedAt: job.updatedAt || job.startedAt };
 }
 function wbRemoveTriggers_() { ScriptApp.getProjectTriggers().filter(function (t) { return t.getHandlerFunction() === 'runQueuedBuild'; }).forEach(function (t) { ScriptApp.deleteTrigger(t); }); }
 function wbSchedule_(job) {
@@ -995,7 +1006,10 @@ function wbAdvanceBuild_() {
     try {
       while (job.status === 'running' && Date.now() - started < WB_LIMITS.jobMillis && units++ < 20) {
         if (wbProps_().getProperty('WB_CANCEL') === job.id) { job.status = 'stopped'; job.finishedAt = new Date().toISOString(); wbSaveJob_(job); break; }
+        var phase = job.phase;
         wbCompileUnit_(job, ws); wbSaveJob_(job);
+        // Return phase transitions to the UI before starting the next step.
+        if (job.phase !== phase) break;
       }
     } catch (error) {
       job.status = 'error'; job.finishedAt = new Date().toISOString();

@@ -67,47 +67,146 @@ async function setup() {
   $('content').innerHTML = '<section class="setup card"><span class="brand-mark">W</span><h1>' + esc(t('setupTitle')) + '</h1><p class="lead">' + esc(t('setupIntro')) + '</p><hr class="divider">' + field('setup-parent', 'setupParent', '', 'text', 'setupParentHint') + btn('setup-create', 'setupButton', true) + notice(t('setupNote')) + '</section>';
   bind('setup-create', async function () { $('setup-create').disabled = true; try { await rpc('apiSetup', $('setup-parent').value); await refreshBoot(); await render(); } finally { if ($('setup-create')) $('setup-create').disabled = false; } });
 }
-async function startBuild(force) { state.boot.job = await rpc('apiStartBuild', Boolean(force)); buildBanner(state.boot.job); if(state.route==='pipeline')pipelinePage(); advanceBuild(); }
+async function startBuild(force) {
+  if (state.startingBuild) return;
+  state.startingBuild = true;
+  try {
+    state.boot.job = await rpc('apiStartBuild', Boolean(force));
+    buildBanner(state.boot.job);
+    location.hash = '#pipeline'; state.route = 'pipeline';
+    await render(); advanceBuild();
+  } finally { state.startingBuild = false; }
+}
+// Read checkpoints while the worker is busy; never start a second worker here.
+async function pollBuildProgress(id) {
+  if (!state.advancing || !state.boot.job || state.boot.job.id !== id) return;
+  try {
+    var job = await rpc('apiBuildStatus');
+    if (state.advancing && job && state.boot.job.id === id && job.id === id &&
+        Date.parse(job.updatedAt || job.startedAt) >= Date.parse(state.boot.job.updatedAt || state.boot.job.startedAt)) {
+      state.boot.job = job; buildBanner(job); if (state.route === 'pipeline') pipelinePage();
+    }
+  } catch (_) { /* The worker response remains authoritative if a status read fails. */ }
+  if (state.advancing && state.boot.job && state.boot.job.id === id && state.boot.job.status === 'running')
+    state.buildPoll = setTimeout(function () { pollBuildProgress(id); }, 3000);
+}
 async function cancelBuild() { state.boot.job = await rpc('apiCancelBuild'); buildBanner(state.boot.job); if(state.route==='pipeline')pipelinePage(); toast(t(state.boot.job && state.boot.job.cancelRequested ? 'cancelRequested' : 'status.stopped')); }
 async function advanceBuild() {
   if (state.advancing) return;
   state.advancing = true;
+  clearTimeout(state.buildPoll);
+  var buildId = state.boot.job && state.boot.job.id;
+  state.buildPoll = setTimeout(function () { pollBuildProgress(buildId); }, 3000);
   try {
     var job = await rpc('apiContinueBuild'); state.boot.job = job; buildBanner(job); if(state.route==='pipeline')pipelinePage();
     if (job && job.status === 'running') setTimeout(advanceBuild, 1500);
     else { await refreshBoot(); if (['dashboard','pipeline','history','pages','health'].indexOf(state.route) >= 0) await render(); }
   } catch (error) { toast(errorText(error)); }
-  finally { state.advancing = false; }
+  finally { state.advancing = false; clearTimeout(state.buildPoll); }
 }
 async function dashboard() {
   var epoch=state.epoch; await refreshBoot(); if(epoch!==state.epoch)return;
   var b = state.boot, c = b.counts, job = b.job;
   $('content').innerHTML = '<div class="eyebrow">' + esc(t('overviewEyebrow')) + '</div>' + heading('overviewTitle','overviewIntro',btn('overview-refresh','refresh')+btn('overview-build','buildButton',true)) +
     '<div class="metrics">' + [['originalFiles',c.sources],['linkedPages',c.pages],['entities',c.entities],['activeVersion',b.version ? date(b.version.slice(0,4)+'-'+b.version.slice(4,6)+'-'+b.version.slice(6,8)+'T'+b.version.slice(8,10)+':'+b.version.slice(10,12)+':'+b.version.slice(12,14)+'Z') : t('notBuilt')]].map(function (m) { return '<div class="metric"><span>' + esc(t(m[0])) + '</span><strong' + (m[0] === 'activeVersion' ? ' style="font-size:15px;margin-top:16px"' : '') + '>' + esc(m[1]) + '</strong></div>'; }).join('') + '</div>' +
-    driveFolderCard() + '<div class="grid"><section class="card"><a target="_self" href="#pipeline" class="text-link">' + esc(t('pipelineOpen')) + '</a><h2>' + esc(t('buildTitle')) + '</h2><p class="small">' + esc(t('buildIntro')) + '</p>' + [1,2,3].map(function (n) { return '<div class="step"><span class="step-number">0'+n+'</span><div><h3>' + esc(t('step'+n)) + '</h3><p>' + esc(t('step'+n+'Hint')) + '</p></div></div>'; }).join('') + '</section><section class="card accent"><h2>' + esc(t('approachTitle')) + '</h2><p class="lead">' + esc(t('approachIntro')) + '</p><a target="_self" href="#sources" class="btn">' + esc(t('quickStart')) + '</a>' + notice(t(b.settings.aiCompile ? 'aiWarning' : 'localWarning')) + '</section></div>' +
+    overviewAiCard() + driveFolderCard() + '<div class="grid"><section class="card"><a target="_self" href="#pipeline" class="text-link">' + esc(t('pipelineOpen')) + '</a><h2>' + esc(t('buildTitle')) + '</h2><p class="small">' + esc(t('buildIntro')) + '</p>' + [1,2,3].map(function (n) { return '<div class="step"><span class="step-number">0'+n+'</span><div><h3>' + esc(t('step'+n)) + '</h3><p>' + esc(t('step'+n+'Hint')) + '</p></div></div>'; }).join('') + '</section><section class="card accent"><h2>' + esc(t('approachTitle')) + '</h2><p class="lead">' + esc(t('approachIntro')) + '</p><a target="_self" href="#sources" class="btn">' + esc(t('quickStart')) + '</a>' + notice(t(b.settings.aiCompile ? 'aiWarning' : 'localWarning')) + '</section></div>' +
     (job ? '<section class="card"><div class="row"><h2>' + esc(t('status.'+job.status)) + '</h2><a target="_self" href="#history" class="text-link">'+esc(t('history'))+'</a></div><p class="small">'+esc(date(job.startedAt))+' · '+esc(t('phase.'+job.phase))+'</p>'+failureList(job.failures)+'</section>' : '');
+  bindOverviewAi();
   bind('overview-build', function () { return startBuild(false); });
   bind('overview-refresh',render);bind('overview-import',async function(){var button=$('overview-import');button.disabled=true;try{var job=await rpc('apiStartFolderImport',$('overview-folder').value);await runFolderImport(job,'overview-import-status');}finally{if(button.isConnected)button.disabled=false;}});
 }
+function overviewAiCard() {
+  var s=state.boot.settings;
+  return '<section class="card"><div class="row"><h2>'+esc(t('overviewAiTitle'))+'</h2><a target="_self" href="#settings" class="text-link">'+esc(t('overviewAiAdvanced'))+'</a></div><p class="small">'+esc(t('overviewAiHint'))+'</p><div class="grid"><form id="overview-ai-form">'+
+    field('overview-api-base','apiBase',s.apiBase,'url','apiBaseHint')+field('overview-api-model','model',s.model)+
+    check('overview-ai-chat','aiChat','aiChatHint',s.aiChat)+check('overview-ai-compile','aiCompile','aiCompileHint',s.aiCompile)+
+    '<button type="submit" id="overview-ai-save" class="btn primary">'+esc(t('overviewAiSave'))+'</button></form><div><h3>'+esc(t('apiKeysTitle'))+'</h3><p class="small">'+esc(t('overviewAiKeysHint'))+'</p><div id="overview-ai-key-status" role="status">'+overviewAiKeyStatus()+'</div><form id="overview-ai-key-form">'+field('overview-api-key','apiKey','','password','apiKeyHint')+
+    '<button type="submit" id="overview-ai-add-key" class="btn">'+esc(t('apiKeyAdd'))+'</button></form><hr class="divider">'+btn('overview-ai-test','testConnection')+'<p class="small">'+esc(t('overviewAiTestHint'))+'</p><div id="overview-ai-test-result" role="status"></div></div></div>'+notice(t('privacyNote'))+'</section>';
+}
+function overviewAiKeyStatus() {
+  var keys=state.boot.settings.apiKeys||[];
+  return '<p class="small">'+esc(keys.length?t('overviewAiKeyCount',{count:keys.length}):t('keyMissing'))+'</p>';
+}
+function bindOverviewAi() {
+  var epoch=state.epoch;
+  ['overview-api-base','overview-api-model'].forEach(function(id){$(id).required=true;});
+  $('overview-api-key').required=true;
+  $('overview-ai-form').addEventListener('submit',async function(event){
+    event.preventDefault();var button=$('overview-ai-save');button.disabled=true;
+    try {
+      var input=Object.assign({},state.boot.settings,{apiBase:$('overview-api-base').value,model:$('overview-api-model').value,aiChat:$('overview-ai-chat').checked,aiCompile:$('overview-ai-compile').checked,language:state.language});
+      state.boot.settings=await rpc('apiSaveSettings',input);shell();
+      if(epoch===state.epoch){$('overview-api-base').value=state.boot.settings.apiBase;$('overview-api-model').value=state.boot.settings.model;$('overview-ai-test-result').innerHTML='';}
+      toast(t('saved'));
+    } catch(error){toast(errorText(error));} finally{if(button.isConnected)button.disabled=false;}
+  });
+  $('overview-ai-key-form').addEventListener('submit',async function(event){
+    event.preventDefault();var button=$('overview-ai-add-key'),input=$('overview-api-key');button.disabled=true;
+    try {
+      state.boot.settings=await rpc('apiAddApiKey',{key:input.value});input.value='';
+      if(epoch===state.epoch)$('overview-ai-key-status').innerHTML=overviewAiKeyStatus();
+      toast(t('apiKeyAdded'));
+    } catch(error){toast(errorText(error));} finally{if(button.isConnected)button.disabled=false;}
+  });
+  bind('overview-ai-test',async function(){
+    var button=$('overview-ai-test');button.disabled=true;$('overview-ai-test-result').innerHTML='';
+    try {
+      var result=await rpc('apiTestConnection',{stage:'default'});
+      if(epoch===state.epoch)$('overview-ai-test-result').innerHTML=notice(t('connectionTestPassed')+' · '+result.model+' · '+result.elapsedMs+' ms');
+    } catch(error){if(epoch===state.epoch)$('overview-ai-test-result').innerHTML=notice(errorText(error),true);}
+    finally{if(button.isConnected)button.disabled=false;}
+  });
+}
+function buildDuration(ms) {
+  var seconds = Math.max(0, Math.floor(ms / 1000));
+  return t('pipelineDuration', {minutes:Math.floor(seconds / 60), seconds:String(seconds % 60).padStart(2, '0')});
+}
+function pipelineTiming(job, phase) {
+  var step = job.steps && job.steps[phase];
+  if (!step) return t(['reading','extracting','writing','publishing'].indexOf(phase) <= ['reading','extracting','writing','publishing'].indexOf(job.phase) ? 'pipelineTimingUnknown' : 'pipelineTimingPending');
+  var end = step.finishedAt || (job.status !== 'running' ? job.finishedAt : null);
+  var elapsed = Math.max(0, Date.parse(end || new Date().toISOString()) - Date.parse(step.startedAt));
+  var text = t(end ? 'pipelineTimeTaken' : 'pipelineElapsed', {time:buildDuration(elapsed)});
+  if (!end) {
+    var done = Number(step.cursor) || 0, total = Number(step.total) || 0;
+    text += ' · ' + (done > 0 && done < total ? t('pipelineRemaining', {time:buildDuration(elapsed / done * (total - done))}) : t('pipelineEstimating'));
+  }
+  return text;
+}
+function updatePipelineTimers() {
+  if (state.route !== 'pipeline' || !state.boot.job) return;
+  var job = state.boot.job, total = $('pipeline-total-time');
+  if (total) total.textContent = t('pipelineTotalTime', {time:buildDuration(Date.parse(job.finishedAt || new Date().toISOString()) - Date.parse(job.startedAt))});
+  ['reading','extracting','writing','publishing'].forEach(function (phase) {
+    var node = $('pipeline-time-' + phase); if (node) node.textContent = pipelineTiming(job, phase);
+  });
+}
 function pipelinePage() {
+  clearTimeout(state.pipelineTick);
   var job=state.boot.job, phases=['reading','extracting','writing','publishing'], current=job?phases.indexOf(job.phase):-1;
   var actions=job&&job.status==='running'?btn('pipeline-continue','continueBuild')+btn('pipeline-stop','cancelBuild'):btn('pipeline-start','buildButton',true);
   $('content').innerHTML=heading('pipelineTitle','pipelineIntro',actions+btn('pipeline-refresh','refresh'))+
     '<section class="card pipeline-summary"><div class="row"><div><h2>'+esc(t(job?'status.'+job.status:'pipelineNotStarted'))+'</h2><p class="small">'+esc(job?t('pipelineStarted',{date:date(job.startedAt)}):t('pipelineEmpty'))+'</p></div><a target="_self" href="#history" class="text-link">'+esc(t('history'))+'</a></div>'+
-    (job?'<p class="small">'+esc(t(job.ai?'pipelineAi':'pipelineLocal'))+' · '+esc(t('pipelineCounts',{sources:job.sourceCount,pages:job.pageCount}))+'</p>':'')+'</section>'+
+    (job?'<p class="small">'+esc(t(job.ai?'pipelineAi':'pipelineLocal'))+' · '+esc(t('pipelineCounts',{sources:job.sourceCount,pages:job.pageCount}))+'</p><p class="pipeline-time" id="pipeline-total-time"></p><p class="small">'+esc(t('pipelineTimingHint'))+'</p>':'')+'</section>'+
     '<ol class="pipeline-steps">'+phases.map(function(phase,index){
       var status=!job||current<0?'pending':job.status==='success'||index<current?'complete':index>current?'pending':job.status==='running'?'active':job.status==='error'?'error':'stopped';
       var progress=job&&index===current&&job.status!=='success'?'<div class="pipeline-progress"><progress aria-label="'+esc(t('phase.'+phase))+'" value="'+Math.max(0,Number(job.cursor)||0)+'" max="'+Math.max(1,Number(job.total)||0)+'"></progress><span>'+esc(t('pipelineProgress',{done:job.cursor,total:job.total}))+'</span></div>':'';
-      return '<li class="pipeline-step '+status+'"><div class="pipeline-number">0'+(index+1)+'</div><div class="pipeline-body"><div class="row"><h2>'+esc(t('phase.'+phase))+'</h2><span class="pipeline-state">'+esc(t('pipelineState.'+status))+'</span></div><p>'+esc(t('pipelineHint.'+phase))+'</p>'+progress+'</div></li>';
+      return '<li class="pipeline-step '+status+'"><div class="pipeline-number">0'+(index+1)+'</div><div class="pipeline-body"><div class="row"><h2>'+esc(t('phase.'+phase))+'</h2><span class="pipeline-state">'+esc(t('pipelineState.'+status))+'</span></div><p>'+esc(t('pipelineHint.'+phase))+'</p>'+progress+(job?'<p class="pipeline-time" id="pipeline-time-'+phase+'">'+esc(pipelineTiming(job,phase))+'</p>':'')+'</div></li>';
     }).join('')+'</ol>'+
     (job&&(job.failures||[]).length?'<section class="card"><h2>'+esc(t('pipelineFailures'))+'</h2>'+failureList(job.failures)+'</section>':'')+
     (job&&(job.warnings||[]).length?'<section class="card"><h2>'+esc(t('pipelineWarnings'))+'</h2>'+job.warnings.map(function(item){return notice((item.source?item.source+': ':'')+t('warning.'+item.code));}).join('')+'</section>':'')+
     '<div class="toolbar"><a target="_self" href="#sources" class="btn">'+esc(t('pipelineSources'))+'</a><a target="_self" href="#pages" class="btn">'+esc(t('pipelinePages'))+'</a></div>';
+  updatePipelineTimers();
+  if (job && job.status === 'running') state.pipelineTick = setTimeout(function tick() {
+    if (state.route !== 'pipeline') return;
+    updatePipelineTimers();
+    if (state.boot.job && state.boot.job.status === 'running') state.pipelineTick = setTimeout(tick, 1000);
+  }, 1000);
   bind('pipeline-start',async function(){var button=$('pipeline-start');button.disabled=true;try{await startBuild(false);}finally{if(button.isConnected)button.disabled=false;}});
   bind('pipeline-continue',advanceBuild);bind('pipeline-stop',cancelBuild);bind('pipeline-refresh',async function(){await refreshBoot();if(state.route==='pipeline')pipelinePage();});
 }
 function failureList(items) { return (items || []).map(function (item) { return notice((item.source ? item.source + ': ' : '') + t('error.' + item.code), true); }).join(''); }
-function driveFolderCard(){return '<section class="card"><h2>'+esc(t('overviewFolderTitle'))+'</h2><p class="small">'+esc(t('overviewFolderHint'))+'</p>'+field('overview-folder','driveLink',state.boot.workspace.sourceFolderId||'','text')+btn('overview-import','overviewFolderButton',true)+'<div id="overview-import-status" role="status"></div></section>';}
+function driveFolderCard(){return '<section class="card"><h2>'+esc(t('overviewFolderTitle'))+'</h2><p class="small">'+esc(t('overviewFolderHint'))+'</p>'+field('overview-folder','driveLink',state.boot.workspace.sourceFolderId||'','text')+btn('overview-import','overviewFolderButton',true)+link(state.boot.workspace.inboxUrl,t('openInbox'),'btn')+'<div id="overview-import-status" role="status"></div></section>';}
 async function runFolderImport(job,statusId){
   var epoch=state.epoch;
   while(job.status==='running'){
@@ -140,21 +239,45 @@ function emailAttachmentsHtml(email){return '<section class="email-attachments">
 function bindEmailAttachments(id,email,epoch,request){bind('email-import-parts',async function(){var parts=Array.from($('source-preview').querySelectorAll('[data-email-part]:checked')).map(function(node){return email.attachments[Number(node.dataset.emailPart)].id;});if(!parts.length||parts.length>10){toast(t('emailAttachmentLimit'));return;}var button=$('email-import-parts');button.disabled=true;try{var result=await rpc('apiImportEmailAttachments',{id:id,revision:email.revision,parts:parts});await refreshBoot();if(epoch!==state.epoch||request!==state.sourcePreviewRequest||!$('email-import-status'))return;$('email-import-status').innerHTML=result.map(function(part){return notice((part.name||part.part)+' · '+(part.imported?t(part.existing?'emailAttachmentExisting':'emailAttachmentImported'):errorText({message:part.error})),!part.imported)+(part.imported?link(part.url,t('openDrive'),'btn'):'');}).join('');}finally{if(button.isConnected)button.disabled=false;}});}
 function emailDateText(raw){return raw&&Number.isFinite(Date.parse(raw))?date(raw):raw||t('emailUnknownDate');}
 async function emailsPage(refresh){
+  clearTimeout(state.emailPoll);
   var epoch=state.epoch,request=state.emailRequest=(state.emailRequest||0)+1;
-  $('content').innerHTML=heading('emailsTitle','emailsIntro',btn('email-create','emailCreate',true)+btn('emails-refresh','refresh')+btn('emails-build','buildButton'))+'<div id="email-progress" class="small" role="status"></div><div class="toolbar"><input id="email-filter" aria-label="'+esc(t('emailFilter'))+'" placeholder="'+esc(t('emailFilter'))+'"></div><div id="email-table"></div><section class="card" id="source-preview" hidden></section>';
-  bind('email-create',function(){return emailEditor(null);});bind('emails-refresh',function(){return emailsPage(true);});bind('emails-build',function(){return startBuild(false);});var data;
+  $('content').innerHTML=heading('emailsTitle','emailsIntro',btn('emails-refresh','refresh'))+'<div id="email-progress" class="small" role="status"></div><div class="toolbar"><input id="email-filter" aria-label="'+esc(t('emailFilter'))+'" placeholder="'+esc(t('emailFilter'))+'"></div><div id="email-table"></div><section class="card" id="source-preview" hidden></section>';
+  bind('emails-refresh',function(){return emailsPage(true);});var data;
   function draw(){var query=$('email-filter').value.toLocaleLowerCase(),rows=(data?data.emails:[]).filter(function(row){return [row.subject,row.from,row.to,row.cc,row.bodyPreview,row.source.title].join(' ').toLocaleLowerCase().includes(query);});
-    $('email-table').innerHTML=rows.length?'<div class="table-wrap"><table><thead><tr>'+['emailSubject','emailSender','emailDate','emailAttachments','status','sourceActions'].map(function(key){return '<th>'+esc(t(key))+'</th>';}).join('')+'</tr></thead><tbody>'+rows.map(function(row,index){return '<tr><td class="file-title"><strong>'+esc(row.subject||row.source.title||t('emailNoSubject'))+'</strong><small>'+link(row.source.url,row.source.title)+'</small><small>'+esc(row.bodyPreview||'')+'</small></td><td>'+esc(row.from||'—')+'</td><td>'+esc(emailDateText(row.date))+'</td><td>'+esc(row.attachmentCount===undefined?'—':row.attachmentCount)+'</td><td>'+esc(row.error?errorText({message:row.error}):t(row.indexed?'emailIndexed':'emailNeedsBuild'))+'</td><td>'+(!row.error?'<button type="button" class="btn" data-email-open="'+index+'">'+esc(t('emailOpen'))+'</button>':'')+'<button type="button" class="btn" data-email-history="'+index+'">'+esc(t('emailHistory'))+'</button></td></tr>';}).join('')+'</tbody></table></div>':empty(data&&data.total?'noMatches':'emailEmpty');
-    $('email-table').querySelectorAll('[data-email-open]').forEach(function(button){button.addEventListener('click',function(){openEmail(rows[Number(button.dataset.emailOpen)].source.id).catch(function(error){toast(errorText(error));});});});$('email-table').querySelectorAll('[data-email-history]').forEach(function(button){button.addEventListener('click',function(){emailHistoryView(rows[Number(button.dataset.emailHistory)].source.id).catch(function(error){toast(errorText(error));});});});
+    $('email-table').innerHTML=rows.length?'<div class="table-wrap"><table><thead><tr>'+['emailSubject','emailSender','emailDate','emailAttachments','status','sourceActions'].map(function(key){return '<th>'+esc(t(key))+'</th>';}).join('')+'</tr></thead><tbody>'+rows.map(function(row,index){return '<tr><td class="file-title"><strong>'+esc(row.subject||row.source.title||t('emailNoSubject'))+'</strong><small>'+link(row.source.url,row.source.title)+'</small><small>'+esc(row.bodyPreview||'')+'</small></td><td>'+esc(row.from||'—')+'</td><td>'+esc(emailDateText(row.date))+'</td><td>'+esc(row.attachmentCount===undefined?'—':row.attachmentCount)+'</td><td>'+esc(row.error?errorText({message:row.error}):t(row.indexed?'emailIndexed':'emailAutoIndexing'))+'</td><td>'+(!row.error?'<button type="button" class="btn" data-email-open="'+index+'">'+esc(t('emailOpen'))+'</button>':'')+'</td></tr>';}).join('')+'</tbody></table></div>':empty(data?(data.total?'noMatches':'emailEmpty'):'emailConnecting');
+    $('email-table').querySelectorAll('[data-email-open]').forEach(function(button){button.addEventListener('click',function(){openEmail(rows[Number(button.dataset.emailOpen)].source.id).catch(function(error){toast(errorText(error));});});});
   }
   $('email-filter').addEventListener('input',draw);draw();
-  for(var batch=0;batch<30;batch++){data=await rpc('apiEmails',{refresh:refresh===true&&batch===0});if(epoch!==state.epoch||request!==state.emailRequest)return;draw();$('email-progress').textContent=data.pending?t('emailCatalogProgress',{ready:data.ready,total:data.total}):t('emailCatalogReady',{total:data.total});if(!data.pending)return;}
-  $('email-progress').innerHTML=esc(t('emailCatalogPaused'))+btn('emails-continue','continueBuild');bind('emails-continue',function(){return emailsPage(false);});
+  function active(){return epoch===state.epoch&&request===state.emailRequest;}
+  async function update(){
+    if(!active())return;
+    var sync=null,syncError=null,delay=60000;
+    try{sync=await rpc('apiEmailSync');}catch(error){syncError=error;}
+    if(!active())return;
+    try{
+      data=await rpc('apiEmails',{refresh:refresh===true});refresh=false;
+      if(!active())return;draw();
+      var status=data.pending?t('emailCatalogProgress',{ready:data.ready,total:data.total}):t('emailCatalogReady',{total:data.total});
+      if(syncError)status+=' · '+errorText(syncError);
+      else if(sync){
+        status+=' · '+t(!sync.enabled||!sync.allGmail&&!sync.gmailQuery?'emailSyncPaused':sync.lastStatus==='busy'?'emailSyncBusy':sync.lastStatus==='running'?'emailSyncWorking':'emailSyncAutomatic');
+        if(sync.lastError)status+=' · '+errorText({message:sync.lastError});
+        var issues=(sync.issues||[]).filter(function(issue){return /^[a-f0-9]{8,64}(?::|$)|^__gmail_limit__$/.test(issue.id);});
+        var codes=Array.from(new Set(issues.map(function(issue){return issue.code;})));
+        if(codes.length)status+=' · '+codes.map(function(code){return errorText({message:code});}).join(' · ');
+        if(sync.enabled&&sync.lastStatus==='running')delay=5000;
+      }
+      $('email-progress').textContent=status;
+      if(data.pending)delay=1000;
+    }catch(error){if(active())$('email-progress').textContent=errorText(error);}
+    if(active())state.emailPoll=setTimeout(update,delay);
+  }
+  $('email-progress').textContent=t('emailConnecting');await update();
 }
 async function openEmail(id){
   var epoch=state.epoch,view=state.emailViewRequest=(state.emailViewRequest||0)+1,detail=await rpc('apiEmailDetail',id);if(epoch!==state.epoch||view!==state.emailViewRequest)return;
-  var request=state.sourcePreviewRequest=(state.sourcePreviewRequest||0)+1,box=$('source-preview');if(!box)return;box.hidden=false;box.innerHTML='<div class="row"><h2>'+esc(detail.headers.subject||t('emailNoSubject'))+'</h2>'+btn('email-edit','emailEdit')+btn('email-history','emailHistory')+btn('email-trash','emailTrash')+'</div>'+link(detail.source.url,t('openDrive'),'btn')+'<div class="small">'+['from','to','cc','date'].map(function(key){return '<p><strong>'+esc(t('emailHeader.'+key))+'</strong> '+esc(detail.headers[key]||(key==='date'?t('emailUnknownDate'):''))+'</p>';}).join('')+'</div><pre>'+esc(detail.body)+'</pre>'+emailAttachmentsHtml(detail)+(detail.pages.length?'<h3>'+esc(t('pages'))+'</h3>'+detail.pages.map(function(page){return '<p>'+pageLink(page.slug,page.title)+'</p>';}).join(''):'');
-  bindEmailAttachments(id,detail,epoch,request);bind('email-edit',function(){return emailEditor(detail);});bind('email-history',function(){return emailHistoryView(id);});bind('email-trash',async function(){await rpc('apiManageSource',{id:id,revision:detail.revision,action:'trash'});await refreshBoot();if(epoch===state.epoch){toast(t('emailTrashed'));if(state.route==='emails')await emailsPage();else await sourcePage();}});box.scrollIntoView({block:'start'});
+  var automatic=state.route==='emails',request=state.sourcePreviewRequest=(state.sourcePreviewRequest||0)+1,box=$('source-preview');if(!box)return;box.hidden=false;box.innerHTML='<div class="row"><h2>'+esc(detail.headers.subject||t('emailNoSubject'))+'</h2>'+(automatic?'':btn('email-edit','emailEdit')+btn('email-history','emailHistory')+btn('email-trash','emailTrash'))+'</div>'+link(detail.source.url,t('openDrive'),'btn')+'<div class="small">'+['from','to','cc','date'].map(function(key){return '<p><strong>'+esc(t('emailHeader.'+key))+'</strong> '+esc(detail.headers[key]||(key==='date'?t('emailUnknownDate'):''))+'</p>';}).join('')+'</div><pre>'+esc(detail.body)+'</pre>'+(automatic?'<h3>'+esc(t('emailAttachments'))+' · '+detail.attachments.length+'</h3><p class="small">'+esc(t('emailAutoAttachments'))+'</p>'+detail.attachments.map(function(part){return '<p>'+esc(part.name)+' · '+esc(part.mime)+'</p>';}).join(''):emailAttachmentsHtml(detail))+(detail.pages.length?'<h3>'+esc(t('pages'))+'</h3>'+detail.pages.map(function(page){return '<p>'+pageLink(page.slug,page.title)+'</p>';}).join(''):'');
+  if(!automatic)bindEmailAttachments(id,detail,epoch,request);bind('email-edit',function(){return emailEditor(detail);});bind('email-history',function(){return emailHistoryView(id);});bind('email-trash',async function(){await rpc('apiManageSource',{id:id,revision:detail.revision,action:'trash'});await refreshBoot();if(epoch===state.epoch){toast(t('emailTrashed'));if(state.route==='emails')await emailsPage();else await sourcePage();}});box.scrollIntoView({block:'start'});
 }
 function emailEditor(detail){
   state.emailViewRequest=(state.emailViewRequest||0)+1;state.sourcePreviewRequest=(state.sourcePreviewRequest||0)+1;
@@ -230,11 +353,20 @@ async function searchPage(){
 }
 async function chatPage(){
   var epoch=state.epoch, chats=await rpc('apiChats'),resources=await rpc('apiResources');if(epoch!==state.epoch)return;
-  $('content').innerHTML=heading('chatTitle','chatIntro',btn('new-chat','newChat'))+'<div class="chat-layout"><aside class="card chat-history" id="chat-list">'+(chats.length?chats.map(function(c){return '<button type="button" data-chat="'+esc(c.id)+'" class="'+(state.chat&&state.chat.id===c.id?'active':'')+'">'+esc(c.title)+'</button>';}).join(''):'<p class="small">'+esc(t('noChats'))+'</p>')+'</aside><section class="card">'+(state.chat?'<div class="toolbar">'+field('chat-title','conversationTitle',state.chat.title)+btn('chat-rename','renameChat')+btn('chat-trash','trashChat')+(state.chat.messages.length?btn('chat-truncate','removeLastExchange'):'')+btn('chat-undo','undoChatRemoval')+'</div>':'')+'<div class="messages" id="messages"></div><form id="ask-form"><hr class="divider"><div class="toolbar">'+scopeSelect('chat-scope')+'<label class="field" for="chat-model">'+esc(t('chatModel'))+'<select id="chat-model">'+[['gpt-6-luna','chatModelLuna'],['gpt-6.1-terra','chatModelTerra'],['gpt-6.1-sol','chatModelSol'],['gpt-4o-mini','chatModel4oMini'],['configured','chatModelConfigured']].map(function(m){return '<option value="'+m[0]+'">'+esc(t(m[1]))+'</option>';}).join('')+'</select></label></div><p class="small">'+esc(t(state.boot.settings.aiChat?'chatModelHint':'chatModelEnableHint'))+'</p>'+resourceScopeHtml('chat-resources',resources)+'<label class="field">'+esc(t('ragArchitectureLabel'))+'<select id="chat-rag">'+ragMethodOptions(true)+'</select></label><p class="small" id="chat-rag-hint"></p>'+field('chat-rag-metadata','ragMetadata',state.chat&&state.chat.ragMetadata||'')+check('chat-rag-api','ragUseApi','ragChatApiHint',false)+'<label class="field" for="chat-question">'+esc(t('question'))+'</label><textarea id="chat-question" required maxlength="1000" placeholder="'+esc(t('question'))+'"></textarea><div class="toolbar"><button id="ask-button" class="btn primary" type="submit">'+esc(t('ask'))+'</button><span id="ask-status" class="small"></span></div></form></section></div>';
+  var activeTitle=state.chat?state.chat.title:t('newChat');
+  $('content').innerHTML=heading('chatTitle','chatIntro')+
+    '<div class="chat-layout"><aside class="card chat-history"><div class="chat-history-heading"><h2>'+esc(t('chatConversations'))+'</h2><span class="chat-count">'+chats.length+'</span></div>'+btn('new-chat','newChat',true)+'<div id="chat-list">'+(chats.length?chats.map(function(c){var active=state.chat&&state.chat.id===c.id;return '<button type="button" data-chat="'+esc(c.id)+'"'+(active?' aria-current="true"':'')+' class="chat-history-item'+(active?' active':'')+'">'+icon('chat')+'<span>'+esc(c.title)+'</span></button>';}).join(''):'<p class="chat-history-empty">'+esc(t('noChats'))+'</p>')+'</div><p class="chat-history-note">'+esc(t('chatHistoryHint'))+'</p></aside>'+
+    '<section class="card chat-thread"><header class="chat-thread-header"><div class="chat-thread-title">'+icon('chat')+'<div><h2>'+esc(activeTitle)+'</h2><span class="small">'+esc(t(state.boot.settings.aiChat?'generatedAnswer':'sourceExcerpts'))+'</span></div></div>'+(state.chat?'<details class="chat-manage"><summary>'+esc(t('chatManage'))+'</summary><div>'+field('chat-title','conversationTitle',state.chat.title)+'<div class="actions">'+btn('chat-rename','renameChat')+(state.chat.messages.length?btn('chat-truncate','removeLastExchange'):'')+btn('chat-undo','undoChatRemoval')+btn('chat-trash','trashChat')+'</div></div></details>':'')+'</header>'+
+    '<div class="messages" id="messages" role="log" aria-label="'+esc(t('chatConversations'))+'" aria-live="polite" aria-relevant="additions text"></div>'+
+    '<form id="ask-form" class="chat-composer"><label class="chat-question-label" for="chat-question">'+esc(t('question'))+'</label><div class="chat-input-wrap"><textarea id="chat-question" required maxlength="1000" rows="2" placeholder="'+esc(t('chatPlaceholder'))+'"></textarea><div class="chat-composer-footer"><span class="small" id="ask-status" role="status">'+esc(t('chatKeyboardHint'))+'</span><button id="ask-button" class="btn primary" type="submit">'+esc(t('ask'))+'<svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 19V5m-6 6 6-6 6 6"/></svg></button></div></div>'+
+    '<details class="chat-options"><summary>'+icon('settings')+'<span>'+esc(t('chatOptions'))+'</span></summary><div class="chat-options-body">'+'<div class="toolbar">'+scopeSelect('chat-scope')+'<label class="field" for="chat-model">'+esc(t('chatModel'))+'<select id="chat-model">'+[['gpt-6-luna','chatModelLuna'],['gpt-6.1-terra','chatModelTerra'],['gpt-6.1-sol','chatModelSol'],['gpt-4o-mini','chatModel4oMini'],['configured','chatModelConfigured']].map(function(m){return '<option value="'+m[0]+'">'+esc(t(m[1]))+'</option>';}).join('')+'</select></label></div><p class="small">'+esc(t(state.boot.settings.aiChat?'chatModelHint':'chatModelEnableHint'))+'</p>'+resourceScopeHtml('chat-resources',resources)+'<label class="field">'+esc(t('ragArchitectureLabel'))+'<select id="chat-rag">'+ragMethodOptions(true)+'</select></label><p class="small" id="chat-rag-hint"></p>'+field('chat-rag-metadata','ragMetadata',state.chat&&state.chat.ragMetadata||'')+check('chat-rag-api','ragUseApi','ragChatApiHint',false)+'</div></details></form></section></div>';
   $('chat-scope').value=state.chat&&state.chat.scope||'raw';$('chat-model').value=state.chat?(state.chat.model||'configured'):(state.boot.settings.stageModels&&state.boot.settings.stageModels.chat?'configured':'gpt-6-luna');if(!$('chat-model').value)$('chat-model').value='configured';setResourceScope('chat-resources',state.chat&&state.chat.sourceIds);$('chat-rag').value=state.chat&&state.chat.ragArchitecture||'default';function ragHint(){var method=$('chat-rag').value;$('chat-rag-hint').textContent=method==='default'?t('ragDefaultHint'):t('ragHint.'+method);}ragHint();$('chat-rag').addEventListener('change',ragHint);
-  function draw(){var messages=state.chat?state.chat.messages:[];$('messages').innerHTML=messages.length?messages.map(function(m){return '<div class="message '+(m.role==='user'?'user':'')+'"><div class="message-label">'+esc(t(m.role==='user'?'you':m.mode==='generated'?'generatedAnswer':'sourceExcerpts'))+(m.mode==='generated'&&m.model?' · '+esc(m.model):'')+'</div><div class="message-content">'+esc(m.mode==='no_match'?t('noMatches'):m.content)+'</div>'+ragDetails(m.retrieval)+(m.evidence&&(m.evidence.unsupported_count||m.evidence.invalid_citations.length)?notice(t('answerNeedsReview')):'')+(m.sources&&m.sources.length?'<div class="source-links">'+m.sources.map(function(s){return link(s.url,'['+s.number+'] '+s.title);}).join('')+'</div>':'')+'</div>';}).join(''):empty('chatEmpty');$('messages').scrollTop=$('messages').scrollHeight;}
-  draw();bind('chat-truncate',async function(){state.chat=await rpc('apiManageChat',{id:state.chat.id,updatedAt:state.chat.updatedAt,action:'truncate',keep:Math.max(0,state.chat.messages.length-2)});await chatPage();});bind('chat-undo',async function(){state.chat=await rpc('apiManageChat',{id:state.chat.id,updatedAt:state.chat.updatedAt,action:'undo'});await chatPage();});bind('chat-rename',async function(){state.chat=await rpc('apiManageChat',{id:state.chat.id,action:'rename',title:$('chat-title').value});await chatPage();});bind('chat-trash',async function(){await rpc('apiManageChat',{id:state.chat.id,action:'trash'});state.chat=null;await chatPage();});bind('new-chat',function(){state.chat=null;return chatPage();});$('chat-list').querySelectorAll('[data-chat]').forEach(function(button){button.addEventListener('click',async function(){try{state.chat=await rpc('apiChat',button.dataset.chat);if(state.route==='chat')await chatPage();}catch(error){toast(errorText(error));}});});
-  $('ask-form').addEventListener('submit',async function(e){e.preventDefault();var query=$('chat-question').value.trim();if(!query)return;$('ask-button').disabled=true;$('ask-status').textContent=t('sending');try{state.chat=await rpc('apiAsk',{message:query,scope:$('chat-scope').value,sourceIds:selectedResources('chat-resources'),architecture:$('chat-rag').value,metadata:$('chat-rag-metadata').value,useApi:$('chat-rag-api').checked,model:$('chat-model').value,chatId:state.chat&&state.chat.id});if(epoch===state.epoch){$('chat-question').value='';await chatPage();}}catch(error){toast(errorText(error));}finally{if($('ask-button'))$('ask-button').disabled=false;if($('ask-status'))$('ask-status').textContent='';}});
+  function draw(){var messages=state.chat?state.chat.messages:[];$('messages').innerHTML=messages.length?messages.map(function(m){return '<div class="message '+(m.role==='user'?'user':'')+'"><div class="message-label">'+esc(t(m.role==='user'?'you':m.mode==='generated'?'generatedAnswer':'sourceExcerpts'))+(m.mode==='generated'&&m.model?' · '+esc(m.model):'')+'</div><div class="message-content">'+esc(m.mode==='no_match'?t('noMatches'):m.content)+'</div>'+ragDetails(m.retrieval)+(m.evidence&&(m.evidence.unsupported_count||m.evidence.invalid_citations.length)?notice(t('answerNeedsReview')):'')+(m.sources&&m.sources.length?'<div class="source-links">'+m.sources.map(function(s){return link(s.url,'['+s.number+'] '+s.title);}).join('')+'</div>':'')+'</div>';}).join(''):'<div class="chat-welcome"><div class="chat-welcome-icon">'+icon('chat')+'</div><span class="eyebrow">Wissensbau</span><h2>'+esc(t('chatWelcome'))+'</h2><p>'+esc(t('chatEmpty'))+'</p><div class="chat-starters">'+['chatStarterSummary','chatStarterDecisions','chatStarterQuestions'].map(function(key){return '<button type="button" data-chat-prompt="'+key+'">'+esc(t(key))+icon('chevron')+'</button>';}).join('')+'</div></div>';$('messages').scrollTop=$('messages').scrollHeight;}
+  draw();
+  $('messages').querySelectorAll('[data-chat-prompt]').forEach(function(button){button.addEventListener('click',function(){$('chat-question').value=t(button.dataset.chatPrompt);$('chat-question').focus();});});
+  $('chat-question').addEventListener('keydown',function(event){if(event.key==='Enter'&&(event.metaKey||event.ctrlKey)&&!event.isComposing){event.preventDefault();if(!$('ask-button').disabled)$('ask-form').requestSubmit();}});
+  bind('chat-truncate',async function(){state.chat=await rpc('apiManageChat',{id:state.chat.id,updatedAt:state.chat.updatedAt,action:'truncate',keep:Math.max(0,state.chat.messages.length-2)});await chatPage();});bind('chat-undo',async function(){state.chat=await rpc('apiManageChat',{id:state.chat.id,updatedAt:state.chat.updatedAt,action:'undo'});await chatPage();});bind('chat-rename',async function(){state.chat=await rpc('apiManageChat',{id:state.chat.id,action:'rename',title:$('chat-title').value});await chatPage();});bind('chat-trash',async function(){await rpc('apiManageChat',{id:state.chat.id,action:'trash'});state.chat=null;await chatPage();});bind('new-chat',function(){state.chat=null;return chatPage();});$('chat-list').querySelectorAll('[data-chat]').forEach(function(button){button.addEventListener('click',async function(){try{state.chat=await rpc('apiChat',button.dataset.chat);if(state.route==='chat')await chatPage();}catch(error){toast(errorText(error));}});});
+  $('ask-form').addEventListener('submit',async function(e){e.preventDefault();if($('ask-button').disabled)return;var query=$('chat-question').value.trim();if(!query)return;$('ask-button').disabled=true;$('ask-status').textContent=t('sending');try{state.chat=await rpc('apiAsk',{message:query,scope:$('chat-scope').value,sourceIds:selectedResources('chat-resources'),architecture:$('chat-rag').value,metadata:$('chat-rag-metadata').value,useApi:$('chat-rag-api').checked,model:$('chat-model').value,chatId:state.chat&&state.chat.id});if(epoch===state.epoch){$('chat-question').value='';await chatPage();}}catch(error){toast(errorText(error));}finally{if($('ask-button'))$('ask-button').disabled=false;if($('ask-status'))$('ask-status').textContent='';}});
 }
 async function graphPage(){var epoch=state.epoch,data=await rpc('apiGraph'),byId={};if(epoch!==state.epoch)return;data.nodes.forEach(function(n){byId[n.id]=n;});$('content').innerHTML=heading('graphTitle','graphIntro')+'<div class="relations">'+data.nodes.map(function(n){var links=data.links.filter(function(l){return l.from===n.id;});return '<article class="relation-card"><h3>'+pageLink(n.id,n.title)+'</h3><small>'+esc(t('outgoing'))+'</small>'+(links.length?links.map(function(l){return pageLink(l.to,byId[l.to]?byId[l.to].title:l.to);}).join(''):'<p class="small">'+esc(t('noConnections'))+'</p>')+'</article>';}).join('')+'</div>'+graphRulesHtml(data)+'<section class="card" style="margin-top:25px"><h2>'+esc(t('exactEntities'))+'</h2><p class="small">'+esc(t('entityHint'))+'</p>'+data.entities.map(function(entity){return '<span class="badge" style="margin:4px">'+esc(entity.name)+' · '+entity.sources.length+'</span>';}).join('')+'</section>'+entityResolutionHtml(data.resolution);bindEntityResolution(data.resolution);bindGraphRules(data);}
 function graphRulesHtml(data){function options(){return data.nodes.map(function(n){return '<option value="'+esc(n.id)+'">'+esc(n.title)+'</option>';}).join('');}return '<section class="card"><h2>'+esc(t('linkRules'))+'</h2>'+notice(t('linkRulesHint'))+'<div class="grid"><label class="field">'+esc(t('linkFrom'))+'<select id="link-from">'+options()+'</select></label><label class="field">'+esc(t('linkTo'))+'<select id="link-to">'+options()+'</select></label></div><label class="field">'+esc(t('linkRule'))+'<select id="link-rule"><option value="require">'+esc(t('link.require'))+'</option><option value="block">'+esc(t('link.block'))+'</option></select></label>'+field('link-note','linkNote','','text')+btn('link-save','saveLinkRule',true)+'<h3>'+esc(t('savedLinkRules'))+'</h3>'+(data.rules||[]).map(function(r,i){return '<p>'+esc(r.from)+' → '+esc(r.to)+' · '+esc(t('link.'+r.rule))+' · '+esc(t(r.enabled===false?'ruleDisabled':'ruleEnabled'))+(r.note?' · '+esc(r.note):'')+' <button class="btn" type="button" data-link-toggle="'+i+'">'+esc(t(r.enabled===false?'enableRule':'disableRule'))+'</button><button class="btn" type="button" data-link-remove="'+i+'">'+esc(t('removeRule'))+'</button></p>';}).join('')+'</section>';}
@@ -314,6 +446,7 @@ async function settingsPage(){var epoch=state.epoch,s=state.boot.settings,preset
 function presetSettingsHtml(presets){return '<section class="card"><h2>'+esc(t('retrievalPresets'))+'</h2><p>'+esc(t('retrievalPresetsHint'))+'</p>'+field('preset-name','presetName','','text')+btn('preset-save','saveRetrievalPreset')+presets.map(function(p,i){return '<p><strong>'+esc(p.name)+'</strong> · '+esc(date(p.at))+' <button class="btn" data-preset-apply="'+i+'">'+esc(t('applyPreset'))+'</button><button class="btn" data-preset-remove="'+i+'">'+esc(t('removePreset'))+'</button></p>';}).join('')+'</section>';}
 function bindPresetSettings(presets){var epoch=state.epoch;bind('preset-save',async function(){await rpc('apiRetrievalPresets',{action:'save',name:$('preset-name').value});if(epoch===state.epoch)await settingsPage();});['apply','remove'].forEach(function(action){$('content').querySelectorAll('[data-preset-'+action+']').forEach(function(button){button.addEventListener('click',async function(){button.disabled=true;try{var index=Number(button.getAttribute('data-preset-'+action));await rpc('apiRetrievalPresets',{action:action,id:presets[index].id});await refreshBoot();if(epoch===state.epoch)await settingsPage();}catch(error){toast(errorText(error));button.disabled=false;}});});});}
 async function render(){
+  clearTimeout(state.emailPoll);
   var parts=location.hash.replace(/^#/,'').split('/');state.route=routes.includes(parts[0])?parts[0]:'dashboard';var epoch=++state.epoch;shell();
   if(!state.boot||!state.boot.ready){await setup();return;}
   $('content').innerHTML='<div class="loading"><span class="spinner" aria-hidden="true"></span><p>'+esc(t('loading'))+'</p></div>';

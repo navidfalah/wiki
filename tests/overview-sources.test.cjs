@@ -85,6 +85,41 @@ server.wbSourceRevision_=()=> 'revision';
   await ui.dashboard();
   assert.ok(nodes.content.innerHTML.includes('<strong>2</strong>'),'Overview refreshes the source count');
   assert.ok(nodes.content.innerHTML.includes('overview-folder'),'an existing workspace can import a folder from Overview');
+  assert.ok(nodes.content.innerHTML.includes('overview-ai-form'),'Overview exposes AI configuration');
+  assert.ok(nodes.content.innerHTML.includes('id="overview-api-key" type="password"'),'API key entry is masked');
+  ui.state.boot.settings={apiBase:'https://provider.example/v1',model:'saved-model',apiKeys:[],aiSearch:true,embeddingModel:'embedding-model',stageModels:{chat:'chat-model'},autoResume:true,convertLegacy:true,topK:7};
+  let savedInput;
+  ui.rpc(async(name,input)=>{
+    if(name==='apiAddApiKey'){
+      assert.equal(input.key,'test-secret');
+      return {...ui.state.boot.settings,hasApiKey:true,apiKeys:[{id:'key-1',position:1}]};
+    }
+    if(name==='apiSaveSettings'){savedInput=input;return {...input};}
+    if(name==='apiTestConnection')return {model:'new-model',elapsedMs:12};
+    throw new Error('Unexpected RPC '+name);
+  });
+  nodes['overview-api-base'].value='https://new-provider.example/v1';
+  nodes['overview-api-model'].value='new-model';
+  node('overview-ai-chat').checked=true;node('overview-ai-compile').checked=false;
+  nodes['overview-api-key'].value='test-secret';
+  await nodes['overview-ai-key-form'].submit({preventDefault(){}});
+  assert.equal(nodes['overview-api-key'].value,'','clear the key after storing it');
+  assert.equal(nodes['overview-api-model'].value,'new-model','adding a key preserves unsaved configuration');
+  assert.ok(!nodes.content.innerHTML.includes('test-secret'),'the key is never rendered into HTML');
+  assert.ok(nodes['overview-ai-key-status'].innerHTML.includes('1'));
+  await nodes['overview-ai-form'].submit({preventDefault(){}});
+  assert.equal(savedInput.apiBase,'https://new-provider.example/v1');
+  assert.equal(savedInput.aiChat,true);
+  assert.equal(savedInput.embeddingModel,'embedding-model','saving quick settings preserves advanced configuration');
+  assert.equal(savedInput.aiSearch,true);
+  assert.equal(savedInput.stageModels.chat,'chat-model');
+  assert.equal(savedInput.autoResume,true);
+  assert.ok(!JSON.stringify(savedInput).includes('test-secret'),'settings contain no credential');
+  await nodes['overview-ai-test'].click({});
+  // bind() runs its action in a promise continuation.
+  await new Promise(resolve=>setImmediate(resolve));
+  assert.ok(nodes['overview-ai-test-result'].innerHTML.includes('new-model'));
+  ui.rpc(async()=>server.apiBootstrap().data);
   let rendered=0;ui.render(async()=>{rendered++;});
   await ui.runFolderImport({status:'success'},'overview-import-status');
   assert.equal(rendered,1,'completed imports refresh the current view');

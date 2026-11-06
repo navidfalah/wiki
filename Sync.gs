@@ -13,6 +13,23 @@ function wbSyncPublic_(ws) {
   return state;
 }
 function apiSyncStatus() { return wbReply_(function(){return wbSyncPublic_(wbWorkspace_());}); }
+// Opening Emails connects the existing Gmail authorization once. Later explicit
+// connector settings (including disabling sync) remain authoritative.
+function apiEmailSync() { return wbReply_(function(){
+  wbLock_(function(){
+    var ws=wbWorkspace_(),state=wbSyncState_(ws),created=null;
+    if(!state.emailAutoConfigured){
+      state.emailAutoConfigured=true;state.enabled=true;state.allGmail=true;
+      if(wbListSources_(ws.inbox).length)state.dirty=true;
+      state.gmailToken='';state.gmailDone=false;state.discoveryDone=!state.allDrive;state.phase='gmail';
+    }
+    try {
+      if(state.enabled&&!wbSyncTriggers_().length)created=ScriptApp.newTrigger('runSourceSync').timeBased().everyMinutes(5).create();
+      wbSyncSave_(ws,state);
+    } catch(error){if(created)ScriptApp.deleteTrigger(created);throw error;}
+  });
+  return wbSyncRun_();
+}); }
 function apiSyncForgetDrive(id) { return wbReply_(function(){return wbLock_(function(){
   var ws=wbWorkspace_(),ledger=wbRead_(ws.root,'drive-imports.json',{}),state=wbSyncState_(ws),record=ledger[String(id||'')];
   if(!record)throw new Error('SYNC_SOURCE_MISSING');if(record.pending)throw new Error('SYNC_PENDING');

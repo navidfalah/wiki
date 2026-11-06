@@ -31,3 +31,6 @@ wiki-app/.docusaurus/
 wiki-app/node_modules/
 wiki-app/static/media/*
 !wiki-app/static/media/.gitkeep
+
+.clasp.json
+.clasprc.json
